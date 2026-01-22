@@ -554,6 +554,22 @@ Need isolation/parallelism? → Subagent
 
 ---
 
+## Working with Multiple Components
+
+**Refactoring Multiple Components**: When renaming multiple directories/files, combine `mv` commands: `mv old1 new1 && mv old2 new2 && mv old3 new3` - single bash call more efficient than multiple separate calls.
+
+**Edit Tool for Cross-References**: Use `replace_all=true` parameter when updating same text across multiple occurrences: `Edit(file, old_string, new_string, replace_all=true)` - replaces all instances in one operation.
+
+**TodoWrite for Large Tasks**: Use TodoWrite to track multi-phase work (e.g., 7-8 phase refactor). Update status: pending → in_progress → completed. Provides visibility and prevents lost steps.
+
+**Phase-Based Commits**: For large refactors, commit after each logical phase rather than one mega-commit. Makes review easier and enables selective rollback.
+
+**Verify with Grep**: After updating cross-references, verify: `grep -r "old-pattern" --include="*.md" . | wc -l` - should return 0 if all references updated.
+
+**Read Before Edit**: Must read file with Read tool before Edit tool can modify it (system constraint).
+
+---
+
 ## Claude Code Plugin Engineering (2026)
 
 ### Skills-First Architecture
