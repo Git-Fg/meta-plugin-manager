@@ -1,10 +1,10 @@
 ---
-name: architecting-skills
-description: "Progressive disclosure router for skills autonomy and SKILL.md structure. Use for creating, auditing, or refining skills with tier-based organization. Routes to skills-knowledge for implementation details. Do not use for simple documentation or basic markdown editing."
+name: skills-architect
+description: "Project-scoped skills router for .claude/skills/ with progressive disclosure. Use when creating, auditing, or refining skills in current project. Routes to skills-knowledge for implementation details. Do not use for standalone plugin development."
 disable-model-invocation: true
 ---
 
-# Architecting Skills
+# Skills Architect
 
 Domain router for skills development with progressive disclosure and autonomy-first design.
 

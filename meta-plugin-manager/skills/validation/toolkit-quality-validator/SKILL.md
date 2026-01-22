@@ -1,12 +1,12 @@
 ---
-name: plugin-quality-validator
-description: "Validate plugin quality and compliance with skills-first architecture and 2026 best practices. Use when auditing plugins, checking compliance, or validating architecture. Do not use for simple file validation without plugin context."
+name: toolkit-quality-validator
+description: "Validate .claude/ configuration quality and compliance with 2026 best practices. Use when auditing project setup, checking skills/mcp/hooks compliance, or validating local-first configuration. Do not use for standalone plugin validation without project context."
 user-invocable: true
 ---
 
-# Plugin Quality Validator
+# Toolkit Quality Validator
 
-Validate plugin quality and compliance with skills-first architecture and 2026 best practices.
+Validate .claude/ configuration quality and compliance with skills-first architecture and 2026 best practices.
 
 ## 🚨 MANDATORY: Read BEFORE Validation
 

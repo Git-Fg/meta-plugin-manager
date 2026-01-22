@@ -1,6 +1,6 @@
 ---
-name: plugin-architect
-description: "Plugin lifecycle router for .json configuration and skills-first architecture. Use for creating, auditing, or refining plugins with complete directory structure. Routes to specialized knowledge skills and plugin-worker for analysis. Do not use for single-skill modifications."
+name: toolkit-architect
+description: "Project scaffolding router for .claude/ configuration and local-first customization. Use when enhancing current project with skills, MCP, hooks, or subagents. Routes to specialized domain architects and toolkit-worker for analysis. Do not use for standalone plugin publishing."
 disable-model-invocation: true
 ---
 
@@ -9,26 +9,26 @@ disable-model-invocation: true
 **CRITICAL**: You MUST read and understand these URLs:
 
 ### Primary Documentation (MUST READ)
-- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+- **[MUST READ] Project Customization Guide**: https://code.claude.com/docs/en/skills
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Plugin structure, component organization
+  - **Content**: Project-scoped skills, .claude/ directory structure
   - **Cache**: 15 minutes minimum
 
-- **[MUST READ] Skills Guide**: https://code.claude.com/docs/en/skills
+- **[MUST READ] Local-First Configuration**: https://code.claude.com/docs/en/plugins
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Skills-first architecture, progressive disclosure
+  - **Content**: .claude/ configuration patterns
   - **Cache**: 15 minutes minimum
 
 ### ⚠️ BLOCKING RULES
 - **DO NOT proceed** until you've fetched and reviewed Primary Documentation
 - **MUST validate** all URLs are accessible before routing
-- **REQUIRED** to understand plugin architecture before routing
+- **REQUIRED** to understand project-scoped configuration before routing
 
 ---
 
-# Plugin Architect
+# Toolkit Architect
 
-Single domain router for complete plugin lifecycle management using skills-first architecture.
+Project scaffolding router for .claude/ configuration using skills-first architecture.
 
 ## Actions
 
