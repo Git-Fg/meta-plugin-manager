@@ -67,6 +67,41 @@ START: What do you need?
    └─→ Subagent (RARE/ADVANCED)
 ```
 
+### MCP Scope Configuration Criteria
+
+**Before project setup or workflow changes:**
+
+1. **Identify Task Category**
+   - Plugin authoring (docs, skills, commands)
+   - Web research (verification, documentation fetching)
+   - Code analysis (validation, review)
+   - Orchestration (multi-phase workflows)
+
+2. **Configure MCPs at Appropriate Scope**
+   - **Authoring**: Project scope → `file-search + simplewebfetch` only
+   - **Research**: Project scope → `browser + deepwiki + simplewebfetch`
+   - **Analysis**: Project scope → `file-search + LSP` (if available)
+   - **Universal tools**: User scope → ONLY for cross-project utilities
+
+3. **Edit `.mcp.json` and Restart**
+   - Configure project-specific MCPs in `.mcp.json`
+   - Use `--scope local` for personal project tools
+   - Restart Claude Code to apply configuration changes
+   - Tool Search activates automatically when tools exceed 10% context
+
+**Configuration Example**:
+```json
+// .mcp.json for plugin authoring project
+{
+  "mcpServers": {
+    "file-search": { "command": "..." },
+    "simplewebfetch": { "command": "..." }
+  }
+}
+```
+
+**For detailed scope-based strategy**: See [common.md](common.md#context-window-management)
+
 ---
 
 ## Layer Comparison Matrix

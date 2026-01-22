@@ -136,6 +136,19 @@ Domain router for hooks development with event automation and infrastructure int
 - PreToolUse - Validate before execution
 - PostToolUse - Process results
 
+**Permission Hooks**:
+- PermissionRequest - Handle permission prompts
+- UserPromptSubmit - Process user submissions
+
+**Agent Hooks**:
+- SubagentStop - Handle subagent completion
+- Stop - Handle session stop events
+
+**System Hooks**:
+- Notification - Handle system notifications
+- PreCompact - Pre-context compact
+- Setup - Hook system initialization
+
 **Validation Hooks**:
 - PreWrite - Validate file operations
 - PreEdit - Validate modifications
@@ -145,19 +158,38 @@ Domain router for hooks development with event automation and infrastructure int
 - LSP setup
 - Environment preparation
 
-## Knowledge Base
+## Implementation Guidance
 
-See [Hooks Knowledge](references/hooks-knowledge.md) for event handling patterns, security best practices, and infrastructure integration.
+**For detailed implementation patterns**: Load: hooks-knowledge
+
+**Security Best Practices**:
+- Input validation and sanitization
+- Event pattern matching safety
+- Error handling and recovery
+- Performance impact monitoring
+
+### Session Persistence Protocol
+
+**Purpose**: Memory persistence for plugin development workflow
+
+**State File**: `.claude/PLUGIN_STATE.md`
+
+**Use When**:
+- Creating hooks for session state persistence
+- Implementing SessionStart/Stop/PreCompact hooks
+- Extracting plugin development decisions from transcripts
+
+**Implementation**: Load: hooks-knowledge → references/session-persistence.md
 
 ## Routing Criteria
-
-**Route to hooks-knowledge** when:
-- Creating new hooks
-- Auditing security
-- Refining event handling
-- Infrastructure questions
 
 **Direct action** when:
 - Standard hook patterns
 - Simple event matching
 - Basic security checks
+
+**Load: hooks-knowledge** when:
+- Infrastructure integration questions
+- Advanced security patterns
+- Event automation edge cases
+- Detailed implementation guidance

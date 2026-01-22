@@ -152,27 +152,33 @@ Domain router for subagent development with isolation and parallelism focus.
 - Sequential processing stages
 - Data flows through stages
 - Each stage transforms data
+- Use for: multi-step transformations
 
 **Router + Worker Pattern**:
 - Task distribution and execution
 - Router delegates to workers
 - Workers return results
+- Use for: parallel task execution
 
 **Handoff Pattern**:
 - Coordination between specialized agents
 - State transfer between contexts
 - Seamless information flow
+- Use for: specialized domain handoffs
 
-## Knowledge Routing
+## Implementation Guidance
 
-See [Subagents Knowledge](references/subagents-knowledge.md) for context: fork criteria and coordination patterns.
+For detailed implementation patterns, route to subagents-knowledge or refer to:
+- Official Subagents documentation: https://code.claude.com/docs/en/sub-agents
 
 ## Routing Criteria
 
-**Route to subagents-knowledge** when:
-- Context fork decisions
-- Isolation justification
-- Usage appropriateness
-- Pattern selection
-- Coordination implementation
-- State management
+**Direct action** when:
+- Standard coordination patterns
+- Basic context fork decisions
+- Simple isolation scenarios
+
+**Route to external docs** when:
+- Complex pattern selection
+- Advanced coordination implementation
+- State management edge cases

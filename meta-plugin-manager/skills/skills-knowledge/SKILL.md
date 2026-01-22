@@ -142,6 +142,105 @@ Scan $ARGUMENTS:
 - User interaction workflows
 - Low output volume operations
 
+## Pattern: Context-Forked Worker Skills
+
+**When to Use**: Skills designed to be called by other skills in multi-step pipelines
+
+### Problem Solved
+
+Linear skill chains accumulate "context rot" - intermediate outputs, thinking noise, and token bloat that make later steps less effective. Using `context: fork` for worker skills mitigates this brittleness.
+
+### Clean Fork Pipeline Architecture
+
+**Instead of** (brittle linear chain in one context):
+```
+[Main Context]: Step 1 output → Step 2 output → Step 3 output
+                      (Huge Token Bloat, Context Rot)
+```
+
+**Use** (hub with forked workers):
+```
+[Hub Skill - Main Context]
+    ↓ (spawn with context: fork)
+[Worker A - Isolated Context] → Clean Result
+    ↓ (hub receives result)
+[Worker B - Isolated Context] → Clean Result (uses A)
+    ↓ (hub receives result)
+[Worker C - Isolated Context] → Final Result (uses A+B)
+```
+
+### Benefits of Forked Workers
+
+1. **Prevents Context Rot**: Each worker starts with clean, focused context
+2. **Enables Parallelism**: Hub can spawn multiple forked skills simultaneously
+3. **Reduces Hallucinations**: Constrained context prevents confusion from irrelevant history
+4. **Modular & Reusable**: Worker skills can be called from any hub skill
+5. **Error Isolation**: Failure in one worker doesn't corrupt others' contexts
+
+### Implementation Example
+
+**Hub Skill** (orchestrates workflow):
+```yaml
+---
+name: analysis-pipeline
+description: "Orchestrate multi-step analysis workflow"
+disable-model-invocation: true
+---
+
+# Analysis Pipeline
+
+1. Spawn research-worker (context: fork)
+   - Input: $ARGUMENTS
+   - Output: Research findings
+
+2. Spawn analysis-worker (context: fork, parallel)
+   - Input: Research findings
+   - Output: Analysis results
+
+3. Aggregate results
+4. Spawn report-worker (context: fork)
+   - Input: Aggregated data
+   - Output: Final report
+```
+
+**Worker Skill** (isolated execution):
+```yaml
+---
+name: research-worker
+description: "Deep research in isolated context"
+context: fork
+agent: Explore
+---
+
+Research $ARGUMENTS thoroughly:
+1. Find relevant files
+2. Analyze content
+3. Generate comprehensive research report
+
+# This creates noise, but it's isolated from main context
+```
+
+### When to Use Forked Workers
+
+| Scenario | Pattern | Why |
+|----------|---------|-----|
+| Multi-step pipeline (>3 steps) | Hub + Forked Workers | Prevents context rot |
+| High-volume intermediate output | Forked Workers | Keeps main context clean |
+| Parallel execution needed | Forked Workers | Isolation enables parallelism |
+| Complex reasoning tasks | Forked Workers | Reduces confusion from irrelevant history |
+| Simple deterministic chain | Linear | Low overhead, simple enough |
+
+### When NOT to Use Forked Workers
+
+| Scenario | Reason |
+|----------|--------|
+| Simple one-off tasks | Overhead not justified |
+| Tasks needing conversation context | Forked context lacks history |
+| Low-volume operations | No benefit to isolation |
+| Single-step operations | Unnecessary complexity |
+
+---
+
 ## Quick Start
 
 ### Step 1: Create Directory Structure

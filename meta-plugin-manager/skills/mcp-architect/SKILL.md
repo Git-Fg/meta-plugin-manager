@@ -8,6 +8,23 @@ disable-model-invocation: true
 
 Domain router for Model Context Protocol (MCP) integrations with external service access focus.
 
+## MANDATORY: Read Before Creating MCP Integrations
+
+- **MUST READ**: [Official MCP Guide](https://code.claude.com/docs/en/mcp)
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Cache**: 15 minutes minimum
+  - **Content**: MCP integration patterns, tools, resources, prompts, transport mechanisms
+
+- **MUST READ**: [MCP Specification](https://modelcontextprotocol.io/)
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Cache**: 15 minutes minimum
+  - **Content**: Protocol definition, JSON-RPC 2.0 message format, security principles
+
+**BLOCKING RULES**:
+- **DO NOT proceed** without understanding MCP protocol and primitives
+- **REQUIRED** to validate URLs are accessible before MCP integration
+- **MUST understand** Tools, Resources, Prompts primitives before server creation
+
 ## Actions
 
 ### create
@@ -19,11 +36,7 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
    - Resources - Data access
    - Prompts - Templates
    - Servers - Full integration
-2. Route to appropriate knowledge:
-   - mcp-tools → Tool creation
-   - mcp-resources-prompts → Resource/prompt creation
-   - mcp-servers → Server configuration
-   - mcp-integration → Integration patterns
+2. **Load: mcp-knowledge** for implementation details
 3. Generate with protocol compliance
 
 **Output Contract**:
@@ -48,10 +61,10 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
 **Audits MCP integrations** for protocol compliance
 
 **Router Logic**:
-1. Load: mcp-integration
+1. **Load: mcp-knowledge/references/integration.md**
 2. Check:
    - Protocol adherence
-   - Transport configuration
+   - Transport configuration (stdio, http)
    - Tool/resource/prompt validity
    - Security considerations
 3. Generate audit with compliance scoring
@@ -82,7 +95,7 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
 **Improves MCP integrations** based on audit findings
 
 **Router Logic**:
-1. Load: mcp-integration, relevant mcp-* skill
+1. **Load: mcp-knowledge** for implementation patterns
 2. Enhance:
    - Protocol compliance
    - Transport optimization
@@ -127,34 +140,63 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
 - Multi-component integration
 - Transport management
 
-## Knowledge Routing
-
-See [MCP Knowledge](references/mcp-knowledge.md) for component patterns and implementation details.
-
-**Component Overview**:
-- **mcp-tools** - Tool creation and API wrappers
-- **mcp-resources-prompts** - Resource and prompt patterns
-- **mcp-servers** - Server configuration and transport
-- **mcp-integration** - Integration best practices
-
 ## Routing Criteria
 
-**Route to mcp-tools** when:
-- Creating API wrappers
-- Tool pattern questions
-- Service integration
+**For Tool Creation**: Load mcp-knowledge/references/tools.md
+- API wrapper patterns
+- Tool schemas and validation
+- Service integration examples
 
-**Route to mcp-resources-prompts** when:
-- Resource access patterns
-- Prompt template management
+**For Resource/Prompt Creation**: Load mcp-knowledge/references/resources.md
+- Data access patterns
+- File system resources
+- Template management
 - Context injection
 
-**Route to mcp-servers** when:
-- Server configuration
-- Transport setup
-- Protocol implementation
+**For Server Configuration**: Load mcp-knowledge/references/servers.md
+- Transport setup (stdio, http)
+- Official servers (Context7, DeepWiki, DuckDuckGo)
+- Custom server deployment
+- Plugin MCP (.mcp.json or plugin.json)
 
-**Route to mcp-integration** when:
-- Integration patterns
-- Best practices
-- Architecture questions
+**For Integration Guidance**: Load mcp-knowledge/references/integration.md
+- Architecture patterns
+- Decision framework
+- Security considerations
+- Configuration management
+
+## 2026 MCP Features
+
+- **Tool Search**: Auto-enabled when tools exceed 10% of context
+- **MCP Resources**: Referenced via `@server:protocol://resource/path` syntax
+- **MCP Prompts**: Available as `/mcp__servername__promptname` commands
+- **Plugin MCP**: Plugins bundle MCP servers via `.mcp.json` or `plugin.json`
+- **Dynamic Tool Updates**: Supports `list_changed` notifications
+- **MCP Output Limits**: Default 25,000 tokens, configurable via `MAX_MCP_OUTPUT_TOKENS`
+- **Environment Variables**: `${CLAUDE_PLUGIN_ROOT}` for plugin paths
+
+## Transport Mechanisms
+
+### stdio (Local)
+- Local process execution via standard input/output
+- Use for: Development, testing, single-user scenarios
+- Configuration: `claude mcp add --transport stdio <name> -- <command> [args...]`
+
+### http (Remote)
+- Hosted services with bidirectional streaming (recommended for cloud)
+- Use for: Production deployments, multi-user, high availability
+- Configuration: `claude mcp add --transport http <name> <url>`
+
+### sse (Deprecated)
+- Server-Sent Events transport is deprecated
+- Use http instead for new implementations
+
+## MCP Primitives Quick Reference
+
+See mcp-knowledge for complete primitives table and decision framework.
+
+| Primitive | Purpose | Use When |
+| --------- | ------- | -------- |
+| **Tools** | Callable functions | Need to expose operations or actions |
+| **Resources** | Read-only data | Need to provide data access |
+| **Prompts** | Reusable workflows | Need predefined prompt templates |

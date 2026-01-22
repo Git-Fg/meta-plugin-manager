@@ -154,6 +154,115 @@ Skills should be **self-sufficient by default** (80-95% autonomous):
 
 ---
 
+## Orchestration Patterns: When to Use Which
+
+### Linear Skill Chaining
+
+**Use For**: Deterministic, simple, repeatable workflows
+
+**Examples**:
+- `diff → lint → commit`
+- `validate → format → validate`
+- `extract → transform → load`
+
+**Pros**:
+- Simple to implement
+- Deterministic behavior
+- Low token overhead
+
+**Cons**:
+- Brittle for complex workflows (single point of failure)
+- Limited flexibility
+- No error recovery between steps
+
+**When to Avoid**:
+- Workflows requiring decision-making between steps
+- Dynamic problem solving where output is unpredictable
+- Workflows with >3 steps that need error recovery
+
+### Hub-and-Spoke
+
+**Use For**: Complex, dynamic workflows requiring flexibility
+
+**Examples**:
+- `research → plan → code → test` (with decision points)
+- Parallel research with aggregation
+- Multi-stage analysis with branching logic
+
+**Pros**:
+- Centralized state management
+- Error recovery and retry capability
+- Dynamic rerouting based on results
+- Resilient to individual worker failures
+
+**Cons**:
+- Higher complexity
+- Token overhead (hub reads everything)
+- More moving parts
+
+**Sources**:
+- [Anthropic: Building Effective Agents (Hub & Spoke)](https://www.anthropic.com/research/building-effective-agents)
+- [LangChain: Chains vs Agents](https://python.langchain.com/docs/modules/chains/)
+- [Microsoft: Autogen Design Patterns](https://microsoft.github.io/autogen/)
+
+### Worker Orchestration (Noise Isolation)
+
+**Pattern**: Router (this skill) + Worker (plugin-worker)
+
+** Use When**:
+- Task involves high-volume output (audit, grep, log analysis)
+- User asks for "Deep Analysis" or "Comprehensive Audit"
+- Need to keep main context clean
+
+**Instructions**:
+1.  **Identify**: User task is "noisy" (e.g., "Audit this repo structure")
+2.  **Delegate**: Spawn `plugin-worker` subagent
+3.  **Inject**: Dynamic context (repo structure, file lists)
+4.  **Instructions**: "Perform audit based on your internal knowledge and this injected context."
+
+**Example Delegation**:
+```javascript
+const workerResult = await Task({
+  subagent_type: "plugin-worker", // Uses agents/plugin-worker.md configuration
+  prompt: `Perform a comprehensive structural audit of the current repository.
+  
+  Context:
+  - Repository Root: ${env.CLAUDE_PROJECT_DIR}
+  - Focus: Architecture compliance, progressive disclosure checks
+  
+  Report Requirements:
+  - Quality Score (0-10 scale)
+  - Anti-patterns detected
+  - Remediation list
+  `,
+  formatted_output: true
+});
+```
+
+### Decision Tree
+
+```
+Need to orchestrate multiple skills?
+│
+├─ Simple, deterministic workflow?
+│  ├─ Yes → Linear Chaining (≤3 steps)
+│  └─ No → Continue below
+│
+├─ Requires decision-making between steps?
+│  ├─ Yes → Hub-and-Spoke
+│  └─ No → Continue below
+│
+├─ Parallel execution needed?
+│  ├─ Yes → Hub-and-Spoke with context: fork
+│  └─ No → Linear Chaining
+│
+└─ Error recovery required?
+   ├─ Yes → Hub-and-Spoke
+   └─ No → Linear Chaining
+```
+
+---
+
 ## Workflow Selection
 
 ### What do you need?

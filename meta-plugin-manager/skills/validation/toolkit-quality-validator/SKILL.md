@@ -96,6 +96,18 @@ This validator checks:
   - ✅ Cost optimization
   - ✅ Autonomy-first design
 
+### Context & Tool Management (5 points)
+
+**MCP Configuration Hygiene:**
+- ✅ MCP servers organized by purpose (authoring/research/validation)
+- ✅ Documentation references proper enable/disable patterns
+- ✅ No "always-on" heavy MCPs without justification
+
+**Session Management Guidance:**
+- ✅ Clear task-to-MCP mapping documented
+- ✅ Phase-based enable/disable instructions present
+- ✅ Warning about "too many tools active" included
+
 ## Validation Process
 
 ### Step 1: Fetch Documentation
@@ -147,6 +159,12 @@ simpleWebFetch https://code.claude.com/docs/en/plugins
 - Resources/prompts proper
 - Security considerations
 
+**Context Management Validation**:
+- [ ] Check if MCPs are properly categorized by purpose
+- [ ] Verify documentation explains enable/disable strategy
+- [ ] Confirm no unnecessary MCPs are marked as always-on
+- [ ] Validate tool count recommendations are present
+
 ### Step 4: Standards Check
 
 **2026 Compliance**:
@@ -183,6 +201,10 @@ simpleWebFetch https://code.claude.com/docs/en/plugins
 - URL currency: {url_score}/10
 - Best practices: {bp_score}/10
 
+### Context & Tool Management ({context_score}/5)
+- MCP configuration: {mcp_config_score}/3
+- Session management: {session_mgmt_score}/2
+
 ### Critical Issues
 - {issue_1}
 - {issue_2}
@@ -210,6 +232,12 @@ simpleWebFetch https://code.claude.com/docs/en/plugins
 ❌ **Context: fork misuse**
 - Simple tasks using context: fork
 - Missing dynamic context injection
+
+❌ **Linear chain brittleness** ( workflows >3 steps with decision points)
+- Deep skill chains for reasoning tasks
+- Single point of failure in chain
+- **Recommendation**: Use Hub-and-Spoke or forked workers for complex workflows
+- **Exception**: Linear chains are acceptable for deterministic utility workflows (e.g., validate → format → commit)
 
 ❌ **Missing URL fetching**
 - Skills without mandatory documentation

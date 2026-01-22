@@ -253,6 +253,12 @@ class UserProfile extends Component {
 
 **Good**: Global rules should be **truly universal** preferences
 
+### Anti-Pattern 5: Linear Chain Brittleness
+
+**Bad**: A -> B -> C -> D (for reasoning tasks) where C depends on B's specific output format.
+
+**Good**: Hub -> A; Hub -> B; Hub -> C. The Hub validates and routes, handling errors if B fails.
+
 ## Quick Validation Checklist
 
 - [ ] Rules are specific, not vague
@@ -615,6 +621,7 @@ Following refactor patterns from skill...
 - You need **strict tool isolation** or permission modes
 - You want to route to a **cheaper model** (Haiku for exploration)
 - Tasks are **naturally separable** and can run in parallel
+- **Context Rot Prevention**: Long workflows degrade performance; forks start fresh.
 
 **Subagents excel at:**
 - Isolating noisy output from main conversation
@@ -917,3 +924,117 @@ await Task({
 - [ ] Am I passing sufficient context?
 - [ ] Is the subagent type appropriate for the task?
 - [ ] Would parallel execution help?
+
+---
+
+## Pattern: Clean Fork Pipeline
+
+**Problem**: Linear skill chains accumulate "context rot" - intermediate outputs, thinking noise, and token bloat that make later steps less effective.
+
+**Solution**: Use `context: fork` for worker skills in multi-step pipelines to create isolated, clean contexts for each step.
+
+### Architecture
+
+```
+┌─────────────────────────────────────┐
+│     Hub Skill (Main Context)          │
+│  - Orchestrates workflow              │
+│  - Maintains state                    │
+│  - Spawns forked workers              │
+└─────────────┬─────────────────────────┘
+              │
+      ┌───────┴───────┐
+      │               │
+      ▼               ▼
+┌───────────┐  ┌───────────┐
+│ Worker A  │  │ Worker B  │
+│(fork)     │  │(fork)     │
+│Clean ctx  │  │Clean ctx  │
+└───────────┘  └───────────┘
+      │               │
+      └───────┬───────┘
+              ▼
+      ┌─────────────┐
+      │ Worker C    │
+      │ (fork)      │
+      │Uses A+B     │
+      └─────────────┘
+```
+
+### Benefits
+
+1. **Prevents Context Rot**: Each worker starts with clean, focused context
+2. **Enables Parallelism**: Workers can run simultaneously in isolated contexts
+3. **Reduces Hallucinations**: Constrained context prevents confusion from irrelevant history
+4. **Modular & Reusable**: Worker skills can be called from any hub skill
+5. **Error Isolation**: Failure in one worker doesn't corrupt others' contexts
+
+### Implementation Example
+
+**Hub Skill** (main context, orchestrates):
+```yaml
+---
+name: analysis-pipeline
+description: "Orchestrate multi-step analysis workflow"
+disable-model-invocation: true
+---
+
+# Analysis Pipeline
+
+1. Spawn research-worker (context: fork)
+   - Task: Deep research on $ARGUMENTS
+   - Output: Research findings (clean result, no noise)
+
+2. Spawn analysis-worker (context: fork, parallel)
+   - Task: Analyze research findings
+   - Output: Analysis results
+
+3. Aggregate results from both workers
+
+4. Spawn report-worker (context: fork)
+   - Task: Generate final report
+   - Input: Aggregated research + analysis
+   - Output: Final report
+```
+
+**Worker Skill** (forked, isolated context):
+```yaml
+---
+name: research-worker
+description: "Deep research in isolated context"
+context: fork
+agent: Explore
+---
+
+Research $ARGUMENTS thoroughly:
+1. Find all relevant files using Glob and Grep
+2. Read and analyze content
+3. Generate comprehensive research findings
+
+# This creates significant noise and intermediate output,
+# but it's isolated from the main conversation context
+```
+
+### When to Use Forked Workers
+
+| Scenario | Pattern | Why |
+|----------|---------|-----|
+| Multi-step pipeline (>3 steps) | Hub + Forked Workers | Prevents context rot |
+| High-volume intermediate output | Forked Workers | Keeps main context clean |
+| Parallel execution needed | Forked Workers | Isolation enables parallelism |
+| Complex reasoning tasks | Forked Workers | Reduces confusion from irrelevant history |
+| Simple deterministic chain | Linear | Low overhead, simple enough |
+
+### When NOT to Use Forked Workers
+
+| Scenario | Reason |
+|----------|--------|
+| Simple one-off tasks | Overhead not justified |
+| Tasks needing conversation context | Forked context lacks history |
+| Low-volume operations | No benefit to isolation |
+| Single-step operations | Unnecessary complexity |
+
+### Sources
+- Context isolation prevents context rot (verified via agent-browser research)
+- Fork pattern enables parallel execution (official Claude Code docs)
+- Hub-and-spoke pattern for complex workflows (Anthropic research)

@@ -155,6 +155,9 @@ Fetch: https://agentskills.io/specification
 - **Command Orchestration**: Called as part of larger workflow
 - **Subagent Integration**: Provides expertise to Subagents
 - **Skill Chaining**: Calls other Skills while remaining autonomous
+  - **Best for**: Deterministic utility chains (e.g., validate → format → validate)
+  - **Avoid for**: Complex reasoning flows where output is unpredictable (Linear Chain Brittleness)
+  - **Alternative**: Use Hub-and-Spoke pattern with `context: fork` (Clean Fork Pattern) for dynamic workflows
 
 ### Frontmatter Format
 
@@ -162,10 +165,16 @@ Fetch: https://agentskills.io/specification
 ---
 name: skill-name              # Lowercase, gerund form, ≤64 chars
 description: "{{CAPABILITY}}. Use when {{TRIGGERS}}. Do not use for {{EXCLUSIONS}}."
+user-invocable: true          # Optional, default: true (model can invoke)
+disable-model-invocation: true # Optional, manual-only (user-triggered)
+context: fork                 # Optional, for worker isolation
+agent: Explore                # Optional, when context: fork
 ---
 ```
 
 **Description Formula**: WHAT + WHEN + NOT
+
+**IMPORTANT**: Only these frontmatter fields are supported. Custom fields like `output-contract`, `stop-conditions`, or `error-handling` are NOT valid. Document output contracts in the SKILL.md body instead.
 
 ### Skill Design Principles
 
@@ -177,6 +186,20 @@ Skills should embody specific values based on task needs:
 - **Consistency**: Standardized output from templates
 - **Coordination**: Orchestration of multiple workflows
 - **Simplicity**: Direct path with minimal overhead
+
+### Output Contracts for Orchestrator and Worker Skills
+
+**Orchestrator Skills** (`disable-model-invocation: true`):
+- Document output format in SKILL.md body: `## Output Format`
+- Include routing decision logic: "Route to {skill}" or "Delegate to {worker} (context: fork)"
+- Add fork decision matrix based on output volume
+- Parse worker output for explicit completion markers
+
+**Worker Skills** (`context: fork`):
+- MUST include `## Output Format` with exact template
+- MUST include `## STOP WHEN` section with explicit conditions
+- MUST include error handling: "If validation fails, return ERROR status, never loop"
+- Reference: `meta-architect-claudecode/references/output-contracts.md`
 
 ---
 
@@ -498,10 +521,24 @@ Need isolation/parallelism? → Subagent
 
 **Directory Hygiene**: Remove empty scaffolding directories (`references/`, `scripts/`) rather than leaving technical debt.
 
+**Refactoring check**: When reviewing skills, if total content (SKILL.md + references) <500 lines, consider merging into self-contained skill.
+
 **Reference Links**: Use simple relative paths from SKILL.md:
 - `references/file.md` (for files in references/)
 - `examples/file.md` (for files in examples/)
 - Avoid `../` paths within skill context
+- **Anti-pattern**: Cross-skill links like `../other-skill/SKILL.md` - skills should be self-contained or use routing language
+
+**Router/Orchestrator Skills**: Skills with `disable-model-invocation: true` should route to knowledge skills, not reference external docs:
+- Route: "Load: {knowledge-skill}" for implementation details
+- Anti-pattern: "Refer to CLAUDE.md X section" - creates external dependency
+- Exception: Teaching ABOUT CLAUDE.md as a layer concept (educational, not dependency)
+
+**Fork Decision Matrix** (when calling other skills):
+- Small tasks, direct routing → Load knowledge skill directly
+- Large/complex tasks, noisy output → Delegate to worker (context: fork)
+- Parse worker output for explicit completion markers
+- On ERROR: Log and abort, never continue blindly
 
 ---
 
@@ -524,6 +561,8 @@ Need isolation/parallelism? → Subagent
 2. **Tier 2**: SKILL.md body (~3,500 tokens) - overview, decision logic, examples
 3. **Tier 3**: references/ subdirectories - detailed guides loaded on-demand
 
+**Self-contained threshold**: If SKILL.md + all references would be <500 lines total, merge into single self-contained SKILL.md instead of using progressive disclosure.
+
 **Anti-pattern**: Everything in SKILL.md or deeply nested sub-skills instead of references.
 
 ### Component Auto-Discovery
@@ -542,6 +581,7 @@ Claude automatically discovers:
 - High-volume/noisy operations (repo audits, log analysis)
 - Parallel execution of independent tasks
 - Security isolation (untrusted code)
+- **Prevention of Context Rot**: Long linear chains accumulate noise. Forking ensures zero context pollution.
 
 **Context fork requirements**: Always inject **dynamic context** for self-contained execution. Forked contexts don't inherit conversation history.
 
@@ -637,7 +677,9 @@ path: "${CLAUDE_PROJECT_DIR}/.claude-plugin/"
 
 **Architectural**:
 - Command wrapper (Skills that just invoke commands)
-- Over-orchestration (multiple subagents for linear workflows)
+- **Orchestration Complexity** (Managers managing managers)
+- **Indecisive Orchestrator** (Ambiguous handoffs/Too many paths)
+- **Linear Chain Brittleness** (Long chains for reasoning tasks)
 - Empty scaffolding (directories with no content)
 - Skill fragmentation (many tiny skills instead of one with references)
 - **Cosmetic hooks** (SessionStart hooks that only echo/print without functional behavior)

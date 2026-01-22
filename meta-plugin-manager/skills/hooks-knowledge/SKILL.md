@@ -44,11 +44,73 @@ Create, audit, and refine Claude Code hooks for event-driven automation and infr
 
 **Configuration**: `hooks/hooks.json` or inline in `plugin.json`
 
-**Events**: PreToolUse, Stop/SubagentStop, SessionStart/End, PermissionRequest, Notification
+**Events**: PreToolUse, PostToolUse, PostToolUseFailure, Stop, SubagentStop, SubagentStart, SessionStart, SessionEnd, PermissionRequest, Notification, PreCompact, Setup, UserPromptSubmit
 
 ## Hook Events
 
-### 1. PreToolUse
+### Complete Event List (12 Events)
+
+| Event | Trigger | Best For |
+|-------|---------|----------|
+| `SessionStart` | Session begins/resumes | Session initialization, environment setup |
+| `UserPromptSubmit` | User submits prompt | Prompt validation, logging |
+| `PreToolUse` | Before tool execution | Validation, security checks |
+| `PermissionRequest` | Permission dialog appears | Custom permission logic |
+| `PostToolUse` | After tool succeeds | Logging, cleanup, metrics |
+| `PostToolUseFailure` | After tool fails | Error handling, recovery |
+| `SubagentStart` | Spawning subagent | Subagent configuration |
+| `SubagentStop` | Subagent finishes | Cleanup, result processing |
+| `Stop` | Claude finishes responding | Final validation, state save |
+| `PreCompact` | Before context compaction | State persistence |
+| `Setup` | Repository setup/maintenance | One-time initialization |
+| `SessionEnd` | Session terminates | Session cleanup |
+| `Notification` | Claude Code sends notifications | Notification filtering |
+
+---
+
+### 1. SessionStart
+**Trigger**: Session begins or resumes (matchers: startup, resume, clear, compact)
+
+**Use For**:
+- Session initialization
+- Environment variable persistence via `CLAUDE_ENV_FILE`
+- Context setup
+- Resource allocation
+
+**Example**:
+```json
+{
+  "SessionStart": [{
+    "matcher": "startup|resume",
+    "hooks": [{
+      "type": "command",
+      "command": "setup-session.sh"
+    }]
+  }]
+}
+```
+
+### 2. UserPromptSubmit
+**Trigger**: User submits a prompt
+
+**Use For**:
+- Prompt validation
+- User intent logging
+- Prompt preprocessing
+
+**Example**:
+```json
+{
+  "UserPromptSubmit": [{
+    "hooks": [{
+      "type": "command",
+      "command": "validate-prompt.sh \"$PROMPT\""
+    }]
+  }]
+}
+```
+
+### 3. PreToolUse
 **Trigger**: Before tool execution
 
 **Use For**:
@@ -70,26 +132,8 @@ Create, audit, and refine Claude Code hooks for event-driven automation and infr
 }
 ```
 
-### 2. Stop/SubagentStop
-**Trigger**: When agent considers stopping
-
-**Use For**:
-- Cleanup operations
-- Final validation
-- State persistence
-- Resource release
-
-### 3. SessionStart/End
-**Trigger**: Session boundaries
-
-**Use For**:
-- Session initialization
-- Context setup
-- Resource allocation
-- Session cleanup
-
 ### 4. PermissionRequest
-**Trigger**: Permission management
+**Trigger**: Permission dialog appears
 
 **Use For**:
 - Custom permission logic
@@ -97,46 +141,271 @@ Create, audit, and refine Claude Code hooks for event-driven automation and infr
 - Access control
 - Compliance checks
 
-### 5. Notification
-**Trigger**: User notifications
+**Example**:
+```json
+{
+  "PermissionRequest": [{
+    "matcher": "Bash",
+    "hooks": [{
+      "type": "prompt",
+      "prompt": "Evaluate if this command should be allowed."
+    }]
+  }]
+}
+```
+
+### 5. PostToolUse
+**Trigger**: After tool succeeds
 
 **Use For**:
-- Status updates
-- Progress tracking
-- Alert systems
-- Communication
+- Logging successful operations
+- Cleanup after execution
+- Metrics collection
+- Result validation
+
+**Example**:
+```json
+{
+  "PostToolUse": [{
+    "matcher": "Write|Edit",
+    "hooks": [{
+      "type": "command",
+      "command": "log-success.sh $TOOL_NAME"
+    }]
+  }]
+}
+```
+
+### 6. PostToolUseFailure
+**Trigger**: After tool fails
+
+**Use For**:
+- Error logging
+- Recovery actions
+- Fallback mechanisms
+- Error notifications
+
+**Example**:
+```json
+{
+  "PostToolUseFailure": [{
+    "matcher": "*",
+    "hooks": [{
+      "type": "command",
+      "command": "handle-error.sh $ERROR_TYPE"
+    }]
+  }]
+}
+```
+
+### 7. SubagentStart
+**Trigger**: When spawning a subagent
+
+**Use For**:
+- Subagent configuration
+- Context injection
+- Subagent-specific setup
+
+**Example**:
+```json
+{
+  "SubagentStart": [{
+    "hooks": [{
+      "type": "command",
+      "command": "configure-subagent.sh $SUBAGENT_NAME"
+    }]
+  }]
+}
+```
+
+### 8. SubagentStop
+**Trigger**: When subagent finishes
+
+**Use For**:
+- Subagent cleanup
+- Result processing
+- Output collection
+
+**Example**:
+```json
+{
+  "SubagentStop": [{
+    "hooks": [{
+      "type": "prompt",
+      "prompt": "Review subagent output for quality."
+    }]
+  }]
+}
+```
+
+### 9. Stop
+**Trigger**: Claude finishes responding
+
+**Use For**:
+- Final validation
+- State persistence (use with PreCompact)
+- Resource release
+- Quality checks
+
+**Example**:
+```json
+{
+  "Stop": [{
+    "hooks": [{
+      "type": "prompt",
+      "prompt": "Review the response for quality and completeness."
+    }]
+  }]
+}
+```
+
+### 10. PreCompact
+**Trigger**: Before context compaction
+
+**Use For**:
+- State persistence before compaction
+- Memory optimization
+- Critical data save
+
+**Matchers**: `manual` (user-initiated), `auto` (system-triggered)
+
+**Example**:
+```json
+{
+  "PreCompact": [{
+    "matcher": "auto",
+    "hooks": [{
+      "type": "command",
+      "command": "save-state.sh"
+    }]
+  }]
+}
+```
+
+### 11. Setup
+**Trigger**: Repository setup/maintenance
+
+**Use For**:
+- One-time initialization
+- Dependency installation
+- Configuration setup
+
+**Note**: Distinct from SessionStart - Setup runs once, SessionStart runs every session.
+
+**Example**:
+```json
+{
+  "Setup": [{
+    "hooks": [{
+      "type": "command",
+      "command": "install-dependencies.sh"
+    }]
+  }]
+}
+```
+
+### 12. SessionEnd
+**Trigger**: Session terminates
+
+**Use For**:
+- Session cleanup
+- Resource deallocation
+- Session summary
+
+**Anti-Pattern**: Don't use for state save (use Stop + PreCompact instead).
+
+**Example**:
+```json
+{
+  "SessionEnd": [{
+    "hooks": [{
+      "type": "command",
+      "command": "cleanup-session.sh"
+    }]
+  }]
+}
+```
+
+### 13. Notification
+**Trigger**: Claude Code sends notifications
+
+**Use For**:
+- Notification filtering
+- Custom notification handling
+- Alert routing
+
+**Type Matchers**: `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`
+
+**Example**:
+```json
+{
+  "Notification": [{
+    "matcher": "permission_prompt",
+    "hooks": [{
+      "type": "command",
+      "command": "handle-permission.sh"
+    }]
+  }]
+}
+```
 
 ## Hook Types
 
-### Prompt Hooks
-Execute inline prompts
+### Prompt Hooks (LLM-Based)
+**Use For**: Stop, SubagentStop events only
 
+Prompt hooks use Haiku (fast LLM) for LLM-based evaluation. The model evaluates the prompt and makes decisions.
+
+**Best For**:
+- Quality validation (Stop/SubagentStop)
+- Content review
+- Decision-making requiring judgment
+
+**Example**:
 ```json
 {
-  "PreToolUse": [{
-    "matcher": "Write",
+  "Stop": [{
     "hooks": [{
       "type": "prompt",
-      "prompt": "Validate this operation..."
+      "prompt": "Review this response for quality, clarity, and completeness. Flag any issues."
     }]
   }]
 }
 ```
 
-### Command Hooks
-Execute external commands/scripts
+**⚠️ Important**: Prompt hooks ONLY work for Stop and SubagentStop events. For all other events, use command hooks.
 
+### Command Hooks (Bash-Based)
+**Use For**: All events (faster, deterministic)
+
+Command hooks execute external bash commands/scripts. They're fast, deterministic, and work with every event type.
+
+**Best For**:
+- Validation rules
+- Security checks
+- Logging
+- State persistence
+- File operations
+
+**Example**:
 ```json
 {
   "PreToolUse": [{
-    "matcher": "Bash",
+    "matcher": "Write|Edit",
     "hooks": [{
       "type": "command",
-      "command": "validate.sh $TOOL_NAME"
+      "command": "validate-file.sh \"$FILE_PATH\""
     }]
   }]
 }
 ```
+
+**Exit Codes**:
+- `0`: Success (stdout shown in verbose mode, except UserPromptSubmit/SessionStart where it's added to context)
+- `1`: Non-blocking error (logged but doesn't block operation)
+- `2`: Blocking error (stderr shown to Claude, operation blocked)
+
+**Security**: Always quote variables: `"$VAR"` not `$VAR`
 
 ## Configuration
 
@@ -169,6 +438,56 @@ mkdir -p hooks
   }
 }
 ```
+
+## Component-Scoped Hooks
+
+**Overview**: Skills and agents can define hooks in their frontmatter (YAML header). These hooks are only active during that component's execution.
+
+**Best For**: Component-specific validation, logging, or behavior modification
+
+**Supported Events**: PreToolUse, PostToolUse, Stop
+
+**Example (Skill Frontmatter)**:
+```yaml
+---
+name: my-skill
+description: "Does something"
+user-invocable: true
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: "command"
+          command: "${CLAUDE_PLUGIN_ROOT}/scripts/validate-write.sh"
+  Stop:
+    - hooks:
+        - type: "prompt"
+          prompt: "Review the quality of this response."
+---
+```
+
+**Example (Agent Frontmatter)**:
+```yaml
+---
+name: my-agent
+description: "Specialized agent"
+hooks:
+  PostToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: "command"
+          command: "log-command.sh $COMMAND"
+---
+```
+
+**Scoping Hierarchy** (precedence order):
+1. **Component-scoped** (highest): Active only during component execution, auto-cleanup
+2. **Plugin-level**: Always active when plugin enabled
+3. **Project/User-level** (lowest): Organizational policies
+
+**Best Practice**: Prefer component-scoped hooks to avoid "always-on" noise. Use plugin-level hooks sparingly for infrastructure needs.
+
+**Anti-Pattern**: SessionStart hooks that only echo/print without functional behavior (cosmetic noise).
 
 ## Security Considerations
 
@@ -331,6 +650,20 @@ Error handling strategies:
 - Graceful degradation
 - Retry logic
 - User feedback
+
+## Session Persistence Pattern
+
+**Purpose**: Memory persistence for plugin development decisions
+
+**State File**: `${CLAUDE_PROJECT_DIR}/.claude/PLUGIN_STATE.md`
+
+**Use When**: Implementing hooks that save/load plugin development state (manifest decisions, naming conventions, validation issues)
+
+**Implementation**: See [session-persistence.md](references/session-persistence.md) for:
+- State schema specification
+- Hook configuration (SessionStart/Stop/PreCompact)
+- State extraction logic from transcripts
+- Integration patterns with plugin-architect
 
 ## Additional Resources
 

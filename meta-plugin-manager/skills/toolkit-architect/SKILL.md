@@ -37,10 +37,13 @@ Single domain router for complete plugin lifecycle management using skills-first
 
 **Router Logic**:
 1. Load: plugin-architect, skills-knowledge, meta-architect-claudecode
-2. If needs isolation → Delegate to plugin-worker with context: fork
-3. If simple skill → Create directly using skills-knowledge
-4. If needs MCP → Route to mcp-architect
-5. Validate: plugin-quality-validator
+2. Initialize PLUGIN_STATE.md with template (if not exists)
+3. If needs isolation → Delegate to plugin-worker with context: fork
+4. If simple skill → Create directly using skills-knowledge
+5. If needs MCP → Route to mcp-architect
+6. Record manifest decisions to PLUGIN_STATE.md as they are made
+7. Record naming decisions to PLUGIN_STATE.md as they are made
+8. Validate: plugin-quality-validator
 
 **Output Contract**:
 ```
@@ -61,9 +64,43 @@ Continue only if score ≥ 8/10
 
 **Router Logic**:
 1. Load: plugin-quality-validator
-2. Delegate to plugin-worker for noisy analysis (context: fork)
-3. Integrate results with quality scoring
-4. Generate recommendations
+2. Load existing state from PLUGIN_STATE.md (if exists)
+3. **Assess output volume**:
+   - Large plugin or full audit? → Delegate to plugin-worker (context: fork)
+   - Simple validation? → Load directly
+4. **Parse explicit output**:
+   - Look for "## Audit Results: {plugin_name}"
+   - Check "Quality Score: {score}/10"
+5. **Handle failures explicitly**:
+   - On ERROR: Log issue and report to user
+   - On FAIL (< 8/10): Continue with recommendations
+   - On PASS (≥ 8/10): Report compliance status
+6. Update PLUGIN_STATE.md with results
+7. Generate recommendations
+
+**Fork Decision Matrix**:
+| Plugin Size | Component Count | Use Fork? | Worker |
+|-------------|-----------------|-----------|--------|
+| Small (<5 skills) | <10 components | No | Direct load |
+| Medium (5-20 skills) | 10-50 components | Yes | plugin-worker |
+| Large (>20 skills) | >50 components | Yes | plugin-worker |
+
+**Worker Output Parsing**:
+```markdown
+# Parse plugin-worker output for:
+Completion marker: "## Audit Results:"
+Quality score: Extract from "Quality Score: {score}/10"
+Status classification:
+  - score ≥ 8 → Continue with recommendations
+  - score 5-7 → Report issues, suggest refinement
+  - score < 5 → Major rework required
+
+# If worker returns ERROR:
+1. Parse error context
+2. Log to PLUGIN_STATE.md
+3. Report error to user with recovery options
+4. Do NOT continue or retry without explicit direction
+```
 
 **Output Contract**:
 ```
@@ -97,14 +134,18 @@ Continue only if score ≥ 8/10
 
 **Router Logic**:
 1. Load: plugin-quality-validator, relevant knowledge skills
-2. Review current state
-3. Identify improvements by domain:
+2. Load existing state from PLUGIN_STATE.md
+3. Review current state
+4. Identify improvements by domain:
    - Skills issues → Route to skills-architect
    - Hook issues → Route to hooks-architect
    - MCP issues → Route to mcp-architect
    - Subagent issues → Route to subagents-architect
-4. Apply improvements
-5. Validate: plugin-quality-validator
+5. Apply improvements
+6. Update architecture decisions in PLUGIN_STATE.md
+7. Mark resolved validation issues in PLUGIN_STATE.md
+8. Update quality metrics in PLUGIN_STATE.md
+9. Validate: plugin-quality-validator
 
 **Output Contract**:
 ```

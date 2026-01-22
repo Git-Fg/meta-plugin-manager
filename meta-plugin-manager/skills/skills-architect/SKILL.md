@@ -1,12 +1,24 @@
 ---
-name: skills-architect
+name: architecting-skills
 description: "Progressive disclosure router for skills autonomy and SKILL.md structure. Use for creating, auditing, or refining skills with tier-based organization. Routes to skills-knowledge for implementation details. Do not use for simple documentation or basic markdown editing."
 disable-model-invocation: true
 ---
 
-# Skills Architect
+# Architecting Skills
 
 Domain router for skills development with progressive disclosure and autonomy-first design.
+
+## MANDATORY: Read Before Creating Skills
+
+- **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
+  - Cache: 15 minutes minimum
+  - Blocking: DO NOT proceed without understanding skill structure
+
+- **MUST READ**: [Agent Skills Specification](https://agentskills.io/specification)
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
+  - Cache: 15 minutes minimum
+  - Blocking: DO NOT proceed without understanding progressive disclosure format
 
 ## Actions
 
@@ -14,16 +26,15 @@ Domain router for skills development with progressive disclosure and autonomy-fi
 **Creates new skills** with self-sufficient architecture
 
 **Router Logic**:
-1. See: [skills-knowledge](references/skills-knowledge.md)
-2. Determine tier structure:
+1. Determine tier structure:
    - Tier 1: Metadata (~100 tokens)
-   - Tier 2: SKILL.md (<35,000 chars)
+   - Tier 2: SKILL.md (<500 lines)
    - Tier 3: references/ (on-demand)
-3. Generate skill with:
+2. Generate skill with:
    - YAML frontmatter (name, description, disable-model-invocation)
    - Progressive disclosure structure
    - Auto-discovery optimization
-4. Validate: URL fetching sections, triggers
+3. Validate: URL fetching sections, triggers
 
 **Output Contract**:
 ```
@@ -47,14 +58,13 @@ Target: 80-95% completion without questions
 **Audits skills** for quality and autonomy
 
 **Router Logic**:
-1. See: [skills-knowledge](references/skills-knowledge.md)
-2. Check:
+1. Check:
    - YAML frontmatter completeness
    - Progressive disclosure implementation
    - Autonomy score (80-95% completion)
    - Auto-discovery optimization
    - URL fetching sections
-3. Generate audit with scoring
+2. Generate audit with scoring
 
 **Output Contract**:
 ```
@@ -82,14 +92,13 @@ Target: 80-95% completion without questions
 **Improves skills** based on audit findings
 
 **Router Logic**:
-1. See: [skills-knowledge](references/skills-knowledge.md)
-2. Review progressive disclosure
-3. Enhance:
+1. Review progressive disclosure
+2. Enhance:
    - Metadata clarity
    - SKILL.md structure
    - references/ organization
    - Autonomy optimization
-4. Validate improvements
+3. Validate improvements
 
 **Output Contract**:
 ```
@@ -124,19 +133,16 @@ Target: 80-95% completion without questions
 - Clear triggers and preconditions
 - Deterministic execution
 
-## Knowledge Base
-
-**[Skills Knowledge](references/skills-knowledge.md)** - Best practices, patterns, and implementation details for skill development.
-
 ## Routing Criteria
-
-**[Route to skills-knowledge](references/skills-knowledge.md)** when:
-- Creating new skills
-- Auditing existing skills
-- Refining skill architecture
-- Progressive disclosure questions
 
 **Direct action** when:
 - Simple skill instantiation
 - Clear pattern application
 - Standard structure generation
+
+**Route to skills-knowledge** when:
+- Creating new skills
+- Auditing existing skills
+- Refining skill architecture
+- Progressive disclosure questions
+- URL fetching requirements

@@ -117,6 +117,153 @@ Customizations use tiered loading for optimal token economics:
 
 ---
 
+## Context Window Management
+
+### The "Scope-Based MCP" Strategy
+
+**Problem**: Too many MCP servers configured simultaneously causes:
+- Tool definitions consuming 10%+ of context window
+- Automatic Tool Search activation (adds overhead)
+- Degraded quality/reliability during plugin development
+
+**Solution**: Configure MCPs at appropriate **scopes** rather than enabling everything globally.
+
+**Official Documentation**: https://code.claude.com/docs/en/mcp
+
+### MCP Scopes Explained
+
+| Scope | Location | Use For | Availability |
+|-------|----------|---------|--------------|
+| **Project** | `.mcp.json` at project root | Team-shared, project-specific MCPs | Everyone in project |
+| **Local** | `~/.claude.json` (project path) | Personal, project-specific MCPs | You only, this project |
+| **User** | `~/.claude.json` (global) | Cross-project utilities | You, all projects |
+
+**Precedence**: Local > Project > User (local overrides when same name exists)
+
+### Scope-Based MCP Management Decision Tree
+
+```
+Task Start: What MCPs does this project need?
+│
+├─ "Plugin development (authoring)"
+│  └─→ Project scope: file-search, simplewebfetch only
+│     └─ Local scope: personal tools (avoid user scope)
+│
+├─ "Web research / verification"
+│  └─→ Project scope: browser, deepwiki, simplewebfetch
+│     └─ Disable other project MCPs temporarily
+│
+├─ "Code analysis / validation"
+│  └─→ Project scope: file-search, LSP (if needed)
+│     └─ User scope: ONLY for utilities used across ALL projects
+│
+└─ "Multi-phase workflow"
+   └─→ Use ENABLE_TOOL_SEARCH environment variable
+      └─ Or manually comment out unused MCPs in .mcp.json
+```
+
+### Configuration Guidelines
+
+**Project `.mcp.json`** (shared, version-controlled):
+```json
+{
+  "mcpServers": {
+    "file-search": { "command": "file-search-server" },
+    "simplewebfetch": { "command": "webfetch-server" }
+  }
+}
+```
+
+**Local scope** (personal, not shared):
+```bash
+# Add MCP only for current project
+claude mcp add --transport http personal-tool https://api.example.com/mcp --scope local
+```
+
+**User scope** (cross-project - use sparingly):
+```bash
+# Only for utilities used across ALL projects
+claude mcp add --transport http universal-tool https://api.example.com/mcp --scope user
+```
+
+### Tool Management Checklist
+
+**Project Setup:**
+- [ ] Identify project-specific MCP needs (authoring vs research vs analysis)
+- [ ] Configure only project-needed MCPs in `.mcp.json`
+- [ ] Use local scope for personal tools (don't pollute user scope)
+- [ ] Reserve user scope for truly universal utilities
+
+**During Development:**
+- [ ] Monitor for "tool definitions exceed 10% context" warnings
+- [ ] If Tool Search activates, consider reducing configured MCPs
+- [ ] Comment out unused MCPs from `.mcp.json` when not needed
+- [ ] Restart Claude Code after `.mcp.json` changes
+
+**Anti-patterns:**
+- ❌ User scope filled with project-specific MCPs
+- ❌ Leaving research MCPs configured during pure authoring
+- ❌ "I'll add this to user scope just in case"
+- ✅ "Configure at the most restrictive scope possible"
+
+### MCP Tool Search
+
+When tool definitions exceed 10% of context, Claude automatically enables **Tool Search**:
+- MCP tools are loaded on-demand instead of upfront
+- Reduces initial context cost
+- Adds slight overhead when tools are first used
+
+**Control Tool Search** via environment variable:
+
+**Verify current value**:
+```bash
+echo $ENABLE_TOOL_SEARCH
+```
+
+**Edit shell configuration** (default: `~/.zshrc` or `~/.bashrc`):
+```bash
+# Auto mode (default): activates at 10% threshold
+export ENABLE_TOOL_SEARCH=auto
+
+# Custom threshold (activates earlier, at 5%)
+export ENABLE_TOOL_SEARCH=auto:5
+
+# Disable entirely (all MCP tools loaded upfront)
+export ENABLE_TOOL_SEARCH=false
+```
+
+**When to adjust**:
+- **Default (`auto`)**: Most users, activates at 10% context threshold
+- **Lower threshold (`auto:5`)**: Many MCPs, want earlier Tool Search activation
+- **Disabled (`false`)**: Few MCPs, prefer all tools loaded upfront
+
+**Apply changes**: Restart terminal or run `source ~/.zshrc`
+
+### Session Phase MCP Strategy
+
+| Phase | Project MCPs | Action |
+|-------|-------------|--------|
+| **Authoring** | file-search, simplewebfetch | Comment out others in `.mcp.json` |
+| **Research** | browser, deepwiki, simplewebfetch | Swap into `.mcp.json` temporarily |
+| **Validation** | file-search, LSP | Minimal configuration |
+| **Orchestration** | All workflow MCPs | Accept Tool Search overhead |
+
+### Why This Matters
+
+**Context efficiency**:
+- Tool definitions don't crowd context window
+- Tool Search only activates when truly needed
+- Faster loading and response times
+
+**Reliability**:
+- Fewer "too many tools" scenarios
+- Predictable tool availability per project
+- Easier troubleshooting
+
+**For integration**: See [layer-selection.md](layer-selection.md) for task-to-MCP mapping.
+
+---
+
 ## Core Values Framework
 
 Each value represents a **design approach**, not a rigid category. Trust task characteristics.

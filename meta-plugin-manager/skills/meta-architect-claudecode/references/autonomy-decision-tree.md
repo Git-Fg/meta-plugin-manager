@@ -9,6 +9,42 @@ Skills should be **autonomous by default** — they should complete without ques
 
 ## The 5-Step Autonomy Policy
 
+### Step 0: Check Tool Load (Pre-Execution)
+
+Before any autonomous action, verify MCP configuration is appropriate for the task scope.
+
+**Action:**
+- Check `.mcp.json` for project-scope MCP configuration
+- Verify only task-relevant MCPs are configured
+- Comment out or move unused MCPs to local scope
+
+**Scope Decision:**
+- **Plugin authoring tasks** → Project scope: file-search, simplewebfetch only
+- **Research/verification tasks** → Project scope: browser, deepwiki, simplewebfetch
+- **Validation/review tasks** → Project scope: file-search, LSP (if needed)
+- **Cross-project utilities** → User scope: ONLY for truly universal tools
+
+**Configuration edits** (requires Claude Code restart):
+```json
+// .mcp.json - Authoring phase
+{
+  "mcpServers": {
+    "file-search": { "command": "..." },
+    "simplewebfetch": { "command": "..." }
+    // "browser": { ... } // Comment out for authoring
+    // "deepwiki": { ... } // Comment out for authoring
+  }
+}
+```
+
+**Why this matters:**
+- Prevents tool definitions from exceeding 10% context threshold
+- Avoids automatic Tool Search activation (adds overhead)
+- Reduces context rot during long sessions
+- Improves reliability of autonomous workflows
+
+**For detailed MCP scope management**: See [common.md](common.md#context-window-management)
+
 ### Step 1: Classify (No Questions)
 
 Before taking any action, classify the task to understand the budget and approach.
