@@ -56,9 +56,21 @@ Fetch based on your needs:
 
 # Project Overview
 
-**The Cat Toolkit v3** is a skill-centric plugin development ecosystem for Claude Code. It provides comprehensive guidance for building plugins with Skills (PRIMARY), Commands, Hooks, and Subagents using 2026 best practices.
+**The Cat Toolkit v3** is a project scaffolding toolkit for Claude Code. It provides comprehensive guidance for enhancing **current projects** via `.claude/` directory configuration using Skills, MCP, Hooks, and Subagents with 2026 best practices.
 
-**Architecture Philosophy**: Skills-First approach with progressive disclosure, minimum complexity, and price optimization.
+**Architecture Philosophy**: Local-first configuration with skills-first approach, progressive disclosure, minimum complexity, and price optimization.
+
+## Local-First Configuration Philosophy
+
+**Target**: `${CLAUDE_PROJECT_DIR}/.claude/`
+
+The toolkit empowers users to:
+- Add skills to their current project via `.claude/skills/`
+- Configure MCP servers in project root `.mcp.json`
+- Create project-specific agents in `.claude/agents/`
+- Add scoped hooks where needed (global or component-scoped)
+
+**Zero Active Hooks**: This toolkit contains NO active hooks. It teaches users how to create their own.
 
 ---
 
@@ -361,20 +373,20 @@ Fetch: https://code.claude.com/docs/en/mcp
 
 ---
 
-## Plugin Lifecycle Management
+## Project Configuration Lifecycle
 
 ### Create → Review → Refine Pattern
 
-**1. Plugin Creation**
+**1. Component Creation**
 ```bash
-# Follow established best practices
+# Use toolkit-architect to scaffold .claude/ components
 # Ensure: Skills-first architecture, progressive disclosure, URL fetching
 ```
 
 **2. Quality Review**
 - Fetch: https://agentskills.io/specification
-- Check: Architecture compliance, component quality, standards adherence
-- Score: Use 0-10 quality framework
+- Check: .claude/ architecture compliance, component quality, standards adherence
+- Score: Use 0-10 quality framework with toolkit-quality-validator
 - Validate: URL currency, best practices
 
 **3. Refinement**
@@ -408,9 +420,9 @@ Fetch: https://code.claude.com/docs/en/mcp
 
 ## Skills Index
 
-**Meta-Skills for Plugin Development**:
+**Project Scaffolding Skills**:
 
-Use these skills to build better plugins:
+Use the meta-plugin-manager toolkit to enhance your current project:
 
 1. **Skill Development**
    - Fetch: https://agentskills.io/home
