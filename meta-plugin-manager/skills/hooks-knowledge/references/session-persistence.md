@@ -1,7 +1,7 @@
 # Session Persistence Pattern
 
 > **Pattern**: Memory persistence using SessionStart/PreCompact/Stop hooks
-> **State File**: `${CLAUDE_PROJECT_DIR}/.claude/PLUGIN_STATE.md`
+> **State File**: `${CLAUDE_PROJECT_DIR}/.claude/TOOLKIT_STATE.md`
 > **Use Case**: Plugin development workflow - persist decisions across sessions
 
 ## Pattern Overview
@@ -19,7 +19,7 @@
 
 ## State Schema
 
-### PLUGIN_STATE.md Structure
+### TOOLKIT_STATE.md Structure
 
 ```markdown
 # Plugin Development Session State
@@ -86,8 +86,8 @@
 
 ### Chosen Patterns
 - **Skills-First**: ✅ Primary interface
-- **Hub-and-Spoke**: ✅ plugin-architect routes to domain experts
-- **Context Fork**: ✅ plugin-worker for noisy analysis
+- **Hub-and-Spoke**: ✅ toolkit-architect routes to domain experts
+- **Context Fork**: ✅ toolkit-worker for noisy analysis
 
 ### Rejected Alternatives
 - **Command Wrapper Pattern**: Rejected - causes metadata bloat
@@ -198,7 +198,7 @@
 
 ### update-state.py
 
-**Purpose**: Parse transcript and update PLUGIN_STATE.md
+**Purpose**: Parse transcript and update TOOLKIT_STATE.md
 
 **Input**: JSON via stdin with session metadata
 
@@ -223,7 +223,7 @@
 4. **Architecture Decisions**: Extract from conversation
    - Parse chosen patterns (skills-first, hub-and-spoke, context fork)
    - Track rejected alternatives with rationale
-   - Extract from plugin-architect decisions
+   - Extract from toolkit-architect decisions
 
 5. **Quality Metrics**: Extract from audit scores
    - Parse overall quality score
@@ -236,27 +236,27 @@
 
 ### During Plugin Creation
 
-When `plugin-architect` creates a plugin:
+When `toolkit-architect` creates a plugin:
 
-1. **Initialize State**: Create PLUGIN_STATE.md with template
+1. **Initialize State**: Create TOOLKIT_STATE.md with template
 2. **Record Manifest**: Capture plugin.json decisions as made
 3. **Track Naming**: Record component names and conventions
 4. **Document Architecture**: Note chosen patterns and rejections
 
 ### During Plugin Audit
 
-When `plugin-architect` audits a plugin:
+When `toolkit-architect` audits a plugin:
 
-1. **Load State**: Read existing PLUGIN_STATE.md (if exists)
+1. **Load State**: Read existing TOOLKIT_STATE.md (if exists)
 2. **Append Issues**: Add validation issues found during audit
 3. **Update Metrics**: Refresh quality scores
 4. **Generate Report**: Output includes state context
 
 ### During Plugin Refinement
 
-When `plugin-architect` refines a plugin:
+When `toolkit-architect` refines a plugin:
 
-1. **Load State**: Read existing PLUGIN_STATE.md
+1. **Load State**: Read existing TOOLKIT_STATE.md
 2. **Update Decisions**: Modify architecture decisions section
 3. **Mark Resolved**: Remove fixed validation issues
 4. **Update Metrics**: Refresh quality scores after improvements
@@ -281,7 +281,7 @@ When `plugin-architect` refines a plugin:
 
 **Why**: Clutters plugin directory with session-specific files
 
-**Correct**: Use `.claude/PLUGIN_STATE.md` (project-local, git-ignored)
+**Correct**: Use `.claude/TOOLKIT_STATE.md` (project-local, git-ignored)
 
 ### DON'T: Parse Entire Transcript Every Time
 
@@ -321,10 +321,10 @@ When `plugin-architect` refines a plugin:
 
 ## Example Integration
 
-### plugin-architect create action
+### toolkit-architect create action
 
 ```
-1. Initialize PLUGIN_STATE.md with template
+1. Initialize TOOLKIT_STATE.md with template
 2. Prompt: "What type of plugin are you creating?"
 3. User: "A toolkit for API testing"
 4. Record: Manifest decision - type: "toolkit"
@@ -335,10 +335,10 @@ When `plugin-architect` refines a plugin:
 9. Stop hook fires: Save state with all decisions
 ```
 
-### plugin-architect audit action
+### toolkit-architect audit action
 
 ```
-1. Load: PLUGIN_STATE.md (contains previous decisions)
+1. Load: TOOLKIT_STATE.md (contains previous decisions)
 2. Run audit workflow
 3. Found issue: Missing URL validation section
 4. Record: High priority - http-validator/SKILL.md missing URL section
@@ -376,7 +376,7 @@ When `plugin-architect` refines a plugin:
 **Symptoms**: Parse errors, malformed state
 
 **Solutions**:
-1. Delete PLUGIN_STATE.md
+1. Delete TOOLKIT_STATE.md
 2. Restart session (will recreate from template)
 3. Implement backup/rotation in future
 
@@ -411,8 +411,8 @@ When `plugin-architect` refines a plugin:
 - [ ] Add hooks reference to plugin.json
 - [ ] Update hooks-knowledge/SKILL.md with session persistence section
 - [ ] Update hooks-architect/SKILL.md with routing to session-persistence.md
-- [ ] Update plugin-architect/SKILL.md with state management in actions
+- [ ] Update toolkit-architect/SKILL.md with state management in actions
 - [ ] Test SessionStart loads state correctly
 - [ ] Test Stop saves after responses
 - [ ] Test PreCompact saves before compaction
-- [ ] Add .claude/PLUGIN_STATE.md to .gitignore
+- [ ] Add .claude/TOOLKIT_STATE.md to .gitignore

@@ -374,5 +374,5 @@ This skill provides informational content about {domain}.
 
 See these skills for complete examples:
 - `meta-plugin-manager/skills/workers/validation-worker/SKILL.md` - Forked validation worker
-- `meta-plugin-manager/skills/plugin-architect/SKILL.md` - Orchestrator with fork delegation
-- `meta-plugin-manager/skills/validation/plugin-quality-validator/SKILL.md` - Knowledge skill with output contract
+- `meta-plugin-manager/skills/toolkit-architect/SKILL.md` - Orchestrator with fork delegation
+- `meta-plugin-manager/skills/validation/toolkit-quality-validator/SKILL.md` - Knowledge skill with output contract

@@ -696,7 +696,7 @@ Error handling strategies:
 
 **Purpose**: Memory persistence for plugin development decisions
 
-**State File**: `${CLAUDE_PROJECT_DIR}/.claude/PLUGIN_STATE.md`
+**State File**: `${CLAUDE_PROJECT_DIR}/.claude/TOOLKIT_STATE.md`
 
 **Use When**: Implementing hooks that save/load plugin development state (manifest decisions, naming conventions, validation issues)
 
@@ -704,7 +704,7 @@ Error handling strategies:
 - State schema specification
 - Hook configuration (SessionStart/Stop/PreCompact)
 - State extraction logic from transcripts
-- Integration patterns with plugin-architect
+- Integration patterns with toolkit-architect
 
 ## Additional Resources
 

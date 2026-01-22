@@ -380,4 +380,4 @@ See **[references/troubleshooting.md](references/troubleshooting.md)** for compl
 
 ### Related Skills
 - **[meta-architect-claudecode](meta-architect-claudecode/)** - Layer selection and architecture decisions
-- **[plugin-architect](plugin-architect/)** - Plugin architecture and organization
+- **[toolkit-architect](toolkit-architect/)** - Project scaffolding and .claude/ organization

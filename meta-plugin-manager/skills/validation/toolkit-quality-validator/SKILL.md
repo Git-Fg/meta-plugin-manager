@@ -251,25 +251,25 @@ simpleWebFetch https://code.claude.com/docs/en/plugins
 
 This validator is designed to work with:
 
-- **plugin-architect** - Complete plugin lifecycle validation
+- **toolkit-architect** - Complete .claude/ lifecycle validation
 - **skills-architect** - Skills-specific validation
 - **hooks-architect** - Hooks-specific validation
 - **mcp-architect** - MCP-specific validation
 - **subagents-architect** - Subagents-specific validation
-- **plugin-worker** - Parallel validation
+- **toolkit-worker** - Parallel validation
 
 ## Usage
 
 ### Standalone Validation
 ```bash
 # Validate entire plugin
-/plugin-quality-validator /path/to/plugin
+/toolkit-quality-validator /path/to/project
 ```
 
 ### Integrated Validation
 ```yaml
 # In orchestrator workflows
-Load plugin-quality-validator
+Load toolkit-quality-validator
 
 Validate:
 - Quality score: {score}/10

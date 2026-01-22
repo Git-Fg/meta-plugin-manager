@@ -207,7 +207,7 @@ Skills should be **self-sufficient by default** (80-95% autonomous):
 
 ### Worker Orchestration (Noise Isolation)
 
-**Pattern**: Router (this skill) + Worker (plugin-worker)
+**Pattern**: Router (this skill) + Worker (toolkit-worker)
 
 ** Use When**:
 - Task involves high-volume output (audit, grep, log analysis)
@@ -216,14 +216,14 @@ Skills should be **self-sufficient by default** (80-95% autonomous):
 
 **Instructions**:
 1.  **Identify**: User task is "noisy" (e.g., "Audit this repo structure")
-2.  **Delegate**: Spawn `plugin-worker` subagent
+2.  **Delegate**: Spawn `toolkit-worker` subagent
 3.  **Inject**: Dynamic context (repo structure, file lists)
 4.  **Instructions**: "Perform audit based on your internal knowledge and this injected context."
 
 **Example Delegation**:
 ```javascript
 const workerResult = await Task({
-  subagent_type: "plugin-worker", // Uses agents/plugin-worker.md configuration
+  subagent_type: "toolkit-worker", // Uses agents/toolkit-worker.md configuration
   prompt: `Perform a comprehensive structural audit of the current repository.
   
   Context:
