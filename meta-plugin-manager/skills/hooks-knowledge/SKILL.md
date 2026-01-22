@@ -1,12 +1,12 @@
 ---
 name: hooks-knowledge
-description: "Create event-driven automation hooks for project-scoped configuration. Use when implementing .claude/hooks.json, component-scoped validation, or infrastructure integration. Do not use for plugin-level hook configuration without project context."
+description: "Knowledge base for event-driven automation in .claude/ configuration. Teaches project-first hooks architecture with templates, security patterns, and guardrails for local project protection. Do not use for plugin-level configuration."
 user-invocable: true
 ---
 
 # Hooks Knowledge Base
 
-Create, audit, and refine Claude Code hooks for project-scoped event-driven automation and infrastructure integration using official documentation.
+Reference library for creating project-scoped hooks automation and guardrails in `.claude/` configuration. Contains templates, security patterns, and best practices for protecting and automating your local project.
 
 ## 🚨 MANDATORY: Read BEFORE Creating Hooks
 
@@ -30,62 +30,97 @@ Create, audit, and refine Claude Code hooks for project-scoped event-driven auto
 - **MUST validate** security requirements before implementation
 - **REQUIRED** to understand event-driven automation patterns
 
+## Core Philosophy: Project-First Hooks
+
+**This skill teaches the "Project Scaffolding & Guardrails" approach:**
+
+1. **Zero Active Hooks in Toolkit**: The toolkit contains NO active hooks for users
+2. **Templates, Not Execution**: Provides templates and patterns, not active configuration
+3. **Project-Local Configuration**: All hooks belong in user's `.claude/` directory
+4. **Component-Scoped First**: Prefer hooks in skill/agent frontmatter over global hooks
+5. **Fail Fast Principle**: Use command hooks with `exit 2` for immediate blocking
+6. **User Empowerment**: Users create their own guardrails, toolkit guides them
+
 ## Quick Reference
 
-**Hooks** execute in response to Claude Code events for automation and infrastructure integration.
+**Hooks** automate your local project through event-driven guardrails and validation.
 
 **Use Hooks For**:
-- Event-driven automation
-- Validation before tool execution
-- Infrastructure integration
-- MCP/LSP configuration
-- Permission management
-- Session lifecycle management
+- **Guardrails**: Prevent dangerous operations (e.g., `.env` modification)
+- **Validation**: Validate file operations before execution
+- **Project Automation**: Initialize development environment
+- **Quality Gates**: Ensure code meets project standards
+- **Session Management**: Persist development decisions
+- **Security**: Block unauthorized actions
+
+**Project-First Approach**:
+- **Local Configuration**: All hooks in your `.claude/hooks.json`
+- **Component-Scoped**: Hooks in skill/agent frontmatter (preferred)
+- **Fail Fast**: Use `exit 2` to block dangerous operations
+- **Templates**: Use provided templates, customize for your project
 
 ## Project-Scoped Hook Configuration
 
-**Two Levels**:
+**Two Levels for Your Local Project**:
 
 ### 1. Global Hooks (`.claude/hooks.json`)
 **Target**: `${CLAUDE_PROJECT_DIR}/.claude/hooks.json`
 
-Use for project-wide automation and infrastructure:
+Use for project-wide automation and infrastructure guardrails:
+
 ```json
 {
   "hooks": {
-    "SessionStart": [{
-      "matcher": "startup",
+    "PreToolUse": [{
+      "matcher": "Write",
       "hooks": [{
         "type": "command",
-        "command": "./scripts/init.sh"
+        "command": "validate-write.sh"
       }]
     }]
   }
 }
 ```
 
+**Create in your project:**
+```bash
+mkdir -p .claude
+cat > .claude/hooks.json << 'EOF'
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "validate-file.sh"
+      }]
+    }]
+  }
+}
+EOF
+```
+
 ### 2. Component-Scoped Hooks (Skill/Agent Frontmatter)
 **Target**: `hooks:` block in YAML frontmatter
 
-Use for skill-specific validation and logging:
+Use for skill-specific validation and security:
+
 ```yaml
 ---
-name: my-skill
-description: "Does something"
+name: deploy-skill
+description: "Deploys application"
 hooks:
   PreToolUse:
-    - matcher: "Write"
+    - matcher: "Bash"
       hooks:
         - type: "command"
-          command: "validate-write.sh"
+          command: "run-tests.sh"
 ---
 ```
 
-**Best Practice**: Prefer component-scoped hooks to avoid "always-on" noise.
+**Best Practice**: Prefer component-scoped hooks to avoid "always-on" noise. Only use global hooks for project-wide guardrails.
 
-**Configuration**: `.claude/hooks.json` (global) or inline frontmatter (component-scoped)
-
-**Events**: PreToolUse, PostToolUse, PostToolUseFailure, Stop, SubagentStop, SubagentStart, SessionStart, SessionEnd, PermissionRequest, Notification, PreCompact, Setup, UserPromptSubmit
+**Configuration Location**: Your project's `.claude/hooks.json` (global) or inline frontmatter (component-scoped)
 
 ## Hook Events
 
@@ -106,6 +141,68 @@ hooks:
 | `Setup` | Repository setup/maintenance | One-time initialization |
 | `SessionEnd` | Session terminates | Session cleanup |
 | `Notification` | Claude Code sends notifications | Notification filtering |
+
+---
+
+## Common Guardrail Patterns
+
+### Protection Hook (Fail Fast)
+**Block dangerous file operations:**
+
+```json
+{
+  "PreToolUse": [{
+    "matcher": "Write",
+    "hooks": [{
+      "type": "command",
+      "command": "guard-env-files.sh"
+    }]
+  }]
+}
+```
+
+**Script Example** (`guard-env-files.sh`):
+```bash
+#!/bin/bash
+FILE_PATH="$1"
+if [[ "$FILE_PATH" == *".env"* ]]; then
+  echo "❌ BLOCKED: Writing to .env files requires explicit approval"
+  exit 2
+fi
+exit 0
+```
+
+### Quality Gate Hook
+**Validate code before deployment:**
+
+```yaml
+---
+name: deploy-skill
+description: "Deploys application"
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: "command"
+          command: "run-tests.sh"
+---
+```
+
+### Session Persistence Hook
+**Remember development decisions:**
+
+```json
+{
+  "Stop": [{
+    "hooks": [{
+      "type": "command",
+      "command": "save-decisions.sh"
+    }]
+  }]
+}
+```
+
+**Reference**: [Session Persistence Pattern](references/session-persistence.md)
 
 ---
 
@@ -480,115 +577,150 @@ mkdir -p hooks
 }
 ```
 
-## Component-Scoped Hooks
+## Component-Scoped Hooks (Recommended)
 
 **Overview**: Skills and agents can define hooks in their frontmatter (YAML header). These hooks are only active during that component's execution.
 
-**Best For**: Component-specific validation, logging, or behavior modification
+**Best For**: Component-specific validation, security checks, and quality gates
 
 **Supported Events**: PreToolUse, PostToolUse, Stop
 
 **Example (Skill Frontmatter)**:
 ```yaml
 ---
-name: my-skill
-description: "Does something"
-user-invocable: true
+name: deploy-skill
+description: "Deploys application to production"
 hooks:
   PreToolUse:
-    - matcher: "Write"
+    - matcher: "Bash"
       hooks:
         - type: "command"
-          command: "${CLAUDE_PLUGIN_ROOT}/scripts/validate-write.sh"
+          command: "run-tests.sh"
   Stop:
     - hooks:
         - type: "prompt"
-          prompt: "Review the quality of this response."
+          prompt: "Review deployment quality and rollback plan."
 ---
 ```
 
 **Example (Agent Frontmatter)**:
 ```yaml
 ---
-name: my-agent
-description: "Specialized agent"
+name: code-auditor
+description: "Audits code for security issues"
 hooks:
   PostToolUse:
-    - matcher: "Bash"
+    - matcher: "Grep"
       hooks:
         - type: "command"
-          command: "log-command.sh $COMMAND"
+          command: "validate-findings.sh"
 ---
 ```
 
 **Scoping Hierarchy** (precedence order):
 1. **Component-scoped** (highest): Active only during component execution, auto-cleanup
-2. **Plugin-level**: Always active when plugin enabled
-3. **Project/User-level** (lowest): Organizational policies
+2. **Project-level** (recommended): Global hooks in `.claude/hooks.json`
+3. **User-level** (lowest): Organizational policies
 
-**Best Practice**: Prefer component-scoped hooks to avoid "always-on" noise. Use plugin-level hooks sparingly for infrastructure needs.
+**Best Practice**:
+- ✅ **Prefer component-scoped hooks** to avoid "always-on" noise
+- ✅ Use for skill-specific validation and security
+- ✅ Block dangerous operations with `exit 2`
+- ❌ **Avoid** plugin-level hooks (not project-scoped)
 
 **Anti-Pattern**: SessionStart hooks that only echo/print without functional behavior (cosmetic noise).
 
-## Security Considerations
+## Security Guardrails
 
-### Path Safety
+### Path Safety (Fail Fast)
+**Block dangerous file operations in your project:**
+
 ```json
 {
   "PreToolUse": [{
     "matcher": "Write",
     "hooks": [{
       "type": "command",
-      "command": "validate-path.sh $FILE_PATH"
+      "command": "guard-sensitive-paths.sh"
     }]
   }]
 }
 ```
 
-### Input Validation
-```json
-{
-  "PermissionRequest": [{
-    "matcher": "Bash",
-    "hooks": [{
-      "type": "prompt",
-      "prompt": "Validate this command is safe."
-    }]
-  }]
-}
+**Script Template** (`guard-sensitive-paths.sh`):
+```bash
+#!/bin/bash
+FILE_PATH="$1"
+
+# Block sensitive files
+if [[ "$FILE_PATH" =~ \.env$ ]] || [[ "$FILE_PATH" =~ \.aws/credentials$ ]]; then
+  echo "❌ BLOCKED: Sensitive file modification requires explicit approval"
+  exit 2
+fi
+
+# Block deletion of important directories
+if [[ "$FILE_PATH" =~ node_modules/ ]] || [[ "$FILE_PATH" =~ .git/ ]]; then
+  echo "❌ BLOCKED: Protected directory modification"
+  exit 2
+fi
+
+exit 0
 ```
 
-## Implementation
+### Input Validation (Quality Gates)
+**Validate operations before execution:**
 
-### Step 1: Identify Event
-Choose event based on trigger:
-- PreToolUse: Before execution
-- SessionStart/End: Session management
-- PermissionRequest: Permission handling
-- Notification: User notifications
-
-### Step 2: Configure Hook
 ```json
 {
   "PreToolUse": [{
-    "matcher": "Write|Edit",
+    "matcher": "Bash",
     "hooks": [{
-      "type": "prompt",
-      "prompt": "Validate operation..."
+      "type": "command",
+      "command": "validate-command.sh"
     }]
   }]
 }
 ```
 
-### Step 3: Test Hook
-1. Trigger the event
-2. Verify hook executes
-3. Check expected behavior
-4. Validate security
+**Script Template** (`validate-command.sh`):
+```bash
+#!/bin/bash
+COMMAND="$1"
 
-## Examples
+# Block dangerous commands
+if [[ "$COMMAND" =~ rm[[:space:]]+-rf ]] || [[ "$COMMAND" =~ sudo.*rm ]]; then
+  echo "❌ BLOCKED: Dangerous deletion command"
+  exit 2
+fi
 
-### File Validation Hook
+exit 0
+```
+
+## Implementation for Your Project
+
+### Step 1: Identify Your Need
+**What guardrail do you need?**
+- Block dangerous operations? → PreToolUse + `exit 2`
+- Validate before deployment? → PreToolUse + command hook
+- Remember decisions? → Stop + state save
+- Quality gate? → Stop + prompt hook
+
+### Step 2: Choose Scope
+**Component-scoped (Recommended)**:
+```yaml
+---
+name: my-skill
+description: "My skill"
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: "command"
+          command: "validate.sh"
+---
+```
+
+**Global (Project-wide)**:
 ```json
 {
   "hooks": {
@@ -596,64 +728,148 @@ Choose event based on trigger:
       "matcher": "Write|Edit",
       "hooks": [{
         "type": "command",
-        "command": "validate-file.sh $FILE_PATH"
+        "command": "validate.sh"
       }]
     }]
   }
 }
 ```
 
-### Session Management Hook
-```json
+### Step 3: Create Hook Configuration
+**For your project**:
+```bash
+# Create hooks directory
+mkdir -p .claude
+
+# Create hooks.json with your configuration
+cat > .claude/hooks.json << 'EOF'
 {
   "hooks": {
-    "SessionStart": [{
-      "matcher": "*",
+    "PreToolUse": [{
+      "matcher": "Write|Edit",
       "hooks": [{
         "type": "command",
-        "command": "setup-session.sh"
-      }]
-    }],
-    "SessionEnd": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "cleanup-session.sh"
+        "command": "guard-files.sh"
       }]
     }]
   }
 }
+EOF
 ```
 
-### Security Hook
-```json
+### Step 4: Test Guardrail
+1. Create file that should be blocked
+2. Verify hook blocks it
+3. Test `exit 2` returns error correctly
+4. Validate security pattern
+
+## Examples: Project Guardrails
+
+### 1. Environment File Protection
+**Blocks accidental `.env` file modifications:**
+
+```bash
+# Create in your project: .claude/hooks.json
 {
   "hooks": {
-    "PermissionRequest": [{
-      "matcher": "Bash",
+    "PreToolUse": [{
+      "matcher": "Write|Edit",
       "hooks": [{
-        "type": "prompt",
-        "prompt": "Check if user has permission."
+        "type": "command",
+        "command": "guard-env.sh"
       }]
     }]
   }
 }
 ```
 
-## Best Practices
+```bash
+# Create script: guard-env.sh
+#!/bin/bash
+FILE_PATH="$1"
+if [[ "$FILE_PATH" == *".env"* ]]; then
+  echo "❌ BLOCKED: .env files require explicit approval"
+  exit 2
+fi
+exit 0
+```
+
+### 2. Deployment Quality Gate
+**Validates tests before deployment:**
+
+```yaml
+---
+name: deploy-to-prod
+description: "Deploys to production"
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: "command"
+          command: "run-tests.sh"
+---
+```
+
+```bash
+# Script: run-tests.sh
+#!/bin/bash
+echo "Running tests..."
+npm test
+if [ $? -ne 0 ]; then
+  echo "❌ BLOCKED: Tests failed"
+  exit 2
+fi
+exit 0
+```
+
+### 3. Session Persistence
+**Remembers your development decisions:**
+
+```bash
+# Create: .claude/hooks.json
+{
+  "Stop": [{
+    "hooks": [{
+      "type": "command",
+      "command": "save-decisions.sh"
+    }]
+  }]
+}
+```
+
+```bash
+# Script: save-decisions.sh
+#!/bin/bash
+# Extract decisions from conversation and save to .claude/STATE.md
+# See references/session-persistence.md for full implementation
+```
+
+## Best Practices: Project-First Approach
 
 ### DO ✅
-- Validate all inputs
-- Use path safety checks
-- Implement proper error handling
-- Follow security guidelines
-- Test thoroughly
+- **Prefer component-scoped hooks** over global hooks
+- Use `exit 2` to block dangerous operations immediately
+- Validate all file paths before writes/edits
+- Create scripts in your project's `.claude/scripts/` directory
+- Test guardrails with intentionally dangerous operations
+- Keep hooks fast (<10 seconds timeout)
+- Document what each guardrail protects
 
 ### DON'T ❌
-- Don't execute untrusted commands
-- Don't skip validation
-- Don't ignore security warnings
-- Don't create conflicting hooks
+- **Don't create plugin-level hooks** (not project-scoped)
+- Don't execute untrusted commands without validation
+- Don't use hooks for cosmetic messages (SessionStart echo)
+- Don't create conflicting hooks across components
+- Don't ignore security warnings in your guardrails
+- Don't use prompt hooks for non-Stop/SubagentStop events
+
+### Project Configuration Checklist
+- [ ] Created `.claude/hooks.json` for global guardrails
+- [ ] Added hooks to skill frontmatter where needed
+- [ ] All scripts in `.claude/scripts/` directory
+- [ ] Tested blocking behavior with `exit 2`
+- [ ] Validated path safety in PreToolUse hooks
+- [ ] Documented guardrail purposes in README
 
 ## Troubleshooting
 

@@ -752,7 +752,7 @@ This minimal pack handles 80% of customization needs. Add commands/subagents ONL
 
 **For detailed guidance:**
 - **Layer selection** → This guide
-- **Skill creation** → [build.md](build.md)
+- **Skill creation** → **Load: skills-knowledge**
 - **Core principles** → [common.md](common.md)
 - **Advanced patterns** (commands/subagents/rules) → [advanced-patterns.md](advanced-patterns.md)
 

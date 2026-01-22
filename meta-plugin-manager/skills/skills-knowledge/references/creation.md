@@ -39,7 +39,7 @@
 - [Common Mistakes to Avoid](#common-mistakes-to-avoid)
 - [Quality Validation](#quality-validation)
 
-> This workflow guides you through building customizations from scratch and refining existing ones. For core principles and archetypes, see [common.md](common.md).
+> This workflow guides you through building customizations from scratch and refining existing ones. For core principles and archetypes, see **Load: meta-architect-claudecode**.
 
 ---
 
@@ -59,7 +59,7 @@ START: What do you need?
 
 **Key Principle**: A complete customization pack can be just **CLAUDE.md + one Skill**. Commands and subagents are optional enhancements.
 
-**For detailed layer selection**: See [layer-selection.md](layer-selection.md)
+**For detailed layer selection**: See **Load: meta-architect-claudecode**
 
 ---
 
@@ -113,7 +113,7 @@ START: What do you need?
 
 If any condition fails → encode decision tree instead of asking.
 
-**For detailed autonomy design**: See [autonomy-decision-tree.md](autonomy-decision-tree.md)
+**For detailed autonomy design**: See **Load: meta-architect-claudecode**
 
 ### Step 2: Name from Essence
 
@@ -126,7 +126,7 @@ The name should capture the **core value**, not the technical mechanism.
 
 ### Step 3: Identify Core Value
 
-Review the Core Values Framework in [common.md](common.md#core-values-framework) and identify which value your skill provides: reliability, wisdom, consistency, coordination, or simplicity.
+Review the Core Values Framework in **Load: meta-architect-claudecode** and identify which value your skill provides: reliability, wisdom, consistency, coordination, or simplicity.
 
 Use the decision tree to determine the design approach that best fits your task.
 
@@ -333,9 +333,9 @@ If no → Provide a script (rare)
 
 # Extracting Knowledge from Documentation
 
-> This workflow guides you through distilling knowledge from documentation, references, other customizations, and external sources into actionable customization content. This applies to **any layer** — rules, skills, commands, or subagents. For core principles and archetypes, see [common.md](common.md).
+> This workflow guides you through distilling knowledge from documentation, references, other customizations, and external sources into actionable customization content. This applies to **any layer** — rules, skills, commands, or subagents. For core principles and archetypes, see **Load: meta-architect-claudecode**.
 
-> **Before starting**: Ensure you've chosen the correct layer for your needs. See [layer-selection.md](layer-selection.md) for guidance.
+> **Before starting**: Ensure you've chosen the correct layer for your needs. See **Load: meta-architect-claudecode** for guidance.
 
 ## What Gets Ingested
 
@@ -388,7 +388,7 @@ What makes this knowledge **unique**? What can't someone find in a tutorial?
 
 Based on the golden path, what archetype fits?
 
-Review the Five Archetypes in [common.md](common.md#the-five-skill-archetypes) and select:
+Review the Five Archetypes in **Load: meta-architect-claudecode** and select:
 
 | Content Type | Archetype |
 |--------------|-----------|
@@ -625,7 +625,7 @@ You're not including everything - you're **extracting the essence**.
 
 # Evaluating Skill Quality
 
-> This workflow provides a comprehensive evaluation framework for Agent Skills based on the Universal Engineering Standard. For core principles and archetypes, see [common.md](common.md).
+> This workflow provides a comprehensive evaluation framework for Agent Skills based on the Universal Engineering Standard. For core principles and archetypes, see **Load: meta-architect-claudecode**.
 
 ## Tool vs Skill
 
@@ -707,7 +707,7 @@ A Skill should be used when Claude should discover domain expertise automaticall
 - Using subagent when main context would work (adds complexity)
 - Using all four layers for simple workflows
 
-**For detailed layer selection**: See [layer-selection.md](layer-selection.md)
+**For detailed layer selection**: See **Load: meta-architect-claudecode**
 
 **Criticality-Variability-Autonomy Matrix**:
 
@@ -749,7 +749,7 @@ Use judgment to prioritize findings
 | 11-13 | Valid frontmatter, description has WHAT but weak on WHEN |
 | 14-15 | Perfect: comprehensive description with WHAT, WHEN, trigger keywords, and negative constraints |
 
-See [Frontmatter Specification](common.md#frontmatter-specification) for detailed requirements.
+See **Load: meta-architect-claudecode** for frontmatter requirements.
 
 ### D4: Instruction Engineering Quality (15 points)
 
@@ -807,7 +807,7 @@ Before [action], ask yourself:
 | 11-13 | Good validation strategy for critical operations |
 | 14-15 | Complete Plan-Validate-Execute with machine-verifiable gates |
 
-See [Plan-Validate-Execute Pattern](common.md#plan-validate-execute-pattern) for details.
+See **Load: meta-architect-claudecode** for Plan-Validate-Execute Pattern details.
 
 ### D7: Error Handling & Resilience (10 points)
 
@@ -845,7 +845,7 @@ See [Plan-Validate-Execute Pattern](common.md#plan-validate-execute-pattern) for
 | 11-13 | Clear pattern with minor deviations |
 | 14-15 | Masterful application of appropriate archetype |
 
-See [Structural Archetypes](common.md#structural-archetypes) for detailed patterns.
+See **Load: meta-architect-claudecode** for Structural Archetypes.
 
 ### D9: Anti-Pattern Quality & NEVER Lists (10 points)
 
@@ -937,7 +937,7 @@ NEVER use generic AI-generated aesthetics like:
 - Too complex/risky for auto-discovery → recommend command
 - Long/noisy work → recommend subagent or forked variant
 
-**For detailed autonomy guidance**: See [layer-selection.md](layer-selection.md#autonomy-decision-tree)
+**For detailed autonomy guidance**: See **Load: meta-architect-claudecode**
 
 ## NEVER Do When Evaluating
 

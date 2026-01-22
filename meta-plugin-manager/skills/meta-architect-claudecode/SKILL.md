@@ -272,12 +272,12 @@ Need to orchestrate multiple skills?
 - Comparison matrix
 - When to use each layer
 
-**"Create skill from scratch"** → [build.md](references/build.md)
+**"Create skill from scratch"** → **Load: skills-knowledge**
 - Step-by-step building workflow
 - Golden path extraction method
 - Autonomy design patterns
 
-**"Evaluate skill quality"** → [build.md#evaluating-skill-quality](references/build.md#evaluating-skill-quality)
+**"Evaluate skill quality"** → **Load: skills-knowledge#evaluating-skill-quality**
 - 12-dimensional evaluation framework
 - Common failure patterns
 - Quality scoring (160 points)
@@ -330,7 +330,7 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 ```
 1. "I need domain expertise Claude can discover"
    → Skill (Minimal Pack)
-2. Follow: build.md (Steps 1-9)
+2. Follow: Load: skills-knowledge (Steps 1-9)
 3. Test: Fresh Eyes Test
 4. Evaluate: 12-dimension framework
 ```
@@ -353,7 +353,7 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 **Path**: Build Workflow → Evaluation Section
 
 ```
-1. Load: build.md#evaluating-skill-quality
+1. Load: skills-knowledge#evaluating-skill-quality
 2. Scan: D1 (Knowledge Delta) first
 3. Score: All 12 dimensions
 4. Grade: A (144+), B (128-143), C (112-127), D (96-111), F (<96)
@@ -378,7 +378,7 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 | Reference                                                   | When to Load               | Purpose                                            |
 | ----------------------------------------------------------- | -------------------------- | -------------------------------------------------- |
 | **[layer-selection.md](references/layer-selection.md)**     | **First**: Before building | Choose between layers + context: fork guidance     |
-| **[build.md](references/build.md)**                         | Creating/evaluating        | Skill building + extraction + evaluation workflows |
+| **[skills-knowledge](skills-knowledge)**                    | Creating/evaluating        | Skill building + extraction + evaluation workflows |
 | **[common.md](references/common.md)**                       | Foundational               | Core principles, archetypes, shared patterns       |
 | **[advanced-patterns.md](references/advanced-patterns.md)** | Advanced                   | Subagents, hooks, MCP (consolidated)               |
 
@@ -432,8 +432,8 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 > **Start with layer selection** → [references/layer-selection.md](references/layer-selection.md)
 
 1. **Choosing a layer?** → layer-selection.md
-2. **Building skills?** → layer-selection.md → build.md → common.md
-3. **Evaluating quality?** → build.md#evaluating-skill-quality
+2. **Building skills?** → layer-selection.md → skills-knowledge → common.md
+3. **Evaluating quality?** → skills-knowledge#evaluating-skill-quality
 4. **Learning fundamentals?** → common.md
 
 **Remember**: Most customization needs are met by CLAUDE.md + one Skill.

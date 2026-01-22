@@ -72,6 +72,8 @@ The toolkit empowers users to:
 
 **Zero Active Hooks**: This toolkit contains NO active hooks. It teaches users how to create their own.
 
+**Project Structure**: Toolkit skills live in `/meta-plugin-manager/skills/` with progressive disclosure (SKILL.md → references/). Skills teach templates/patterns, NOT active hooks - all user hooks go in their `.claude/` directory.
+
 ---
 
 ## Core Principles
@@ -129,6 +131,16 @@ Fetch: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-pr
 - **5-6**: Fair - Significant improvements recommended
 - **3-4**: Poor - Major rework required
 - **0-2**: Failing - Complete rebuild recommended
+
+### 7. Project Scaffolding Philosophy
+
+**From Plugin System to Teaching**: The toolkit shifted from "plugin with active hooks" to "scaffolding and education" approach.
+
+**User Empowerment**: Guide users to create their own guardrails rather than forcing toolkit hooks on them.
+
+**Project-Local Config**: All hooks/config belong in user's `.claude/`, never in toolkit itself. Toolkit provides templates and patterns.
+
+**Knowledge Skills**: Must include mandatory URL fetching sections with cache requirements for quality validation.
 
 ---
 
@@ -294,6 +306,14 @@ hook-name/
 └── scripts/              # Execution logic (if needed)
 ```
 
+**Hook Types**:
+- **Command hooks** (type: `command`): All events, fast/deterministic, exit codes (0=allow, 2=block)
+- **Prompt hooks** (type: `prompt`): Only for Stop/SubagentStop events, context-aware, risk of infinite loops
+
+**Component-Scoped First**: Prefer hooks in skill/agent frontmatter over global `.claude/hooks.json` to avoid "always-on" noise.
+
+**Template Approach**: Skills provide templates/scripts, users customize in their project `.claude/scripts/`. Toolkit guides users to create their own guardrails, doesn't force its hooks on them.
+
 ---
 
 ## Subagents
@@ -352,6 +372,22 @@ Fetch: https://code.claude.com/docs/en/mcp
 ### 5. Missing Quality Validation
 **Violation**: No URL fetching, poor documentation, missing standards
 **Correct**: Use create → review → refine lifecycle with quality scoring
+
+---
+
+## Security Patterns
+
+**Defense in Depth**: Multiple validation layers (input → context → output) for comprehensive protection.
+
+**Path Safety**: Validate all file paths before operations, block path traversal with `../../../etc/passwd` patterns.
+
+**Sensitive File Protection**: Block `.env`, `.aws/credentials`, SSH keys, and other credential files with explicit approval requirements.
+
+**Dangerous Command Blocking**: Use regex patterns to block `rm -rf`, `sudo rm`, `chmod 777`, and other destructive operations.
+
+**Security Testing**: Test guardrails with intentionally dangerous operations (path traversal, .env access, `rm -rf`) to verify blocking behavior.
+
+**Fail Fast Principle**: Block dangerous operations immediately with `exit 2` rather than warning or logging only.
 
 ---
 
@@ -568,6 +604,8 @@ Need isolation/parallelism? → Subagent
 
 **Read Before Edit**: Must read file with Read tool before Edit tool can modify it (system constraint).
 
+**Exit Code 2**: User-created hooks use `exit 2` to block dangerous operations (not exit 1). Use for fail-fast security patterns in custom guardrails.
+
 ---
 
 ## Claude Code Plugin Engineering (2026)
@@ -733,6 +771,27 @@ path: "${CLAUDE_PROJECT_DIR}/.claude-plugin/"
 ✅ Quality validation gates
 ✅ One knowledge skill per domain
 ✅ Single source of truth per concept
+
+## Operational Learnings
+
+**Validation Tools**:
+- `scripts/validate-links.sh` - Run before commits to catch broken internal references
+- Version consistency check - Ensure plugin.json and marketplace.json versions match
+
+**Reference Patterns**:
+- Cross-skill references: Use "Load: skill-name" not `[link](references/file.md)`
+- Hub-and-spoke routing: Domain routers delegate to knowledge skills
+- Anti-pattern: Direct file references create broken links when skills restructure
+
+**Git Hygiene**:
+- Add `.DS_Store` to `.gitignore` on macOS
+- Cache files in `.cache/` and `.agent/.cache/` are auto-ignored
+- Use `git status --short` to review changes before committing
+
+**Architecture Pattern**:
+- Domain routers (skills-architect, hooks-architect, etc.) handle orchestration
+- Knowledge skills provide reference content
+- toolkit-worker performs isolated analysis for noisy operations
 
 ---
 
