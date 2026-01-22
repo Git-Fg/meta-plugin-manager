@@ -1,12 +1,12 @@
 ---
 name: subagents-knowledge
-description: "Complete guide to subagents for specialized autonomous workers in Claude Code. Use when deciding when to use subagents or coordinating multiple subagents. Do not use for simple file operations or basic workflow tasks."
+description: "Complete guide to subagents for project-scoped workers in Claude Code. Use when creating .claude/agents/*.md files or adding context: fork to skills. Do not use for standalone plugin agent development."
 user-invocable: true
 ---
 
 # Subagents Knowledge Base
 
-Complete subagents knowledge base for Claude Code. Access comprehensive guidance on when to use subagents and how to coordinate multiple subagents effectively.
+Complete subagents knowledge base for project-scoped Claude Code workers. Access comprehensive guidance on when to use subagents, how to create `.claude/agents/*.md` files, and coordinate multiple subagents effectively.
 
 ## 🚨 MANDATORY: Read BEFORE Using Subagents
 
@@ -98,6 +98,35 @@ Need specialized autonomous workers?
 - Complex multi-step tasks requiring focus
 - Need isolation from main conversation
 - High-volume output (extensive grep, repo traversal)
+
+## Project-Scoped Subagent Configuration
+
+**Target Directory**: `${CLAUDE_PROJECT_DIR}/.claude/agents/`
+
+**Two Approaches**:
+
+### 1. Reusable Agent File (`.claude/agents/<name>.md`)
+Use for specialized workers used across multiple skills:
+```markdown
+---
+name: my-agent
+description: "Does something specific"
+---
+# My Agent
+
+Agent instructions here...
+```
+
+### 2. Forked Skill (`context: fork`)
+Use for task-specific isolation:
+```yaml
+---
+name: my-worker
+description: "Does isolated work"
+context: fork
+agent: Explore
+---
+```
 - Noisy exploration that would clutter conversation
 - Parallel execution needed
 - Long-running tasks

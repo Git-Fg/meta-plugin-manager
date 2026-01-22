@@ -1,12 +1,12 @@
 ---
 name: hooks-knowledge
-description: "Create event-driven automation hooks for Claude Code. Use when implementing validation hooks, infrastructure integration, or session lifecycle automation. Do not use for simple file operations or basic workflows."
+description: "Create event-driven automation hooks for project-scoped configuration. Use when implementing .claude/hooks.json, component-scoped validation, or infrastructure integration. Do not use for plugin-level hook configuration without project context."
 user-invocable: true
 ---
 
 # Hooks Knowledge Base
 
-Create, audit, and refine Claude Code hooks for event-driven automation and infrastructure integration using official documentation.
+Create, audit, and refine Claude Code hooks for project-scoped event-driven automation and infrastructure integration using official documentation.
 
 ## 🚨 MANDATORY: Read BEFORE Creating Hooks
 
@@ -42,7 +42,48 @@ Create, audit, and refine Claude Code hooks for event-driven automation and infr
 - Permission management
 - Session lifecycle management
 
-**Configuration**: `hooks/hooks.json` or inline in `plugin.json`
+## Project-Scoped Hook Configuration
+
+**Two Levels**:
+
+### 1. Global Hooks (`.claude/hooks.json`)
+**Target**: `${CLAUDE_PROJECT_DIR}/.claude/hooks.json`
+
+Use for project-wide automation and infrastructure:
+```json
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "startup",
+      "hooks": [{
+        "type": "command",
+        "command": "./scripts/init.sh"
+      }]
+    }]
+  }
+}
+```
+
+### 2. Component-Scoped Hooks (Skill/Agent Frontmatter)
+**Target**: `hooks:` block in YAML frontmatter
+
+Use for skill-specific validation and logging:
+```yaml
+---
+name: my-skill
+description: "Does something"
+hooks:
+  PreToolUse:
+    - matcher: "Write"
+      hooks:
+        - type: "command"
+          command: "validate-write.sh"
+---
+```
+
+**Best Practice**: Prefer component-scoped hooks to avoid "always-on" noise.
+
+**Configuration**: `.claude/hooks.json` (global) or inline frontmatter (component-scoped)
 
 **Events**: PreToolUse, PostToolUse, PostToolUseFailure, Stop, SubagentStop, SubagentStart, SessionStart, SessionEnd, PermissionRequest, Notification, PreCompact, Setup, UserPromptSubmit
 

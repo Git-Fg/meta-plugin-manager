@@ -1,12 +1,12 @@
 ---
 name: mcp-knowledge
-description: "Complete guide to Model Context Protocol (MCP) for Claude Code integration. Use when integrating external services, creating custom tools, configuring servers, or building resources/prompts. Do not use for simple file operations or basic tool creation."
+description: "Complete guide to Model Context Protocol (MCP) for project-scoped integration via .mcp.json. Use when configuring project-level MCP servers, creating custom tools, or managing resources/prompts. Do not use for standalone plugin MCP configuration."
 user-invocable: true
 ---
 
 # MCP Knowledge Base
 
-Complete Model Context Protocol (MCP) knowledge base for Claude Code integration. Access comprehensive guides for MCP integration, server configuration, tool development, and resources/prompts creation.
+Complete Model Context Protocol (MCP) knowledge base for project-scoped Claude Code integration. Access comprehensive guides for MCP integration, server configuration in `.mcp.json`, tool development, and resources/prompts creation.
 
 ## 🚨 MANDATORY: Read BEFORE MCP Integration
 
@@ -88,6 +88,33 @@ Hosted services with bidirectional streaming
 3. **Use native tools** for basic file operations
 4. **Choose transport** based on deployment needs
 5. **Start with official servers** before building custom
+
+## Project-Scoped MCP Configuration
+
+**Target File**: `${CLAUDE_PROJECT_DIR}/.mcp.json`
+
+**Use Project MCP When**:
+- Adding web search to current project
+- Integrating external APIs for project use
+- Configuring project-specific tools
+- Local development MCP servers
+
+**Configuration Example**:
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["path/to/server.js"]
+      }
+    }
+  }
+}
+```
+
+**Safety**: Always merge new servers into existing `.mcp.json` to preserve current configuration.
 
 ## Layer Selection Decision
 
