@@ -1,12 +1,12 @@
 ---
 name: mcp-architect
-description: ".mcp.json router for external tools and service integrations. Use for creating, auditing, or refining MCP servers with external API access. Routes to mcp-knowledge for configuration details. Do not use for internal plugin development or simple file operations."
+description: "Project-scoped .mcp.json router for external tools and service integrations. Use for creating, auditing, or refining MCP servers in current project root. Routes to mcp-knowledge for configuration details. Do not use for standalone plugin MCP configuration."
 disable-model-invocation: true
 ---
 
 # MCP Architect
 
-Domain router for Model Context Protocol (MCP) integrations with external service access focus.
+Domain router for project-scoped Model Context Protocol (MCP) integrations via `.mcp.json`.
 
 ## MANDATORY: Read Before Creating MCP Integrations
 
@@ -28,33 +28,38 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
 ## Actions
 
 ### create
-**Creates new MCP integrations** for external services
+**Creates/edits MCP configuration** in `.mcp.json`
+
+**Target File**: `${CLAUDE_PROJECT_DIR}/.mcp.json`
 
 **Router Logic**:
-1. Determine MCP component:
+1. Load: mcp-knowledge for implementation details
+2. Determine MCP component:
    - Tools - API wrappers
    - Resources - Data access
    - Prompts - Templates
    - Servers - Full integration
-2. **Load: mcp-knowledge** for implementation details
-3. Generate with protocol compliance
+3. **Safely merge** new server into existing .mcp.json:
+   - Read existing .mcp.json
+   - Parse as JSON
+   - Add/merge new server configuration
+   - Validate JSON syntax
+   - Write back to .mcp.json
+4. Validate: Protocol compliance
 
 **Output Contract**:
 ```
-## MCP Component Created: {component_name}
+## MCP Server Added: {server_name}
 
-### Type: {type}
+### Location
+- File: .mcp.json
+- Transport: {transport}
+- Existing Servers Preserved: ✅
+
+### Server Configuration
 - Tools: {count}
 - Resources: {count}
 - Prompts: {count}
-
-### Transport: {transport}
-- Configuration: ✅
-- Validation: ✅
-
-### Integration Scope
-- {integration_1}
-- {integration_2}
 ```
 
 ### audit

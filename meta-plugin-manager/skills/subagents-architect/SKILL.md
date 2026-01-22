@@ -1,6 +1,6 @@
 ---
 name: subagents-architect
-description: "Context: fork router for isolation and parallelism patterns. Use for creating, auditing, or refining subagents with context: fork decisions. Routes to subagents-knowledge for coordination implementation. Do not use for simple tool execution or basic workflows."
+description: "Project-scoped context: fork router for .claude/agents/ with isolation and parallelism patterns. Use for creating, auditing, or refining subagents in current project. Routes to subagents-knowledge for coordination implementation. Do not use for standalone plugin agent development."
 disable-model-invocation: true
 ---
 
@@ -9,9 +9,9 @@ disable-model-invocation: true
 **CRITICAL**: You MUST read and understand these URLs:
 
 ### Primary Documentation (MUST READ)
-- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+- **[MUST READ] Project Configuration**: https://code.claude.com/docs/en/plugins
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Plugin structure, component organization
+  - **Content**: .claude/ structure, component organization
   - **Cache**: 15 minutes minimum
 
 - **[MUST READ] Subagents Documentation**: https://code.claude.com/docs/en/sub-agents
@@ -28,20 +28,21 @@ disable-model-invocation: true
 
 # Subagents Architect
 
-Domain router for subagent development with isolation and parallelism focus.
+Domain router for project-scoped subagent development with isolation and parallelism focus.
 
 ## Actions
 
 ### create
-**Creates new subagents** for specialized autonomous work
+**Creates subagents** in `.claude/agents/<name>.md`
+
+**Target Directory**: `${CLAUDE_PROJECT_DIR}/.claude/agents/`
 
 **Router Logic**:
 1. Load: subagents-knowledge
 2. Determine pattern:
-   - Pipeline - Sequential processing
-   - Router + Worker - Task distribution
-   - Handoff - Coordination
-3. Generate subagent with:
+   - **Reusable Agent File** (`.claude/agents/<name>.md`)
+   - **Forked Skill** (`context: fork` in skill)
+3. Generate with:
    - Clear autonomy definition
    - Coordination pattern
    - Output contracts
@@ -51,10 +52,9 @@ Domain router for subagent development with isolation and parallelism focus.
 ```
 ## Subagent Created: {agent_name}
 
-### Pattern: {pattern}
-- Purpose: {purpose}
-- Autonomy: {autonomy_level}
-- Coordination: {coordination_type}
+### Location
+- Path: .claude/agents/{agent_name}.md
+- Pattern: {pattern}
 
 ### Context Fork Usage
 - Isolation needed: ✅/❌

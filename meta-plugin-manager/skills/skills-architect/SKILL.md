@@ -23,22 +23,32 @@ Domain router for skills development with progressive disclosure and autonomy-fi
 ## Actions
 
 ### create
-**Creates new skills** with self-sufficient architecture
+**Creates new skills** in `.claude/skills/<name>/`
+
+**Target Directory**: `${CLAUDE_PROJECT_DIR}/.claude/skills/`
 
 **Router Logic**:
 1. Determine tier structure:
    - Tier 1: Metadata (~100 tokens)
-   - Tier 2: SKILL.md (<500 lines)
+   - Tier 2: SKILL.md (<500 lines for self-contained, or use references/)
    - Tier 3: references/ (on-demand)
 2. Generate skill with:
    - YAML frontmatter (name, description, disable-model-invocation)
    - Progressive disclosure structure
    - Auto-discovery optimization
-3. Validate: URL fetching sections, triggers
+   - **MANDATORY URL fetching sections**
+3. Create directory: `.claude/skills/<skill-name>/`
+4. Write SKILL.md and references/ (if needed)
+5. Validate: URL fetching sections, triggers
 
 **Output Contract**:
 ```
 ## Skill Created: {skill_name}
+
+### Location
+- Path: .claude/skills/{skill_name}/
+- SKILL.md: ✅
+- references/: {count} files
 
 ### Tier Structure
 - Tier 1: Metadata loaded

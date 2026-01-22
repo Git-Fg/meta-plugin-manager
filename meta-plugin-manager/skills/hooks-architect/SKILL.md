@@ -1,6 +1,6 @@
 ---
 name: hooks-architect
-description: "Event automation router for hooks development. Use for creating hooks, auditing security, or refining event handlers with .json configuration. Routes to hooks-knowledge for infrastructure integration. Do not use for simple file validation."
+description: "Project-scoped event automation router for .claude/hooks.json or component-scoped hooks. Use for creating hooks, auditing security, or refining event handlers. Routes to hooks-knowledge for infrastructure integration. Do not use for simple file validation."
 disable-model-invocation: true
 ---
 
@@ -9,9 +9,9 @@ disable-model-invocation: true
 **CRITICAL**: You MUST read and understand these URLs:
 
 ### Primary Documentation (MUST READ)
-- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+- **[MUST READ] Project Configuration**: https://code.claude.com/docs/en/plugins
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Plugin structure, component organization
+  - **Content**: .claude/ structure, component organization
   - **Cache**: 15 minutes minimum
 
 - **[MUST READ] Hooks Documentation**: https://code.claude.com/docs/en/hooks
@@ -28,29 +28,36 @@ disable-model-invocation: true
 
 # Hooks Architect
 
-Domain router for hooks development with event automation and infrastructure integration focus.
+Domain router for project-scoped hooks development with event automation and infrastructure integration focus.
 
 ## Actions
 
 ### create
-**Creates new hooks** for event-driven automation
+**Creates hooks** for project automation
+
+**Target Options**:
+1. **Global hooks**: `${CLAUDE_PROJECT_DIR}/.claude/hooks.json`
+2. **Component-scoped**: Add `hooks:` block to skill frontmatter
 
 **Router Logic**:
 1. Load: hooks-knowledge
-2. Determine hook type:
-   - Session initialization
-   - Pre/Post tool use
-   - File watchers
-   - Validation hooks
+2. Determine hook scope:
+   - "I need global automation" → Create .claude/hooks.json
+   - "I need skill-specific validation" → Add hooks: to skill frontmatter
 3. Generate hook with:
-   - hooks.json configuration
-   - Event handlers
+   - Event type (PreToolUse, Stop, etc.)
+   - Matcher patterns
+   - Command or prompt type
    - Security considerations
 4. Validate: Event matching, security
 
 **Output Contract**:
 ```
 ## Hook Created: {hook_name}
+
+### Location
+- Type: {global|component-scoped}
+- Path: {path}
 
 ### Event Triggers
 - {event_type}: {pattern}
@@ -59,10 +66,6 @@ Domain router for hooks development with event automation and infrastructure int
 ### Security Level: {level}
 - Validation: ✅
 - Safety checks: ✅
-
-### Automation Scope
-- {automation_1}
-- {automation_2}
 ```
 
 ### audit
