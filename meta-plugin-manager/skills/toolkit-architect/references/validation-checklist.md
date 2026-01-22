@@ -311,10 +311,10 @@ Tier 3 (references/):
 
 ## Validation Scripts
 
-**Use the plugin-quality-validator skill for automated validation:**
+**Use the toolkit-quality-validator skill for automated validation:**
 
 ```bash
-/plugin-quality-validator /path/to/plugin
+/toolkit-quality-validator /path/to/project
 ```
 
 This provides comprehensive quality scoring (0-10 scale) with:
@@ -326,7 +326,7 @@ This provides comprehensive quality scoring (0-10 scale) with:
 For CI/CD integration, use the audit command:
 
 ```bash
-/plugin-architect audit plugin ./my-plugin --quick
+/toolkit-architect audit .claude/ --quick
 ```
 
 # Standards (30 points)

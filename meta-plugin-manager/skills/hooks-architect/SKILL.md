@@ -175,7 +175,7 @@ Domain router for project-scoped hooks development with event automation and inf
 
 **Purpose**: Memory persistence for plugin development workflow
 
-**State File**: `.claude/PLUGIN_STATE.md`
+**State File**: `.claude/TOOLKIT_STATE.md`
 
 **Use When**:
 - Creating hooks for session state persistence

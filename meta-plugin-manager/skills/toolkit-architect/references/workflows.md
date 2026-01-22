@@ -70,7 +70,7 @@ Plugin manifest: !`cat .claude-plugin/plugin.json 2>/dev/null || echo "No plugin
 ## Auditing a Component
 
 ```bash
-/plugin-architect audit skill my-skill
+/toolkit-architect audit skill my-skill
 ```
 
 **Dynamic Context**:
@@ -97,13 +97,13 @@ Last modified: !`stat -f "%Sm" -t "%Y-%m-%d %H:%M" .claude/skills/my-skill 2>/de
 !`find .claude/skills/api-conventions -type f`
 
 # 3. Audit quality
-/plugin-architect audit skill api-conventions
+/toolkit-architect audit skill api-conventions
 
 # 4. Test auto-discovery
 # Invoke with natural language about API conventions
 
 # 5. Refine if needed
-/plugin-architect refine skill api-conventions
+/toolkit-architect refine skill api-conventions
 ```
 
 ## User-Triggered Skill Example
@@ -119,5 +119,5 @@ Last modified: !`stat -f "%Sm" -t "%Y-%m-%d %H:%M" .claude/skills/my-skill 2>/de
 /deploy-app staging
 
 # 4. Audit compliance
-/plugin-architect audit skill deploy-app
+/toolkit-architect audit skill deploy-app
 ```
