@@ -1,7 +1,29 @@
 ---
 name: plugin-architect
-description: "Single router for complete plugin lifecycle. Use for creating, auditing, or refining plugins with skills-first architecture. Routes to specialized knowledge skills and plugin-worker for analysis."
+description: "Plugin lifecycle router for .json configuration and skills-first architecture. Use for creating, auditing, or refining plugins with complete directory structure. Routes to specialized knowledge skills and plugin-worker for analysis. Do not use for single-skill modifications."
 disable-model-invocation: true
+---
+
+## 🚨 MANDATORY: Read BEFORE Routing
+
+**CRITICAL**: You MUST read and understand these URLs:
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Plugin structure, component organization
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Skills Guide**: https://code.claude.com/docs/en/skills
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Skills-first architecture, progressive disclosure
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **MUST validate** all URLs are accessible before routing
+- **REQUIRED** to understand plugin architecture before routing
+
 ---
 
 # Plugin Architect
@@ -14,7 +36,7 @@ Single domain router for complete plugin lifecycle management using skills-first
 **Creates new plugins** with skills-first architecture
 
 **Router Logic**:
-1. Load: plugin-structure, skills-knowledge, meta-architect-claudecode
+1. Load: plugin-architect, skills-knowledge, meta-architect-claudecode
 2. If needs isolation → Delegate to plugin-worker with context: fork
 3. If simple skill → Create directly using skills-knowledge
 4. If needs MCP → Route to mcp-architect
@@ -116,7 +138,7 @@ Continue only if score ≥ 8/10
 ## Knowledge Skills
 
 Delegates to:
-- **plugin-structure** - Skills-first architecture guidance
+- **plugin-architect** - Skills-first architecture guidance
 - **skills-knowledge** - Skill development best practices
 - **meta-architect-claudecode** - Layer selection decisions
 - **plugin-quality-validator** - Standards enforcement

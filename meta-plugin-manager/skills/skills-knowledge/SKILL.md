@@ -281,4 +281,4 @@ See **[references/troubleshooting.md](references/troubleshooting.md)** for compl
 
 ### Related Skills
 - **[meta-architect-claudecode](meta-architect-claudecode/)** - Layer selection and architecture decisions
-- **[plugin-structure](plugin-structure/)** - Plugin architecture and organization
+- **[plugin-architect](plugin-architect/)** - Plugin architecture and organization

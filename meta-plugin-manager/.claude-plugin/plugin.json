@@ -4,7 +4,6 @@
   "description": "Skills-first teaching toolkit with domain hub architecture for Claude Code plugin development - 5 domain routers + single plugin-worker for noisy analysis",
   "repository": "https://github.com/Git-Fg/meta-plugin-manager",
   "license": "MIT",
-  "category": "development",
   "keywords": [
     "plugin",
     "skills",

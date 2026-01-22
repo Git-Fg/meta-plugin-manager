@@ -1,7 +1,7 @@
 ---
 name: plugin-worker
 description: Specialized worker subagent for plugin management operations including repository audits, pattern discovery, quality scans, and comprehensive compliance checking. Use when performing noisy analysis, full codebase audits, or extracting patterns across plugin components. Do not use for simple tasks that don't require isolation or high-volume processing.
-skills: skills-knowledge, plugin-structure, meta-architect-claudecode, hooks-knowledge, subagents-when, subagents-coordination, plugin-quality-validator
+skills: skills-knowledge, plugin-architect, meta-architect-claudecode, hooks-knowledge, subagents-knowledge, plugin-quality-validator
 ---
 
 # Plugin Worker Subagent
@@ -15,11 +15,10 @@ Specialized worker subagent for plugin management operations with preloaded best
 This worker has access to:
 
 - **skills-knowledge** - Skills development and progressive disclosure
-- **plugin-structure** - Skills-first architecture guidance
+- **plugin-architect** - Skills-first architecture guidance
 - **meta-architect-claudecode** - Layer selection and context: fork decisions
 - **hooks-knowledge** - Event automation and infrastructure
-- **subagents-when** - When to use subagents effectively
-- **subagents-coordination** - Coordination patterns and implementation
+- **subagents-knowledge** - Subagent decisions and coordination patterns
 - **plugin-quality-validator** - Standards enforcement and quality scoring
 
 ## Responsibilities

@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# MANDATORY: Read Official Documentation First using simpleWebFetch tool and/or agent-browser skill
+# MANDATORY: Read Official Documentation First using mcp__simplewebfetch__simpleWebFetch tool and/or agent-browser skill
 
 **BEFORE STARTING ANY TASK**, fetch and study the official documentation from these sources:
 
@@ -249,6 +249,8 @@ Fetch: https://code.claude.com/docs/en/hooks
 **Hooks** provide infrastructure integration for MCP servers, LSP configuration, and event-driven automation.
 
 **When to use**: Infrastructure integration, event automation, MCP/LSP configuration
+
+**Anti-Pattern**: SessionStart hooks that only print cosmetic messages (echo/logging without functional behavior). These add noise without value.
 
 **Structure**:
 ```
@@ -577,7 +579,7 @@ Knowledge skills MUST include mandatory URL fetching sections:
 ## MANDATORY: Read Before Creating Skills
 
 - **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
-  - Tool: `simpleWebFetch`
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
   - Cache: 15 minutes minimum
 
 **BLOCKING RULES**:
@@ -638,6 +640,7 @@ path: "${CLAUDE_PROJECT_DIR}/.claude-plugin/"
 - Over-orchestration (multiple subagents for linear workflows)
 - Empty scaffolding (directories with no content)
 - Skill fragmentation (many tiny skills instead of one with references)
+- **Cosmetic hooks** (SessionStart hooks that only echo/print without functional behavior)
 
 **Documentation**:
 - Stale URLs (outdated documentation)

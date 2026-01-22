@@ -1,7 +1,29 @@
 ---
 name: subagents-architect
-description: "Router for subagents domain expertise. Use for creating, auditing, or refining subagents for isolation and parallelism. Routes to subagents-* knowledge skills."
+description: "Context: fork router for isolation and parallelism patterns. Use for creating, auditing, or refining subagents with context: fork decisions. Routes to subagents-knowledge for coordination implementation. Do not use for simple tool execution or basic workflows."
 disable-model-invocation: true
+---
+
+## 🚨 MANDATORY: Read BEFORE Routing
+
+**CRITICAL**: You MUST read and understand these URLs:
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Plugin structure, component organization
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Subagents Documentation**: https://code.claude.com/docs/en/sub-agents
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Context fork, isolation patterns
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **MUST validate** all URLs are accessible before routing
+- **REQUIRED** to understand subagents architecture before routing
+
 ---
 
 # Subagents Architect
@@ -14,7 +36,7 @@ Domain router for subagent development with isolation and parallelism focus.
 **Creates new subagents** for specialized autonomous work
 
 **Router Logic**:
-1. Load: subagents-when, subagents-coordination
+1. Load: subagents-knowledge
 2. Determine pattern:
    - Pipeline - Sequential processing
    - Router + Worker - Task distribution
@@ -47,7 +69,7 @@ Domain router for subagent development with isolation and parallelism focus.
 **Audits subagents** for appropriate usage and effectiveness
 
 **Router Logic**:
-1. Load: subagents-when, subagents-coordination
+1. Load: subagents-knowledge
 2. Check:
    - Context fork appropriateness
    - Autonomy definition clarity
@@ -83,7 +105,7 @@ Domain router for subagent development with isolation and parallelism focus.
 **Improves subagents** based on audit findings
 
 **Router Logic**:
-1. Load: subagents-when, subagents-coordination
+1. Load: subagents-knowledge
 2. Enhance:
    - Context fork optimization
    - Autonomy definition
@@ -143,17 +165,14 @@ Domain router for subagent development with isolation and parallelism focus.
 
 ## Knowledge Routing
 
-**subagents-when** - Context fork decision criteria
-**subagents-coordination** - Pattern selection and implementation
+See [Subagents Knowledge](references/subagents-knowledge.md) for context: fork criteria and coordination patterns.
 
 ## Routing Criteria
 
-**Route to subagents-when** when:
+**Route to subagents-knowledge** when:
 - Context fork decisions
 - Isolation justification
 - Usage appropriateness
-
-**Route to subagents-coordination** when:
 - Pattern selection
 - Coordination implementation
 - State management

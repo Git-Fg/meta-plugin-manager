@@ -1,5 +1,6 @@
 {
   "name": "meta-plugin-manager-marketplace",
+  "description": "Marketplace for The Cat Toolkit v3 - a comprehensive plugin development ecosystem with skills-first architecture and domain hub patterns",
   "owner": {
     "name": "Git-Fg"
   },

@@ -1,7 +1,29 @@
 ---
 name: hooks-architect
-description: "Router for hooks domain expertise. Use for creating, auditing, or refining hooks for event automation and infrastructure integration. Routes to hooks-knowledge."
+description: "Event automation router for hooks development. Use for creating hooks, auditing security, or refining event handlers with .json configuration. Routes to hooks-knowledge for infrastructure integration. Do not use for simple file validation."
 disable-model-invocation: true
+---
+
+## 🚨 MANDATORY: Read BEFORE Routing
+
+**CRITICAL**: You MUST read and understand these URLs:
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Plugin structure, component organization
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Hooks Documentation**: https://code.claude.com/docs/en/hooks
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Event automation, infrastructure integration
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **MUST validate** all URLs are accessible before routing
+- **REQUIRED** to understand hooks architecture before routing
+
 ---
 
 # Hooks Architect
@@ -125,11 +147,7 @@ Domain router for hooks development with event automation and infrastructure int
 
 ## Knowledge Base
 
-**hooks-knowledge**:
-- Event handling patterns
-- Security best practices
-- Infrastructure integration
-- Performance optimization
+See [Hooks Knowledge](references/hooks-knowledge.md) for event handling patterns, security best practices, and infrastructure integration.
 
 ## Routing Criteria
 

@@ -1,6 +1,6 @@
 ---
 name: skills-architect
-description: "Router for skills domain expertise. Use for creating, auditing, or refining skills with progressive disclosure and autonomy. Routes to skills-knowledge."
+description: "Progressive disclosure router for skills autonomy and SKILL.md structure. Use for creating, auditing, or refining skills with tier-based organization. Routes to skills-knowledge for implementation details. Do not use for simple documentation or basic markdown editing."
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ Domain router for skills development with progressive disclosure and autonomy-fi
 **Creates new skills** with self-sufficient architecture
 
 **Router Logic**:
-1. Load: skills-knowledge
+1. See: [skills-knowledge](references/skills-knowledge.md)
 2. Determine tier structure:
    - Tier 1: Metadata (~100 tokens)
    - Tier 2: SKILL.md (<35,000 chars)
@@ -47,7 +47,7 @@ Target: 80-95% completion without questions
 **Audits skills** for quality and autonomy
 
 **Router Logic**:
-1. Load: skills-knowledge
+1. See: [skills-knowledge](references/skills-knowledge.md)
 2. Check:
    - YAML frontmatter completeness
    - Progressive disclosure implementation
@@ -82,7 +82,7 @@ Target: 80-95% completion without questions
 **Improves skills** based on audit findings
 
 **Router Logic**:
-1. Load: skills-knowledge
+1. See: [skills-knowledge](references/skills-knowledge.md)
 2. Review progressive disclosure
 3. Enhance:
    - Metadata clarity
@@ -126,15 +126,11 @@ Target: 80-95% completion without questions
 
 ## Knowledge Base
 
-**skills-knowledge**:
-- Best practices for skill development
-- Progressive disclosure patterns
-- Autonomy optimization techniques
-- Auto-discovery strategies
+**[Skills Knowledge](references/skills-knowledge.md)** - Best practices, patterns, and implementation details for skill development.
 
 ## Routing Criteria
 
-**Route to skills-knowledge** when:
+**[Route to skills-knowledge](references/skills-knowledge.md)** when:
 - Creating new skills
 - Auditing existing skills
 - Refining skill architecture

@@ -1,6 +1,6 @@
 ---
 name: mcp-architect
-description: "Router for MCP domain expertise. Use for creating, auditing, or refining MCP integrations for external service access. Routes to mcp-* knowledge skills."
+description: ".mcp.json router for external tools and service integrations. Use for creating, auditing, or refining MCP servers with external API access. Routes to mcp-knowledge for configuration details. Do not use for internal plugin development or simple file operations."
 disable-model-invocation: true
 ---
 
@@ -129,10 +129,13 @@ Domain router for Model Context Protocol (MCP) integrations with external servic
 
 ## Knowledge Routing
 
-**mcp-tools** - Tool creation and API wrappers
-**mcp-resources-prompts** - Resource and prompt patterns
-**mcp-servers** - Server configuration and transport
-**mcp-integration** - Integration best practices
+See [MCP Knowledge](references/mcp-knowledge.md) for component patterns and implementation details.
+
+**Component Overview**:
+- **mcp-tools** - Tool creation and API wrappers
+- **mcp-resources-prompts** - Resource and prompt patterns
+- **mcp-servers** - Server configuration and transport
+- **mcp-integration** - Integration best practices
 
 ## Routing Criteria
 
