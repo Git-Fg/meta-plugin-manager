@@ -1,0 +1,89 @@
+# Ralph Configuration for Granular Deep Audit
+event_loop:
+  prompt_file: "PROMPT.md"
+  completion_promise: "TASK_COMPLETE"
+  max_iterations: 50
+  max_runtime_seconds: 7200
+  starting_event: "audit.begin"
+
+cli:
+  backend: "claude"
+
+core:
+  scratchpad: ".agent/scratchpad.md"
+  specs_dir: "./specs/"
+  guardrails:
+    - "Fresh context each iteration - scratchpad is memory"
+    - "Focus on ONE specific topic at a time"
+    - "Trust the Strategist to decide priority"
+
+hats:
+  strategist:
+    name: "Audit Strategist"
+    description: "Decides the next high-impact topic to audit."
+    triggers: ["audit.begin", "audit.cycle_complete"]
+    publishes: ["research.topic", "task.complete"]
+    instructions: |
+      ## STRATEGIST MODE
+
+      Your goal is to lead the audit by picking high-value targets one by one.
+
+      ### Process
+      1.  **Analyze State**: detailed read of `.agent/scratchpad.md`. What topics have we covered? What URLs are listed but unread? What "Claims" from previous audits need external verification?
+      2.  **Decide**: Pick ONE high-impact topic.
+          *   A specific "MANDATORY" URL from a skill.
+          *   A specific concept (e.g., "Skill Autonomy", "Progressive Disclosure").
+      3.  **Publish**:
+          *   Update Scratchpad with "Current Focus: [Topic]".
+          *   Emit `research.topic` with the topic name.
+          *   OR, if everything is fully audited, emit `task.complete`.
+
+      ### Scratchpad Update
+      ```markdown
+      ## Audit Log
+      - [x] Topic A (Status: Verified)
+      - [ ] Topic B (Current Focus)
+      ```
+
+  researcher:
+    name: "Standards Researcher"
+    description: "Fetches docs and extracts concrete rules for the current topic."
+    triggers: ["research.topic"]
+    publishes: ["audit.ready"]
+    instructions: |
+      ## RESEARCHER MODE
+
+      Your goal is to define the "Standard" for the current topic.
+
+      ### Process
+      1.  **Get Topic**: Check "Current Focus" in Scratchpad.
+      2.  **Fetch**: Use `simpleWebFetch` to read the relevant official documentation.
+      3.  **Extract**:
+          *   **Rule**: What is the hard rule? (e.g. "Must use Tier 2 disclosure")
+          *   **Reasoning**: Why?
+          *   **Evidence**: Quote the docs.
+      4.  **Publish**:
+          *   Update Scratchpad section "Current Standard" with these details.
+          *   Emit `audit.ready`.
+
+  auditor:
+    name: "Codebase Auditor"
+    description: "Audits the codebase against the specific 'Current Standard'."
+    triggers: ["audit.ready"]
+    publishes: ["audit.cycle_complete"]
+    instructions: |
+      ## AUDITOR MODE
+
+      Your goal is to check if `meta-plugin-manager` follows the "Current Standard".
+
+      ### Process
+      1.  **Read Standard**: Review "Current Standard" in Scratchpad.
+      2.  **Audit**:
+          *   **Implementation**: Scan relevant files. Do they comply?
+          *   **Teaching**: Do our knowledge skills teach this rule correctly?
+      3.  **Report**:
+          *   **Pass**: "Verified compliance."
+          *   **Fail**: "Found deviation in [File]."
+      4.  **Publish**:
+          *   Append findings to "Audit Log" in Scratchpad.
+          *   Emit `audit.cycle_complete` to return control to Strategist.

@@ -1,0 +1,18 @@
+{
+  "name": "meta-plugin-manager",
+  "version": "6.0.0",
+  "description": "Skills-first teaching toolkit with domain hub architecture for Claude Code plugin development - 5 domain routers + single plugin-worker for noisy analysis",
+  "repository": "https://github.com/anthropics/claude-code",
+  "license": "MIT",
+  "category": "development",
+  "keywords": ["plugin", "skills", "domain-hubs", "single-plugin-worker", "legacy-commands-reference", "teaching", "orchestration", "subagents", "validation"],
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "prompt",
+        "prompt": "Initialize meta-plugin-manager v6.0 context. Domain hub architecture with 5 router skills (plugin-architect, skills-architect, hooks-architect, mcp-architect, subagents-architect) + single plugin-worker for noisy analysis. Skills-first teaching ecosystem with quality validation."
+      }]
+    }]
+  }
+}
