@@ -1,12 +1,7 @@
 {
-  "name": "anthropic-meta-plugins",
+  "name": "meta-plugin-manager-marketplace",
   "owner": {
-    "name": "Anthropic Team",
-    "email": "claude-code@anthropic.com"
-  },
-  "metadata": {
-    "description": "Official Anthropic plugins for advanced plugin management, orchestration, and best practices enforcement",
-    "version": "1.0.0"
+    "name": "Git-Fg"
   },
   "plugins": [
     {
@@ -14,10 +9,19 @@
       "source": "./meta-plugin-manager",
       "description": "Comprehensive plugin management with knowledge base skills and unified orchestration for creating, auditing, and refining Claude Code plugins",
       "version": "1.0.0",
-      "repository": "https://github.com/anthropics/claude-code",
+      "repository": "https://github.com/Git-Fg/meta-plugin-manager",
       "license": "MIT",
       "category": "development",
-      "keywords": ["plugin", "meta", "management", "orchestration", "skills", "commands", "agents", "hooks"],
+      "keywords": [
+        "plugin",
+        "meta",
+        "management",
+        "orchestration",
+        "skills",
+        "commands",
+        "agents",
+        "hooks"
+      ],
       "strict": true
     }
   ]
