@@ -1,329 +1,367 @@
 ---
 name: claude-cli-non-interactive
-description: "Guide complet pour utiliser Claude Code CLI en mode impression (-p) et tester des skills/plugins/subagents de manière autonome dans un environnement isolé"
+description: "Autonomous testing workflow for skills/plugins/subagents using Claude CLI print mode (-p) with stream-json output and real-time monitoring"
+user-invocable: true
 ---
 
-# Claude CLI Non-Interactif
+# CLI Non-Interactive Testing
 
-## Objectif
-Utiliser Claude Code en mode impression (-p) pour automatiser les workflows, tester des skills et valider leur autonomie complète sans supervision humaine.
+## WIN CONDITION
 
-## Quand Utiliser
-- Tests automatisés de skills et plugins
-- Validation de l'autonomie des workflows (80-95% completion)
-- Orchestration de tâches complexes via scripts
-- Revue de logs et analyse de performance
-- Création d'environnements de test isolés
+```markdown
+## CLI_TEST_COMPLETE
 
-## Workflow Principal
-
-### Pattern de Test Isolé
-
-```bash
-# Créer un dossier local et exécuter Claude depuis ce dossier
-mkdir test-name && cd test-name && claude -p "your query here"
+Workflow: [test-type]
+Tests Run: [count]
+Results: [summary]
+Autonomy: [score]%
 ```
 
-### Exemples
+---
 
+## 🚨 MANDATORY: Read References First
+
+**Before ANY test**, read these in order:
+
+1. **[references/cli-flags.md](references/cli-flags.md)** - All CLI flags, safety limits, output formats
+2. **[references/patterns.md](references/patterns.md)** - Pre-configured test patterns
+3. **[references/troubleshooting.md](references/troubleshooting.md)** - Real-time monitoring, failure diagnosis
+4. **[references/autonomy-scoring.md](references/autonomy-scoring.md)** - 80-95% autonomy scoring
+5. **[references/autonomy-patterns.md](references/autonomy-patterns.md)** - Autonomy testing patterns
+6. **[references/hallucination-detection.md](references/hallucination-detection.md)** - Real vs synthetic execution
+
+---
+
+## 🚨 MANDATORY: Testing Rules
+
+### Step-by-Step Approach (CRITICAL)
+**✅ ALWAYS**: Create ONE new folder per test, execute individually
+**❌ NEVER**: Create test runner scripts (run_*.sh, batch_*.sh, etc.)
+**❌ NEVER**: Run multiple tests in monitoring loops
+**✅ ALWAYS**: Read entire test-output.json before concluding pass/fail
+
+ABSOLUTE CONSTRAINT: You must analyze ALL log files to verify test success. **MANDATORY WORKFLOW**:
+1. **First**: Call the `tool-analyzer` skill to automate pattern detection
+2. **Then**: Read the full log manually if the analyzer output is unclear
+3. Watch for synthetic skill use (hallucinated) vs. real tool/task/skill use
+
+### Path Navigation
+**NEVER use `cd` to navigate** - it's unreliable and causes confusion about current directory.
+
+**ONLY TWO EXCEPTIONS**:
+1. **Setting claude's working directory** (in same command): `cd /path && claude ...`
+2. **Cleanup after test complete**: `cd /original/path` (optional, using absolute paths preferred)
+
+**ALWAYS use absolute paths**:
+- `<project_path>/` = actual project path from `!pwd`
+- All file operations use absolute paths: `cat <project_path>/test/file.json`
+- Never rely on current directory state
+
+**NEVER create test skills in /tmp/** - Always create test skills/agents DIRECTLY in the actual directory. Temporary directories cause confusion and cleanup issues.
+
+**WRONG** ❌:
 ```bash
-# Test basique d'une skill
-mkdir skill-test && cd skill-test && claude -p "Listez les skills disponibles" --max-turns 5
-
-# Test avec budget limité
-mkdir autonomy-test && cd autonomy-test && claude -p "Créez un README.md sans poser de questions" --max-turns 5 --max-budget-usd 2.00
-
-# Test avec sortie JSON
-mkdir json-test && cd json-test && claude -p "Analysez ce projet" --output-format json > result.json
+cd test-name
+claude -p "test" > output.json 2>&1
+cat output.json
 ```
 
-## Commandes CLI Essentielles
-
-### Mode Impression (-p)
+**WRONG** ❌:
 ```bash
-# Syntaxe de base
-claude -p "votre_query" [options]
-
-# Sortie JSON pour analyse programmée
-claude -p "query" --output-format json
-
-# Limitation budgétaire
-claude -p "query" --max-budget-usd 5.00
-
-# Limitation des tours
-claude -p "query" --max-turns 10
+mkdir -p /tmp/test-skills/skill-name  # NEVER use /tmp/ for test skills
 ```
 
-### Drapeaux Cruciaux pour les Tests
-
+**CORRECT** ✅:
 ```bash
-# Persistance désactivée (tests isolés)
---no-session-persistence
-
-# Sortie structurée
---output-format json
---include-partial-messages
-
-# Débogage
---verbose
---debug "api,hooks"
-
-# Modèle spécifique
---model sonnet
---fallback-model haiku
-
-# Outils restreints
---tools "Bash,Read,Edit"
---disallowedTools "Write"
+mkdir <project_path>/test-name
+cd <project_path>/test-name && claude -p "test" > <project_path>/test-name/output.json 2>&1
+cat <project_path>/test-name/output.json
 ```
 
-## Analyse des Logs et Performance
+---
 
-### Stratégie de Revue
+## Core: Print Mode (-p) + stream-json
 
+**Why**: Single-pass execution, no conversation loop, perfect for autonomous testing.
+
+**Mandatory flags for EVERY test**:
 ```bash
-# Capture complète des logs
-claude -p "query" --verbose 2>&1 | tee full-log.txt
-
-# Filtrage par importance
-grep -E "(ERROR|WARN|SUCCESS|TOOL_CALL)" full-log.txt > filtered-log.txt
-
-# Analyse temporelle
-grep -E "timestamp|took [0-9]+ms" full-log.txt > timing-log.txt
+--output-format stream-json --verbose --debug --no-session-persistence --dangerously-skip-permissions
 ```
 
-### Métriques Clés à Surveiller
+**NDJSON output structure (3 lines)**:
+- **Line 1**: System init (`tools`, `skills`, `agents`, `mcp_servers`)
+- **Line 2**: Assistant message
+- **Line 3**: Result (`num_turns`, `duration_ms`, `total_cost_usd`, `permission_denials`)
 
-1. **Autonomie**: Nombre de questions posées
-   ```bash
-   # Ideal: <3 questions pour 95% de completion
-   grep -c "?" questions.log
-   ```
+---
 
-2. **Efficacité**: Tours nécessaires vs objectif
-   ```bash
-   # Ratio: tours_actual / tours_max
-   grep "max_turns" summary.log
-   ```
+## Universal Testing Pattern
 
-3. **Coût**: Budget dépensé vs alloué
-   ```bash
-   # Comparaison
-   cat budget-report.txt
-   ```
+All tests use same structure. Only `--max-turns` and setup vary.
 
-## Patterns de Test pour Skills
+### Phase 1: Setup (Skills/Agents Creation)
 
-### Test d'Autonomie
+**Create test skills/agents DIRECTLY in project structure**:
+
 ```bash
-mkdir autonomy-test && cd autonomy-test && claude -p "Traitez le fichier data.csv sans poser de questions" --max-turns 10 --max-budget-usd 2.00
-```
+!pwd  # Get actual project path
+# Create test folder structure
+mkdir -p <project_path>/test_folder/.claude/skills/skill-test-name
 
-### Test de Robustesse
-```bash
-mkdir robustness-test && cd robustness-test && claude -p "Testez la skill file-analyzer avec des fichiers manquants et vides" --verbose
-```
+# Create skill file
+cat > <project_path>/test_folder/.claude/skills/skill-test-name/SKILL.md << 'EOF'
+---
+name: skill-test-name
+description: "Test skill"
+---
 
-### Test de Performance
-```bash
-mkdir perf-test && cd perf-test && time claude -p "Analysez tous les fichiers du projet" --max-turns 15
-```
+## TEST_SKILL_COMPLETE
 
-## Validation de l'Autonomie (Critères 80-95%)
+Test completed successfully.
+EOF
 
-### Checklist d'Autonomie
-
-✅ **Score 95% - Excellence**
-- 0-1 questions maximum
-- Exécution complète de A à Z
-- Gestion automatique des erreurs
-- Choix optimaux sans guidance
-
-✅ **Score 85% - Bon**
-- 2-3 questions acceptables
-- Complétion de 90% de la tâche
-- Quelques validations mineures
-
-✅ **Score 80% - Minimum Acceptable**
-- 4-5 questions maximum
-- 80% d'exécution autonome
-- Clarifications sur contexte critique
-
-### Script de Scoring Automatique
-```bash
-#!/bin/bash
-# calc-autonomy-score.sh
-
-LOG_FILE="$1"
-QUESTIONS=$(grep -c "?" "$LOG_FILE")
-TOOL_CALLS=$(grep -c "TOOL_CALL" "$LOG_FILE")
-COMPLETION_RATE=$(grep -o "completion_rate: [0-9]*" "$LOG_FILE" | cut -d' ' -f2)
-
-# Score calculation
-if [ "$QUESTIONS" -le 1 ]; then
-  AUTONOMY_SCORE=95
-elif [ "$QUESTIONS" -le 3 ]; then
-  AUTONOMY_SCORE=85
-elif [ "$QUESTIONS" -le 5 ]; then
-  AUTONOMY_SCORE=80
-else
-  AUTONOMY_SCORE=70
-fi
-
-echo "Score d'Autonomie: ${AUTONOMY_SCORE}%"
-echo "Questions posées: $QUESTIONS"
-echo "Appels d'outils: $TOOL_CALLS"
-
-if [ "$AUTONOMY_SCORE" -ge 80 ]; then
-  echo "✅ VALIDÉ: Skill suffisamment autonome"
-  exit 0
-else
-  echo "❌ ÉCHEC: Skill nécessite des améliorations"
-  exit 1
-fi
-```
-
-## Orchestration Multi-Skills
-
-### Pattern de Hub-and-Spoke
-```bash
-# Hub skill orchestre les sub-skills
-claude -p "
-Hub Skill: Orchestration de data-pipeline
-1. Détecter le type de données
-2. Sélectionner skill appropriée:
-   - 'csv-processor' pour données tabulaires
-   - 'json-analyzer' pour données hiérarchiques
-   - 'text-miner' pour données non-structurées
-3. Exécuter la skill choisie
-4. Agréger les résultats
-" \
-  --max-turns 25 \
-  --output-format json
-```
-
-### Validation des Chaînes de Skills
-```bash
-# Test de la chaîne complète
-for i in {1..5}; do
-  echo "=== Test Round $i ==="
-  claude -p "Exécutez la chaîne skill1 → skill2 → skill3" \
-    --max-turns 30 \
-    --session-id "test-chain-$i" \
-    --output-format json > chain-test-$i.json
-
-  # Vérifier l'intégrité
-  jq '.success' chain-test-$i.json
-done
-```
-
-## Bonnes Pratiques pour Tests Automatisés
-
-### Isolation par Test
-```bash
-# Un dossier = un test
-mkdir test-phase1-skill-chain && cd test-phase1-skill-chain && claude -p "Testez la chaîne skill-a → skill-b"
-mkdir test-phase2-forked && cd test-phase2-forked && claude -p "Testez l'isolation des forked skills"
-```
-
-### Reproductibilité
-```bash
-mkdir reproducible-test && cd reproducible-test && claude -p "Query" --session-id "test-001"
-```
-
-### Analyse de Résultat
-```bash
-mkdir json-output && cd json-output && claude -p "Query" --output-format json > result.json && jq '.success' result.json
-```
-
-## Extraction d'Enseignements
-
-### Pattern d'Itération
-```bash
-# Cycle: Test → Analyse → Amélioration → Re-test
-for iteration in {1..3}; do
-  echo "=== Itération $iteration ==="
-
-  # Test
-  claude -p "query" --verbose 2>&1 | tee iteration-$iteration.log
-
-  # Analyse automatique
-  ./analyze-autonomy.sh iteration-$iteration.log > analysis-$iteration.txt
-
-  # Amélioration basée sur l'analyse
-  if [ -f "improvements-$iteration.txt" ]; then
-    apply-improvements.sh improvements-$iteration.txt
-  fi
-done
-```
-
-### Rapport Final
-```bash
-# Génération du rapport de validation
-cat > test-report.md <<EOF
-# Rapport de Test - Skill Validation
-
-## Métriques Globales
-- Tests effectués: $TOTAL_TESTS
-- Taux de réussite: $SUCCESS_RATE%
-- Score d'autonomie moyen: $AVG_AUTONOMY%
-- Coût moyen par test: $AVG_COST$
-
-## Points d'Amélioration
-$(cat improvements-summary.txt)
-
-## Recommandations
-$(cat recommendations.txt)
+# If testing subagents, create agent file
+mkdir -p <project_path>/test_folder/.claude/agents
+cat > <project_path>/test_folder/.claude/agents/test-agent.md << 'EOF'
+---
+name: test-agent
+description: "Test agent"
+tools: [Read, Grep]
+---
 EOF
 ```
 
-## URLs de Référence
+### Phase 2: Pre-flight Checklist
 
-### Documentation Officielle
-- **Claude Code CLI**: https://code.claude.com/docs/en/cli
-- **Agent SDK**: https://docs.claude.com/en/docs/agent-sdk
-- **Skills Documentation**: https://code.claude.com/docs/en/skills
-- **Agent Skills Spec**: https://agentskills.io/specification
+**CRITICAL**: Complete ALL checklist items BEFORE running test:
 
-### Exemples et Patterns
-- **MCP Integration**: https://code.claude.com/docs/en/mcp
-- **Sub-agents**: https://code.claude.com/docs/en/sub-agents
-- **Hooks System**: https://code.claude.com/docs/en/hooks
+- [ ] Test folder created at `<project_path>/test_folder/`
+- [ ] Test skills created in `<project_path>/test_folder/.claude/skills/`
+- [ ] Test agents created in `<project_path>/test_folder/.claude/agents/` (if applicable)
+- [ ] Skills/agents have correct YAML frontmatter
+- [ ] Win condition markers defined in skills
+- [ ] Test-output.json will be saved IN this test folder
+- [ ] You will analyze the log using tool-analyzer skill (then read manually if needed)
 
-## Conseils de Debugging
+**ONLY after checklist complete, proceed to Phase 3.**
 
-### Mode Verbose
+### Phase 3: Execution (Run Test)
+
 ```bash
-# Logs détaillés pour diagnostic
-claude -p "query" --verbose --debug "api,hooks,tools"
+# Execute test (cd only used here to set claude's working directory)
+# Output goes directly into test_folder
+cd <project_path>/test_folder && claude --dangerously-skip-permissions -p "test prompt" \
+  --output-format stream-json --verbose --debug \
+  --no-session-persistence --max-turns 10 \
+  > <project_path>/test_folder/test-output.json 2>&1
 ```
 
-### Analyse des Échecs
-```bash
-# Identifier les points d'échec
-grep -E "(ERROR|FAIL|Exception)" full-log.txt
+### Phase 4: Verification & Cleanup
 
-# Examiner les dernières actions
-tail -50 full-log.txt
+```bash
+# MANDATORY: Read the FULL test-output.json before deciding pass/fail
+cat <project_path>/test_folder/test-output.json
+
+# Analyze the COMPLETE output:
+# - Check ALL win condition markers
+# - Verify permission_denials array
+# - Look for errors or issues
+
+# Archive successful test folder
+mv <project_path>/test_folder <project_path>//.attic/test_folder_success
+
+# Or delete after analysis
+rm -rf <project_path>/test_folder
 ```
 
-### Optimisation
-```bash
-# Ajuster selon les logs
-# - Réduire max_turns si trop long
-# - Augmenter budget si timeout
-# - Réduire complexité si questions excessives
-```
+**CRITICAL**: Never skip the tool-analyzer analysis. Always analyze logs systematically:
+1. **First**: Call tool-analyzer skill for automated pattern detection
+2. **Then**: Read full log manually if analyzer output is unclear
 
-## Conclusion
+### Max-Turns Guidelines
 
-L'utilisation de Claude CLI en mode non-interactif permet la validation systématique et l'amélioration continue des skills. En suivant ces patterns, vous garantissez une autonomie de 80-95% et une exécution fiable pour l'automatisation.
-
-**Points Clés**:
-- Toujours tester dans un environnement isolé
-- Valider l'autonomie avec des métriques quantifiables
-- Itérer basée sur l'analyse des logs
-- Documenter les patterns qui fonctionnent
+| Test Type | --max-turns |
+|-----------|-------------|
+| Single skill | 10 |
+| Skill chain (2-3) | 20 |
+| Forked skills | 15 |
+| Parallel execution | 25 |
+| Complex pipeline | 50+ |
 
 ---
-*Skill créée pour l'utilisation autonome de Claude Code CLI en mode impression (-p)*
+
+## Per-Test Execution Pattern
+
+For long-running tests, you may optionally monitor one test at a time:
+
+### Phase 1: Setup
+
+```bash
+!pwd  # Get actual project path
+
+# Create test folder structure
+mkdir -p <project_path>/test_folder/.claude/skills/skill-test-name
+cat > <project_path>/test_folder/.claude/skills/skill-test-name/SKILL.md << 'EOF'
+---
+name: skill-test-name
+description: "Test skill"
+---
+
+## TEST_COMPLETE
+EOF
+```
+
+### Phase 2: Pre-flight Checklist
+
+- [ ] Test folder created at `<project_path>/test_folder/`
+- [ ] Test skill created in `<project_path>/test_folder/.claude/skills/skill-test-name/`
+- [ ] Win condition marker present
+- [ ] Test output will go to `<project_path>/test_folder/test-output.json`
+
+### Phase 3: Optional Per-Test Monitoring
+
+```bash
+# Run ONE test at a time with optional monitoring
+cd <project_path>/test_folder && claude --dangerously-skip-permissions -p "test prompt" \
+  --output-format stream-json --verbose --debug \
+  --no-session-persistence --max-turns 10 \
+  > <project_path>/test_folder/test-output.json 2>&1 &
+
+# Monitor this specific test (optional)
+sleep 5
+tail -f <project_path>/test_folder/test-output.json 2>/dev/null
+```
+
+### Phase 4: Log Analysis & Cleanup
+
+**CRITICAL**: Analyze logs systematically:
+
+```bash
+# Step 1: Call tool-analyzer skill (MANDATORY FIRST STEP)
+# The tool-analyzer will detect patterns, skill invocations, autonomy scores
+
+# Step 2: Read full log manually if needed
+cat <project_path>/test_folder/test-output.json
+
+# Decide pass/fail based on:
+# - tool-analyzer findings
+# - Completion markers present
+# - permission_denials array empty
+# - No errors in output
+
+# Archive successful tests
+mv <project_path>/test_folder <project_path>/.attic/test_folder_success
+
+# Or delete failed tests after analysis
+rm -rf <project_path>/test_folder
+```
+
+**Next Test**: Create NEW folder for next test
+
+---
+
+## Quick Verification Checklist
+
+After each test, **READ THE FULL** `test-output.json` (from inside the test folder):
+
+**Step 1: Automated Analysis (MANDATORY)**
+```bash
+# Call tool-analyzer skill FIRST - it will analyze the log and report:
+# - Execution patterns detected
+# - Skill invocation counts
+# - Autonomy scores
+# - Completion markers found
+# - Any anomalies or issues
+
+# Review tool-analyzer output
+```
+
+**Step 2: Manual Verification (if needed)**
+```bash
+# If tool-analyzer output is unclear, read the full log manually
+cat <project_path>/test_folder/test-output.json
+```
+
+**Step 2: Verify System Init (Line 1)**:
+- [ ] Test skills in `"skills"` array
+- [ ] Required MCP servers in `"mcp_servers"`
+- [ ] Custom agents in `"agents"` (if applicable)
+
+**Step 3: Verify Result (Last Lines)**:
+- [ ] `"num_turns"` within expected range
+- [ ] `"permission_denials"` is empty (no questions asked)
+- [ ] `"duration_ms"` reasonable (not infinite loop)
+- [ ] Completion marker present in `"result"`
+
+**Step 4: Autonomy Score**:
+- Count `"permission_denials"` entries
+- 0-1 = Excellent (95%)
+- 2-3 = Good (85%)
+- 4-5 = Acceptable (80%)
+- 6+ = Fail (<80%)
+
+**CRITICAL**: If you did NOT read the full log, you cannot conclude pass/fail.
+
+---
+
+## Autonomy Testing Patterns
+
+**CRITICAL**: Forked skills MUST complete without asking questions.
+
+For complete autonomy testing patterns, verification, templates, and scoring:
+**See [references/autonomy-patterns.md](references/autonomy-patterns.md)**
+
+## Common Test Scenarios
+
+For detailed patterns, see **[references/patterns.md](references/patterns.md)**:
+
+| Scenario | --max-turns | Key Verification |
+|----------|-------------|------------------|
+| Skill discovery | 5 | Skills loaded in line 1 |
+| Autonomy test | 8 | No permission_denials |
+| Context fork | 15 | Isolation confirmed |
+| Skill chain (A→B→C) | 20 | All markers present |
+| Parallel workers | 25 | All results aggregated |
+
+---
+
+## Failure Diagnosis
+
+For troubleshooting, see **[references/troubleshooting.md](references/troubleshooting.md)**:
+
+| Symptom | NDJSON Indicator | Fix |
+|---------|------------------|-----|
+| Too many questions | `permission_denials` array >3 | Add decision criteria to skill |
+| Missing markers | No `## MARKER` in result | Add WIN CONDITION to skill |
+| Context leak | Forked skill accesses main vars | Add `context: fork` to frontmatter |
+| Timeout | `stop_reason: "max_turns_reached"` | Increase max-turns or simplify |
+| Skills not loading | Missing from line 1 skills array | Fix directory structure |
+| Test hangs | (no output) | Missing `--dangerously-skip-permissions` |
+
+---
+
+## Hallucination Detection Framework
+
+**ABSOLUTE CONSTRAINT**: Always verify real execution vs hallucination.
+
+For complete verification framework, automated tool-analyzer usage, and expected patterns:
+**See [references/hallucination-detection.md](references/hallucination-detection.md)**
+
+---
+
+## Key CLI Flags (Delta - Expert Only)
+
+Full reference: **[references/cli-flags.md](references/cli-flags.md)**
+
+| Flag | Purpose | Expert Tip |
+|------|---------|------------|
+| `--output-format stream-json` | NDJSON output (3 lines) | ALWAYS use with `--verbose` |
+| `--no-session-persistence` | Don't save sessions | Prevents disk pollution |
+| `--dangerously-skip-permissions` | Auto-approve prompts | Required for non-interactive |
+| `--max-turns N` | Limit conversation rounds | Prevents infinite loops |
+| `--debug` | Debug visibility | Essential for diagnosis |
+
+---
+
+*Use this skill for autonomous, isolated testing of Claude Code capabilities.*
