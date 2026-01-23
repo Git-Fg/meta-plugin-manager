@@ -295,15 +295,15 @@ Scoring system (0-160 points):
 ### Autonomy Score: XX%
 Target: 80-95% completion
 
-### Quality Score: XXX/160
-### Status: [Production Ready|Needs Enhancement]
+### Quality Score: 85/160 (Grade: B)
+### Status: Production Ready
 ```
 
 ### EVALUATE Output
 ```markdown
 ## Skill Evaluation Complete
 
-### Quality Score: XXX/160 (Grade: [A/B/C/D/F])
+### Quality Score: 92/160 (Grade: A)
 
 ### Breakdown
 - Knowledge Delta: XX/15
@@ -332,7 +332,7 @@ Target: 80-95% completion
 ```markdown
 ## Skill Enhanced: {skill_name}
 
-### Quality Score: XXX → YYY/160 (+ZZ points)
+### Quality Score: 75 → 120/160 (+45 points)
 
 ### Improvements Applied
 - {improvement_1}: [Before] → [After]

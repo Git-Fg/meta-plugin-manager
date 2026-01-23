@@ -195,7 +195,8 @@ Component Scope Score = (Component-scoped hooks / Total hooks) × 20
 **Assessment Checklist**:
 - [ ] Count total hooks configured
 - [ ] Count component-scoped hooks (in skill frontmatter)
-- [ ] Count global hooks (in .claude/hooks.json)
+- [ ] Count settings-based hooks (in .claude/settings.json or .claude/settings.local.json)
+- [ ] Count legacy global hooks (in .claude/hooks.json)
 - [ ] Calculate percentage
 - [ ] Assign score based on percentage
 
@@ -528,9 +529,10 @@ Total: 99/100 (Grade A)
 # List all hooks
 grep -r "hooks:" .claude/
 
-# Count component-scoped vs global
+# Count component-scoped vs settings-based vs legacy
 grep -r "hooks:" .claude/skills/ | wc -l  # component-scoped
-grep -r "hooks:" .claude/hooks.json | wc -l  # global (should be 0 or 1)
+grep -r "hooks:" .claude/settings*.json | wc -l  # settings-based
+grep -r "hooks:" .claude/hooks.json | wc -l  # legacy global (should be 0 or 1)
 ```
 
 ### Step 2: Evaluate Scripts

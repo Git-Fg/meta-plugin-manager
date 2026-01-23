@@ -487,9 +487,9 @@ Install dependencies and configure environment.
 
 1. **[REQUIRED] Install dependencies**
    ```bash
-   npm install
+   npm ci --no-audit
    ```
-   - FAILURE: "DEPENDENCIES_REQUIRED - Run npm install"
+   - FAILURE: "DEPENDENCIES_REQUIRED - Run npm ci"
 
 2. **[REQUIRED] Configure environment**
    ```bash
@@ -702,12 +702,12 @@ Use the pdf library for processing.
 
 Install required packages:
 ```bash
-pip install pypdf pdfplumber
+pip install --no-cache-dir pypdf==3.17.0 pdfplumber==0.10.3
 ```
 
 **Verify installation**:
 ```bash
-python -c "import pypdf, pdfplumber; print('OK')"
+python -c "import pypdf; print(pypdf.__version__)"
 ```
 
 **Package versions**:

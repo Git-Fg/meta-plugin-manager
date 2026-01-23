@@ -7,7 +7,6 @@ Comprehensive index of all reference files across the skills ecosystem with cros
 | Skill | Reference | Focus | Dimensions |
 |-------|-----------|-------|------------|
 | **claude-md-manager** | [quality-framework.md](claude-md-manager/references/quality-framework.md) | CLAUDE.md files | 7 dimensions (0-100) |
-| **refining-claude-md** | [quality-framework.md](refining-claude-md/references/quality-framework.md) | Refactoring quality | 5 dimensions |
 | **skills-architect** | [quality-framework.md](skills-architect/references/quality-framework.md) | Skill quality | 11 dimensions (0-160) |
 | **toolkit-architect** | [scoring-breakdown.md](toolkit-architect/references/scoring-breakdown.md) | Component scoring | Multi-dimensional |
 
@@ -27,7 +26,6 @@ Comprehensive index of all reference files across the skills ecosystem with cros
 | Skill | Reference | Focus | Application |
 |-------|-----------|-------|-------------|
 | **claude-md-manager** | [delta-standard.md](claude-md-manager/references/delta-standard.md) | Memory filtering | CLAUDE.md content |
-| **refining-claude-md** | [best-practices.md](refining-claude-md/references/best-practices.md) | Refactoring | Memory optimization |
 
 **Concept**: Delta Standard = Expert Knowledge - What Claude Already Knows
 
@@ -131,7 +129,7 @@ Comprehensive index of all reference files across the skills ecosystem with cros
 
 **Security**: hooks-architect/security-patterns → hooks-knowledge/security-patterns
 **Quality**: skills-architect/quality-framework → toolkit-architect/scoring-breakdown
-**Delta Standard**: claude-md-manager/delta-standard → refining-claude-md/best-practices
+**Delta Standard**: claude-md-manager/delta-standard
 **Workflows**: meta-architect-claudecode/orchestration-patterns → [all architect skills]
 
 ### By Pattern

@@ -1,12 +1,79 @@
 # Hook Types Reference
 
-Comprehensive guide to hook types, event patterns, and when to use each.
+Comprehensive guide to hook types, event patterns, event scope, and when to use each.
 
 ---
 
 ## Overview
 
-Claude Code provides multiple hook types for different lifecycle stages. Understanding which hook to use for each scenario is critical for effective guardrail implementation.
+Claude Code provides multiple hook types for different lifecycle stages and scopes. Understanding which hook to use for each scenario is critical for effective guardrail implementation.
+
+---
+
+## Hook Scope Hierarchy
+
+### Component-Scoped Hooks (Skill/Command/Agent Frontmatter)
+**Best For**:
+- **Skills/Commands**: Preprocessing data, validation after edits, one-time setup (with `once: true`)
+- **Agents**: Scoped event handling, automatic cleanup, agent-specific validation
+
+**Features**:
+- ✅ Auto-cleanup when component finishes
+- ✅ Skills/Commands: Support `once: true` for one-time setup
+- ❌ Agents: Do NOT support `once` option
+- ✅ All events: PreToolUse, PostToolUse, Stop
+
+**Example**:
+```yaml
+---
+name: deploy-skill
+description: "Deploys application"
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "run-tests.sh"
+          once: true  # Only runs once per session
+  PostToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "format-code.sh"
+---
+```
+
+### Settings-Based Hooks (settings.json/settings.local.json/hooks.json)
+**Best For**:
+- Project-wide preprocessing (e.g., filtering logs to reduce context)
+- Team-wide automation
+- Cross-component policies
+
+**Use Settings-Based When**:
+- Need preprocessing across multiple components
+- Team-wide automation required
+- Project-wide policies needed
+
+**Example**:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Write",
+      "hooks": [{
+        "type": "command",
+        "command": "./.claude/scripts/validate-file.sh"
+      }]
+    }]
+  }
+}
+```
+
+**Configuration Precedence** (highest to lowest):
+1. `.claude/settings.local.json` (local overrides)
+2. `.claude/settings.json` (team-shared)
+3. `.claude/hooks.json` (legacy global)
+4. Component-scoped hooks (skill/agent frontmatter)
 
 ---
 
@@ -475,19 +542,26 @@ hooks:
 
 ### Global Hooks
 
-**Location**: `.claude/hooks.json`
+**Locations**:
+- `.claude/settings.json` (recommended - team-shared)
+- `.claude/settings.local.json` (local overrides)
+- `.claude/hooks.json` (legacy - still supported)
 
 **Advantages**:
 - ✅ Applies to all skills
 - ✅ Organization-wide policies
 - ✅ Persistent configuration
 - ✅ Centralized management
+- ✅ Team collaboration via settings.json
 
 **When to Use**:
 - Organization security policies
 - Environment validation
 - Production safety measures
 - Compliance requirements
+- Team-wide automation
+
+**Note**: `.claude/settings.json` is the modern recommended format for better team collaboration.
 
 **Example**:
 ```json

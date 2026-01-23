@@ -24,13 +24,15 @@ user-invocable: true
 # Skill Name
 
 ## Purpose
-Clear explanation
+Deploys to staging with strict validation.
 
 ## When to Use
-Specific triggers
+Trigger: "Deploy to staging"
 
 ## Workflows
-Step-by-step guidance
+1. `npm run validate:schema` (CRITICAL: Fast fail)
+2. `./scripts/deploy.sh --staging`
+3. Verify: `curl -I https://staging.api.com/health`
 ```
 
 ### Tier 3: references/ (on-demand)

@@ -6,27 +6,25 @@
 
 ## Scoring Dimensions
 
-### 1. Knowledge Delta (15 points)
-**Expert-only vs Claude-obvious**
+### 1. Knowledge Delta (20 points)
+**CRITICAL: Expert-only vs Claude-obvious**
 
 | Score | Criteria |
 |-------|----------|
-| 13-15 | All content is project-specific |
-| 10-12 | Mostly expert knowledge |
-| 7-9 | Some generic content |
-| 4-6 | Too much obvious content |
-| 0-3 | Mostly tutorials |
+| 17-20 | 100% Project-Specific. Zero tutorials. |
+| 13-16 | Mostly expert knowledge. |
+| 8-12  | Contains some generic info. |
+| 0-7   | Fails Delta Principle (Tutorials found). |
 
-### 2. Autonomy (15 points)
+### 2. Autonomy (10 points)
 **80-95% completion without questions**
 
 | Score | Criteria |
 |-------|----------|
-| 13-15 | 90-95% autonomous |
-| 10-12 | 85-89% autonomous |
-| 7-9 | 80-84% autonomous |
-| 4-6 | 75-79% autonomous |
-| 0-3 | <75% autonomous |
+| 9-10  | 90-95% autonomous |
+| 7-8   | 85-89% autonomous |
+| 5-6   | 80-84% autonomous |
+| 0-4   | <80% autonomous |
 
 ### 3. Discoverability (15 points)
 **Clear description with triggers**
@@ -116,16 +114,15 @@
 | 3-4 | Hard to maintain |
 | 0-2 | Not maintainable |
 
-### 11. Innovation (10 points)
+### 11. Innovation (5 points)
 **Unique value**
 
 | Score | Criteria |
 |-------|----------|
-| 9-10 | Highly innovative |
-| 7-8 | Innovative |
-| 5-6 | Somewhat innovative |
-| 3-4 | Standard approach |
-| 0-2 | No unique value |
+| 5     | Highly innovative |
+| 3-4   | Innovative |
+| 1-2   | Standard approach |
+| 0     | No unique value |
 
 ---
 
@@ -172,8 +169,8 @@
 **Production Ready**: ≥128/160 (Grade B)
 
 **Minimum Scores**:
-- Knowledge Delta: ≥12/15
-- Autonomy: ≥12/15
+- Knowledge Delta: ≥16/20 (CRITICAL)
+- Autonomy: ≥8/10
 - Discoverability: ≥12/15
 - Progressive Disclosure: ≥12/15
 - Clarity: ≥12/15
@@ -182,6 +179,6 @@
 - Security: ≥8/10
 - Performance: ≥8/10
 - Maintainability: ≥8/10
-- Innovation: ≥8/10
+- Innovation: ≥3/5
 
 See also: progressive-disclosure.md, autonomy-design.md, extraction-methods.md

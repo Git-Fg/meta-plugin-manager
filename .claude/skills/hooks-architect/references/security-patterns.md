@@ -534,7 +534,7 @@ exit 0
 2. `guard-commands.sh` - Command validation
 3. `detect-secrets.sh` - Secret detection
 
-**Global Hooks** (`/.claude/hooks.json`):
+**Global Hooks** (`.claude/settings.json` or `.claude/hooks.json`):
 ```json
 {
   "hooks": {
@@ -561,6 +561,8 @@ exit 0
   }
 }
 ```
+
+**Note**: Use `.claude/settings.json` for team-shared configuration or `.claude/settings.local.json` for local overrides.
 
 ### SECURE Workflow Patterns
 

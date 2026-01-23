@@ -34,12 +34,15 @@
 
 **Example 1: Basic Use**
 ```bash
-command --flag value
+# Don't document `ls -la` (Obvious)
+# Do document:
+./bin/processor --mode=fast --shards=4
 ```
 
 **Example 2: Advanced Use**
 ```bash
-command --flag1 value1 --flag2 value2
+# Complex piping workflow
+cat logs.txt | ./bin/analyzer --format=json > report.json
 ```
 ```
 

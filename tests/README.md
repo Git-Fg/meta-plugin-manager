@@ -1,99 +1,114 @@
-# Skill Interaction Testing Framework
+# Skill Testing Framework - Non-Interactive CLI Mode
 
 ## Overview
 
-Complete testing framework for validating skill calling, context handling, and forking behavior in Claude Code skill ecosystem.
+Complete testing framework for validating skill calling, context handling, and forking behavior using **non-interactive CLI testing** with print mode (`-p`) and `stream-json` output format.
 
-## Files Created
+ABSOLUTE CONSTRAINT: You must analyze ALL log files to verify test success. **MANDATORY WORKFLOW**:
+1. **First**: Call the `tool-analyzer` skill to automate pattern detection
+2. **Then**: Read the full log manually if the analyzer output is unclear
+3. Watch for synthetic skill use (hallucinated) vs. real tool/task/skill use
 
-### 1. skill_test_plan.json
-**Purpose**: Complete test specification
-**Contents**: 7 phases, 20 tests, progressive complexity
-**Format**: JSON
+**Core Principles**:
+- ✅ Non-interactive execution (autonomous skills)
+- ✅ Stream-JSON NDJSON output (3-line format)
+- ✅ Absolute paths (no /tmp/, no relative paths)
+- ✅ One folder per test (isolation)
+- ✅ Autonomy scoring (permission_denials)
+- ✅ Win condition markers (## COMPLETE)
 
-**Structure**:
-```json
-{
-  "test_plan": {
-    "phases": [
-      {
-        "phase": 1,
-        "name": "Basic Skill Calling",
-        "tests": [...]
-      }
-    ]
-  }
-}
-```
+## Testing Workflow
 
-### 2. test_implementation_guide.md
-**Purpose**: Detailed implementation instructions
-**Contents**: Step-by-step for each test
-**Format**: Markdown
-
-**Includes**:
-- Skill templates
-- Execution steps
-- Expected results
-- Validation criteria
-- Documentation templates
-
-### 3. quick_reference.md
-**Purpose**: Quick reference during testing
-**Contents**: Condensed key information
-**Format**: Markdown
-
-**Includes**:
-- Phase summary
-- Skill type reference
-- Win condition markers
-- Context rules
-- Testing checklist
-
-### 4. testing_summary.md
-**Purpose**: Overview and guide
-**Contents**: Complete framework summary
-**Format**: Markdown
-
-**Includes**:
-- Framework overview
-- Expected discoveries
-- Success criteria
-- Common patterns
-- Next steps
-
-## Quick Start
-
-### Step 1: Review Files
+### Step 1: Review Framework
 ```bash
-# View test plan
-cat skill_test_plan.json | jq .
-
-# View implementation guide
-cat test_implementation_guide.md
-
-# View quick reference
-cat quick_reference.md
-
-# View summary
-cat testing_summary.md
+cat /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/README.md
+cat /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/skill_test_plan.json | jq '.test_plan.phases[0]'
+cat /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/execution/quick_reference.md
 ```
 
-### Step 2: Start Testing
+### Step 2: Start Testing (Phase 1, Test 1.1)
 ```bash
-# Begin with Phase 1, Test 1.1
-# Create skill-b (transitive)
-# Create skill-a (regular)
-# Execute and validate
+# Create test directory with absolute path
+mkdir -p /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1/.claude/skills/skill-b
+mkdir -p /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1/.claude/skills/skill-a
+
+# Create skills with completion markers
+cat > /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1/.claude/skills/skill-b/SKILL.md << 'EOF'
+---
+name: skill-b
+description: "Simple transitive skill for testing"
+---
+
+## SKILL_B_COMPLETE
+
+Processing completed successfully.
+EOF
+
+# Execute with non-interactive flags (MANDATORY)
+cd /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1 && \
+claude --dangerously-skip-permissions -p "Call skill-a" \
+  --output-format stream-json --verbose --debug \
+  --no-session-persistence --max-turns 10 \
+  > /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1/test-output.json 2>&1
+
+# Verify NDJSON structure (3 lines)
+[ "$(wc -l < /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1_1/test-output.json)" -eq 3 ] && echo "✅ NDJSON OK"
 ```
 
-### Step 3: Progress
+### Step 3: Progress Through Phases
 ```bash
 # Complete Phase 1 (2 tests)
-# Move to Phase 2 (3 tests)
+# Move to Phase 2 (3 tests) - Forked skills testing
 # Continue through Phase 7
 # Document results at each step
+# Archive to .attic/ after completion
 ```
+
+## Core Concepts
+
+### NDJSON Output Format (3 Lines)
+Every test produces exactly 3 lines of NDJSON:
+
+**Line 1: System Initialization**
+```json
+{"type":"system","subtype":"init","tools":[...],"skills":[...],"agents":[...]}
+```
+- Verifies skills loaded
+- Shows available tools
+
+**Line 2: Assistant Message**
+```json
+{"type":"assistant","content":[{"type":"text","text":"..."}]}
+```
+- Contains skill execution output
+- Includes completion markers (## SKILL_COMPLETE)
+
+**Line 3: Result Summary**
+```json
+{"type":"result","result":{"num_turns":10,"duration_ms":5000,"permission_denials":[]}}
+```
+- `permission_denials`: Autonomy score (empty = 100%)
+- `num_turns`: Conversation rounds
+- `duration_ms`: Execution time
+
+### Autonomy Scoring
+| Permission Denials | Autonomy Score | Grade |
+|-------------------|---------------|-------|
+| 0 | 100% | A+ |
+| 1 | 95% | A |
+| 2-3 | 85-90% | B |
+| 4-5 | 75-80% | C |
+| 6+ | <75% | FAIL |
+
+**Verification**: `grep '"permission_denials": \[\]' test-output.json`
+
+### Win Condition Markers
+All transitive skills MUST output completion markers:
+- `## SKILL_B_COMPLETE`
+- `## SKILL_A_COMPLETE`
+- `## FORKED_SKILL_COMPLETE`
+
+**Purpose**: Signal completion to calling skill
 
 ## Test Phases
 
@@ -104,7 +119,7 @@ cat testing_summary.md
 
 ### Phase 2: Forked Skills (3 tests)
 **Goal**: Test context: fork behavior
-**Focus**: Isolation, Explore tools
+**Focus**: Isolation, autonomy, Explore tools
 **Duration**: ~45 minutes
 
 ### Phase 3: Forked + Subagents (2 tests)
@@ -133,6 +148,39 @@ cat testing_summary.md
 **Duration**: ~60 minutes
 
 **Total Duration**: ~5 hours
+
+## Mandatory CLI Flags (Non-Interactive Testing)
+
+**ALWAYS use these flags for every test**:
+```bash
+--dangerously-skip-permissions    # Auto-approve prompts
+--output-format stream-json        # NDJSON output (3 lines)
+--verbose --debug                 # Debug visibility
+--no-session-persistence          # Don't save sessions
+--max-turns N                     # Limit conversation rounds
+```
+
+**Example**:
+```bash
+claude --dangerously-skip-permissions -p "Call skill-name" \
+  --output-format stream-json --verbose --debug \
+  --no-session-persistence --max-turns 10 \
+  > test-output.json 2>&1
+```
+
+## Pre-Flight Checklist (CRITICAL)
+
+**Before EVERY test, verify**:
+- [ ] Test folder created at `/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_name/`
+- [ ] Test skills created in `.claude/skills/`
+- [ ] Skills have correct YAML frontmatter
+- [ ] Win condition markers defined (## COMPLETE)
+- [ ] test-output.json will be saved in test folder
+- [ ] You will analyze the log using tool-analyzer skill (then read manually if needed)
+- [ ] Absolute paths used (no /tmp/, no relative paths)
+- [ ] cd only used to set working directory (not for navigation)
+
+**ONLY after checklist complete, proceed to execution.**
 
 ## Key Questions to Answer
 
@@ -183,6 +231,7 @@ cat testing_summary.md
 - [ ] Check context
 
 **Validate** (5 minutes):
+- [ ] Call tool-analyzer skill to analyze test-output.json
 - [ ] Results match expected
 - [ ] Context behaves correctly
 - [ ] No unexpected errors
@@ -296,16 +345,61 @@ After testing:
 - Share findings
 - Iterate based on use
 
+## Verification Checklist
+
+**After each test, verify in test-output.json**:
+
+### NDJSON Structure
+- [ ] **3 lines present** - Check with `wc -l test-output.json`
+- [ ] **Line 1**: System init with skills array
+- [ ] **Line 2**: Assistant message with completion markers
+- [ ] **Line 3**: Result with num_turns, permission_denials
+
+### Autonomy Score
+- [ ] **permission_denials is empty** - `grep '"permission_denials": \[\]'`
+- [ ] **0 = 100% autonomy** (Excellent)
+- [ ] **1-3 = 85-95% autonomy** (Good)
+- [ ] **4+ = <80% autonomy** (Needs improvement)
+
+### Test Results
+- [ ] **All completion markers present** - `grep "COMPLETE"`
+- [ ] **num_turns reasonable** (not infinite loop)
+- [ ] **duration_ms acceptable**
+- [ ] **No unexpected errors**
+
+## Archive Successful Tests
+
+**After successful test completion**:
+```bash
+# Move to .attic/ for reference
+mv /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_name \
+   /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.attic/test_name_success
+
+# Failed tests can be deleted after analysis
+rm -rf /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_name
+```
+
 ## Files Location
 
 All in `/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/`:
 ```
 tests/
-├── skill_test_plan.json          # Test specifications
-├── test_implementation_guide.md  # Implementation guide
-├── quick_reference.md             # Quick reference
-├── testing_summary.md            # Framework summary
-└── README.md                     # This file
+├── README.md                           # This file
+├── skill_test_plan.json                # Test specifications
+├── execution/
+│   ├── EXECUTION_STEPS.md              # Step-by-step guide
+│   └── quick_reference.md              # Quick reference
+├── frameworks/
+│   ├── AUTONOMY_TESTING_FRAMEWORK.md    # Autonomy testing guide
+│   ├── AUTONOMY_QUICK_REFERENCE.md     # Autonomy quick ref
+│   └── AUTONOMY_TEST_EXAMPLE.md        # Autonomy examples
+├── reference/
+│   ├── subagent_config_test.md         # Subagent testing
+│   └── test_implementation_guide.md    # Implementation guide
+└── results/
+    ├── TEST_RESULTS.md                 # Test results
+    ├── FINAL_TEST_COMPLETION_REPORT.md # Completion report
+    └── REMAINING_TESTS_PROGRESS.md     # Progress tracking
 ```
 
 ## Ready to Begin
@@ -313,12 +407,13 @@ tests/
 Everything is prepared. Start with:
 ```bash
 # Review the test plan
-cat skill_test_plan.json | jq '.test_plan.phases[0]'
+cat /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/skill_test_plan.json | jq '.test_plan.phases[0]'
 
 # Begin Phase 1, Test 1.1
-# Create skill-b and skill-a
-# Execute and validate
+# Create skill-b and skill-a in /tests/test_1_1/
+# Execute with non-interactive flags
+# Verify NDJSON structure and autonomy
 ```
 
-**Goal**: Empirically understand skill interactions, context handling, and forking behavior.
+**Goal**: Empirically understand skill interactions, context handling, and forking behavior using non-interactive CLI testing.
 ```

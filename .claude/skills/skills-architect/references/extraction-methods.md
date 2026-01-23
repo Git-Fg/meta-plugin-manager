@@ -66,18 +66,17 @@ Step-by-step process
 ```markdown
 ## Commands
 
-**Install**: `npm install`
-**Build**: `npm run build`
-**Test**: `npm test`
+**Build**: `npm run build:prod -- --analyze` (Includes bundle stats)
+**Deploy**: `./scripts/deploy.sh --env=staging --dry-run`
 ```
 
 ### Pattern 2: Decision-Based
 ```markdown
 ## Decision Tree
 
-**Node.js Project?** → Use npm
-**Python Project?** → Use pip
-**Unknown?** → Detect automatically
+**Legacy Project?** → Use `make build` (requires gcc-9)
+**Modern Project?** → Use `pnpm build`
+**Unknown?** → Check `rust-toolchain.toml` presence
 ```
 
 ### Pattern 3: Context-Aware

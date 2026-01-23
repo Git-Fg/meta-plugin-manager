@@ -10,6 +10,11 @@ user-invocable: true
 
 **Called by**: skills-architect
 **Purpose**: Provide implementation guidance for skill development
+**Metric**: **Knowledge Delta** (Project-Specific ÷ Total Tokens)
+
+**Success Criteria**:
+1. **Zero Generic Tutorials**: No "How to use Python" or standard library docs.
+2. **Expert-Only Focus**: Content restricted to architectural decisions, blocking rules, and complex project-specific patterns.
 
 **Output**: Must output completion marker after providing guidance
 
@@ -29,35 +34,17 @@ Create, audit, and refine Claude Code skills following the 2026 unified skills-c
 
 **CRITICAL**: You MUST read and understand these URLs:
 
-### Primary Documentation (MUST READ)
-- **[MUST READ] Official Skills Guide**: https://code.claude.com/docs/en/skills
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **When to Read**: Before any skill creation or modification
-  - **Content**: Skills architecture, YAML frontmatter, progressive disclosure
-  - **Cache**: 15 minutes minimum
-
-- **[MUST READ] Agent Skills Specification**: https://github.com/agentskills/agentskills
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **When to Read**: Before implementing any skill following the open standard
-  - **Content**: Technical requirements, open standard specifications
-  - **Cache**: 15 minutes minimum
-
-### Examples & Patterns (SHOULD READ)
-- **[SHOULD READ] Anthropic Skills Repository**: https://github.com/anthropics/skills
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Official skill implementations, working examples
-
-- **[SHOULD READ] Community Examples**: https://github.com/agentskills/examples
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Diverse skill implementations, real-world patterns
-
 ### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **DO NOT proceed** until you've read the mandatory reference files
 - **REQUIRED** to understand progressive disclosure before creating skills
 
 ## Core Principles
 
 **Skills** are the PRIMARY building blocks for Claude Code plugins.
+
+### The Delta Principle
+> **Good Customization = Expert-only Knowledge − What Claude Already Knows**
+> "If Claude knows it from training, **DELETE** it from the skill."
 
 **Self-Sufficient Design**:
 - Autonomous: Complete 80-95% of tasks without user questions
@@ -309,7 +296,7 @@ See **[references/creation.md](references/creation.md)** for complete creation g
 
 11-dimensional scoring system (100 points total):
 
-1. **Knowledge Delta** (10 points) - Expert-only knowledge vs what Claude knows
+1. **Knowledge Delta** (20 points) - **CRITICAL**: Expert-only knowledge vs Generic info
 2. **Autonomy** (10 points) - Completes 80-95% without questions
 3. **Discoverability** (10 points) - Clear description triggers
 4. **Progressive Disclosure** (10 points) - Tier 1/2/3 properly organized
