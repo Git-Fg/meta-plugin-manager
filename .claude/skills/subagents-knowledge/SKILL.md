@@ -1,10 +1,27 @@
 ---
 name: subagents-knowledge
-description: "Complete guide to subagents for project-scoped workers in Claude Code. Use when creating .claude/agents/*.md files or adding context: fork to skills. Do not use for standalone plugin agent development."
+description: "Complete guide to subagents for project-scoped workers in Claude Code. Use when creating .claude/agents/*.md files or configuring subagent frontmatter. Do not use for standalone plugin agent development."
 user-invocable: true
 ---
 
 # Subagents Knowledge Base
+
+## WIN CONDITION
+
+**Called by**: subagents-architect
+**Purpose**: Provide implementation guidance for subagent development
+
+**Output**: Must output completion marker after providing guidance
+
+```markdown
+## SUBAGENTS_KNOWLEDGE_COMPLETE
+
+Guidance: [Implementation patterns provided]
+References: [List of reference files]
+Recommendations: [List]
+```
+
+**Completion Marker**: `## SUBAGENTS_KNOWLEDGE_COMPLETE`
 
 Complete subagents knowledge base for project-scoped Claude Code workers. Access comprehensive guidance on when to use subagents, how to create `.claude/agents/*.md` files, and coordinate multiple subagents effectively.
 
@@ -62,12 +79,65 @@ See **[coordination.md](references/coordination.md)** for coordination patterns 
 | **General-Purpose** | Full capabilities | Complex workflows, research + execution |
 | **Bash** | Command execution | Git operations, terminal tasks |
 
-## Context: Fork Scenarios (2026)
+## Context: Fork - Use Sparingly
 
-Use `context: fork` when:
-- **High-volume output**: Extensive grep, repo traversal, large log analysis
-- **Noisy exploration**: Multi-file searches, deep code analysis
-- **Isolation benefits**: Separate context window, clean result handoff
+**⚠️ WARNING**: Forked skills **lose global context**. This has **huge side effects**.
+
+### When Forking is DANGEROUS
+
+**DON'T FORK if you need**:
+- Conversation history
+- User preferences
+- Project-specific decisions
+- Previous workflow steps
+- Main context decisions
+
+**Example of Dangerous Fork**:
+```yaml
+# ❌ BAD - Makes decisions based on context
+---
+name: workflow-decider
+description: "Makes workflow decisions based on project state"
+context: fork  # LOSES PROJECT CONTEXT!
+---
+
+# This will fail - no access to main conversation context!
+```
+
+### When Forking is SAFE
+
+**Fork ONLY if**:
+- Isolated analysis work (no context needed)
+- Noisy operations (want isolation from main conversation)
+- Clear, self-contained tasks
+
+**Example of Safe Fork**:
+```yaml
+# ✅ GOOD - Isolated analysis
+---
+name: log-analyzer
+description: "Analyzes log files for patterns"
+context: fork
+agent: Explore
+---
+
+# WIN CONDITION:
+## LOG_ANALYSIS_COMPLETE
+
+{"patterns": [...], "anomalies": [...]}
+
+# No context needed - just analyze files
+```
+
+### When to Consider Forking
+
+Use `context: fork` **only when**:
+- High-volume output would clutter main conversation
+- Isolated analysis (no context dependency)
+- Noisy operations (file scanning, pattern matching)
+- Clear, bounded task with defined output
+
+**Default**: Don't fork. Use regular context unless isolation is essential.
 
 ## Cost Considerations (2026)
 
@@ -111,26 +181,75 @@ Use for specialized workers used across multiple skills:
 ---
 name: my-agent
 description: "Does something specific"
+tools:
+  - Read
+  - Grep
+skills:
+  - skills-knowledge
 ---
 # My Agent
 
 Agent instructions here...
 ```
 
-### 2. Forked Skill (`context: fork`)
-Use for task-specific isolation:
+### Valid Subagent Frontmatter Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | ✅ | Unique identifier (lowercase, hyphens) |
+| `description` | ✅ | When Claude should delegate to this subagent |
+| `tools` | ❌ | Allowlist of tools (inherits all if omitted) |
+| `disallowedTools` | ❌ | Denylist of tools |
+| `model` | ❌ | sonnet, opus, haiku, or inherit |
+| `permissionMode` | ❌ | default, acceptEdits, dontAsk, bypassPermissions, plan |
+| `skills` | ❌ | Inject skill content at startup |
+| `hooks` | ❌ | Lifecycle hooks scoped to this subagent |
+
+### Common Configuration Examples
+
+**Read-only analysis agent:**
 ```yaml
 ---
-name: my-worker
-description: "Does isolated work"
-context: fork
-agent: Explore
+name: code-analyzer
+description: "Analyze code patterns and suggest improvements"
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
 ---
 ```
-- Noisy exploration that would clutter conversation
-- Parallel execution needed
-- Long-running tasks
-- Domain-specific expertise required
+
+**Full-capabilities agent:**
+```yaml
+---
+name: full-worker
+description: "Complete workflow automation"
+skills:
+  - skills-knowledge
+  - toolkit-quality-validator
+tools: []  # Inherits all tools
+---
+```
+
+**Agent with skill preloading:**
+```yaml
+---
+name: domain-expert
+description: "Domain-specific analysis with toolkit knowledge"
+skills:
+  - skills-knowledge
+  - toolkit-architect
+---
+```
+
+### 2. Plugin-Level Subagent
+**Location**: `<plugin>/agents/<name>.md`
+**Scope**: Shared across projects where plugin is enabled
+
+### 3. User-Level Subagent
+**Location**: `~/.claude/agents/<name>.md`
+**Scope**: Available in all projects on the machine
 
 ### Don't Use Subagents For
 - Simple file operations (use Read, Grep, Glob)
@@ -141,6 +260,72 @@ agent: Explore
 - User interaction workflows
 - Quick lookups
 
+## Common Configuration Mistakes
+
+### ❌ Wrong: Confusing Skills with Subagents
+
+**Incorrect** (using skill fields on subagents):
+```yaml
+---
+name: my-agent
+description: "Does X"
+context: fork      # ❌ WRONG - for skills, not subagents
+agent: Explore     # ❌ WRONG - this field doesn't exist
+user-invocable: true  # ❌ WRONG - subagents aren't skills
+---
+```
+
+**Correct** (using proper subagent fields):
+```yaml
+---
+name: my-agent
+description: "Does X"
+tools:
+  - Read
+  - Grep
+---
+```
+
+### ⚠️ Important Distinction
+
+- **Skills** use: `context: fork`, `agent:`, `disable-model-invocation`
+- **Subagents** use: `name`, `description`, `tools`, `skills`, `hooks`
+
+Subagents ARE forked contexts by definition - no need to specify `context: fork`.
+
+### When to Use Skills with `context: fork`
+
+**⚠️ DANGER**: Forked skills **lose all global context**.
+
+**Skills can delegate TO subagents using `context: fork`**:
+
+```yaml
+---
+name: delegator
+description: "Delegates to a subagent for noisy work"
+context: fork
+agent: Explore
+---
+
+# WIN CONDITION: Must output completion marker
+## DELEGATION_COMPLETE
+
+[Results from subagent work]
+```
+
+**Use ONLY when**:
+- ✅ Task is isolated (no context dependency)
+- ✅ High-volume output would clutter main conversation
+- ✅ Subagent work is self-contained
+
+**DON'T use when**:
+- ❌ Need conversation history
+- ❌ Need user preferences
+- ❌ Need project context
+- ❌ Need previous workflow steps
+
+**Default**: Don't fork. Isolation has huge side effects.
+
 ## Next Steps
 
 Choose your path:
@@ -148,3 +333,76 @@ Choose your path:
 1. **[Determine if subagents are needed](references/when-to-use.md)** - Decision framework
 2. **[Coordinate multiple subagents](references/coordination.md)** - Patterns and state management
 3. **Review layer selection** - Consider if skills would be more appropriate
+
+## When Skills Call Subagents
+
+### Pattern: Hub Skill → Subagent
+
+**When a skill delegates to a subagent**:
+
+```yaml
+# Hub Skill
+---
+name: workflow-orchestrator
+description: "Orchestrates multi-step analysis"
+---
+
+# Delegate to subagent
+Call: toolkit-worker (subagent)
+Input: [What to analyze]
+Wait for: "## .claude/ Analysis Report" marker
+Extract: Quality score, findings, recommendations
+
+# Continue workflow with results
+Based on results:
+  If score < 8.0: Recommend improvements
+  Else: Report success
+```
+
+### Transitive Subagents Need Win Conditions
+
+**If a subagent is called by other skills** (transitive):
+
+```yaml
+# Transitive Subagent
+---
+name: file-scanner
+description: "Scans files for patterns"
+tools:
+  - Read
+  - Grep
+---
+
+# WIN CONDITION: Must output completion marker
+## FILE_SCAN_COMPLETE
+
+{"patterns": [...], "count": X}
+
+# Hub waits for this marker before continuing
+```
+
+### Subagents ARE Forked Contexts
+
+**Important**: Subagents already run in forked contexts by definition.
+
+- ✅ Subagent has isolated context
+- ✅ No need to specify `context: fork` for subagents
+- ✅ Skills use `context: fork` to spawn subagents
+- ✅ Results must be structured for clean handoff
+
+### Multi-Subagent Workflows
+
+```yaml
+# Hub Skill
+---
+name: multi-agent-workflow
+---
+
+# Parallel execution possible
+Call: subagent-1 (isolated)
+Call: subagent-2 (isolated)
+
+Wait for both completion markers
+Aggregate results
+Make decision
+```

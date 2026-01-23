@@ -1,10 +1,27 @@
 ---
 name: mcp-knowledge
-description: "Complete guide to Model Context Protocol (MCP) for project-scoped integration via .mcp.json. Use when configuring project-level MCP servers, creating custom tools, or managing resources/prompts. Do not use for standalone plugin MCP configuration."
+description: "Integrate external APIs and tools via Model Context Protocol (MCP). Use when adding web search, databases, GitHub, Notion, or custom API integrations. Configure MCP servers in .mcp.json for tools, resources, and prompts. Triggers: 'add web search', 'integrate API', 'connect database', 'MCP server', 'external tools', 'GitHub integration', 'Notion integration'."
 user-invocable: true
 ---
 
 # MCP Knowledge Base
+
+## WIN CONDITION
+
+**Called by**: mcp-architect
+**Purpose**: Provide implementation guidance for MCP integration
+
+**Output**: Must output completion marker after providing guidance
+
+```markdown
+## MCP_KNOWLEDGE_COMPLETE
+
+Guidance: [Implementation patterns provided]
+References: [List of reference files]
+Recommendations: [List]
+```
+
+**Completion Marker**: `## MCP_KNOWLEDGE_COMPLETE`
 
 Complete Model Context Protocol (MCP) knowledge base for project-scoped Claude Code integration. Access comprehensive guides for MCP integration, server configuration in `.mcp.json`, tool development, and resources/prompts creation.
 
@@ -136,3 +153,87 @@ Choose your path:
 2. **[Configure MCP servers](references/servers.md)** - Setup and deployment
 3. **[Develop MCP tools](references/tools.md)** - Custom tool creation
 4. **[Build resources/prompts](references/resources.md)** - Data access and workflows
+
+## Handling MCP Delegations
+
+When MCP is configured by architect skills or integrated with external services:
+
+### For MCP Configuration Delegations
+
+**When responding to mcp-architect delegations**:
+
+```markdown
+## MCP Integration Guidance
+
+**Protocol Pattern**: [Pattern name]
+**Transport**: [stdio|http|sse]
+
+**Component Assessment:**
+- Tools: [X] tools - [Validation status]
+- Resources: [X] resources - [Validation status]
+- Prompts: [X] prompts - [Validation status]
+- Security: [Score]/10
+
+**Integration Status:**
+- Protocol adherence: [Version and compliance]
+- Transport optimization: [stdio for local|http for cloud]
+- Component validity: [All valid/Issues found]
+
+**Deployment Recommendation:**
+- Local development: [Configuration]
+- Production deployment: [Configuration]
+- Multi-user scenario: [Configuration]
+```
+
+### For Server Integration
+
+When adding or modifying MCP servers:
+
+```markdown
+**Server Integration Pattern:**
+
+**Configuration Safety:**
+- Existing servers: [Preserved ✅]
+- Merge strategy: [Safe JSON merge]
+- Validation: [Protocol compliance check]
+- Rollback: [Available via git]
+
+**Server Characteristics:**
+- Tools: [Count and types]
+- Resources: [Data access patterns]
+- Prompts: [Workflow templates]
+- Transport: [stdio recommended for local]
+
+**Integration Benefits:**
+- Protocol standardization: [Yes/No]
+- Tool discoverability: [Enhanced via auto-discovery]
+- Context management: [Tool search when >10% context]
+```
+
+### For Multi-Server Coordination
+
+When coordinating multiple MCP servers:
+
+```markdown
+**Multi-Server Orchestration:**
+
+**Server Hierarchy:**
+- Primary: [Server name - Primary use case]
+- Secondary: [Server name - Secondary use case]
+- Specialized: [Server name - Specific domain]
+
+**Tool Management:**
+- Total tools: [X] across [N] servers
+- Tool search: [Auto-enabled when tools >10% context]
+- Context optimization: [Tool suggestions based on task]
+
+**Resource Coordination:**
+- Shared resources: [Cross-server access]
+- Cached resources: [15-minute cache minimum]
+- Resource references: [@server:protocol://resource/path]
+
+**Best Practices:**
+- Enable/disable per task phase ✅
+- Monitor tool count to prevent overload ✅
+- Use official servers when available ✅
+```

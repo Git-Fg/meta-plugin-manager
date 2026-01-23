@@ -6,6 +6,23 @@ user-invocable: true
 
 # Skills Knowledge Base
 
+## WIN CONDITION
+
+**Called by**: skills-architect
+**Purpose**: Provide implementation guidance for skill development
+
+**Output**: Must output completion marker after providing guidance
+
+```markdown
+## SKILLS_KNOWLEDGE_COMPLETE
+
+Guidance: [Implementation patterns provided]
+References: [List of reference files]
+Recommendations: [List]
+```
+
+**Completion Marker**: `## SKILLS_KNOWLEDGE_COMPLETE`
+
 Create, audit, and refine Claude Code skills following the 2026 unified skills-commands paradigm.
 
 ## 🚨 MANDATORY: Read BEFORE Creating Skills
@@ -290,21 +307,21 @@ See **[references/creation.md](references/creation.md)** for complete creation g
 
 ## Quality Framework
 
-11-dimensional scoring system:
+11-dimensional scoring system (100 points total):
 
-1. **Knowledge Delta** (15 points) - Expert-only knowledge vs what Claude knows
-2. **Autonomy** (15 points) - Completes 80-95% without questions
-3. **Discoverability** (15 points) - Clear description triggers
-4. **Progressive Disclosure** (15 points) - Tier 1/2/3 properly organized
-5. **Clarity** (15 points) - Clear instructions and workflows
-6. **Completeness** (15 points) - Covers all scenarios, handles edge cases
-7. **Standards Compliance** (15 points) - Follows Agent Skills specification
+1. **Knowledge Delta** (10 points) - Expert-only knowledge vs what Claude knows
+2. **Autonomy** (10 points) - Completes 80-95% without questions
+3. **Discoverability** (10 points) - Clear description triggers
+4. **Progressive Disclosure** (10 points) - Tier 1/2/3 properly organized
+5. **Clarity** (10 points) - Clear instructions and workflows
+6. **Completeness** (10 points) - Covers all scenarios, handles edge cases
+7. **Standards Compliance** (10 points) - Follows Agent Skills specification
 8. **Security** (10 points) - Tool restrictions, validation, safe execution
 9. **Performance** (10 points) - Efficient workflows, minimal token usage
-10. **Maintainability** (10 points) - Well-structured, easy to update
-11. **Innovation** (10 points) - Unique value, creative solutions
+10. **Maintainability** (5 points) - Well-structured, easy to update
+11. **Innovation** (5 points) - Unique value, creative solutions
 
-**Scoring**: A (135-150), B (120-134), C (105-119), D (90-104), F (<90)
+**Pass Threshold**: ≥80/100
 
 See **[references/audit.md](references/audit.md)** for complete audit checklist.
 
@@ -381,3 +398,83 @@ See **[references/troubleshooting.md](references/troubleshooting.md)** for compl
 ### Related Skills
 - **[meta-architect-claudecode](meta-architect-claudecode/)** - Layer selection and architecture decisions
 - **[toolkit-architect](toolkit-architect/)** - Project scaffolding and .claude/ organization
+
+## Transitive Skills (Called by Other Skills)
+
+### Definition
+Transitive skills are workflow steps called by other skills in multi-step processes.
+
+### When You Need a Transitive Skill
+- Called by architect skills as part of a workflow
+- Reusable component across multiple workflows
+- Needs clear completion for workflow coordination
+
+### Win Conditions for Transitive Skills
+
+Transitive skills **MUST** output a completion marker:
+
+```markdown
+# Transitive Skill Example
+---
+name: check-skill-quality
+description: "Checks if skill meets quality standards"
+---
+
+Analyze skill and output:
+
+## QUALITY_CHECK_COMPLETE
+
+Quality Score: X/10
+Pass/Fail: [PASS|FAIL]
+Issues: [List of issues]
+```
+
+### Regular Skills (No Win Conditions)
+
+Regular skills are user-invocable or knowledge skills:
+
+```markdown
+# Regular Skill Example
+---
+name: api-conventions
+description: "API design patterns for this codebase. Use when writing API endpoints."
+user-invocable: true
+---
+
+# No win condition needed - user invokes directly
+```
+
+### Context: Fork for Transitive Skills
+
+**Use sparingly** - forked skills lose global context:
+
+```markdown
+# ❌ BAD - Needs context from main conversation
+---
+name: make-decision
+description: "Makes workflow decisions"
+context: fork  # LOSES CONTEXT!
+---
+
+# Will fail - no access to user preferences or workflow history
+
+# ✅ GOOD - Isolated analysis
+---
+name: scan-files
+description: "Scans files for patterns"
+context: fork
+agent: Explore
+---
+
+# WIN CONDITION:
+## FILE_SCAN_COMPLETE
+
+{"patterns": [...], "count": X}
+```
+
+**When to fork a transitive skill**:
+- ✅ Isolated analysis (no context needed)
+- ✅ Noisy operations (want isolation)
+- ❌ Need conversation history
+- ❌ Need user preferences
+- ❌ Need project context

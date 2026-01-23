@@ -1,7 +1,18 @@
 ---
 name: toolkit-worker
-description: Specialized worker subagent for project scaffolding operations including .claude folder audits, pattern discovery, quality scans, and comprehensive compliance checking. Use when performing noisy analysis, full project audits, or extracting patterns across .claude components. Do not use for simple tasks that don't require isolation or high-volume processing.
-skills: skills-knowledge, toolkit-architect, meta-architect-claudecode, hooks-knowledge, subagents-knowledge, toolkit-quality-validator
+description: "Specialized worker subagent for project scaffolding operations including .claude folder audits, pattern discovery, quality scans, and comprehensive compliance checking. Use when performing noisy analysis, full project audits, or extracting patterns across .claude components. Do not use for simple tasks that don't require isolation or high-volume processing."
+skills:
+  - skills-knowledge
+  - toolkit-architect
+  - meta-architect-claudecode
+  - hooks-knowledge
+  - subagents-knowledge
+  - toolkit-quality-validator
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
 ---
 
 # Toolkit Worker Subagent

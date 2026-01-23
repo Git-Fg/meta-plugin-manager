@@ -6,6 +6,26 @@ user-invocable: true
 
 # Toolkit Quality Validator
 
+## WIN CONDITION
+
+**Called by**: toolkit-architect, skills-architect, hooks-architect, mcp-architect
+**Purpose**: Validate .claude/ configuration quality and compliance
+
+**Output**: Must output completion marker with quality score
+
+```markdown
+## QUALITY_VALIDATION_COMPLETE
+
+Quality Score: X.X/10
+Structural: X/30
+Components: X/50
+Standards: X/20
+Status: [PASS|FAIL]
+Issues: [List]
+```
+
+**Completion Marker**: `## QUALITY_VALIDATION_COMPLETE`
+
 Validate .claude/ configuration quality and compliance with skills-first architecture and 2026 best practices.
 
 ## 🚨 MANDATORY: Read BEFORE Validation

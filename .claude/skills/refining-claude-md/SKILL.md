@@ -1,6 +1,6 @@
 ---
 name: refining-claude-md
-description: "Refine and optimize CLAUDE.md files for clarity and efficiency. Use when CLAUDE.md grows too long, contains redundant content, or needs restructuring. Also handles .claude/rules/ optimization. Do not use for creating new memory files from scratch."
+description: "Optimize and streamline CLAUDE.md memory files. Use when files are too long, contain redundant content, or need restructuring. Applies Delta Standard filtering and modularization. Triggers: 'CLAUDE.md too long', 'remove redundant content', 'CLAUDE.md optimization', 'memory cleanup', 'refactor memory', 'CLAUDE.md streamlining', 'reduce file size'."
 user-invocable: true
 ---
 
@@ -59,6 +59,20 @@ For each section, ask:
 4. Score against quality framework
 5. Generate audit report
 
+**Concrete Example**:
+```bash
+# User says: "Audit my CLAUDE.md"
+# Skill automatically:
+# 1. Reads CLAUDE.md (500 lines found)
+# 2. Scans for redundancies (found 150 lines of generic content)
+# 3. Identifies issues:
+#    - Generic React tutorial (80 lines)
+#    - Duplicate command documentation (30 lines)
+#    - Outdated URL references (2 links)
+# 4. Scores quality: 52/100
+# 5. Generates report with actionable recommendations
+```
+
 **Output Contract**:
 ```
 ## CLAUDE.md Audit Report
@@ -104,6 +118,19 @@ For each section, ask:
 - Apply: Standard refinements without asking
 - Ask only when: Content removal could lose critical info
 
+**Concrete Example**:
+```bash
+# Audit found: 52/100, needs refinement
+# Skill automatically:
+# 1. Removes 80 lines of generic React tutorial
+# 2. Condenses 30 lines of duplicate commands to 8 lines
+# 3. Fixes 2 outdated URLs
+# 4. Creates diff for review:
+#    - "React SPA with TypeScript"
+#    - "Dev server: npm start (port 3000)"
+# 5. Presents changes for approval
+```
+
 **Output Contract**:
 ```
 ## Refinement Applied: CLAUDE.md
@@ -136,6 +163,23 @@ For each section, ask:
 2. Create modular rule files with path-specific frontmatter
 3. Update CLAUDE.md with `@imports`
 4. Validate structure
+
+**Concrete Example**:
+```bash
+# User says: "Modularize my 400-line CLAUDE.md"
+# Skill automatically:
+# 1. Identifies 3 modular sections:
+#    - Coding standards (120 lines)
+#    - Security policies (80 lines)
+#    - Testing practices (60 lines)
+# 2. Creates .claude/rules/ directory
+# 3. Extracts sections to individual files
+# 4. Updates CLAUDE.md with:
+#    @import rules/coding-style
+#    @import rules/security
+#    @import rules/testing
+# 5. Reduces CLAUDE.md from 400 to 140 lines
+```
 
 **Output Contract**:
 ```

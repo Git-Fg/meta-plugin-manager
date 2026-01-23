@@ -169,6 +169,8 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 
 ### When NOT to Use disable-model-invocation
 
+⚠️ **Anti-Pattern Warning**: Using `disable-model-invocation` turns a skill into a "pure command"—a rigid, manually-triggered-only workflow. **Pure commands are an anti-pattern for skills.** If you're considering this, reconsider the skill design: a well-crafted description usually enables Claude to invoke appropriately without blocking. Reserve strictly for genuinely destructive operations (deploy, delete, send) where user timing is critical.
+
 Don't use for domain expertise:
 
 ```yaml

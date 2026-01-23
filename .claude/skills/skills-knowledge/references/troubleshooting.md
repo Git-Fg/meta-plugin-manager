@@ -513,9 +513,9 @@ description: "WHAT + WHEN + NOT formula"  # 1-1024 chars, no XML
 **Solution 1: Focus on High-Impact**
 ```markdown
 Priority improvements:
-1. Autonomy (15 points max)
-2. Discoverability (15 points max)
-3. Knowledge Delta (15 points max)
+1. Autonomy (10 points max)
+2. Discoverability (10 points max)
+3. Knowledge Delta (10 points max)
 
 Address these first for biggest gain.
 ```

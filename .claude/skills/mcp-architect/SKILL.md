@@ -1,15 +1,40 @@
 ---
 name: mcp-architect
-description: "Project-scoped .mcp.json router for external tools and service integrations. Use for creating, auditing, or refining MCP servers in current project root. Routes to mcp-knowledge for configuration details. Do not use for standalone plugin MCP configuration."
-disable-model-invocation: true
+description: "Project-scoped .mcp.json router with multi-workflow orchestration. Automatically detects DISCOVER/INTEGRATE/VALIDATE/OPTIMIZE workflows. Routes to mcp-knowledge for configuration details."
 ---
 
 # MCP Architect
 
-Domain router for project-scoped Model Context Protocol (MCP) integrations via `.mcp.json`.
+## WIN CONDITION
 
-## MANDATORY: Read Before Creating MCP Integrations
+**Called by**: toolkit-architect
+**Purpose**: Configure MCP servers and integrations in .mcp.json
 
+**Output**: Must output completion marker
+
+```markdown
+## MCP_ARCHITECT_COMPLETE
+
+Workflow: [DISCOVER|INTEGRATE|VALIDATE|OPTIMIZE]
+Quality Score: XX/100
+Protocol Compliance: XX/100
+Servers: [count] configured
+Context Applied: [Summary]
+```
+
+**Completion Marker**: `## MCP_ARCHITECT_COMPLETE`
+
+## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
+
+**CRITICAL**: You MUST understand these concepts:
+
+### Mandatory Reference Files (read in order):
+1. `references/protocol-guide.md` - MCP specification and primitives
+2. `references/transport-mechanisms.md` - stdio vs http patterns
+3. `references/component-templates.md` - Tools, resources, prompts
+4. `references/compliance-framework.md` - Protocol adherence scoring
+
+### Primary Documentation (MUST READ)
 - **MUST READ**: [Official MCP Guide](https://code.claude.com/docs/en/mcp)
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
   - **Cache**: 15 minutes minimum
@@ -25,150 +50,427 @@ Domain router for project-scoped Model Context Protocol (MCP) integrations via `
 - **REQUIRED** to validate URLs are accessible before MCP integration
 - **MUST understand** Tools, Resources, Prompts primitives before server creation
 
-## Actions
+## Multi-Workflow Detection Engine
 
-### create
-**Creates/edits MCP configuration** in `.mcp.json`
+Automatically detects and executes appropriate workflow:
 
-**Target File**: `${CLAUDE_PROJECT_DIR}/.mcp.json`
+```python
+def detect_mcp_workflow(project_state, user_request):
+    mcp_exists = exists(".mcp.json")
+    project_type = analyze_project_type(project_state)
+    integration_requested = "add" in user_request.lower() or "integrate" in user_request.lower()
+    validation_requested = "audit" in user_request.lower() or "validate" in user_request.lower()
 
-**Router Logic**:
-1. Load: mcp-knowledge for implementation details
-2. Determine MCP component:
+    if integration_requested:
+        return "INTEGRATE"  # Add new MCP server
+    elif validation_requested:
+        return "VALIDATE"  # Check protocol compliance
+    elif mcp_exists and has_issues():
+        return "OPTIMIZE"  # Fix configuration problems
+    else:
+        return "DISCOVER"  # Analyze needs and suggest
+```
+
+**Detection Logic**:
+1. **Add/integrate requested** → **INTEGRATE mode** (add new server)
+2. **Audit/validate requested** → **VALIDATE mode** (check compliance)
+3. **Existing .mcp.json with issues** → **OPTIMIZE mode** (fix problems)
+4. **Default analysis** → **DISCOVER mode** (analyze needs)
+
+## Core Philosophy
+
+**Trust in AI Reasoning**:
+- Provides context and examples, trusts AI to make intelligent decisions
+- Uses clear detection logic instead of asking questions upfront
+- Relies on completion markers for workflow verification
+
+**Component-Aware Routing**:
+- Automatically detects MCP server needs
+- Safely merges into existing .mcp.json
+- Validates protocol compliance
+
+## Four Workflows
+
+### DISCOVER Workflow - Analyze MCP Needs
+
+**Use When:**
+- Unclear what MCP servers are needed
+- Project analysis phase
+- Before adding any integrations
+- Understanding current MCP landscape
+
+**Why:**
+- Identifies integration opportunities
+- Maps existing MCP servers
+- Suggests appropriate components
+- Prevents unnecessary integrations
+
+**Process:**
+1. Scan project structure for integration candidates
+2. List existing MCP servers (if any)
+3. Identify service integration needs
+4. Suggest appropriate components
+5. Generate recommendation report
+
+**Required References:**
+- `references/protocol-guide.md#discover-workflow` - Analysis patterns
+- `references/component-templates.md` - Component selection
+
+**Example:** Project with API integrations → DISCOVER suggests appropriate MCP servers
+
+---
+
+### INTEGRATE Workflow - Add New MCP Server
+
+**Use When:**
+- Explicit add/integrate request
+- New service integration needed
+- User asks for MCP configuration
+- Missing integration capability
+
+**Why:**
+- Creates properly configured MCP servers
+- Safely merges into existing .mcp.json
+- Validates protocol compliance
+- Preserves existing configurations
+
+**Process:**
+1. Determine MCP component needed:
    - Tools - API wrappers
    - Resources - Data access
    - Prompts - Templates
    - Servers - Full integration
-3. **Safely merge** new server into existing .mcp.json:
-   - Read existing .mcp.json
+2. **Safely merge** into existing .mcp.json:
+   - Read existing configuration
    - Parse as JSON
-   - Add/merge new server configuration
-   - Validate JSON syntax
-   - Write back to .mcp.json
-4. Validate: Protocol compliance
+   - Add/merge new server
+   - Validate syntax
+   - Write back
+3. Validate protocol compliance
 
-**Output Contract**:
-```
-## MCP Server Added: {server_name}
+**Required References:**
+- `references/protocol-guide.md#integrate-workflow` - Integration patterns
+- `references/compliance-framework.md` - Protocol validation
 
-### Location
-- File: .mcp.json
-- Transport: {transport}
-- Existing Servers Preserved: ✅
+**Example:** User asks "Add web search" → INTEGRATE adds DuckDuckGo MCP server
 
-### Server Configuration
-- Tools: {count}
-- Resources: {count}
-- Prompts: {count}
-```
-
-### audit
-**Audits MCP integrations** for protocol compliance
-
-**Router Logic**:
-1. **Load: mcp-knowledge/references/integration.md**
-2. Check:
-   - Protocol adherence
-   - Transport configuration (stdio, http)
-   - Tool/resource/prompt validity
-   - Security considerations
-3. Generate audit with compliance scoring
-
-**Output Contract**:
-```
-## MCP Audit: {component_name}
-
-### Protocol Compliance
-- Specification: {version}
-- Adherence: {score}/10
-
-### Components
-- Tools: {tool_count} ({valid_count} valid)
-- Resources: {resource_count} ({valid_count} valid)
-- Prompts: {prompt_count} ({valid_count} valid)
-
-### Transport
-- Type: {transport}
-- Configuration: ✅/❌
-
-### Issues
-- {issue_1}
-- {issue_2}
+**Concrete Example**:
+```bash
+# User says: "I need web search in this project"
+# Integration automatically:
+# 1. Detects INTEGRATE workflow
+# 2. Adds DuckDuckGo MCP server to .mcp.json:
+{
+  "mcpServers": {
+    "duckduckgo": {
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "duckduckgo-search-mcp"]
+      }
+    }
+  }
+}
+# 3. Validates protocol compliance
+# 4. Reports success
 ```
 
-### refine
-**Improves MCP integrations** based on audit findings
+---
 
-**Router Logic**:
-1. **Load: mcp-knowledge** for implementation patterns
-2. Enhance:
-   - Protocol compliance
-   - Transport optimization
-   - Component validation
-   - Security hardening
-3. Validate improvements
+### VALIDATE Workflow - Protocol Compliance Check
 
-**Output Contract**:
+**Use When:**
+- Audit or validation requested
+- Before deployment to production
+- After MCP configuration changes
+- Regular compliance check
+
+**Why:**
+- Ensures protocol adherence
+- Validates transport configuration
+- Checks component validity
+- Provides compliance score
+
+**Process:**
+1. Read and parse .mcp.json
+2. Validate against MCP specification
+3. Check transport configuration
+4. Verify component schemas
+5. Generate compliance report
+
+**Required References:**
+- `references/compliance-framework.md` - Scoring dimensions
+- `references/transport-mechanisms.md` - Transport validation
+
+**Score-Based Actions:**
+- 90-100 (A): Excellent compliance, no changes needed
+- 75-89 (B): Good compliance, minor improvements
+- 60-74 (C): Adequate compliance, OPTIMIZE recommended
+- <60 (D/F): Poor compliance, OPTIMIZE required
+
+**Example:** User asks "Audit my MCP setup" → VALIDATE with detailed report
+
+**Concrete Example**:
+```bash
+# User says: "Check if my MCP configuration is correct"
+# Validation automatically:
+# 1. Reads .mcp.json
+# 2. Checks each server configuration
+# 3. Validates against MCP specification
+# 4. Generates report:
+## MCP Validation Complete
+
+### Compliance Score: 85/100 (Grade: B)
+
+### Issues:
+- Server 'my-server': Missing required transport config (-10 points)
+- Transport 'stdio': Missing 'command' field (-5 points)
+
+### Recommendations:
+1. Add transport.command to stdio servers
+2. Validate JSON syntax
+3. Test connection
+
+### Protocol Adherence:
+✓ Valid JSON structure
+✗ Missing required fields
 ```
-## MCP Refined: {component_name}
 
-### Protocol Improvements
-- {improvement_1}
-- {improvement_2}
+---
 
-### Component Enhancements
-- {enhancement_1}
-- {enhancement_2}
+### OPTIMIZE Workflow - Performance Improvements
 
-### Compliance Score: {old_score} → {new_score}/10
+**Use When:**
+- VALIDATE found issues (score <75)
+- Protocol compliance problems
+- Transport optimization needed
+- Best practices not followed
+
+**Why:**
+- Fixes protocol violations
+- Optimizes transport configuration
+- Improves component schemas
+- Ensures best practices
+
+**Process:**
+1. Review validation findings
+2. Prioritize issues by severity
+3. Fix protocol violations
+4. Optimize transport
+5. Re-validate improvements
+
+**Required References:**
+- `references/compliance-framework.md#optimization` - Fix strategies
+- `references/transport-mechanisms.md#optimization` - Performance patterns
+
+**Example:** VALIDATE found score 45/100 → OPTIMIZE to reach ≥80/100
+
+**Concrete Example**:
+```bash
+# VALIDATE found issues:
+# - Missing transport.command
+# - Invalid JSON structure
+# - No error handling
+
+# OPTIMIZE automatically:
+# 1. Fixes JSON syntax errors
+# 2. Adds missing transport.command fields
+# 3. Adds error handling patterns
+# 4. Re-validates configuration
+
+## MCP Optimization Complete
+
+### Quality Score: 45 → 88/100 (+43 points)
+
+### Changes Applied:
+✓ Fixed JSON syntax errors (3 issues)
+✓ Added missing transport.command (2 servers)
+✓ Added error handling patterns
+✓ Optimized transport configuration
+
+### Improvements:
+- Protocol compliance: 40% → 95%
+- Error handling: Added validation
+- Transport optimization: stdio configured correctly
 ```
+
+## Quality Framework (5 Dimensions)
+
+Scoring system (0-100 points):
+
+| Dimension | Points | Focus |
+|-----------|--------|-------|
+| **1. Protocol Compliance** | 25 | Adherence to MCP specification |
+| **2. Transport Configuration** | 20 | stdio/http setup correctness |
+| **3. Component Validity** | 20 | Tools/Resources/Prompts schemas |
+| **4. Security Hardening** | 15 | Security best practices |
+| **5. Maintainability** | 20 | Configuration clarity and structure |
+
+**Quality Thresholds**:
+- **A (90-100)**: Exemplary protocol compliance
+- **B (75-89)**: Good compliance with minor gaps
+- **C (60-74)**: Adequate compliance, needs improvement
+- **D (40-59)**: Poor compliance, significant issues
+- **F (0-39)**: Failing compliance, critical errors
 
 ## MCP Components
 
-**Tools**:
-- External API wrappers
-- Service integrations
-- Data transformation
+### Tools
+**Purpose**: Callable functions for operations
+**Use When**: Need to expose operations or actions
 
-**Resources**:
-- Data access patterns
-- File system access
-- Network resources
+**Example**:
+```json
+{
+  "name": "web-search",
+  "tools": {
+    "search": {
+      "description": "Search the web for information",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {"type": "string"}
+        }
+      }
+    }
+  }
+}
+```
 
-**Prompts**:
-- Template management
-- Dynamic generation
-- Context injection
+### Resources
+**Purpose**: Read-only data access
+**Use When**: Need to provide data access
 
-**Servers**:
-- Full MCP server implementation
-- Multi-component integration
-- Transport management
+**Example**:
+```json
+{
+  "name": "filesystem",
+  "resources": {
+    "file://{path}": {
+      "description": "Access project files",
+      "mimeType": "text/plain"
+    }
+  }
+}
+```
 
-## Routing Criteria
+### Prompts
+**Purpose**: Reusable workflow templates
+**Use When**: Need predefined prompt templates
 
-**For Tool Creation**: Load mcp-knowledge/references/tools.md
-- API wrapper patterns
-- Tool schemas and validation
-- Service integration examples
+**Example**:
+```json
+{
+  "name": "code-templates",
+  "prompts": {
+    "code-review": {
+      "description": "Review code for issues",
+      "arguments": [
+        {"name": "language", "required": false}
+      ]
+    }
+  }
+}
+```
 
-**For Resource/Prompt Creation**: Load mcp-knowledge/references/resources.md
-- Data access patterns
-- File system resources
-- Template management
-- Context injection
+### Servers
+**Purpose**: Full MCP server implementation
+**Use When**: Multi-component integration
 
-**For Server Configuration**: Load mcp-knowledge/references/servers.md
-- Transport setup (stdio, http)
-- Official servers (Context7, DeepWiki, DuckDuckGo)
-- Custom server deployment
-- Plugin MCP (.mcp.json or plugin.json)
+## Transport Mechanisms
 
-**For Integration Guidance**: Load mcp-knowledge/references/integration.md
-- Architecture patterns
-- Decision framework
-- Security considerations
-- Configuration management
+### stdio (Local)
+- Local process execution via standard input/output
+- Use for: Development, testing, single-user scenarios
+- Configuration: `claude mcp add --transport stdio <name> -- <command> [args...]`
+
+### http (Remote)
+- Hosted services with bidirectional streaming
+- Use for: Production deployments, multi-user, high availability
+- Configuration: `claude mcp add --transport http <name> <url>`
+
+## Workflow Selection Quick Guide
+
+**"I need an MCP server"** → INTEGRATE
+**"Check my MCP setup"** → VALIDATE
+**"Fix MCP issues"** → OPTIMIZE
+**"What MCP do I need?"** → DISCOVER
+
+## Output Contracts
+
+### DISCOVER Output
+```markdown
+## MCP Discovery Complete
+
+### Existing Servers: [count]
+### Recommendations: [count]
+
+### Suggested Integrations
+1. [Server]: [Purpose] - Transport: [stdio|http]
+2. [Server]: [Purpose] - Transport: [stdio|http]
+
+### Integration Opportunities
+- [Pattern 1]: Suitable for MCP integration
+- [Pattern 2]: Suitable for MCP integration
+```
+
+### INTEGRATE Output
+```markdown
+## MCP Server Integrated: {server_name}
+
+### Transport
+- Type: {stdio|http}
+- Configuration: Valid ✅
+
+### Components
+- Tools: {count} configured
+- Resources: {count} configured
+- Prompts: {count} configured
+
+### Protocol Compliance: XX/100
+### Existing Servers Preserved: ✅
+```
+
+### VALIDATE Output
+```markdown
+## MCP Validation Complete
+
+### Quality Score: XX/100 (Grade: [A/B/C/D/F])
+
+### Breakdown
+- Protocol Compliance: XX/25
+- Transport Configuration: XX/20
+- Component Validity: XX/20
+- Security Hardening: XX/15
+- Maintainability: XX/20
+
+### Issues
+- [Count] protocol violations
+- [Count] warnings
+- [Count] recommendations
+
+### Recommendations
+1. [Action] → Expected improvement: [+XX points]
+2. [Action] → Expected improvement: [+XX points]
+```
+
+### OPTIMIZE Output
+```markdown
+## MCP Optimized: {server_name}
+
+### Quality Score: XX → YY/100 (+ZZ points)
+
+### Improvements Applied
+- {improvement_1}: [Before] → [After]
+- {improvement_2}: [Before] → [After]
+
+### Protocol Compliance
+- Specification: [Version] ✅
+- Transport: [stdio|http] ✅
+- Components: [X/Y] valid ✅
+
+### Status: [Production Ready|Needs More Work]
+```
 
 ## 2026 MCP Features
 
@@ -179,29 +481,3 @@ Domain router for project-scoped Model Context Protocol (MCP) integrations via `
 - **Dynamic Tool Updates**: Supports `list_changed` notifications
 - **MCP Output Limits**: Default 25,000 tokens, configurable via `MAX_MCP_OUTPUT_TOKENS`
 - **Environment Variables**: `${CLAUDE_PLUGIN_ROOT}` for plugin paths
-
-## Transport Mechanisms
-
-### stdio (Local)
-- Local process execution via standard input/output
-- Use for: Development, testing, single-user scenarios
-- Configuration: `claude mcp add --transport stdio <name> -- <command> [args...]`
-
-### http (Remote)
-- Hosted services with bidirectional streaming (recommended for cloud)
-- Use for: Production deployments, multi-user, high availability
-- Configuration: `claude mcp add --transport http <name> <url>`
-
-### sse (Deprecated)
-- Server-Sent Events transport is deprecated
-- Use http instead for new implementations
-
-## MCP Primitives Quick Reference
-
-See mcp-knowledge for complete primitives table and decision framework.
-
-| Primitive | Purpose | Use When |
-| --------- | ------- | -------- |
-| **Tools** | Callable functions | Need to expose operations or actions |
-| **Resources** | Read-only data | Need to provide data access |
-| **Prompts** | Reusable workflows | Need predefined prompt templates |

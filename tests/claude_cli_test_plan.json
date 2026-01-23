@@ -1,0 +1,485 @@
+{
+  "test_plan": {
+    "name": "Claude CLI Non-Interactive Skill Testing",
+    "version": "1.0",
+    "description": "Testing framework for validating CLI automation, autonomy scoring, and orchestration patterns",
+    "skill_under_test": "claude-cli-non-interactive",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Basic Skill Execution",
+        "description": "Test basic calling and execution of claude-cli-non-interactive skill",
+        "tests": [
+          {
+            "test_id": "1.1",
+            "name": "Simple Skill Call",
+            "description": "Call the claude-cli-non-interactive skill and verify it executes",
+            "setup": {
+              "skills": [
+                {
+                  "name": "claude-cli-non-interactive",
+                  "type": "user-invocable",
+                  "context": "fork"
+                }
+              ],
+              "test_environment": {
+                "working_directory": "/tmp/test-cli-skill-$$",
+                "required_files": []
+              }
+            },
+            "execution": {
+              "step_1": {
+                "action": "Invoke claude-cli-non-interactive skill",
+                "command": "claude -p \"Expliquez comment utiliser claude -p pour les tests automatisés\"",
+                "expected_behavior": "Skill should provide comprehensive guidance on CLI usage"
+              },
+              "step_2": {
+                "action": "Verify autonomy",
+                "expected_output": "Complete explanation without asking questions"
+              }
+            },
+            "validation": {
+              "skill_called_successfully": true,
+              "autonomy_score": ">85%",
+              "no_questions_asked": true
+            }
+          },
+          {
+            "test_id": "1.2",
+            "name": "Skill with Context Fork",
+            "description": "Test the skill's fork context behavior",
+            "setup": {
+              "skills": [
+                {
+                  "name": "claude-cli-non-interactive",
+                  "type": "user-invocable",
+                  "context": "fork"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call skill in forked context",
+                "command": "claude -p \"Créez un script de test pour valider l'autonomie d'une skill\" --max-turns 10"
+              },
+              "step_2": {
+                "action": "Verify script generation",
+                "expected_output": "Complete bash script with validation logic"
+              }
+            },
+            "validation": {
+              "fork_context_active": true,
+              "script_generated": true,
+              "autonomy_preserved": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Autonomy Validation",
+        "description": "Test the skill's autonomy scoring and validation capabilities",
+        "tests": [
+          {
+            "test_id": "2.1",
+            "name": "Autonomy Score Calculation",
+            "description": "Test the autonomy scoring script from the skill",
+            "setup": {
+              "scripts": [
+                {
+                  "name": "calc-autonomy-score.sh",
+                  "source": "claude-cli-non-interactive skill"
+                }
+              ],
+              "test_logs": [
+                {
+                  "file": "test1.log",
+                  "content": "Sample log with 2 questions asked"
+                },
+                {
+                  "file": "test2.log",
+                  "content": "Sample log with 0 questions asked"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run autonomy score calculation",
+                "command": "./calc-autonomy-score.sh test1.log"
+              },
+              "step_2": {
+                "action": "Verify score for test1.log",
+                "expected_output": "Score: 85% (2 questions)"
+              },
+              "step_3": {
+                "action": "Run autonomy score for test2.log",
+                "command": "./calc-autonomy-score.sh test2.log"
+              },
+              "step_4": {
+                "action": "Verify score for test2.log",
+                "expected_output": "Score: 95% (0 questions)"
+              }
+            },
+            "validation": {
+              "scoring_accurate": true,
+              "thresholds_correct": true,
+              "pass_fail_logic": true
+            }
+          },
+          {
+            "test_id": "2.2",
+            "name": "80% Autonomy Threshold",
+            "description": "Validate that skills meeting 80% threshold pass validation",
+            "setup": {
+              "test_cases": [
+                {
+                  "questions": 4,
+                  "expected_score": 80,
+                  "expected_result": "PASS"
+                },
+                {
+                  "questions": 6,
+                  "expected_score": 70,
+                  "expected_result": "FAIL"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Test with 4 questions",
+                "expected_output": "Score: 80%, VALIDÉ"
+              },
+              "step_2": {
+                "action": "Test with 6 questions",
+                "expected_output": "Score: 70%, ÉCHEC"
+              }
+            },
+            "validation": {
+              "threshold_working": true,
+              "exit_codes_correct": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "CLI Orchestration Patterns",
+        "description": "Test various CLI orchestration patterns documented in the skill",
+        "tests": [
+          {
+            "test_id": "3.1",
+            "name": "Pattern 1 - Basic Test",
+            "description": "Test basic CLI orchestration with claude -p",
+            "setup": {
+              "test_directory": "/tmp/test-orchestration-$$",
+              "skills_to_test": ["test-skill-alpha"]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run basic test pattern",
+                "command": "claude -p \"Analysez ce projet et listez les skills\" --output-format json --max-turns 5"
+              },
+              "step_2": {
+                "action": "Verify JSON output",
+                "expected_output": "Valid JSON with skills list"
+              }
+            },
+            "validation": {
+              "json_output_valid": true,
+              "output_contains_skills": true,
+              "execution_completes": true
+            }
+          },
+          {
+            "test_id": "3.2",
+            "name": "Pattern 2 - Hub-and-Spoke",
+            "description": "Test hub-and-spoke orchestration pattern",
+            "setup": {
+              "skills": ["csv-processor", "json-analyzer", "text-miner"],
+              "test_data": ["data.csv", "data.json", "data.txt"]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Execute hub-and-spoke pattern",
+                "command": "claude -p \"Orchestrez le traitement des données: csv-processor → json-analyzer → text-miner\" --max-turns 25"
+              },
+              "step_2": {
+                "action": "Verify pipeline execution",
+                "expected_output": "All three skills executed in sequence"
+              }
+            },
+            "validation": {
+              "all_skills_called": true,
+              "correct_sequence": true,
+              "results_combined": true
+            }
+          },
+          {
+            "test_id": "3.3",
+            "name": "Pattern 3 - Isolation Test",
+            "description": "Test isolated environment creation and testing",
+            "setup": {
+              "isolation_script": "from skill documentation"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Create isolated test environment",
+                "command": "mkdir -p /tmp/test-$$ && cd /tmp/test-$$"
+              },
+              "step_2": {
+                "action": "Run claude -p in isolation",
+                "command": "claude -p \"Créez un README\" --no-session-persistence --max-turns 5"
+              },
+              "step_3": {
+                "action": "Clean up",
+                "command": "rm -rf /tmp/test-$$"
+              }
+            },
+            "validation": {
+              "environment_created": true,
+              "execution_isolated": true,
+              "cleanup_successful": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Log Analysis & Performance",
+        "description": "Test log analysis and performance monitoring capabilities",
+        "tests": [
+          {
+            "test_id": "4.1",
+            "name": "Log Filtering and Analysis",
+            "description": "Test log filtering strategies from the skill",
+            "setup": {
+              "sample_log": "full-log.txt with mixed content"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Extract important log lines",
+                "command": "grep -E \"(ERROR|WARN|SUCCESS|TOOL_CALL)\" full-log.txt"
+              },
+              "step_2": {
+                "action": "Analyze timing information",
+                "command": "grep -E \"timestamp|took [0-9]+ms\" full-log.txt"
+              },
+              "step_3": {
+                "action": "Count questions",
+                "command": "grep -c \"?\" questions.log"
+              }
+            },
+            "validation": {
+              "errors_extracted": true,
+              "timing_captured": true,
+              "questions_counted": true
+            }
+          },
+          {
+            "test_id": "4.2",
+            "name": "Performance Metrics",
+            "description": "Test performance monitoring and cost tracking",
+            "setup": {
+              "budget_limit": 5.00,
+              "turn_limit": 10
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run with budget limit",
+                "command": "claude -p \"Analyze a project\" --max-budget-usd 5.00"
+              },
+              "step_2": {
+                "action": "Check cost tracking",
+                "command": "Extract cost from output"
+              },
+              "step_3": {
+                "action": "Verify budget respected",
+                "expected_output": "Cost < $5.00"
+              }
+            },
+            "validation": {
+              "budget_limit_respected": true,
+              "cost_tracked": true,
+              "turns_limited": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "name": "Real-World Scenarios",
+        "description": "Test practical use cases from the skill documentation",
+        "tests": [
+          {
+            "test_id": "5.1",
+            "name": "Skill Testing Workflow",
+            "description": "Complete workflow: Create → Test → Analyze → Iterate",
+            "setup": {
+              "skills_to_create": ["test-skill-1"],
+              "test_environment": "/tmp/test-workflow-$$"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Create test skill",
+                "command": "mkdir -p .claude/skills/test-skill-1"
+              },
+              "step_2": {
+                "action": "Run iteration cycle",
+                "command": "for i in {1..3}; do claude -p \"Test iteration $i\" --max-turns 10; done"
+              },
+              "step_3": {
+                "action": "Analyze results",
+                "command": "./analyze-autonomy.sh iteration-*.log"
+              },
+              "step_4": {
+                "action": "Generate report",
+                "command": "cat > test-report.md"
+              }
+            },
+            "validation": {
+              "workflow_complete": true,
+              "all_iterations_run": true,
+              "report_generated": true
+            }
+          },
+          {
+            "test_id": "5.2",
+            "name": "Automated Validation Pipeline",
+            "description": "Test automated skill validation pipeline",
+            "setup": {
+              "pipeline_script": "from skill documentation"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run validation pipeline",
+                "command": "bash validate-skill.sh my-skill"
+              },
+              "step_2": {
+                "action": "Verify automation",
+                "expected_output": "Automated results with scores"
+              },
+              "step_3": {
+                "action": "Check recommendations",
+                "expected_output": "Improvement suggestions generated"
+              }
+            },
+            "validation": {
+              "pipeline_automatic": true,
+              "scores_calculated": true,
+              "recommendations_provided": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 6,
+        "name": "Error Handling & Edge Cases",
+        "description": "Test error handling and robustness",
+        "tests": [
+          {
+            "test_id": "6.1",
+            "name": "Budget Exhaustion",
+            "description": "Test behavior when budget limit reached",
+            "setup": {
+              "low_budget": 0.50,
+              "complex_task": "Analyze 1000 files"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run with insufficient budget",
+                "command": "claude -p \"Analyze 1000 files\" --max-budget-usd 0.50"
+              },
+              "step_2": {
+                "action": "Verify graceful handling",
+                "expected_output": "Controlled exit with budget message"
+              }
+            },
+            "validation": {
+              "graceful_failure": true,
+              "error_message_clear": true,
+              "no_crash": true
+            }
+          },
+          {
+            "test_id": "6.2",
+            "name": "Max Turns Exceeded",
+            "description": "Test behavior when turn limit exceeded",
+            "setup": {
+              "low_turn_limit": 3,
+              "complex_task": "Full project analysis"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run with low turn limit",
+                "command": "claude -p \"Full analysis\" --max-turns 3"
+              },
+              "step_2": {
+                "action": "Verify controlled exit",
+                "expected_output": "Error about turn limit"
+              }
+            },
+            "validation": {
+              "turn_limit_enforced": true,
+              "error_clear": true,
+              "state_saved": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "name": "Integration with Existing Tests",
+        "description": "Test integration with existing test framework",
+        "tests": [
+          {
+            "test_id": "7.1",
+            "name": "Combine with Skill Interaction Tests",
+            "description": "Use cli-non-interactive to validate other skills",
+            "setup": {
+              "target_skills": ["skill-a", "skill-b", "skill-c"],
+              "cli_skill": "claude-cli-non-interactive"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Use CLI skill to test other skills",
+                "command": "claude -p \"Test autonomy of skill-a using claude -p\""
+              },
+              "step_2": {
+                "action": "Generate validation report",
+                "command": "Combine results from multiple tests"
+              }
+            },
+            "validation": {
+              "other_skills_tested": true,
+              "autonomy_scores_calculated": true,
+              "report_comprehensive": true
+            }
+          },
+          {
+            "test_id": "7.2",
+            "name": "End-to-End Testing Workflow",
+            "description": "Complete integration with existing test framework",
+            "setup": {
+              "integration_script": "combining both frameworks"
+            },
+            "execution": {
+              "step_1": {
+                "action": "Run combined test suite",
+                "command": "bash run-all-tests.sh"
+              },
+              "step_2": {
+                "action": "Verify comprehensive results",
+                "expected_output": "Both skill interactions and CLI automation validated"
+              }
+            },
+            "validation": {
+              "integration_successful": true,
+              "all_tests_run": true,
+              "unified_report": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

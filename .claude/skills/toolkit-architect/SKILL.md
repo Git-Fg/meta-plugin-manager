@@ -1,7 +1,6 @@
 ---
 name: toolkit-architect
 description: "Project scaffolding router for .claude/ configuration and local-first customization. Use when enhancing current project with skills, MCP, hooks, or subagents. Routes to specialized domain architects and toolkit-worker for analysis. Do not use for standalone plugin publishing."
-disable-model-invocation: true
 ---
 
 ## 🚨 MANDATORY: Read BEFORE Routing
@@ -37,6 +36,12 @@ Project scaffolding router for .claude/ configuration using skills-first archite
 
 **Target Directory**: `${CLAUDE_PROJECT_DIR}/.claude/`
 
+**Exploration Before Questions**:
+1. Verify `.claude/` exists in current project
+2. Scan existing structure: `ls -la .claude/` to see what components exist
+3. Check for existing components in skills/, agents/, hooks.json, .mcp.json
+4. Identify user's intent from request keywords (skill, MCP, hook, agent)
+
 **Router Logic**:
 1. Validate: User's project has .claude/ directory
 2. Determine component type:
@@ -44,9 +49,24 @@ Project scaffolding router for .claude/ configuration using skills-first archite
    - "I want web search" → Route to mcp-architect
    - "I need a PR reviewer" → Route to skills-architect or subagents-architect
    - "I want automation" → Route to hooks-architect
+   - "I need CLAUDE.md" or "memory management" → Route to claude-md-manager
+   - "refactor CLAUDE.md" or "improve CLAUDE.md" → Route to claude-md-manager
 3. Load: appropriate knowledge skill
 4. Generate in .claude/ (not standalone plugin)
 5. Validate: toolkit-quality-validator
+
+**Output Clarification Requirements**:
+- **Delegate to Knowledge Skills**: Summarize key points with attribution, maintain voice separation
+- **Fork to toolkit-worker**: Parse results, present as subagent findings, acknowledge isolation
+- **Quality Validation**: Lead with scores, separate critical vs. recommendations
+
+**Autonomy Pattern**: Smart defaults based on exploration
+- No .claude/ exists → Create .claude/ directory structure first
+- Empty .claude/ → Ask: "What type of component do you need? (skill/MCP/hook/agent/CLAUDE.md)"
+- Has skills/ → Suggest skill enhancements or new skills
+- Has .mcp.json → Suggest additional MCP servers
+- Has messy/outdated CLAUDE.md → Suggest claude-md-manager for refactoring
+- No CLAUDE.md exists → Suggest claude-md-manager for creation
 
 **Output Contract**:
 ```
@@ -67,7 +87,7 @@ Continue only if score ≥ 8/10
 **Router Logic**:
 1. Load: toolkit-quality-validator
 2. **Assess output volume**:
-   - Large .claude/ or full audit? → Delegate to toolkit-worker (context: fork)
+   - Large .claude/ or full audit? → **Use the meta-plugin-manager:toolkit-worker subagent**
    - Simple validation? → Load directly
 3. **Parse explicit output**:
    - Look for "## Audit Results:"
@@ -99,6 +119,14 @@ Status classification:
 1. Parse error context
 2. Log and report error to user with recovery options
 3. Do NOT continue or retry without explicit direction
+
+# Output Clarification Requirements:
+## Present toolkit-worker results as:
+- Mark source: "The toolkit-worker subagent reports..."
+- Parse findings: Extract insights from noisy analysis
+- Acknowledge isolation: "In isolated context, the worker found..."
+- Present scores: Lead with quality score and dimensional breakdown
+- Prioritize actions: Critical → High → Medium → Low
 ```
 
 **Output Contract**:
@@ -160,9 +188,9 @@ Status classification:
 - {recommendation_2}
 ```
 
-## When to Use Context: Fork
+## When to Use the Subagent
 
-**Use toolkit-worker (context: fork)** when:
+**Use the toolkit-worker subagent** when:
 - High-volume output (extensive grep, repo traversal)
 - Noisy exploration that clutters conversation
 - Full .claude/ directory audits
@@ -181,6 +209,7 @@ Delegates to:
 - **meta-architect-claudecode** - Layer selection decisions
 - **toolkit-quality-validator** - Standards enforcement
 - **toolkit-worker** - Noisy/high-volume analysis
+- **claude-md-manager** - CLAUDE.md creation, audit, and refactoring
 
 ## Integration Points
 
@@ -188,4 +217,125 @@ Delegates to:
 - **hooks-architect** - Hooks domain expertise
 - **mcp-architect** - MCP domain expertise
 - **subagents-architect** - Subagents domain expertise
+- **claude-md-manager** - CLAUDE.md management
 - **toolkit-worker** - Isolated analysis worker
+
+## Output Clarification Patterns
+
+When skills delegate to other skills or subagents, follow these patterns for clear output handling:
+
+### Pattern 1: Delegation to Knowledge Skills
+**When**: Architect skill delegates to knowledge skill (e.g., toolkit-architect → skills-knowledge)
+
+**Clarification Requirements**:
+1. **Source Attribution**: Always mark the source clearly
+2. **Context Bridge**: Explain how knowledge applies to current request
+3. **Summarize Key Points**: Extract actionable insights, don't dump full reference
+4. **Maintain Voice Separation**: Keep architect's voice distinct from knowledge skill's voice
+
+**Response Template**:
+```markdown
+## [Action] Complete
+
+Based on [knowledge-skill-name] implementation guidance:
+
+**Key Points Applied:**
+1. [Point 1] - Applied to: [specific context]
+2. [Point 2] - Applied to: [specific context]
+
+**Recommendations for Your Project:**
+- [Specific actionable item 1]
+- [Specific actionable item 2]
+```
+
+### Pattern 2: Forked Worker Results (Subagent)
+**When**: toolkit-worker completes noisy/high-volume analysis
+
+**Clarification Requirements**:
+1. **Mark as Subagent Output**: Clearly identify as subagent result
+2. **Parse and Summarize**: Extract insights from noisy output
+3. **Present Key Findings First**: Lead with scores and critical issues
+4. **Acknowledge Isolation**: Note this is from isolated context
+
+**Response Template**:
+```markdown
+## .claude/ Analysis Complete
+
+**Quality Score: X.X/10** (from toolkit-worker subagent analysis)
+
+**Key Findings:**
+- Structural: X/30 - [Status and implications]
+- Components: X/50 - [Specific issues found]
+- Standards: X/20 - [Compliance status]
+
+**Priority Actions:**
+1. [Action 1] - [Expected time/effort]
+2. [Action 2] - [Expected time/effort]
+```
+
+### Pattern 3: Quality Validation Results
+**When**: toolkit-quality-validator audits .claude/ setup
+
+**Clarification Requirements**:
+1. **Lead with Score**: Present overall score prominently
+2. **Break Down Components**: Show dimensional scores
+3. **Separate Critical vs. Recommendations**: Distinguish blocking issues
+4. **Link to Improvement Path**: Show how to reach ≥8.0/10
+
+**Response Template**:
+```markdown
+## Quality Validation Results
+
+**Overall Score: X.X/10** (Target: ≥8.0)
+
+**Breakdown:**
+✅ Structural Compliance: X/30 - [What passed]
+❌ Component Quality: X/50 - [What failed and why]
+⚠️ Standards: X/20 - [Partial compliance]
+
+**Critical Issues (blocking production):**
+- [Issue 1] - Requires immediate attention
+- [Issue 2] - Blocking deployment
+
+**Recommended Improvements:**
+1. [Action] → Expected improvement: [specific score gain]
+2. [Action] → Expected improvement: [specific score gain]
+```
+
+### Pattern 4: Sequential Skill Chains
+**When**: Multiple skills work in sequence (architect → validator → refiner)
+
+**Clarification Requirements**:
+1. **Show Workflow Progression**: Stage 1 → Stage 2 → Stage 3
+2. **Highlight Changes**: What improved between stages
+3. **Final State Focus**: Current quality and status
+4. **Chain Completion**: Demonstrate successful workflow
+
+**Response Template**:
+```markdown
+## Workflow Complete
+
+**Stage 1: Initial Assessment**
+- Score: X.X/10
+- Issues Identified: [List]
+
+**Stage 2: Quality Validation**
+- Validator Confirmed: [Key findings]
+- No Critical Blocking Issues: [Status]
+
+**Stage 3: Applied Refinements**
+- [Action 1]: [Before] → [After]
+- [Action 2]: [Before] → [After]
+- **Final Score: X.X/10** ✅
+```
+
+### Progressive Disclosure for Nested Results
+
+**Tier 1 (Summary)**: Quick overview of key findings and scores
+**Tier 2 (Details)**: Specific recommendations and dimensional breakdown
+**Tier 3 (Deep Dive)**: Available on request
+
+**Implementation**:
+- Always provide Tier 1 in initial response
+- Include Tier 2 for action-oriented details
+- Offer Tier 3 only when explicitly requested

@@ -6,6 +6,23 @@ user-invocable: true
 
 # Meta-Architect
 
+## WIN CONDITION
+
+**Called by**: Various architect skills
+**Purpose**: Guide layer selection and architecture decisions
+
+**Output**: Must output completion marker after providing guidance
+
+```markdown
+## META_ARCHITECT_COMPLETE
+
+Layer Selected: [CLAUDE.md|Skill|Subagent|Hook|MCP]
+Pattern: [Linear|Hub-Spoke|Fork]
+Decision: [Summary]
+```
+
+**Completion Marker**: `## META_ARCHITECT_COMPLETE`
+
 Choose the right customization layer and build effective skills for Claude Code using official documentation.
 
 ## 🚨 MANDATORY: Read BEFORE Proceeding
@@ -98,6 +115,128 @@ Only provide context Claude cannot infer. Focus on expert decisions, trade-offs,
 
 Subagents are **optional enhancements**. Add them only when proven necessary (isolation/parallelism).
 
+## Skill Types & When to Use Win Conditions
+
+### Three Skill Types
+
+| Type | Called By | Purpose | Win Conditions Needed? |
+|------|-----------|---------|----------------------|
+| **Regular Skills** | User | Domain expertise, workflows | ❌ No |
+| **Knowledge Skills** | User/Architect | Implementation guidance | ❌ No |
+| **Transitive Skills** | Other Skills | Workflow steps | ✅ **YES** |
+
+### Win Conditions: Only for Transitive Skills
+
+**Definition**: A win condition is a **specific completion marker** that prevents workflow bugs when skills call other skills.
+
+**When Required**:
+- ✅ Transitive skills (called by other skills)
+- ✅ Multi-step workflows
+- ✅ Skills that delegate TO other skills
+
+**When NOT Required**:
+- ❌ Regular user-invocable skills
+- ❌ Knowledge/reference skills
+- ❌ Standalone skills
+
+**Example Win Condition**:
+```markdown
+# Transitive Skill called by other skills
+---
+name: validate-skill-structure
+description: "Validates skill YAML structure"
+---
+
+# WIN CONDITION: Must output completion marker
+## VALIDATION_COMPLETE
+
+Validation Results:
+- Skills valid: 12/12
+- Errors: 0
+- Warnings: 2
+
+# Hub skill waits for "## VALIDATION_COMPLETE" marker
+```
+
+### Forked Skills: Use Sparingly
+
+**WARNING**: Forked skills **lose global context**. This has **huge side effects**.
+
+**When Context Loss is Acceptable**:
+- Isolated analysis work (no context needed)
+- Noisy operations (want isolation)
+- Clear, self-contained tasks
+
+**When Context Loss is DANGEROUS**:
+- Need conversation history
+- Need user preferences
+- Need project-specific decisions
+- Need previous workflow steps
+
+**Rule of Thumb**: If you need context from the main conversation, **DON'T FORK**.
+
+**Example Dangerous Fork**:
+```yaml
+# ❌ BAD - Needs user preferences from main context
+---
+name: make-decision
+description: "Makes decisions based on user preferences"
+context: fork  # ❌ LOSES USER PREFERENCES
+agent: general-purpose
+---
+
+# This will fail - no access to user's preferences!
+```
+
+**Example Safe Fork**:
+```yaml
+# ✅ GOOD - Isolated analysis, no context needed
+---
+name: analyze-logs
+description: "Analyzes log files for patterns"
+context: fork
+agent: Explore
+---
+
+# WIN CONDITION:
+## LOG_ANALYSIS_COMPLETE
+
+{"patterns": [...], "anomalies": [...]}
+```
+
+### When Skills Call Other Skills
+
+**Pattern**:
+```yaml
+# Caller Skill
+---
+name: caller-skill
+description: "Orchestrates multi-step workflow"
+---
+
+# Step 1: Call transitive skill
+Call: validate-skill-structure
+Wait for: "## VALIDATION_COMPLETE"
+Extract: Score, errors, warnings
+
+# Step 2: Call another transitive skill
+Call: analyze-quality
+Wait for: "## QUALITY_ANALYSIS_COMPLETE"
+Extract: Quality metrics
+
+# Step 3: Make decision based on both results
+If errors > 0:
+  Report failure
+Else:
+  Report success
+```
+
+**Why Win Conditions Matter**:
+- Prevents race conditions
+- Ensures proper sequencing
+- Clear completion detection
+- Easier debugging
+
 ### Progressive Disclosure
 
 **Tier 1**: Metadata (~100 tokens) — Always loaded
@@ -115,7 +254,7 @@ Subagents are **optional enhancements**. Add them only when proven necessary (is
 | **CLAUDE.md Rules** | Persistent norms       | **Foundation**     | Project standards, safety boundaries |
 | **Skills**          | Discoverable expertise | **PRIMARY**        | Domain procedures, complex workflows |
 | **Subagents**       | Isolation/parallelism  | **RARE**           | Noisy tasks, separate context        |
-| **Hooks**           | Event automation       | **INFRASTRUCTURE** | MCP/LSP config, event handling       |
+| **Hooks**           | Event automation       | **INFRASTRUCTURE** | MCP/LSP config, event handling      |
 | **MCP**             | Service integration    | **EXTERNAL**       | External APIs, tools, services       |
 
 ---
@@ -154,112 +293,25 @@ Skills should be **self-sufficient by default** (80-95% autonomous):
 
 ---
 
-## Orchestration Patterns: When to Use Which
+## Orchestration Patterns
 
-### Linear Skill Chaining
+### Quick Reference
 
-**Use For**: Deterministic, simple, repeatable workflows
+| Pattern | Use When | Complexity |
+|---------|----------|------------|
+| **Linear** | Simple, deterministic workflows | Low |
+| **Hub-and-Spoke** | Complex workflows with decisions | Medium |
+| **Worker** | High-volume output, noisy tasks | Medium |
+| **Context: Fork** | Isolation needed, no context dependency | Variable |
 
-**Examples**:
-- `diff → lint → commit`
-- `validate → format → validate`
-- `extract → transform → load`
-
-**Pros**:
-- Simple to implement
-- Deterministic behavior
-- Low token overhead
-
-**Cons**:
-- Brittle for complex workflows (single point of failure)
-- Limited flexibility
-- No error recovery between steps
-
-**When to Avoid**:
-- Workflows requiring decision-making between steps
-- Dynamic problem solving where output is unpredictable
-- Workflows with >3 steps that need error recovery
-
-### Hub-and-Spoke
-
-**Use For**: Complex, dynamic workflows requiring flexibility
-
-**Examples**:
-- `research → plan → code → test` (with decision points)
-- Parallel research with aggregation
-- Multi-stage analysis with branching logic
-
-**Pros**:
-- Centralized state management
-- Error recovery and retry capability
-- Dynamic rerouting based on results
-- Resilient to individual worker failures
-
-**Cons**:
-- Higher complexity
-- Token overhead (hub reads everything)
-- More moving parts
-
-**Sources**:
-- [Anthropic: Building Effective Agents (Hub & Spoke)](https://www.anthropic.com/research/building-effective-agents)
-- [LangChain: Chains vs Agents](https://python.langchain.com/docs/modules/chains/)
-- [Microsoft: Autogen Design Patterns](https://microsoft.github.io/autogen/)
-
-### Worker Orchestration (Noise Isolation)
-
-**Pattern**: Router (this skill) + Worker (toolkit-worker)
-
-** Use When**:
-- Task involves high-volume output (audit, grep, log analysis)
-- User asks for "Deep Analysis" or "Comprehensive Audit"
-- Need to keep main context clean
-
-**Instructions**:
-1.  **Identify**: User task is "noisy" (e.g., "Audit this repo structure")
-2.  **Delegate**: Spawn `toolkit-worker` subagent
-3.  **Inject**: Dynamic context (repo structure, file lists)
-4.  **Instructions**: "Perform audit based on your internal knowledge and this injected context."
-
-**Example Delegation**:
-```javascript
-const workerResult = await Task({
-  subagent_type: "toolkit-worker", // Uses agents/toolkit-worker.md configuration
-  prompt: `Perform a comprehensive structural audit of the current repository.
-  
-  Context:
-  - Repository Root: ${env.CLAUDE_PROJECT_DIR}
-  - Focus: Architecture compliance, progressive disclosure checks
-  
-  Report Requirements:
-  - Quality Score (0-10 scale)
-  - Anti-patterns detected
-  - Remediation list
-  `,
-  formatted_output: true
-});
-```
-
-### Decision Tree
-
-```
-Need to orchestrate multiple skills?
-│
-├─ Simple, deterministic workflow?
-│  ├─ Yes → Linear Chaining (≤3 steps)
-│  └─ No → Continue below
-│
-├─ Requires decision-making between steps?
-│  ├─ Yes → Hub-and-Spoke
-│  └─ No → Continue below
-│
-├─ Parallel execution needed?
-│  ├─ Yes → Hub-and-Spoke with context: fork
-│  └─ No → Linear Chaining
-│
-└─ Error recovery required?
-   ├─ Yes → Hub-and-Spoke
-   └─ No → Linear Chaining
-```
+**For detailed patterns and examples**: [orchestration-patterns.md](references/orchestration-patterns.md)
+- Linear skill chaining
+- Hub-and-Spoke architecture
+- Worker orchestration
+- Decision trees
+- Prompt budget playbook
+- Common use cases
+- Anti-patterns to avoid
 
 ---
 
@@ -287,89 +339,10 @@ Need to orchestrate multiple skills?
 - Core Values Framework
 - Anti-patterns
 
-**"Advanced patterns"** → [advanced-patterns.md](references/advanced-patterns.md)
-- CLAUDE.md rules (structure, anti-patterns)
-- Slash commands (creation, best practices)
-- Subagents (coordination patterns, limitations)
-
----
-
-## Prompt Budget Playbook
-
-**Goal**: Complete each unit of work in 1-2 top-level prompts maximum.
-
-### Budget Rules
-
-1. **Define the Work Unit**: Explicitly state what "done" looks like
-2. **Success Criteria Must Be Measurable**: Binary pass/fail, not "improved"
-3. **Hard Stop Conditions**:
-   - Max 3 subagent spawns per task
-   - Max 2 correction cycles on any file
-   - Immediate stop if criteria met
-4. **Prefer Deterministic Commands**: For validation/format/test
-5. **Anti-2nd-Turn Checklist**:
-   - [ ] All inputs available or identified as missing
-   - [ ] Success criteria explicitly defined
-   - [ ] Expected output format specified
-   - [ ] Rollback strategy known
-
-**Budget Equation**:
-```
-Target Budget = 1 (plan/assess) + 1 (execute/verify)
-Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
-```
-
----
-
-## Common Use Cases
-
-### Use Case 1: Building First Skill
-
-**Path**: Layer Selection → Build Workflow
-
-```
-1. "I need domain expertise Claude can discover"
-   → Skill (Minimal Pack)
-2. Follow: Load: skills-knowledge (Steps 1-9)
-3. Test: Fresh Eyes Test
-4. Evaluate: 12-dimension framework
-```
-
-### Use Case 2: Choosing Context: Fork
-
-**Path**: Layer Selection → Context Fork Criteria
-
-```
-1. "Will this generate high-volume output?"
-   → Yes → Consider context: fork
-2. "Would output clutter the conversation?"
-   → Yes → Use context: fork
-3. Pattern A: Router + Worker (recommended)
-   Pattern B: Single Forked (simpler)
-```
-
-### Use Case 3: Evaluating Existing Skill
-
-**Path**: Build Workflow → Evaluation Section
-
-```
-1. Load: skills-knowledge#evaluating-skill-quality
-2. Scan: D1 (Knowledge Delta) first
-3. Score: All 12 dimensions
-4. Grade: A (144+), B (128-143), C (112-127), D (96-111), F (<96)
-5. Fix: Common failure patterns
-```
-
-### Use Case 4: Creating CLAUDE.md Rules
-
-**Path**: Advanced Patterns → Rules Section
-
-```
-1. Location: ~/.claude/ or project root
-2. Structure: Context → Standards → Principles → Safety
-3. Principles: Specificity, Context, Actionability, Safety
-4. Anti-patterns: Vague rules, over-prescription, static docs
-```
+**"Advanced patterns"** → [orchestration-patterns.md](references/orchestration-patterns.md)
+- Orchestration patterns
+- Prompt budget optimization
+- Use cases and anti-patterns
 
 ---
 
@@ -380,7 +353,7 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 | **[layer-selection.md](references/layer-selection.md)**     | **First**: Before building | Choose between layers + context: fork guidance     |
 | **[skills-knowledge](skills-knowledge)**                    | Creating/evaluating        | Skill building + extraction + evaluation workflows |
 | **[common.md](references/common.md)**                       | Foundational               | Core principles, archetypes, shared patterns       |
-| **[advanced-patterns.md](references/advanced-patterns.md)** | Advanced                   | Subagents, hooks, MCP (consolidated)               |
+| **[orchestration-patterns.md](references/orchestration-patterns.md)** | When to Use Which | Detailed orchestration patterns and use cases |
 
 **Progressive Disclosure**: Only load what you need, when you need it.
 
@@ -388,42 +361,6 @@ Max Budget = 1 (plan) + 2 (execute cycles) + 1 (validate)
 
 - **Command Patterns (Legacy)** - *Note: This guide is historical. Commands were unified with skills in 2026.*
   - *Archived in .attic/legacy-files/*
-
----
-
-## Anti-Patterns to Avoid
-
-### Development
-
-- **Deep Nesting** — `references/v1/setup/config.md` → Flatten to `references/setup-config.md`
-- **Vague Description** — "Helps with coding" → Use clear capability + use case
-- **Over-Engineering** — Scripts for simple tasks → Use native tools first
-
-### Layer Selection
-
-- **Using subagents** for simple tasks (overkill)
-- **Using all layers** for simple workflows (premature abstraction)
-- **Creating skills that require commands** (violates autonomy principle)
-
-### Skill Design
-
-- **Kitchen Sink** — One skill tries to do everything
-- **Indecisive Orchestrator** — Too many paths, unclear direction
-- **Pretend Executor** — Scripts requiring constant guidance
-
----
-
-## Writing Style Requirements
-
-### Imperative Form
-
-**Correct**: "To create a hook, define the event type."
-**Incorrect**: "You should create a hook by defining the event type."
-
-### Third-Person Description
-
-**Correct**: `description: "This skill should be used when the user asks..."`
-**Incorrect**: `description: "Use this skill when you want to..."`
 
 ---
 

@@ -78,7 +78,7 @@ Using subagents-architect incorrectly suggested `agent:` and `context: fork` for
 - `user-invocable: false` - Hides from slash command menu
 - `hooks` in frontmatter - Lifecycle event bindings
 
-⚠️ **`disable-model-invocation` Caution**: Often an anti-pattern. Creates rigid workflows that break when context changes. Prefer skills with clear descriptions that Claude can invoke intelligently.
+⚠️ **`disable-model-invocation` Anti-Pattern**: Turns skills into "pure commands"—rigid, manually-triggered workflows. **Pure commands are an anti-pattern for skills.** A well-crafted description usually suffices. Reserve for genuinely destructive operations (deploy, delete, send) where user timing is critical.
 
 ## Project Structure
 

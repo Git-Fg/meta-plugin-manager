@@ -1,0 +1,754 @@
+{
+  "test_plan": {
+    "name": "Skill Interaction & Context Fork Testing",
+    "version": "1.0",
+    "description": "Progressive testing of skill calling, context handling, and forking behavior",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Basic Skill Calling",
+        "description": "Test skills calling other skills without forking",
+        "tests": [
+          {
+            "test_id": "1.1",
+            "name": "Simple Linear Chain",
+            "description": "Skill A calls Skill B in regular context",
+            "setup": {
+              "skills": [
+                {
+                  "name": "skill-b",
+                  "type": "transitive",
+                  "win_condition": "## SKILL_B_COMPLETE",
+                  "description": "Simple transitive skill with win condition"
+                },
+                {
+                  "name": "skill-a",
+                  "type": "regular",
+                  "description": "Caller skill that calls skill-b",
+                  "calls": ["skill-b"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call skill-a",
+                "expected_behavior": "skill-a should call skill-b and wait for completion marker"
+              },
+              "step_2": {
+                "action": "Verify skill-b executed",
+                "expected_output": "## SKILL_B_COMPLETE marker"
+              },
+              "step_3": {
+                "action": "skill-a should receive results and continue",
+                "expected_output": "skill-a completes with results from skill-b"
+              }
+            },
+            "validation": {
+              "win_condition_works": true,
+              "context_preserved": true,
+              "results_passed_back": true
+            }
+          },
+          {
+            "test_id": "1.2",
+            "name": "Three-Skill Chain",
+            "description": "Skill A calls Skill B calls Skill C",
+            "setup": {
+              "skills": [
+                {
+                  "name": "skill-c",
+                  "type": "transitive",
+                  "win_condition": "## SKILL_C_COMPLETE"
+                },
+                {
+                  "name": "skill-b",
+                  "type": "transitive",
+                  "win_condition": "## SKILL_B_COMPLETE",
+                  "calls": ["skill-c"]
+                },
+                {
+                  "name": "skill-a",
+                  "type": "regular",
+                  "calls": ["skill-b"]
+                }
+              ]
+            },
+            "execution": {
+              "chain": "skill-a → skill-b → skill-c",
+              "markers": ["## SKILL_C_COMPLETE", "## SKILL_B_COMPLETE"]
+            },
+            "validation": {
+              "recursive_calling": true,
+              "context_preserved_through_chain": true,
+              "all_win_conditions_triggered": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "name": "Forked Skills Testing",
+        "description": "Test context: fork behavior and isolation",
+        "tests": [
+          {
+            "test_id": "2.1",
+            "name": "Regular Skill Calls Forked Skill",
+            "description": "Can a regular skill call a forked skill?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "skill-forked",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FORKED_SKILL_COMPLETE",
+                  "description": "Forked skill that loses context"
+                },
+                {
+                  "name": "skill-regular",
+                  "type": "regular",
+                  "calls": ["skill-forked"],
+                  "description": "Regular skill calling forked skill"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call skill-regular",
+                "expected_behavior": "skill-regular spawns skill-forked in isolated context"
+              },
+              "step_2": {
+                "action": "skill-forked executes in isolation",
+                "expected_behavior": "skill-forked has NO access to main conversation context"
+              },
+              "step_3": {
+                "action": "skill-forked completes",
+                "expected_output": "## FORKED_SKILL_COMPLETE with structured results"
+              },
+              "step_4": {
+                "action": "skill-regular receives results",
+                "expected_behavior": "skill-regular continues with forked skill's results"
+              }
+            },
+            "validation": {
+              "context_isolation_confirmed": true,
+              "results_transferred_back": true,
+              "win_condition_marker_received": true
+            }
+          },
+          {
+            "test_id": "2.2",
+            "name": "Forked Skill Loses Context",
+            "description": "Verify forked skill cannot access main conversation",
+            "setup": {
+              "skills": [
+                {
+                  "name": "context-test-skill",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## CONTEXT_TEST_COMPLETE",
+                  "description": "Forked skill trying to access main context"
+                }
+              ],
+              "context_setup": {
+                "user_preference": "prefer_typescript",
+                "project_name": "test-project",
+                "conversation_history": "some context"
+              }
+            },
+            "execution": {
+              "step_1": {
+                "action": "Establish main context with preferences",
+                "setup": "Set user preferences and conversation context"
+              },
+              "step_2": {
+                "action": "Call context-test-skill",
+                "expected_behavior": "skill runs in isolated fork"
+              },
+              "step_3": {
+                "action": "Ask forked skill about preferences",
+                "expected_failure": "Skill cannot access user_preference, project_name, or conversation_history"
+              }
+            },
+            "validation": {
+              "context_lost": true,
+              "no_access_to_main_conversation": true,
+              "fork_isolation_confirmed": true
+            }
+          },
+          {
+            "test_id": "2.3",
+            "name": "Forked Skill Cannot Ask Questions",
+            "description": "Verify forked skill has limited interactivity",
+            "setup": {
+              "skills": [
+                {
+                  "name": "interactive-test",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## INTERACTIVE_TEST_COMPLETE"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call interactive-test",
+                "expected_behavior": "Runs in isolated context"
+              },
+              "step_2": {
+                "action": "Try to ask user questions",
+                "expected_behavior": "Should NOT be able to ask questions (isolated)"
+              },
+              "step_3": {
+                "action": "Skill must complete autonomously",
+                "expected_output": "## INTERACTIVE_TEST_COMPLETE"
+              }
+            },
+            "validation": {
+              "no_user_interaction": true,
+              "autonomous_completion": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "Forked Skills Calling Subagents",
+        "description": "Can forked skills call subagents?",
+        "tests": [
+          {
+            "test_id": "3.1",
+            "name": "Forked Skill Calls Built-in Subagent",
+            "description": "Can a forked skill call a built-in subagent like Explore?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "forked-caller",
+                  "type": "transitive",
+                  "context": "fork",
+                  "agent": "Explore",
+                  "win_condition": "## FORKED_CALLER_COMPLETE"
+                }
+              ],
+              "test_files": {
+                "file1.txt": "content 1",
+                "file2.txt": "content 2"
+              }
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call forked-caller",
+                "expected_behavior": "Runs with Explore agent capabilities"
+              },
+              "step_2": {
+                "action": "Use Explore tools (Read, Grep, Glob)",
+                "expected_behavior": "Should have access to Explore tools"
+              },
+              "step_3": {
+                "action": "Scan files",
+                "expected_output": "Finds test files, returns structured results"
+              },
+              "step_4": {
+                "action": "Complete with marker",
+                "expected_output": "## FORKED_CALLER_COMPLETE"
+              }
+            },
+            "validation": {
+              "agent_capabilities_available": true,
+              "tools_accessible": true,
+              "isolation_maintained": true
+            }
+          },
+          {
+            "test_id": "3.2",
+            "name": "Forked Skill Calls Custom Subagent",
+            "description": "Can a forked skill call a custom subagent?",
+            "setup": {
+              "subagents": [
+                {
+                  "name": "custom-worker",
+                  "description": "Custom subagent with specific tools",
+                  "tools": ["Read", "Grep"],
+                  "model": "haiku"
+                }
+              ],
+              "skills": [
+                {
+                  "name": "forked-calls-custom",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FORKED_CALLS_CUSTOM_COMPLETE"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call forked-calls-custom",
+                "expected_behavior": "Runs in isolated context"
+              },
+              "step_2": {
+                "action": "Try to spawn custom-worker",
+                "expected_behavior": "Should be able to spawn subagent"
+              },
+              "step_3": {
+                "action": "Custom subagent executes",
+                "expected_output": "Subagent completes in its own context"
+              },
+              "step_4": {
+                "action": "Forked skill receives results",
+                "expected_output": "## FORKED_CALLS_CUSTOM_COMPLETE"
+              }
+            },
+            "validation": {
+              "can_spawn_custom_subagent": true,
+              "results_received": true,
+              "double_isolation": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Advanced Forked Skill Patterns",
+        "description": "Test complex forking scenarios",
+        "tests": [
+          {
+            "test_id": "4.1",
+            "name": "Forked Skill Calls Regular Skill",
+            "description": "Can a forked skill call a regular skill?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "regular-skill",
+                  "type": "transitive",
+                  "win_condition": "## REGULAR_SKILL_COMPLETE"
+                },
+                {
+                  "name": "forked-calls-regular",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FORKED_CALLS_REGULAR_COMPLETE",
+                  "calls": ["regular-skill"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call forked-calls-regular",
+                "expected_behavior": "Runs in isolated context"
+              },
+              "step_2": {
+                "action": "Calls regular-skill",
+                "expected_behavior": "Spawns regular-skill in main context"
+              },
+              "step_3": {
+                "action": "regular-skill executes",
+                "expected_output": "## REGULAR_SKILL_COMPLETE"
+              },
+              "step_4": {
+                "action": "forked-calls-regular receives results",
+                "expected_output": "## FORKED_CALLS_REGULAR_COMPLETE"
+              }
+            },
+            "validation": {
+              "fork_to_regular_transition": true,
+              "context_restored": true,
+              "results_combine": true
+            }
+          },
+          {
+            "test_id": "4.2",
+            "name": "Forked Skill Calls Forked Skill",
+            "description": "Can a forked skill call another forked skill?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "forked-inner",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FORKED_INNER_COMPLETE"
+                },
+                {
+                  "name": "forked-outer",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FORKED_OUTER_COMPLETE",
+                  "calls": ["forked-inner"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call forked-outer",
+                "expected_behavior": "Runs in isolated context (Context A)"
+              },
+              "step_2": {
+                "action": "Calls forked-inner",
+                "expected_behavior": "Spawns forked-inner in NEW isolated context (Context B)"
+              },
+              "step_3": {
+                "action": "forked-inner executes in Context B",
+                "expected_output": "## FORKED_INNER_COMPLETE"
+              },
+              "step_4": {
+                "action": "forked-outer receives results",
+                "expected_output": "## FORKED_OUTER_COMPLETE"
+              }
+            },
+            "validation": {
+              "double_fork_isolation": true,
+              "nested_contexts": true,
+              "results_passed_through": true
+            }
+          },
+          {
+            "test_id": "4.3",
+            "name": "Parallel Forked Skills",
+            "description": "Can a skill spawn multiple forked skills in parallel?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "forked-worker-1",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## WORKER_1_COMPLETE"
+                },
+                {
+                  "name": "forked-worker-2",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## WORKER_2_COMPLETE"
+                },
+                {
+                  "name": "parallel-orchestrator",
+                  "type": "regular",
+                  "win_condition": "## ORCHESTRATOR_COMPLETE"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call parallel-orchestrator",
+                "expected_behavior": "Spawns both forked workers in parallel"
+              },
+              "step_2": {
+                "action": "Both workers execute simultaneously",
+                "expected_output": "Two isolated contexts running"
+              },
+              "step_3": {
+                "action": "Workers complete",
+                "expected_output": "## WORKER_1_COMPLETE and ## WORKER_2_COMPLETE"
+              },
+              "step_4": {
+                "action": "Orchestrator aggregates results",
+                "expected_output": "## ORCHESTRATOR_COMPLETE with combined results"
+              }
+            },
+            "validation": {
+              "parallel_execution": true,
+              "isolation_per_worker": true,
+              "results_aggregated": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "name": "Context Transfer & Sharing",
+        "description": "Test how context is transferred between skills",
+        "tests": [
+          {
+            "test_id": "5.1",
+            "name": "Passing Data to Forked Skill",
+            "description": "Can we pass parameters/data to forked skills?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "data-receiver",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## DATA_RECEIVER_COMPLETE"
+                },
+                {
+                  "name": "data-sender",
+                  "type": "regular",
+                  "calls": ["data-receiver"],
+                  "parameters": {"key": "value"}
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "data-sender calls data-receiver with parameters",
+                "expected_behavior": "Parameters passed to forked context"
+              },
+              "step_2": {
+                "action": "data-receiver receives parameters",
+                "expected_output": "Can access parameters but not main context"
+              },
+              "step_3": {
+                "action": "data-receiver processes data",
+                "expected_output": "## DATA_RECEIVER_COMPLETE with processed results"
+              }
+            },
+            "validation": {
+              "parameters_passed": true,
+              "main_context_blocked": true,
+              "results_returned": true
+            }
+          },
+          {
+            "test_id": "5.2",
+            "name": "Cannot Access Main Context Variables",
+            "description": "Verify forked skills cannot see main context variables",
+            "setup": {
+              "context_variables": {
+                "project_path": "/path/to/project",
+                "user_id": "123",
+                "session_id": "abc"
+              },
+              "skills": [
+                {
+                  "name": "context-inspector",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## CONTEXT_INSPECTOR_COMPLETE"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Set context variables in main conversation",
+                "setup": "Define variables in main context"
+              },
+              "step_2": {
+                "action": "Call context-inspector",
+                "expected_behavior": "Runs in isolated fork"
+              },
+              "step_3": {
+                "action": "Ask forked skill about variables",
+                "expected_behavior": "Cannot access any context variables"
+              },
+              "step_4": {
+                "action": "Skill completes",
+                "expected_output": "## CONTEXT_INSPECTOR_COMPLETE with empty/default values"
+              }
+            },
+            "validation": {
+              "variables_inaccessible": true,
+              "complete_isolation": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 6,
+        "name": "Error Handling & Recovery",
+        "description": "Test error scenarios and recovery",
+        "tests": [
+          {
+            "test_id": "6.1",
+            "name": "Forked Skill Failure",
+            "description": "What happens when a forked skill fails?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "failing-forked",
+                  "type": "transitive",
+                  "context": "fork",
+                  "win_condition": "## FAILING_FORKED_COMPLETE",
+                  "will_fail": true
+                },
+                {
+                  "name": "forked-caller",
+                  "type": "regular",
+                  "calls": ["failing-forked"],
+                  "recovery_strategy": "retry"
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call forked-caller",
+                "expected_behavior": "Spawns failing-forked"
+              },
+              "step_2": {
+                "action": "failing-forked encounters error",
+                "expected_behavior": "Fails in isolated context"
+              },
+              "step_3": {
+                "action": "forked-caller receives failure",
+                "expected_behavior": "Main context aware of failure"
+              },
+              "step_4": {
+                "action": "Error handling",
+                "expected_behavior": "forked-caller can retry or handle error"
+              }
+            },
+            "validation": {
+              "error_propagates": true,
+              "main_context_recovery": true,
+              "isolation_maintained": true
+            }
+          },
+          {
+            "test_id": "6.2",
+            "name": "Missing Win Condition",
+            "description": "What happens if a transitive skill doesn't output win condition?",
+            "setup": {
+              "skills": [
+                {
+                  "name": "missing-marker",
+                  "type": "transitive",
+                  "win_condition": "## MISSING_MARKER_COMPLETE",
+                  "will_not_output_marker": true
+                },
+                {
+                  "name": "waiting-skill",
+                  "type": "regular",
+                  "calls": ["missing-marker"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call waiting-skill",
+                "expected_behavior": "Waits for completion marker"
+              },
+              "step_2": {
+                "action": "missing-marker completes without marker",
+                "expected_behavior": "waiting-skill should timeout or detect missing marker"
+              },
+              "step_3": {
+                "action": "Detection mechanism",
+                "expected_behavior": "waiting-skill should detect no marker received"
+              }
+            },
+            "validation": {
+              "timeout_occurs": true,
+              "error_detected": true,
+              "caller_handles_missing_marker": true
+            }
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "name": "Real-World Scenarios",
+        "description": "Test practical use cases",
+        "tests": [
+          {
+            "test_id": "7.1",
+            "name": "Audit Workflow",
+            "description": "Real-world audit: hub orchestrates forked workers",
+            "setup": {
+              "skills": [
+                {
+                  "name": "code-audit-worker",
+                  "type": "transitive",
+                  "context": "fork",
+                  "agent": "Explore",
+                  "win_condition": "## CODE_AUDIT_COMPLETE"
+                },
+                {
+                  "name": "security-audit-worker",
+                  "type": "transitive",
+                  "context": "fork",
+                  "agent": "Explore",
+                  "win_condition": "## SECURITY_AUDIT_COMPLETE"
+                },
+                {
+                  "name": "audit-orchestrator",
+                  "type": "regular",
+                  "win_condition": "## AUDIT_COMPLETE",
+                  "calls": ["code-audit-worker", "security-audit-worker"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call audit-orchestrator",
+                "expected_behavior": "Spawns both audit workers in parallel"
+              },
+              "step_2": {
+                "action": "Workers scan codebase in isolation",
+                "expected_behavior": "Each worker has Explore capabilities"
+              },
+              "step_3": {
+                "action": "Workers complete",
+                "expected_output": "## CODE_AUDIT_COMPLETE and ## SECURITY_AUDIT_COMPLETE"
+              },
+              "step_4": {
+                "action": "Orchestrator combines results",
+                "expected_output": "## AUDIT_COMPLETE with full audit report"
+              }
+            },
+            "validation": {
+              "parallel_workers": true,
+              "isolation_performed": true,
+              "results_combined": true
+            }
+          },
+          {
+            "test_id": "7.2",
+            "name": "Multi-Stage Analysis",
+            "description": "Analysis pipeline: regular → forked → regular",
+            "setup": {
+              "skills": [
+                {
+                  "name": "prepare-data",
+                  "type": "transitive",
+                  "win_condition": "## PREPARE_COMPLETE"
+                },
+                {
+                  "name": "analyze-data",
+                  "type": "transitive",
+                  "context": "fork",
+                  "agent": "Explore",
+                  "win_condition": "## ANALYZE_COMPLETE"
+                },
+                {
+                  "name": "format-results",
+                  "type": "transitive",
+                  "win_condition": "## FORMAT_COMPLETE"
+                },
+                {
+                  "name": "analysis-pipeline",
+                  "type": "regular",
+                  "win_condition": "## PIPELINE_COMPLETE",
+                  "calls": ["prepare-data", "analyze-data", "format-results"]
+                }
+              ]
+            },
+            "execution": {
+              "step_1": {
+                "action": "Call analysis-pipeline",
+                "expected_behavior": "Sequential execution: regular → forked → regular"
+              },
+              "step_2": {
+                "action": "prepare-data executes",
+                "expected_output": "## PREPARE_COMPLETE"
+              },
+              "step_3": {
+                "action": "analyze-data executes in fork",
+                "expected_output": "## ANALYZE_COMPLETE"
+              },
+              "step_4": {
+                "action": "format-results executes",
+                "expected_output": "## FORMAT_COMPLETE"
+              },
+              "step_5": {
+                "action": "Pipeline completes",
+                "expected_output": "## PIPELINE_COMPLETE"
+              }
+            },
+            "validation": {
+              "context_transitions": true,
+              "data_flows": true,
+              "isolation_only_for_forked": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
