@@ -120,7 +120,9 @@ Fetch: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-pr
 
 ### 6. Plugin Quality Framework
 
-**Scoring System (0-10 scale)**:
+**Scoring System**: The 11-Dimensional Quality Framework applies to all skills (see Official Best Practices section above).
+
+**Plugin-Level Scoring** (aggregate of component scores):
 - **Structural (30%)**: Architecture compliance, directory structure, progressive disclosure
 - **Components (50%)**: Skill quality (15), Command quality (10), Agent quality (10), Hook quality (10), MCP quality (5)
 - **Standards (20%)**: URL currency (10), Best practices (10)
@@ -132,6 +134,8 @@ Fetch: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-pr
 - **3-4**: Poor - Major rework required
 - **0-2**: Failing - Complete rebuild recommended
 
+**Skill-Level Scoring**: Individual skills must score ≥8/10 (80/100 points) on the 11-dimensional framework for production use.
+
 ### 7. Project Scaffolding Philosophy
 
 **From Plugin System to Teaching**: The toolkit shifted from "plugin with active hooks" to "scaffolding and education" approach.
@@ -141,6 +145,217 @@ Fetch: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-pr
 **Project-Local Config**: All hooks/config belong in user's `.claude/`, never in toolkit itself. Toolkit provides templates and patterns.
 
 **Knowledge Skills**: Must include mandatory URL fetching sections with cache requirements for quality validation.
+
+---
+
+## Official Best Practices for Skills (Fundamental)
+
+These principles are derived from comprehensive evaluation of skills in this toolkit and represent **2026 best practices** for building effective Claude Code skills.
+
+### Core Standard: Concise, Well-Structured, Tested
+
+**Good Skills** embody three fundamental characteristics:
+
+1. **Concise is Key** - Every token competes with conversation history and other context
+2. **Well-Structured** - Follow progressive disclosure and clear patterns
+3. **Tested with Real Usage** - Validated through evaluation and feedback
+
+### The Delta Standard
+
+> **Good Customization = Expert-only Knowledge − What Claude Already Knows**
+
+Only provide context Claude cannot infer. Focus on expert decisions, trade-offs, and domain-specific thinking frameworks. Challenge each piece of information:
+- "Does Claude really need this explanation?"
+- "Can I assume Claude knows this?"
+- "Does this paragraph justify its token cost?"
+
+### 11-Dimensional Quality Framework
+
+Skills must score ≥8/10 (80%) on this comprehensive evaluation:
+
+| Dimension | Points | Description |
+|----------|--------|-------------|
+| **1. Knowledge Delta** | 15 | Expert-only knowledge vs what Claude already knows |
+| **2. Autonomy** | 15 | Completes 80-95% without questions |
+| **3. Discoverability** | 15 | Clear description with specific triggers |
+| **4. Progressive Disclosure** | 15 | Tier 1/2/3 properly organized |
+| **5. Clarity** | 15 | Clear instructions and workflows |
+| **6. Completeness** | 15 | Covers all scenarios, handles edge cases |
+| **7. Standards Compliance** | 15 | Follows Agent Skills specification |
+| **8. Security** | 10 | Tool restrictions, validation, safe execution |
+| **9. Performance** | 10 | Efficient workflows, minimal token usage |
+| **10. Maintainability** | 10 | Well-structured, easy to update |
+| **11. Innovation** | 10 | Unique value, creative solutions |
+
+**Scoring**: A (135-150), B (120-134), C (105-119), D (90-104), F (<90)
+**Production Threshold**: Score ≥8/10 (80/100 points minimum)
+
+### Conciseness Requirements
+
+**SKILL.md Length Limits**:
+- **Optimal**: <300 lines
+- **Maximum**: 500 lines
+- **Critical Threshold**: 500+ lines requires splitting into references/
+
+**Context Window Optimization**:
+- Default assumption: Claude is already very smart
+- Challenge each piece of information
+- Use progressive disclosure to manage token costs
+- Move detailed content to references/ when approaching limits
+
+**Example: Concise vs Verbose**
+
+❌ **Bad (150 tokens)**:
+```markdown
+## Extract PDF text
+
+PDF (Portable Document Format) files are a common file format that contains
+text, images, and other content. To extract text from a PDF, you'll need to
+use a library. There are many libraries available for PDF processing, but we
+recommend pdfplumber because it's easy to use and handles most cases well.
+```
+
+✅ **Good (50 tokens)**:
+```markdown
+## Extract PDF text
+
+Use pdfplumber for text extraction:
+
+```python
+import pdfplumber
+
+with pdfplumber.open("file.pdf") as pdf:
+    text = pdf.pages[0].extract_text()
+```
+```
+
+### Progressive Disclosure (Mandatory)
+
+**Three-Tier Structure**:
+
+1. **Tier 1** (~100 tokens): Metadata (name + description) — Always loaded
+2. **Tier 2** (<500 lines): SKILL.md — Loaded when invoked
+3. **Tier 3** (on-demand): references/, scripts/ — Loaded when needed
+
+**Implementation Rules**:
+- Keep SKILL.md under 500 lines
+- Use references/ for detailed content (>500 lines total)
+- Ensure progressive disclosure actually reduces load
+- Reference files should be one level deep maximum
+
+**Self-Contained Threshold**: If SKILL.md + all references would be <500 lines, merge into single self-contained SKILL.md instead of using progressive disclosure.
+
+### Autonomy-First Design (Mandatory)
+
+Skills must complete without questions in **80-95% of cases**.
+
+**Question Burst Criteria** (ALL 3 required):
+✓ Information NOT inferrable from repo/tools
+✓ High impact if wrong choice
+✓ Small set (3-7 questions) unlocks everything
+
+**Autonomy Policy**:
+1. **Classify**: Task type + criticality + variability → define budget
+2. **Explore First**: Use read/grep before asking questions
+3. **Execute Deterministically**: Complete workflow if path clear
+4. **Question Burst** (rare): Only if info not inferrable + high impact + 3-7 questions unlock all
+5. **Escalate**: Recommend command (explicit control) or fork (noise isolation)
+
+### Appropriate Degrees of Freedom
+
+Match specificity to task fragility and variability:
+
+**High Freedom** (text-based instructions):
+- Multiple approaches valid
+- Decisions depend on context
+- Heuristics guide approach
+- Example: Code review process
+
+**Medium Freedom** (pseudocode/scripts with parameters):
+- Preferred pattern exists
+- Some variation acceptable
+- Configuration affects behavior
+- Example: Report generation
+
+**Low Freedom** (specific scripts, few parameters):
+- Operations fragile/error-prone
+- Consistency critical
+- Specific sequence required
+- Example: Database migrations
+
+**Analogy**: Think of Claude as a robot exploring a path:
+- **Narrow bridge with cliffs**: One safe way forward → Specific guardrails (low freedom)
+- **Open field with no hazards**: Many paths lead to success → General direction (high freedom)
+
+### Naming Conventions (Mandatory)
+
+**Use gerund form** (verb + -ing):
+- `processing-pdfs`
+- `analyzing-spreadsheets`
+- `managing-databases`
+
+**Requirements**:
+- Maximum 64 characters
+- Lowercase letters, numbers, hyphens only
+- Cannot contain reserved words: "anthropic", "claude"
+- Consistent pattern within skill collection
+
+### Effective Descriptions (Critical)
+
+**Formula**: WHAT + WHEN + NOT
+
+**Structure**:
+```yaml
+description: "{{CAPABILITY}}. Use when {{TRIGGERS}}. Do not use for {{EXCLUSIONS}}."
+```
+
+**Requirements**:
+- Always write in third-person
+- Include both what AND when to use
+- Be specific, include key terms
+- Avoid vague descriptions like "helps with documents"
+
+**Examples**:
+
+✅ **Good**:
+```yaml
+description: "Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction."
+```
+
+❌ **Bad**:
+```yaml
+description: "Helps with documents"
+```
+
+### Hub-and-Spoke Architecture (Preferred)
+
+**Pattern Benefits**:
+- Prevents context rot
+- Enables clean context forking
+- Clear separation of concerns
+- Modular & reusable
+
+**Implementation**:
+- **Hub Skills** (routers): `disable-model-invocation: true`, delegate to knowledge skills
+- **Knowledge Skills**: `user-invocable: true`, self-contained reference libraries
+- **No circular dependencies**: Hubs route deterministically
+
+**Anti-Pattern**: Linear chain brittleness - long chains for reasoning tasks accumulate noise
+
+### Quality Enforcement Requirements
+
+**All Skills MUST Include**:
+- ✅ Mandatory URL fetching sections with blocking rules
+- ✅ Strong language (MUST, REQUIRED)
+- ✅ Explicit tool name (`mcp__simplewebfetch__simpleWebFetch`)
+- ✅ Cache duration (15 minutes minimum)
+- ✅ Progressive disclosure structure
+- ✅ Output contracts for orchestration
+
+**Knowledge Skills Additional Requirements**:
+- ✅ Primary documentation URLs with cache requirements
+- ✅ Blocking rules for documentation reading
+- ✅ Reference to external examples/patterns
 
 ---
 
@@ -433,24 +648,36 @@ Fetch: https://code.claude.com/docs/en/mcp
 
 ### Quality Validation Checklist
 
-**Structural (30%)**:
-- [ ] Architecture follows skills-first approach
-- [ ] Directory structure is standard
-- [ ] Progressive disclosure implemented (Tier 1/2/3)
+**All Skills MUST Score ≥8/10 (80/100 points) on 11-Dimensional Framework**
 
-**Components (50%)**:
-- [ ] Skills are self-sufficient and autonomous
-- [ ] Commands orchestrate, don't wrap
-- [ ] Subagents used for isolation/parallelism
-- [ ] Hooks handle events properly
-- [ ] MCP integration configured correctly
+**11-Dimensional Evaluation**:
+- [ ] **Knowledge Delta** (15 pts): Expert-only knowledge, avoids Claude-obvious content
+- [ ] **Autonomy** (15 pts): Completes 80-95% without questions
+- [ ] **Discoverability** (15 pts): Clear description with specific triggers
+- [ ] **Progressive Disclosure** (15 pts): Tier 1/2/3 properly organized
+- [ ] **Clarity** (15 pts): Clear instructions, no ambiguity
+- [ ] **Completeness** (15 pts): Covers scenarios, handles edge cases
+- [ ] **Standards Compliance** (15 pts): Follows Agent Skills spec
+- [ ] **Security** (10 pts): Validation, safe execution patterns
+- [ ] **Performance** (10 pts): Efficient workflows, minimal tokens
+- [ ] **Maintainability** (10 pts): Well-structured, easy updates
+- [ ] **Innovation** (10 pts): Unique value, creative solutions
 
-**Standards (20%)**:
-- [ ] All components include URL fetching sections
-- [ ] Strong language (MUST/REQUIRED) used
-- [ ] Tool-specific guidance included
-- [ ] Activation conditions defined
-- [ ] Hard preconditions specified
+**Skill-Specific Requirements**:
+- [ ] SKILL.md under 500 lines
+- [ ] Uses gerund naming (verb + -ing)
+- [ ] Description follows WHAT + WHEN + NOT formula
+- [ ] Progressive disclosure structure (Tier 1/2/3)
+- [ ] Mandatory URL fetching sections
+- [ ] Autonomy score: 80-95% completion
+
+**Plugin-Level (Aggregate)**:
+- [ ] Skills-first architecture
+- [ ] Standard directory structure
+- [ ] Component-scoped hooks only
+- [ ] Hub-and-spoke organization
+- [ ] URL currency validation
+- [ ] Best practices adherence
 
 ---
 
@@ -827,3 +1054,10 @@ path: "${CLAUDE_PROJECT_DIR}/.claude-plugin/"
 **External References**:
 - GitHub: https://github.com/agentskills/agentskills - Open standard
 - GitHub: https://github.com/anthropics/skills - Example skills
+
+**Internal Resources**:
+- **Skills Evaluation Report**: `/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/SKILLS_EVALUATION_REPORT.md`
+  - Comprehensive analysis of all 10 toolkit skills
+  - 11-dimensional quality framework validation
+  - Best practices compliance verification
+  - Recommendations for skill development
