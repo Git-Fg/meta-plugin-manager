@@ -3,28 +3,6 @@ name: toolkit-architect
 description: "Project scaffolding router for .claude/ configuration and local-first customization. Use when enhancing current project with skills, MCP, hooks, or subagents. Routes to specialized domain architects and toolkit-worker for analysis. Do not use for standalone plugin publishing."
 ---
 
-## 🚨 MANDATORY: Read BEFORE Routing
-
-**CRITICAL**: You MUST read and understand these URLs:
-
-### Primary Documentation (MUST READ)
-- **[MUST READ] Project Customization Guide**: https://code.claude.com/docs/en/skills
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Project-scoped skills, .claude/ directory structure
-  - **Cache**: 15 minutes minimum
-
-- **[MUST READ] Local-First Configuration**: https://code.claude.com/docs/en/plugins
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: .claude/ configuration patterns
-  - **Cache**: 15 minutes minimum
-
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
-- **MUST validate** all URLs are accessible before routing
-- **REQUIRED** to understand project-scoped configuration before routing
-
----
-
 # Toolkit Architect
 
 Project scaffolding router for .claude/ configuration using skills-first architecture.
@@ -39,7 +17,7 @@ Project scaffolding router for .claude/ configuration using skills-first archite
 **Exploration Before Questions**:
 1. Verify `.claude/` exists in current project
 2. Scan existing structure: `ls -la .claude/` to see what components exist
-3. Check for existing components in skills/, agents/, hooks.json, .mcp.json
+3. Check for existing components in skills/, agents/, settings.json, settings.local.json, hooks.json, .mcp.json
 4. Identify user's intent from request keywords (skill, MCP, hook, agent)
 
 **Router Logic**:
@@ -62,7 +40,7 @@ Project scaffolding router for .claude/ configuration using skills-first archite
 
 **Autonomy Pattern**: Smart defaults based on exploration
 - No .claude/ exists → Create .claude/ directory structure first
-- Empty .claude/ → Ask: "What type of component do you need? (skill/MCP/hook/agent/CLAUDE.md)"
+- Empty .claude/ → Infer from request keywords (skill/MCP/hook/agent/CLAUDE.md) in Router Logic
 - Has skills/ → Suggest skill enhancements or new skills
 - Has .mcp.json → Suggest additional MCP servers
 - Has messy/outdated CLAUDE.md → Suggest claude-md-manager for refactoring
