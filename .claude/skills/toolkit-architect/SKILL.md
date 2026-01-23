@@ -3,6 +3,28 @@ name: toolkit-architect
 description: "Project scaffolding router for .claude/ configuration and local-first customization. Use when enhancing current project with skills, MCP, hooks, or subagents. Routes to specialized domain architects and toolkit-worker for analysis. Do not use for standalone plugin publishing."
 ---
 
+## 🚨 MANDATORY: Read BEFORE Routing
+
+**CRITICAL**: You MUST read and understand these URLs:
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Project Customization Guide**: https://code.claude.com/docs/en/skills
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Project-scoped skills, .claude/ directory structure
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Local-First Configuration**: https://code.claude.com/docs/en/plugins
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: .claude/ configuration patterns
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **MUST validate** all URLs are accessible before routing
+- **REQUIRED** to understand project-scoped configuration before routing
+
+---
+
 # Toolkit Architect
 
 Project scaffolding router for .claude/ configuration using skills-first architecture.

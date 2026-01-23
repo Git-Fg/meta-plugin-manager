@@ -9,6 +9,32 @@ description: "Project-scoped skills router with multi-workflow orchestration. Au
 
 **Called by**: toolkit-architect
 **Purpose**: Route skill development to appropriate knowledge and create skills
+
+## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
+
+**CRITICAL**: You MUST understand these concepts:
+
+### Mandatory Reference Files (read in order):
+1. `references/progressive-disclosure.md` - Tier 1/2/3 structure patterns
+2. `references/autonomy-design.md` - 80-95% completion patterns
+3. `references/extraction-methods.md` - Golden path extraction
+4. `references/quality-framework.md` - 11-dimensional scoring
+
+### Primary Documentation (MUST READ)
+- **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
+  - Cache: 15 minutes minimum
+  - Content: Skill structure, progressive disclosure
+
+- **MUST READ**: [Agent Skills Specification](https://agentskills.io/specification)
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
+  - Cache: 15 minutes minimum
+  - Content: Progressive disclosure format, quality standards
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** without understanding progressive disclosure format
+- **REQUIRED** to validate URLs before skill creation
+- **MUST understand** autonomy-first design before creation
 **Metric**: **Knowledge Delta** (Project-Specific ÷ Total Tokens)
 
 **Success Criteria**:

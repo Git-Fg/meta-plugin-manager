@@ -10,6 +10,32 @@ description: "Configure and audit project guardrails in .claude/ configuration w
 **Called by**: toolkit-architect
 **Purpose**: Configure guardrails and hooks in .claude/ configuration
 
+## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
+
+**CRITICAL**: You MUST understand these concepts:
+
+### Mandatory Reference Files (read in order):
+1. `references/security-patterns.md` - Common security guardrails and validation patterns
+2. `references/hook-types.md` - Event types, use cases, and selection criteria
+3. `references/script-templates.md` - Validation script patterns and conventions
+4. `references/compliance-framework.md` - 5-dimensional quality scoring system
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Hooks Guide**: https://code.claude.com/docs/en/hooks
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Event automation, hook types, configuration
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Project Configuration**: https://code.claude.com/docs/en/plugins
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: .claude/ structure, component organization
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
+- **MUST validate** all URLs are accessible before routing
+- **REQUIRED** to understand security patterns before workflow selection
+
 **Output**: Must output completion marker
 
 ```markdown
