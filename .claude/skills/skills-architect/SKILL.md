@@ -9,6 +9,12 @@ description: "Project-scoped skills router with multi-workflow orchestration. Au
 
 **Called by**: toolkit-architect
 **Purpose**: Route skill development to appropriate knowledge and create skills
+**Metric**: **Knowledge Delta** (Project-Specific ÷ Total Tokens)
+
+**Success Criteria**:
+1. **Zero Generic Tutorials**: No "How to use Python" or standard library docs.
+2. **Expert-Only Focus**: Content restricted to architectural decisions, blocking rules, and complex project-specific patterns.
+3. **Autonomy**: Skills must handle 80-95% of tasks without questions.
 
 **Output**: Must output completion marker
 
@@ -16,7 +22,7 @@ description: "Project-scoped skills router with multi-workflow orchestration. Au
 ## SKILLS_ARCHITECT_COMPLETE
 
 Workflow: [ASSESS|CREATE|EVALUATE|ENHANCE]
-Quality Score: XX/100
+Quality Score: XX/100 (Delta Score: XX/20)
 Autonomy: XX%
 Location: .claude/skills/[skill-name]/
 Improvements: [+XX points]
@@ -24,32 +30,6 @@ Context Applied: [Summary]
 ```
 
 **Completion Marker**: `## SKILLS_ARCHITECT_COMPLETE`
-
-## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
-
-**CRITICAL**: You MUST understand these concepts:
-
-### Mandatory Reference Files (read in order):
-1. `references/progressive-disclosure.md` - Tier 1/2/3 structure patterns
-2. `references/autonomy-design.md` - 80-95% completion patterns
-3. `references/extraction-methods.md` - Golden path extraction
-4. `references/quality-framework.md` - 11-dimensional scoring
-
-### Primary Documentation (MUST READ)
-- **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
-  - Tool: `mcp__simplewebfetch__simpleWebFetch`
-  - Cache: 15 minutes minimum
-  - Content: Skill structure, progressive disclosure
-
-- **MUST READ**: [Agent Skills Specification](https://agentskills.io/specification)
-  - Tool: `mcp__simplewebfetch__simpleWebFetch`
-  - Cache: 15 minutes minimum
-  - Content: Progressive disclosure format, quality standards
-
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** without understanding progressive disclosure format
-- **REQUIRED** to validate URLs before skill creation
-- **MUST understand** autonomy-first design before creation
 
 ## Multi-Workflow Detection Engine
 
@@ -78,6 +58,10 @@ def detect_skill_workflow(project_state, user_request):
 4. **Default analysis** → **ASSESS mode** (analyze needs)
 
 ## Core Philosophy
+
+### The Delta Standard
+> **Good Customization = Expert-only Knowledge − What Claude Already Knows**
+> "If Claude knows it from training, **DELETE** it from the skill."
 
 **Autonomy-First Design**:
 - Skills should be 80-95% autonomous
@@ -144,7 +128,6 @@ def detect_skill_workflow(project_state, user_request):
    - YAML frontmatter (name, description, user-invocable)
    - Progressive disclosure structure
    - Auto-discovery optimization
-   - **MANDATORY URL fetching sections**
 3. Create directory: `.claude/skills/<skill-name>/`
 4. Write SKILL.md and references/ (if needed)
 5. Validate: Autonomy score ≥80%
@@ -225,7 +208,7 @@ Scoring system (0-160 points):
 
 | Dimension | Points | Focus |
 |-----------|--------|-------|
-| **1. Knowledge Delta** | 15 | Expert-only vs Claude-obvious |
+| **1. Knowledge Delta** | 20 | **CRITICAL**: Expert-only constraints vs Generic info |
 | **2. Autonomy** | 15 | 80-95% completion without questions |
 | **3. Discoverability** | 15 | Clear description with triggers |
 | **4. Progressive Disclosure** | 15 | Tier 1/2/3 properly organized |
@@ -235,7 +218,7 @@ Scoring system (0-160 points):
 | **8. Security** | 10 | Validation, safe execution |
 | **9. Performance** | 10 | Efficient workflows |
 | **10. Maintainability** | 10 | Well-structured |
-| **11. Innovation** | 10 | Unique value |
+| **11. Innovation** | 5 | Unique value |
 
 **Quality Thresholds**:
 - **A (144-160)**: Exemplary skill
