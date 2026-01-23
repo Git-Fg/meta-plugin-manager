@@ -1,6 +1,6 @@
 ---
 name: hooks-architect
-description: "Configure and audit project guardrails in .claude/ configuration with multi-workflow orchestration. Automatically detects INIT/SECURE/AUDIT/REMEDIATE workflows. Creates component-scoped hooks in skill frontmatter or global hooks in .claude/hooks.json. Routes to hooks-knowledge for patterns and templates. Does not contain active hooks."
+description: "Configure and audit project guardrails in .claude/ configuration with multi-workflow orchestration. Automatically detects INIT/SECURE/AUDIT/REMEDIATE workflows. Creates component-scoped hooks (skills/commands/agents) with PreToolUse/PostToolUse/Stop events, project settings hooks (settings.json/settings.local.json), or global hooks in .claude/hooks.json. Supports once: true for skills/commands. Routes to hooks-knowledge for patterns and templates. Does not contain active hooks."
 ---
 
 # Hooks Architect
@@ -24,31 +24,13 @@ Context Applied: [Summary]
 
 **Completion Marker**: `## HOOKS_ARCHITECT_COMPLETE`
 
-## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
+## Reference Files
 
-**CRITICAL**: You MUST understand these concepts:
-
-### Mandatory Reference Files (read in order):
+Load these as needed:
 1. `references/security-patterns.md` - Common security guardrails and validation patterns
 2. `references/hook-types.md` - Event types, use cases, and selection criteria
 3. `references/script-templates.md` - Validation script patterns and conventions
 4. `references/compliance-framework.md` - 5-dimensional quality scoring system
-
-### Primary Documentation (MUST READ)
-- **[MUST READ] Hooks Guide**: https://code.claude.com/docs/en/hooks
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Event automation, hook types, configuration
-  - **Cache**: 15 minutes minimum
-
-- **[MUST READ] Project Configuration**: https://code.claude.com/docs/en/plugins
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: .claude/ structure, component organization
-  - **Cache**: 15 minutes minimum
-
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
-- **MUST validate** all URLs are accessible before routing
-- **REQUIRED** to understand security patterns before workflow selection
 
 ## Multi-Workflow Detection Engine
 
@@ -56,7 +38,13 @@ Automatically detects and executes appropriate workflow:
 
 ```python
 def detect_security_workflow(project_state, conversation_context):
-    hooks_exist = exists(".claude/hooks.json") or has_component_hooks()
+    # Check all possible hook locations
+    hooks_exist = (
+        exists(".claude/hooks.json") or
+        exists(".claude/settings.json") or
+        exists(".claude/settings.local.json") or
+        has_component_hooks()
+    )
     security_mentioned = conversation_context.has_security_keywords()
     audit_requested = "audit" in user_request.lower()
 
@@ -90,6 +78,39 @@ def detect_security_workflow(project_state, conversation_context):
 - Uses clear detection logic instead of asking questions upfront
 - Relies on completion markers for workflow verification
 
+## Hook Configuration Types & Events
+
+### Supported Hook Events
+- **PreToolUse**: Run before tool execution (validation, security checks)
+- **PostToolUse**: Run after tool execution (logging, cleanup, formatting)
+- **Stop**: Run when component completes (final validation, state save)
+
+### Component-Scoped Hooks (Preferred)
+**Location**: YAML frontmatter in skills/commands/agents
+
+**Best For**:
+- **Skills/Commands**: Preprocessing, validation after edits, one-time setup (with `once: true`)
+- **Agents**: Scoped event handling, automatic cleanup, agent-specific validation
+
+**Features**:
+- ✅ Auto-cleanup when component finishes
+- ✅ Skills/Commands: Support `once: true` for one-time setup
+- ❌ Agents: Do NOT support `once` option
+- ✅ All events: PreToolUse, PostToolUse, Stop
+
+### Settings-Based Hooks
+**Location**: `.claude/settings.json`, `.claude/settings.local.json`, or `.claude/hooks.json`
+
+**Best For**:
+- Project-wide preprocessing (e.g., filtering logs to reduce context)
+- Team-wide automation
+- Cross-component policies
+
+**Use Settings-Based When**:
+- Need preprocessing across multiple components
+- Team-wide automation required
+- Project-wide policies needed
+
 ## Four Workflows
 
 ### INIT Workflow - Fresh Project Setup
@@ -108,10 +129,15 @@ def detect_security_workflow(project_state, conversation_context):
 
 **Process:**
 1. Investigate project structure
-2. Create `.claude/hooks.json` template
+2. Create `.claude/settings.json` template (recommended) or `.claude/hooks.json` (legacy)
 3. Generate common security scripts in `.claude/scripts/`
 4. Configure basic PreToolUse validation
 5. Validate security score ≥80/100
+
+**Configuration Options:**
+- **settings.json** (recommended): Modern format, better team collaboration
+- **settings.local.json**: For local overrides (gitignored)
+- **hooks.json** (legacy): Traditional global hooks format
 
 **Required References:**
 - `references/security-patterns.md#init-workflow` - Complete INIT setup guide
@@ -270,11 +296,46 @@ hooks:
           command: "./.claude/scripts/validate-deploy.sh"
 ```
 
-### Global Hooks
+### Project Settings Hooks
+
+**Location**: `.claude/settings.json` (team-shared) or `.claude/settings.local.json` (local only)
+
+**Use When**:
+- Team-wide security policies (settings.json)
+- Personal project preferences (settings.local.json)
+- Project-scoped automation
+- Configuration that benefits from JSON format
+
+**Example** (`.claude/settings.json`):
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./.claude/scripts/guard-sensitive-paths.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Key Differences**:
+- `settings.json`: Committed to git, shared with team
+- `settings.local.json`: Gitignored, personal only
+- Both support the same hook configuration as `hooks.json`
+
+### Global Hooks (Legacy)
 
 **Location**: `.claude/hooks.json`
 
 **Use When**:
+- Traditional global hook configuration
 - Organization-wide security policies
 - Cross-skill protection
 - Environment validation
@@ -298,6 +359,8 @@ hooks:
   }
 }
 ```
+
+**Note**: `settings.json` is the modern replacement for `.claude/hooks.json`. Both work, but settings.json provides better team collaboration features.
 
 ## Quick Reference: Security Guardrails
 
@@ -334,13 +397,18 @@ hooks:
 
 ### Security Score: XX/100
 ### Created Files
-- .claude/hooks.json (global configuration)
+- .claude/settings.json (project settings - recommended)
 - .claude/scripts/ (validation scripts)
 
 ### Baseline Security
 - Path safety: ✅
 - Command validation: ✅
 - Environment protection: ✅
+
+### Configuration Options
+- settings.json: Team-shared hooks (committed to git)
+- settings.local.json: Personal hooks (gitignored)
+- hooks.json: Legacy global hooks (still supported)
 ```
 
 ### SECURE Output
