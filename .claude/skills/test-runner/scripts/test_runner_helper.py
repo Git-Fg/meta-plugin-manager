@@ -1,14 +1,8 @@
-#!/usr/bin/env python3
-"""
-Helper script for test-runner complex operations
-Purpose: JSON parsing, batch operations, and lifecycle tracking
-Usage: Call from test-runner skill for complex operations
-Natural language instructions remain in SKILL.md
-"""
-
 import json
 import sys
 import os
+import subprocess
+import time
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, field
@@ -585,34 +579,167 @@ def add_finding(manager: TestPlanManager, test_id: str, finding: str) -> None:
     manager.add_finding(test_id, finding)
 
 
+def run_trial(manager: TestPlanManager, test_id: str, prompt: str, max_turns: int = 10) -> None:
+    """Command: run-trial - Executes the CLI, captures telemetry, and analyzes it."""
+    # 1. Setup paths
+    test_dir = Path(f"tests/test_{test_id.replace('.', '_')}")
+    output_file = test_dir / "test-output.json"
+    
+    if not test_dir.exists():
+        print(f"ERROR: Test directory not found: {test_dir}")
+        sys.exit(1)
+
+    print(f"=== WITNESSING TRIAL {test_id} ===")
+    print(f"Prompt: {prompt}")
+    print(f"Void: {test_dir.absolute()}")
+    print("-" * 20)
+
+    # 2. Execution Command
+    cmd = [
+        "claude",
+        "--dangerously-skip-permissions",
+        "-p", prompt,
+        "--output-format", "stream-json",
+        "--verbose", "--debug",
+        "--no-session-persistence",
+        "--max-turns", str(max_turns)
+    ]
+
+    # 3. Spawn and capture
+    start_time = time.time()
+    try:
+        with open(output_file, 'w') as f:
+            process = subprocess.Popen(
+                cmd,
+                cwd=test_dir,
+                stdout=f,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            process.wait()
+    except Exception as e:
+        print(f"ERROR during execution: {e}")
+        sys.exit(1)
+    
+    end_time = time.time()
+    duration_ms = int((end_time - start_time) * 1000)
+
+    # 4. Analysis
+    print(f"\nTrial complete in {duration_ms}ms. Analyzing telemetry...")
+    analyze_trial_output(output_file, test_id, duration_ms)
+
+
+def analyze_trial_output(file_path: Path, test_id: str, duration_ms: int) -> None:
+    """Consolidated analysis logic from analyze_tools.sh"""
+    if not file_path.exists():
+        print(f"ERROR: Output file not found: {file_path}")
+        return
+
+    try:
+        with open(file_path) as f:
+            lines = f.readlines()
+    except Exception as e:
+        print(f"ERROR reading logs: {e}")
+        return
+
+    data = []
+    for line in lines:
+        line = line.strip()
+        if line:
+            try:
+                data.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+
+    # 1. Metric Extraction
+    result_obj = None
+    for item in data:
+        if isinstance(item, dict) and item.get('type') == 'result':
+            result_obj = item
+            break
+    
+    if not result_obj and data:
+        result_obj = data[-1]
+
+    denials = result_obj.get('result', {}).get('permission_denials', []) if result_obj else []
+    denials_count = len(denials) if isinstance(denials, list) else 0
+    num_turns = result_obj.get('result', {}).get('num_turns', 0) if result_obj else 0
+
+    # 2. Telemetry: Tool Usage vs Hallucinations
+    tools_invoked = []
+    manual_reads = []
+    win_markers = []
+
+    for item in data:
+        # Check tool use
+        if item.get('type') == 'tool_use':
+            tools_invoked.append(item.get('name', 'Unknown'))
+        
+        # Check assistant content for markers/hallucinations
+        message = item.get('message', {})
+        content = message.get('content', [])
+        if isinstance(content, list):
+            for c in content:
+                if isinstance(c, dict):
+                    text = str(c.get('text', ''))
+                    if 'COMPLETE' in text:
+                        win_markers.append(text.split('COMPLETE')[0].strip('# ').strip() + ' COMPLETE')
+                    
+                    if c.get('type') == 'tool_use':
+                        name = c.get('name', 'Unknown')
+                        tools_invoked.append(name)
+                        # Hallucination check: Manual skill reads
+                        input_data = c.get('input', {})
+                        path = str(input_data.get('path', ''))
+                        if name in ['Read', 'Bash'] and '.claude/skills' in path and '.md' in path:
+                            manual_reads.append(path)
+
+    # 3. Final Report
+    autonomy = 100 if denials_count == 0 else max(0, 100 - (denials_count * 10))
+    
+    print("\n" + "=" * 40)
+    print(f"TRIAL REPORT: {test_id}")
+    print("=" * 40)
+    print(f"Status:      {'PASS' if win_markers else 'NO_MARKER'}")
+    print(f"Autonomy:    {autonomy}% ({denials_count} denials)")
+    print(f"Turns:       {num_turns}")
+    print(f"Duration:    {duration_ms}ms")
+    print("-" * 40)
+    print(f"Tools Used:  {', '.join(set(tools_invoked)) if tools_invoked else 'None'}")
+    if win_markers:
+        print(f"Markers:     {', '.join(set(win_markers))}")
+    if manual_reads:
+        print(f"⚠️ HALLUCINATION DETECTED: Manual skill reads found: {len(manual_reads)}")
+    print("=" * 40)
+
+    # Instructions for next step
+    print(f"\nRecommended Command to Commit:")
+    print(f"uv run scripts/test_management_helper.py sync-result {test_id} {autonomy} {duration_ms} \"{', '.join(win_markers)}\"")
+
+
 def main():
     """Main CLI entry point"""
     if len(sys.argv) < 2:
         print("Usage: test_runner_helper.py <command> [args...]")
         print("\nCommands:")
+        print("  run-trial          - Run a test void, witness, and analyze")
         print("  find-next          - Find the next test to run")
-        print("  update-status      - Update test status")
         print("  progress          - Show test progress")
         print("  analyze           - Analyze test output")
-        print("  detect-tools      - Detect tool usage")
         print("  analyze-execution - Comprehensive analysis")
-        print("  lifecycle-stage   - Update test lifecycle stage")
-        print("  phase-complete    - Mark phase as complete")
-        print("  add-finding       - Add finding to test")
         sys.exit(1)
     
     command = sys.argv[1]
     manager = TestPlanManager()
     
-    if command == "find-next":
-        find_next_test(manager)
-    elif command == "update-status":
+    if command == "run-trial":
         if len(sys.argv) < 4:
-            print("Usage: update-status <test_id> <status> [autonomy] [duration]")
+            print("Usage: run-trial <test_id> <prompt> [max_turns]")
             sys.exit(1)
-        autonomy = sys.argv[4] if len(sys.argv) > 4 else None
-        duration = sys.argv[5] if len(sys.argv) > 5 else None
-        update_status(manager, sys.argv[2], sys.argv[3], autonomy, duration)
+        max_turns = int(sys.argv[4]) if len(sys.argv) > 4 else 10
+        run_trial(manager, sys.argv[2], sys.argv[3], max_turns)
+    elif command == "find-next":
+        find_next_test(manager)
     elif command == "progress":
         show_progress(manager)
     elif command == "analyze":
@@ -620,33 +747,11 @@ def main():
             print("Usage: analyze <output_file>")
             sys.exit(1)
         analyze_output(sys.argv[2])
-    elif command == "detect-tools":
-        if len(sys.argv) < 3:
-            print("Usage: detect-tools <output_file>")
-            sys.exit(1)
-        detect_tool_usage(sys.argv[2])
     elif command == "analyze-execution":
         if len(sys.argv) < 3:
             print("Usage: analyze-execution <output_file>")
             sys.exit(1)
         analyze_execution(sys.argv[2])
-    elif command == "lifecycle-stage":
-        if len(sys.argv) < 4:
-            print("Usage: lifecycle-stage <test_id> <stage>")
-            sys.exit(1)
-        lifecycle_stage(manager, sys.argv[2], sys.argv[3])
-    elif command == "phase-complete":
-        if len(sys.argv) < 3:
-            print("Usage: phase-complete <phase_number>")
-            sys.exit(1)
-        phase_complete(manager, int(sys.argv[2]))
-    elif command == "add-finding":
-        if len(sys.argv) < 4:
-            print("Usage: add-finding <test_id> <finding>")
-            sys.exit(1)
-        # Join all remaining args as finding text
-        finding = ' '.join(sys.argv[3:])
-        add_finding(manager, sys.argv[2], finding)
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
