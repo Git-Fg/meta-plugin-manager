@@ -236,13 +236,7 @@ hooks:
 
 ## Usage Pattern
 
-```bash
-# Load knowledge for understanding
-Skill("knowledge-subagents")
-
-# Then use factory for execution
-Skill("create-subagent", args="name=my-agent description='Specialized task'")
-```
+Load this knowledge skill to understand agent types and configuration patterns, then use the create-subagent factory skill for creating agent files.
 
 ## Knowledge Only
 

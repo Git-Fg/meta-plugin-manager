@@ -10,9 +10,7 @@ Adds hooks for event-driven automation and validation in .claude/ configuration.
 
 ## Usage
 
-```bash
-Skill("create-hook", args="event=PreToolUse matcher=Write type=command command='./.claude/scripts/validate.sh'")
-```
+Invoke this factory skill to add hooks for event-driven automation and validation. Specify the event type, tool matcher, hook type, and the script path (for command type hooks).
 
 ### Arguments
 

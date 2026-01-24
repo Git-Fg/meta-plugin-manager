@@ -89,13 +89,7 @@ Hub Skills (routers with disable-model-invocation: true) delegate to knowledge s
 
 ### Usage Pattern
 
-```bash
-# Learn concepts (Knowledge)
-Skill("knowledge-skills")
-
-# Execute operations (Factory)
-Skill("create-skill", args="name=my-skill description='My skill'")
-```
+Load knowledge skills to understand concepts and patterns, then use factory skills to execute operations (create skills, add MCP servers, configure hooks, create agents).
 
 ### Reference Pattern
 

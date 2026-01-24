@@ -10,9 +10,7 @@ Scaffolds new skills with proper YAML structure and validation templates.
 
 ## Usage
 
-```bash
-Skill("create-skill", args="name=my-skill description='Analyze data files. Use when processing CSV data. Not for real-time data.' context=regular")
-```
+Invoke this factory skill to create a new skill with proper YAML structure. Specify the skill name (kebab-case), a What-When-Not description, and optionally the context type (regular or fork).
 
 ### Arguments
 
@@ -38,12 +36,9 @@ Creates `.claude/skills/<name>/SKILL.md` with:
 
 ## Script Execution
 
-The scripts are located in `scripts/` directory and can be executed directly:
+The scripts are located in `scripts/` directory and can be executed directly for testing:
 
 ```bash
-# Via factory skill (recommended)
-Skill("create-skill", args="name=my-skill description='My skill'")
-
 # Direct script execution (for testing)
 bash .claude/skills/create-skill/scripts/scaffold_skill.sh \
     --name my-skill \

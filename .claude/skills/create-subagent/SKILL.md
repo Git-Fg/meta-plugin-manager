@@ -10,9 +10,7 @@ Creates subagent configuration files with proper frontmatter.
 
 ## Usage
 
-```bash
-Skill("create-subagent", args="name=my-agent description='Specialized task' type=general-purpose tools=Bash,Read")
-```
+Invoke this factory skill to create subagent configuration files with proper frontmatter. Specify the agent name, description, and optionally the agent type, model, tool restrictions, or context.
 
 ### Arguments
 

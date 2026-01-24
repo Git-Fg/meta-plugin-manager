@@ -140,22 +140,9 @@ main "$@"
 
 ## Parameter Passing Pattern
 
-**Caller invokes with:**
-```yaml
-Skill("analyze-data", args="dataset=production_logs timeframe=24h")
-```
+**Caller provides arguments as key=value pairs, forked skill receives via $ARGUMENTS:**
 
-**Forked skill receives via $ARGUMENTS:**
-```yaml
----
-name: analyze-data
-context: fork
----
-Scan $ARGUMENTS:
-1. Parse: dataset=production_logs timeframe=24h
-2. Execute analysis
-3. Output: ## ANALYZE_COMPLETE
-```
+For forked skills with context: fork, parse $ARGUMENTS to extract parameters provided by the caller.
 
 ## Skill Completion Markers
 

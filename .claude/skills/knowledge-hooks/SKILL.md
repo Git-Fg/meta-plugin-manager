@@ -214,13 +214,7 @@ Use `CLAUDE_PROJECT_DIR` for portable scripts:
 
 ## Usage Pattern
 
-```bash
-# Load knowledge for understanding
-Skill("knowledge-hooks")
-
-# Then use factory for execution
-Skill("create-hook", args="event=PreToolUse matcher=Write type=command")
-```
+Load this knowledge skill to understand hook events and security patterns, then use the create-hook factory skill for adding hooks to settings.json.
 
 ## Knowledge Only
 

@@ -10,9 +10,7 @@ Adds MCP server configuration to .mcp.json with safe merge strategy.
 
 ## Usage
 
-```bash
-Skill("create-mcp-server", args="name=my-server transport=stdio command=node args='dist/server.js'")
-```
+Invoke this factory skill to register an MCP server in .mcp.json. Specify the server name, transport type (stdio or streamable-http), and the appropriate configuration (command for stdio, URL for streamable-http).
 
 ### Arguments
 
@@ -30,15 +28,11 @@ Skill("create-mcp-server", args="name=my-server transport=stdio command=node arg
 
 ### stdio (Local Development)
 
-```bash
-Skill("create-mcp-server", args="name=my-server transport=stdio command=node args='dist/server.js'")
-```
+For local MCP server implementation, specify the command and arguments.
 
 ### streamable-http (Cloud/Production)
 
-```bash
-Skill("create-mcp-server", args="name=my-server transport=streamable-http url='https://api.example.com/mcp'")
-```
+For hosted services, specify the server URL.
 
 ## Output
 

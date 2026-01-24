@@ -62,13 +62,8 @@ Active execution with deterministic bash/python scripts:
 - **create-subagent**: Agent creation (create_agent.sh, validate_agent.sh, detect_context.sh)
 
 **Usage Pattern**:
-```bash
-# Learn concepts (Knowledge)
-Skill("knowledge-skills")
 
-# Execute operations (Factory)
-Skill("create-skill", args="name=my-skill description='My skill'")
-```
+Load knowledge skills to understand concepts and patterns, then use factory skills to execute operations (create skills, add MCP servers, configure hooks, create agents).
 
 ### Migration from v3
 

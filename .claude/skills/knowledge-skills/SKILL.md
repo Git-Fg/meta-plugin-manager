@@ -163,13 +163,7 @@ Load these as needed for comprehensive guidance:
 
 ## Usage Pattern
 
-```bash
-# Load knowledge for understanding
-Skill("knowledge-skills")
-
-# Then use factory for execution
-Skill("create-skill", args="name=my-skill description='My skill'")
-```
+Load this knowledge skill to understand Agent Skills standards, then use the create-skill factory skill for scaffolding new skills.
 
 ## Knowledge Only
 

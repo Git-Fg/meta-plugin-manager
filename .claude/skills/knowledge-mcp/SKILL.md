@@ -173,13 +173,7 @@ Need external service integration?
 
 ## Usage Pattern
 
-```bash
-# Load knowledge for understanding
-Skill("knowledge-mcp")
-
-# Then use factory for execution
-Skill("create-mcp-server", args="name=my-server transport=stdio command=node")
-```
+Load this knowledge skill to understand MCP protocol and configuration patterns, then use the create-mcp-server factory skill for adding servers to .mcp.json.
 
 ## Knowledge Only
 
