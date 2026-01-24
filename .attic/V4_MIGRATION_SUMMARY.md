@@ -59,13 +59,16 @@
 | create-subagent | create_agent.sh, validate_agent.sh, detect_context.sh | Agent creation |
 
 ### Meta-Critic (1)
-| Skill | References | Purpose |
-|-------|------------|---------|
-| meta-critic | analysis-framework.md, workflow-examples.md | Quality validation and alignment checking |
+| Skill | Purpose | Line Count |
+|-------|---------|------------|
+| meta-critic | Quality validation and alignment checking | 162 lines |
 
 **Three-Way Comparison**:
 - What was Requested vs What was Done vs What Standards Specify
-- Use when: Quality checks, workflow validation, drift detection
+- Issue classification: Critical/High/Medium/Low
+- Specific, actionable feedback (no prescriptive scoring)
+
+**Principles**: Simplified following Delta Standard and Trust AI Intelligence.
 
 ---
 

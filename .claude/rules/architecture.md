@@ -125,14 +125,13 @@ Quality validation and alignment checking:
 | meta-critic | Three-way comparison: Request vs Delivery vs Standards | Quality checks, workflow validation, drift detection |
 
 **Analysis Framework**:
-- **Intent Alignment**: Did actions match user's goal?
-- **Standards Compliance**: Does output comply with knowledge-skills?
-- **Completeness**: Were all requirements addressed?
-- **Quality**: Is work production-ready? (≥80/100 score)
+- Three-way comparison: What was requested vs What was done vs What standards specify
+- Issue classification: Critical (Blocking) / High / Medium / Low
+- Specific, actionable feedback: Exact files and lines, not abstract categories
 
-**Output**: Constructive critique with specific, actionable recommendations.
+**Output**: Constructive critique with specific recommendations.
 
-See `.claude/skills/meta-critic/references/analysis-framework.md` for detailed methodology.
+**Principles**: Trust AI intelligence for quality evaluation — no prescriptive scoring grids.
 
 ## Progressive Disclosure
 
