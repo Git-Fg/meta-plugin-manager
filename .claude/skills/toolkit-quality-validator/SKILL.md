@@ -308,3 +308,27 @@ Continue only if score ≥ 8/10
 - **5-6**: Fair - Significant improvements recommended
 - **3-4**: Poor - Major rework required
 - **0-2**: Failing - Complete rebuild recommended
+
+---
+
+## Task-Integrated Quality Validation
+
+For complex quality audits requiring visual progress tracking and dependency enforcement, use TaskList integration:
+
+**When to use**:
+- Multi-component validation (skills + subagents + hooks + MCP)
+- Need to enforce scan completion before validation
+- Want visual progress tracking (Ctrl+T)
+- Quality tracking across audit iterations
+
+**Workflow description**:
+
+Use TaskList to create a multi-phase validation workflow. First use TaskCreate to establish the structure scan task that identifies all .claude/ components. Then use TaskCreate to set up parallel component validation tasks for skills (15 points), subagents (10 points), hooks (10 points), and MCP (5 points) — configure these with dependencies so they wait for the structure scan to complete. Use TaskCreate to establish the standards compliance check (20 points) with dependencies on all component validations. Finally use TaskCreate to create the final report generation task that depends on the standards check. Use TaskUpdate to mark tasks as completed as each phase finishes, and use TaskList to check overall progress.
+
+**Critical dependency**: Component validation tasks must be configured to wait for the structure scan task to complete. The standards check task must wait for all component validation tasks. This ensures comprehensive evaluation before scoring begins and a complete picture before final scoring.
+
+**Task tracking provides**:
+- Visual progression through validation phases (visible in Ctrl+T)
+- Dependency enforcement (tasks block until dependencies complete)
+- Persistent quality tracking across audit iterations
+- Clear phase completion markers

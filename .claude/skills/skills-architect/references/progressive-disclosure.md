@@ -47,6 +47,67 @@ references/
 
 ---
 
+## Official Progressive Disclosure Patterns
+
+From the official skill-creator, three proven patterns for organizing content:
+
+### Pattern 1: High-level guide with references
+
+```markdown
+# PDF Processing
+
+## Quick start
+Extract text with pdfplumber:
+[python code example]
+
+## Advanced features
+- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
+- **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
+```
+
+**Use when**: Simple quick-start + extensive optional documentation
+
+### Pattern 2: Domain-specific organization
+
+```markdown
+bigquery-skill/
+├── SKILL.md (overview and navigation)
+└── reference/
+    ├── finance.md (revenue, billing metrics)
+    ├── sales.md (opportunities, pipeline)
+    ├── product.md (API usage, features)
+    └── marketing.md (campaigns, attribution)
+```
+
+**Use when**: Skill supports multiple domains or variants. Claude only loads relevant domain file.
+
+### Pattern 3: Conditional details
+
+```markdown
+# DOCX Processing
+
+## Creating documents
+Use docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).
+
+## Editing documents
+For simple edits, modify the XML directly.
+
+**For tracked changes**: See [REDLINING.md](REDLINING.md)
+**For OOXML details**: See [OOXML.md](OOXML.md)
+```
+
+**Use when**: Different workflows require different documentation paths.
+
+**Key principles from official**:
+- Keep references one level deep from SKILL.md
+- Structure longer reference files (>100 lines) with table of contents
+- Avoid duplication: Information lives in SKILL.md OR references/, not both
+- Move detailed reference material, schemas, and examples to references files
+- Keep only essential procedural instructions and workflow guidance in SKILL.md
+
+---
+
 ## ASSESS Workflow
 
 **Purpose**: Analyze progressive disclosure needs
@@ -75,4 +136,4 @@ references/
 - [ ] Detailed documentation
 - [ ] Specific scenarios
 
-See also: autonomy-design.md, extraction-methods.md, quality-framework.md
+See also: autonomy-design.md, extraction-methods.md, quality-framework.md, ../../rules/positive-patterns.md

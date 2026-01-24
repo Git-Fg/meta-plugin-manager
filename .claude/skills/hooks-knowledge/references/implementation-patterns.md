@@ -1,225 +1,281 @@
-# Hook Implementation Patterns
+# Hook Implementation Concepts
 
-Common patterns for implementing hooks in your project.
+Core concepts for implementing hooks in your local project. Trust AI to make intelligent decisions based on these principles.
 
-## Pattern 1: File Validation Hook
+## Core Philosophy: Trust AI Intelligence
 
-Prevent modification of sensitive files.
+**This reference teaches concepts, not prescriptive templates:**
 
-**Configuration**:
-```yaml
-# .claude/settings.json
+1. **Project-First Approach**: Always create hooks in your project's `.claude/` directory
+2. **Trust AI Reasoning**: Provide concepts, AI makes intelligent implementation decisions
+3. **Autonomous Execution**: Skills work without user interaction
+4. **Minimal Prescriptiveness**: Focus on principles, not rigid patterns
+5. **Clean Architecture**: Remove deprecated patterns and legacy knowledge
+
+## Fundamental Concepts
+
+### Hook Configuration Structure
+
+```json
 {
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/validate-file.sh"
-          }
-        ]
-      }
-    ]
+    "EventName": [{
+      "matcher": "ToolPattern",
+      "hooks": [{
+        "type": "command",
+        "command": "your-script.sh"
+      }]
+    }]
   }
 }
 ```
 
-**Validation Script**:
-```bash
-#!/bin/bash
-# .claude/scripts/validate-file.sh
+**Key Elements**:
+- **EventName**: Which hook event to respond to
+- **ToolPattern**: Which tools to match (use patterns, AI handles specificity)
+- **Command**: Script to execute (use CLAUDE_PROJECT_DIR for portability)
 
-FILE="$1"
-SENSITIVE_FILES=(".env" "*.key" "config/production.yml")
+### Event Selection Concept
 
-for pattern in "${SENSITIVE_FILES[@]}"; do
-  if [[ "$FILE" == $pattern ]]; then
-    echo "ERROR: Editing $FILE is not allowed"
-    exit 2
-  fi
-done
-```
+**Trust AI to choose appropriate events based on use case**:
 
-## Pattern 2: Security Check Hook
+**For Validation**:
+- PreToolUse: Validate before operations
+- AI decides: Which specific tools to validate
 
-Validate operations before execution.
+**For Automation**:
+- PostToolUse: Process after operations
+- AI decides: What automation is appropriate
 
-**Configuration**:
-```yaml
-# In skill frontmatter
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./.claude/scripts/security-check.sh"
-```
+**For Lifecycle**:
+- SessionStart/End: Session management
+- AI decides: What session context is needed
 
-**Security Check Script**:
-```bash
-#!/bin/bash
-# .claude/scripts/security-check.sh
+### Matcher Pattern Concept
 
-COMMAND="$1"
+**Trust AI to choose appropriate patterns**:
 
-# Block dangerous commands
-DANGEROUS_PATTERNS=("rm -rf" "sudo" "chmod 777")
+**Simple Matching**:
+- `"Bash"` - Exact match for bash tool
+- `"Write|Edit"` - Multiple specific tools
+- `"*"` - All tools (AI decides when appropriate)
 
-for pattern in "${DANGEROUS_PATTERNS[@]}"; do
-  if [[ "$COMMAND" == *"$pattern"* ]]; then
-    echo "ERROR: Dangerous command detected: $pattern"
-    exit 2
-  fi
-done
-```
+**Pattern Matching**:
+- Regex patterns for complex matching
+- File path patterns for specific files
+- Command patterns for specific operations
 
-## Pattern 3: Formatting Hook
+## Core Implementation Patterns
 
-Automatically format code after edits.
+### Pattern 1: Validation Hooks
 
-**Configuration**:
-```yaml
-# In skill frontmatter
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      hooks:
-        - type: command
-          command: "./.claude/scripts/format.sh"
-          once: true
-```
+**Concept**: Validate operations before execution
 
-**Format Script**:
-```bash
-#!/bin/bash
-# .claude/scripts/format.sh
+**When AI Should Use**:
+- Need to prevent dangerous operations
+- Want to validate file operations
+- Need to check environment state
 
-# Auto-format based on file type
-if [[ "$FILE" == *.js ]]; then
-  prettier --write "$FILE"
-elif [[ "$FILE" == *.py ]]; then
-  black "$FILE"
-elif [[ "$FILE" == *.md ]]; then
-  markdownlint --fix "$FILE"
-fi
-```
+**Implementation Guidance**:
+- Use PreToolUse for validation
+- Trust AI to choose appropriate tools to validate
+- AI decides validation logic based on project context
+- Use exit 2 to block dangerous operations
 
-## Pattern 4: Logging Hook
+### Pattern 2: Security Guardrails
 
-Log all file operations for audit trail.
+**Concept**: Prevent unauthorized or dangerous actions
 
-**Configuration**:
-```yaml
-# .claude/settings.local.json
+**When AI Should Use**:
+- Projects with sensitive files (.env, secrets)
+- Production deployment scenarios
+- Database operations
+- System-level commands
+
+**Implementation Guidance**:
+- Trust AI to identify sensitive patterns in project
+- Use PreToolUse for prevention
+- AI decides specific security rules based on project type
+- Component-scoped hooks preferred for auto-cleanup
+
+### Pattern 3: Automation Hooks
+
+**Concept**: Automate repetitive tasks after operations
+
+**When AI Should Use**:
+- Need to format code after edits
+- Want to log operations for audit
+- Need to update project state
+- Want to trigger follow-up actions
+
+**Implementation Guidance**:
+- Use PostToolUse for automation
+- Trust AI to identify automation opportunities
+- AI decides automation logic based on project needs
+- Use once: true for one-time setup hooks
+
+### Pattern 4: Session Management
+
+**Concept**: Manage session lifecycle and context
+
+**When AI Should Use**:
+- Need to set up environment on session start
+- Want to persist state between sessions
+- Need cleanup on session end
+- Want to initialize project context
+
+**Implementation Guidance**:
+- Use SessionStart/End for lifecycle management
+- Trust AI to determine session needs
+- AI decides what context to load/persist
+- Use CLAUDE_ENV_FILE for environment persistence
+
+## Configuration Location Strategy
+
+### Local Project (Default)
+
+**Location**: `.claude/settings.json`
+
+**When AI Should Use**:
+- Project-specific automation
+- Team collaboration needed
+- Version-controlled settings
+- Project security policies
+
+**Benefits**:
+- AI understands project context
+- Appropriate for project-specific needs
+- Team sharing through git
+
+### Component-Scoped (Preferred for Auto-Cleanup)
+
+**Location**: YAML frontmatter in skills/agents
+
+**When AI Should Use**:
+- Skill-specific validation
+- Temporary or experimental hooks
+- Need auto-cleanup
+- Avoid global impact
+
+**Benefits**:
+- Auto-cleanup when component finishes
+- Scoped to specific use cases
+- No global side effects
+
+## Environment Variable Usage
+
+**Core Principle**: Use CLAUDE_PROJECT_DIR for portable scripts
+
+```json
 {
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/log-operation.sh"
-          }
-        ]
-      }
-    ]
+    "PreToolUse": [{
+      "matcher": "Write",
+      "hooks": [{
+        "type": "command",
+        "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/validate.sh"
+      }]
+    }]
   }
 }
 ```
 
-**Logging Script**:
-```bash
-#!/bin/bash
-# .claude/scripts/log-operation.sh
+**AI Should Handle**:
+- Determining appropriate script locations
+- Setting up project-specific variables
+- Managing environment persistence
 
-TOOL="$1"
-FILE="$2"
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+## Exit Code Strategy
 
-echo "$TIMESTAMP - $TOOL - $FILE" >> .claude/audit.log
-```
+**Standard Convention**:
+- `0`: Success, operation allowed
+- `1`: Warning, operation allowed
+- `2`: Blocking error, operation denied
 
-## Pattern 5: Environment Setup Hook
+**AI Should Decide**:
+- When to block vs warn
+- What constitutes dangerous operations
+- Appropriate error messaging
 
-Initialize development environment.
+## Performance Considerations
 
-**Configuration**:
-```yaml
-# In skill frontmatter
-hooks:
-  PreToolUse:
-    - matcher: "*"
-      hooks:
-        - type: command
-          command: "./.claude/scripts/setup-env.sh"
-          once: true
-```
+**Core Principles**:
+- Keep hooks fast (<100ms)
+- Use specific matchers, not broad patterns
+- Trust AI to optimize performance
 
-**Setup Script**:
-```bash
-#!/bin/bash
-# .claude/scripts/setup-env.sh
+**AI Should Handle**:
+- Determining optimal matcher specificity
+- Identifying performance bottlenecks
+- Deciding when to cache validation results
 
-# Create necessary directories
-mkdir -p .claude/scripts
-mkdir -p logs
-mkdir -p temp
+## Security Best Practices
 
-# Set up environment variables
-export CLAUDE_PROJECT_DIR="$PWD"
-```
+**Core Principles**:
+- Validate inputs before processing
+- Use whitelist over blacklist when possible
+- Provide clear error messages
+- Trust AI to identify security needs
 
-## Best Practices
+**AI Should Handle**:
+- Identifying security-sensitive operations in project
+- Determining appropriate validation rules
+- Choosing security patterns based on project type
 
-### 1. Use Component-Scoped Hooks
-Prefer hooks in skill/agent frontmatter for auto-cleanup:
-```yaml
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./scripts/validate.sh"
-```
+## When NOT to Use Hooks
 
-### 2. Fail Fast
-Use `exit 2` to block dangerous operations:
-```bash
-if [[ $VIOLATION ]]; then
-  echo "ERROR: Operation blocked"
-  exit 2
-fi
-```
+**Trust AI to recognize these cases**:
+- Complex logic requiring user interaction (use skills instead)
+- Temporary needs (use commands instead)
+- Operations requiring external dependencies
+- Cross-session state management (use other mechanisms)
 
-### 3. Keep Scripts in .claude/scripts/
-Organize hook scripts in a dedicated directory:
-```
-.claude/
-├── scripts/
-│   ├── validate.sh
-│   ├── format.sh
-│   └── log.sh
-├── settings.json
-└── hooks.json
-```
+## AI Decision Framework
 
-### 4. Use once: true for Setup Hooks
-Avoid repeated execution:
-```yaml
-hooks:
-  PreToolUse:
-    - matcher: "*"
-      hooks:
-        - type: command
-          command: "./scripts/setup.sh"
-          once: true
-```
+**For Hook Implementation**:
 
-### 5. Log Operations
-Maintain audit trail of hook executions:
-```bash
-echo "$(date): $OPERATION" >> .claude/hook.log
-```
+1. **Assess Project Context**:
+   - What type of project is this?
+   - What security concerns exist?
+   - What automation opportunities are present?
+
+2. **Choose Appropriate Events**:
+   - Validation needs → PreToolUse
+   - Automation needs → PostToolUse
+   - Lifecycle needs → SessionStart/End
+
+3. **Select Configuration Scope**:
+   - Project-wide policies → settings.json
+   - Component-specific → frontmatter hooks
+   - Personal preferences → settings.local.json
+
+4. **Implement with AI Intelligence**:
+   - Trust AI to write appropriate scripts
+   - Let AI choose specific validation logic
+   - Allow AI to optimize for project needs
+
+## Quality Indicators
+
+**High-Quality Hook Implementation**:
+- ✅ Uses appropriate event for use case
+- ✅ Configured at appropriate scope
+- ✅ Includes proper error handling
+- ✅ Performs efficiently
+- ✅ Provides clear feedback
+
+**Trust AI to Achieve**:
+- Appropriate event selection
+- Smart scope choice
+- Intelligent validation logic
+- Optimal performance
+- Clear user feedback
+
+---
+
+## Reference
+
+**For complete event documentation**: See [events.md](events.md)
+
+**For configuration guidance**: See [hook-types.md](../hooks-architect/references/hook-types.md)
+
+**Key Principle**: Provide concepts, trust AI to make intelligent implementation decisions based on project context and requirements.

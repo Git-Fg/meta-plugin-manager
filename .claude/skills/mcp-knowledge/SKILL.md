@@ -1,5 +1,6 @@
 ---
 name: mcp-knowledge
+context: fork
 description: "Integrate external APIs and tools via Model Context Protocol (MCP). Use when adding web search, databases, GitHub, Notion, or custom API integrations. Configure MCP servers in .mcp.json for tools, resources, and prompts. Triggers: 'add web search', 'integrate API', 'connect database', 'MCP server', 'external tools', 'GitHub integration', 'Notion integration'."
 user-invocable: true
 ---
@@ -236,4 +237,87 @@ When coordinating multiple MCP servers:
 - Enable/disable per task phase ✅
 - Monitor tool count to prevent overload ✅
 - Use official servers when available ✅
+
+---
+
+## TaskList Coordination for Multi-Server Setup
+
+### When MCP Workflows Use TaskList Tools
+
+TaskList tools (built-in Layer 1 orchestration primitives) can coordinate complex multi-server MCP configuration with dependency tracking.
+
+### When to Use TaskList for MCP Workflows
+
+**Use TaskList when**:
+- Multi-server setup (3+ servers to configure)
+- Server dependency chains (server B requires server A)
+- Complex validation workflow (test → validate → optimize)
+- Need visual progress tracking across server setup
+- Session-spanning MCP configuration projects
+
+**Don't use TaskList when**:
+- Single server configuration (direct execution is faster)
+- No dependencies between servers
+- One-time setup (MCP tools are sufficient)
+
+### Multi-Server Setup Workflow
+
+**Sequential Server Setup**:
+
+Use TaskCreate to validate the .mcp.json structure first. Then use TaskCreate to establish parallel server configuration tasks for primary (web search), secondary (database), and specialized (custom API) servers — configure these to depend on the structure validation. Use TaskCreate to establish a connectivity testing task that depends on all server configurations completing. Use TaskCreate to establish a tool availability validation task that depends on connectivity testing. Finally use TaskCreate to establish a configuration report generation task. Use TaskUpdate to mark tasks complete as they finish, and use TaskList to check overall progress.
+
+**Benefits**:
+- .mcp.json validation prevents invalid configuration
+- Parallel server configuration saves time
+- Connectivity testing waits for all servers
+- Validation runs only after successful connectivity
+
+### VALIDATE → OPTIMIZE Workflow Pattern
+
+**VALIDATE workflow**: Use TaskCreate to establish an .mcp.json scan task. Then use TaskCreate to set up parallel validation tasks for server protocols, tool schemas, and resource access that depend on the scan. Use TaskCreate to establish a validation report generation task that depends on all validations. Use TaskUpdate to mark tasks complete.
+
+**OPTIMIZE workflow** (depends on VALIDATE): Use TaskCreate to establish a findings review task that depends on the validation report. Then use TaskCreate to set up prioritization, optimization, and re-validation tasks in sequence, each depending on the previous. Use TaskList to track optimization progress.
+
+**Critical dependency**: Optimization tasks must be configured to depend on the validation report task completing, ensuring fixes are based on actual performance findings.
+
+## For Complex MCP Workflows
+
+For multi-server MCP projects requiring task tracking across sessions, see **task-knowledge**:
+
+- **Multi-server coordination**: Track MCP server integration across multiple servers with dependencies
+- **Context spanning for long integrations**: Continue MCP development across multiple sessions when context fills
+- **Parallel server validation**: Multiple MCP server validation running simultaneously with coordinated reporting
+- **Session-persistent MCP tracking**: MCP integration projects spanning days or weeks with TaskList persistence
+
+**When to use TaskList for MCP**:
+- Multi-server setup (3+ servers to configure in sequence)
+- Server dependency chains (server B requires server A)
+- Complex validation workflow (test → validate → optimize)
+- Need visual progress tracking across server setup
+- Session-spanning MCP configuration projects
+
+**Integration Pattern**:
+
+Use TaskCreate to validate the .mcp.json structure first. Then use TaskCreate to establish parallel server configuration tasks for primary (web search), secondary (database), and specialized (custom API) servers — configure these to depend on the structure validation. Use TaskCreate to establish a connectivity testing task that depends on all server configurations completing. Use TaskCreate to establish a tool availability validation task that depends on connectivity testing. Finally use TaskCreate to establish a configuration report generation task.
+
+**Benefits**:
+- .mcp.json validation prevents invalid configuration
+- Parallel server configuration saves time
+- Connectivity testing waits for all servers
+- Validation runs only after successful connectivity
+
+**See task-knowledge**: [task-knowledge](task-knowledge) for complete TaskList workflow orchestration patterns.
+
+### Implementation Pattern
+
+When adding TaskList to MCP workflows, explicitly cite which primitive to use: TaskCreate to establish tasks with dependencies, TaskUpdate to mark completion or update status, TaskList to check progress. Describe the workflow phases, their execution order, and dependencies in natural language.
+
+### Architecture Reminders
+
+- **TaskList, TaskCreate, TaskUpdate, TaskGet are built-in** (Layer 1) - Claude already knows them
+- **MCP servers are user content** (Layer 2) configured in .mcp.json
+- **Cite the specific primitive**: "Use TaskCreate to establish..." not "Create a task..."
+- **Describe the workflow in natural language**, not code syntax
+
+See **[task-architect](task-architect/)** for complete TaskList orchestration patterns and **[mcp-architect](mcp-architect/)** for MCP-specific workflow implementations.
 ```

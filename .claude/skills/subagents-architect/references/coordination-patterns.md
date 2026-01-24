@@ -45,6 +45,24 @@ Multi-agent orchestration patterns for effective subagent coordination.
 
 ---
 
+## Pattern 4: Task Coordination
+
+**Use Case**: Multi-agent workflows with persistent tracking
+
+**Triggers**:
+- Multi-agent workflow spanning sessions
+- Parallel task execution with state tracking
+- Agent handoffs requiring state persistence
+
+**Integration**:
+- Use TaskList tools to create coordination tasks
+- Use TaskList tools for tracking parallel execution
+- Use TaskList tools for agent handoff state management
+
+**Architecture**: TaskList tools (built-in Layer 1) orchestrate subagents (Layer 2 user content). Subagents are launched BY Task tool (Layer 1) while TaskList tools track workflow state.
+
+---
+
 ## DETECT Workflow
 
 **Purpose**: Identify automation opportunities

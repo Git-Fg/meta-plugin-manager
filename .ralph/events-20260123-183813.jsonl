@@ -1,2 +1,0 @@
-{"payload":"Fix URL hypocrisy in hooks-architect: Remove MANDATORY URL fetching claims at lines 27-40 that claim to fetch but don't implement","topic":"refactor.task","ts":"2026-01-23T18:38:30.387115+00:00"}
-{"payload":"step: Remove MANDATORY URL hypocrisy from hooks-architect lines 27-40, tests: n/a (docs only), clippy: n/a (docs only)","topic":"refactor.done","ts":"2026-01-23T18:39:13.372446+00:00"}

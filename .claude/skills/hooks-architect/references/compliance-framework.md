@@ -173,47 +173,56 @@ Score: 6/6 × 20 = 20/20
 
 ---
 
-### Dimension 5: Component Scope (20 points)
+### Dimension 5: Configuration Hierarchy (20 points)
 
-**Measures**: Preference for component-scoped hooks over global hooks
+**Measures**: Proper use of modern configuration hierarchy
 
 **Evaluation Criteria**:
 
-| Scope Type | Points | Percentage |
-|------------|--------|------------|
-| **Component-Scoped** | 20 | All hooks in skill frontmatter |
-| **Mostly Component-Scoped** | 16 | 80% component-scoped, 20% global |
-| **Mixed** | 12 | 50% component-scoped, 50% global |
-| **Mostly Global** | 8 | 20% component-scoped, 80% global |
-| **All Global** | 0 | No component-scoped hooks |
+| Configuration Type | Points | Percentage |
+|-------------------|--------|------------|
+| **Modern Hierarchy** | 20 | User-wide + Project settings + Component-scoped |
+| **Mostly Modern** | 16 | 80% modern (user-wide/project/component), 20% legacy |
+| **Mixed Modern/Legacy** | 12 | 50% modern, 50% legacy |
+| **Legacy with Some Modern** | 8 | 20% modern, 80% legacy |
+| **All Legacy** | 0 | Only legacy hooks.json format |
 
 **Scoring Formula**:
 ```
-Component Scope Score = (Component-scoped hooks / Total hooks) × 20
+Configuration Score = (Modern configurations / Total configurations) × 20
 ```
 
+**Modern Configuration Types**:
+1. **User-wide settings** (`~/.claude/settings.json`)
+2. **Project settings** (`.claude/settings.json`)
+3. **Local overrides** (`.claude/settings.local.json`)
+4. **Component-scoped hooks** (skill/agent frontmatter)
+
+**Legacy Configuration Types**:
+1. **Legacy global hooks** (`.claude/hooks.json`)
+
 **Assessment Checklist**:
-- [ ] Count total hooks configured
-- [ ] Count component-scoped hooks (in skill frontmatter)
-- [ ] Count settings-based hooks (in .claude/settings.json or .claude/settings.local.json)
-- [ ] Count legacy global hooks (in .claude/hooks.json)
+- [ ] Count total hook configurations
+- [ ] Count modern configurations (user-wide + project + component-scoped)
+- [ ] Count legacy configurations (hooks.json)
 - [ ] Calculate percentage
 - [ ] Assign score based on percentage
 
 **Example Calculation**:
 ```
-Total hooks: 10
-Component-scoped: 8
+Total configurations: 10
+Modern: 8 (user-wide: 2, project: 3, component: 3)
+Legacy: 2 (hooks.json)
 Percentage: 8/10 = 80%
 Score: 16/20
 ```
 
-**Why Component-Scoped is Preferred**:
-- ✅ Easier to understand scope and impact
-- ✅ Can be temporary/experimental
-- ✅ No global side effects
-- ✅ Auto-cleanup when skill removed
-- ✅ Scoped to specific use cases
+**Why Modern Hierarchy is Preferred**:
+- ✅ User-wide settings enable consistent workflow across all projects
+- ✅ Project settings enable team collaboration
+- ✅ Component-scoped hooks enable auto-cleanup
+- ✅ Local overrides enable personal preferences
+- ✅ Legacy format lacks team collaboration features
 
 ---
 

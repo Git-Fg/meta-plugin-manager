@@ -1,6 +1,7 @@
 ---
 name: toolkit-architect
 description: "Project scaffolding router for .claude/ configuration and local-first customization. Use when enhancing current project with skills, MCP, hooks, or subagents. Routes to specialized domain architects and toolkit-worker for analysis. Do not use for standalone plugin publishing."
+user-invocable: false
 ---
 
 ## 🚨 MANDATORY: Read BEFORE Routing
@@ -51,6 +52,7 @@ Project scaffolding router for .claude/ configuration using skills-first archite
    - "I want automation" → Route to hooks-architect
    - "I need CLAUDE.md" or "memory management" → Route to claude-md-manager
    - "refactor CLAUDE.md" or "improve CLAUDE.md" → Route to claude-md-manager
+   - "workflow spanning sessions" or "multi-stage project setup" → Route to task-architect
 3. Load: appropriate knowledge skill
 4. Generate in .claude/ (not standalone plugin)
 5. Validate: toolkit-quality-validator
@@ -59,6 +61,28 @@ Project scaffolding router for .claude/ configuration using skills-first archite
 - **Delegate to Knowledge Skills**: Summarize key points with attribution, maintain voice separation
 - **Fork to toolkit-worker**: Parse results, present as subagent findings, acknowledge isolation
 - **Quality Validation**: Lead with scores, separate critical vs. recommendations
+
+## TaskList Routing
+
+**Route to task-architect when**:
+- "Multi-session project"
+- "Context window spanning"
+- "Project persistence"
+- "Complex multi-step workflow"
+- "Indefinitely long project"
+
+**Route to task-knowledge when**:
+- "Task management guidance"
+- "Agent type selection"
+- "Model selection for tasks"
+- "Context spanning patterns"
+- "Multi-session collaboration"
+- "Task JSON file management"
+
+**Route to subagents-knowledge when**:
+- "Agent type selection for subagents"
+- "Subagent coordination patterns"
+- "Agent model selection"
 
 **Autonomy Pattern**: Smart defaults based on exploration
 - No .claude/ exists → Create .claude/ directory structure first
@@ -217,6 +241,7 @@ Delegates to:
 - **hooks-architect** - Hooks domain expertise
 - **mcp-architect** - MCP domain expertise
 - **subagents-architect** - Subagents domain expertise
+- **task-architect** - Multi-step workflow coordination with TaskList
 - **claude-md-manager** - CLAUDE.md management
 - **toolkit-worker** - Isolated analysis worker
 
@@ -339,3 +364,29 @@ Based on [knowledge-skill-name] implementation guidance:
 - Always provide Tier 1 in initial response
 - Include Tier 2 for action-oriented details
 - Offer Tier 3 only when explicitly requested
+
+---
+
+## Task-Integrated Audit Workflow
+
+For complex .claude/ audits requiring visual progress tracking and dependency enforcement, use TaskList integration:
+
+**When to use**:
+- Multi-component validation (skills + subagents + hooks + MCP)
+- Need to enforce scan completion before component validation
+- Want visual progress tracking (Ctrl+T)
+- Quality tracking across audit iterations
+
+**Workflow description**:
+
+Use TaskCreate to establish a .claude/ structure scan task first. Then use TaskCreate to set up parallel component validation tasks for skills (15 points), subagents (10 points), hooks (10 points), and MCP (5 points) — configure these to depend on the scan completion. Use TaskCreate to establish a standards compliance check task (20 points) that depends on all component validations completing. Finally use TaskCreate to establish a final audit report generation task. Use TaskUpdate to mark tasks complete as each phase finishes, and use TaskList to check overall progress and identify any blocked tasks.
+
+**Critical dependency**: Component validation tasks must be configured to depend on the structure scan task completing. The standards check task must depend on all component validation tasks. This ensures comprehensive evaluation before scoring and a complete picture before final reporting.
+
+**Task tracking provides**:
+- Visual progression through audit phases (visible in Ctrl+T)
+- Dependency enforcement (tasks block until dependencies complete)
+- Persistent quality tracking across audit iterations
+- Clear phase completion markers
+
+## TOOLKIT_ARCHITECT_COMPLETE

@@ -1,6 +1,7 @@
 ---
 name: subagents-architect
 description: "Creates, audits, and refines subagent files with multi-workflow orchestration. Automatically detects DETECT/CREATE/VALIDATE/OPTIMIZE workflows. Context-aware routing for projects and plugins. Routes to subagents-knowledge for implementation patterns."
+user-invocable: false
 ---
 
 # Subagents Architect

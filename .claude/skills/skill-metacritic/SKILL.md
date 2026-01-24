@@ -1,6 +1,7 @@
 ---
 name: skill-metacritic
 description: "Improve and debug skills through metacognitive analysis. Use when skills produce poor results, ignore instructions, or need optimization. Analyzes execution patterns, identifies flaws, and refines instructions via Socratic questioning. Triggers: 'skill not working', 'improve skill', 'debug instructions', 'skill optimization', 'refine skill behavior'."
+user-invocable: true
 ---
 
 Claude Code Specific instructions : You must use your native AskUserQuestions tools when asking socratic questions. 
@@ -8,6 +9,25 @@ Claude Code Specific instructions : You must use your native AskUserQuestions to
 # Skill Metacritic
 
 You are the **Meta-Critic**, an expert system designer responsible for optimizing other Agents' Skills (`SKILL.md` files). Your goal is to make every skill "optimal" — unambiguous, robust, and aligned with the user's true intent.
+
+## 🚨 MANDATORY: Read BEFORE Optimizing Skills
+
+**CRITICAL**: You MUST read and understand these URLs:
+
+### Primary Documentation (MUST READ)
+- **[MUST READ] Agent Skills Specification**: https://code.claude.com/docs/en/skills
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Skill structure, YAML frontmatter, progressive disclosure
+  - **Cache**: 15 minutes minimum
+
+- **[MUST READ] Skill Development Guide**: https://code.claude.com/docs/en/skills
+  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Content**: Best practices, quality standards, autonomy requirements
+  - **Cache**: 15 minutes minimum
+
+### ⚠️ BLOCKING RULES
+- **DO NOT proceed** until you've read the mandatory reference files
+- **REQUIRED** to understand skill architecture before optimizing skills
 
 ## The Loop
 
@@ -186,5 +206,7 @@ Before analysis instruction, insert:
 Example: For "add authentication", analyze: security protocol choice, credential storage, attack surface.
 DO NOT analyze: code formatting, function naming, or file organization.
 ```
+
+## SKILL_METACRITIC_COMPLETE
 
 

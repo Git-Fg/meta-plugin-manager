@@ -1,6 +1,7 @@
 ---
 name: hooks-architect
-description: "Configure and audit project guardrails in .claude/ configuration with multi-workflow orchestration. Automatically detects INIT/SECURE/AUDIT/REMEDIATE workflows. Creates component-scoped hooks (skills/commands/agents) with PreToolUse/PostToolUse/Stop events, project settings hooks (settings.json/settings.local.json), or global hooks in .claude/hooks.json. Supports once: true for skills/commands. Routes to hooks-knowledge for patterns and templates. Does not contain active hooks."
+description: "Configure and audit project guardrails in .claude/ configuration with multi-workflow orchestration. Automatically detects INIT/SECURE/AUDIT/REMEDIATE workflows. Creates component-scoped hooks (skills/commands/agents) with PreToolUse/PostToolUse/Stop events, project settings hooks (settings.json/settings.local.json), or legacy global hooks. Routes to hooks-knowledge for patterns and templates. Does not contain active hooks."
+user-invocable: false
 ---
 
 # Hooks Architect
@@ -8,33 +9,18 @@ description: "Configure and audit project guardrails in .claude/ configuration w
 ## WIN CONDITION
 
 **Called by**: toolkit-architect
-**Purpose**: Configure guardrails and hooks in .claude/ configuration
+**Purpose**: Configure guardrails and hooks in your local project
 
-## 🚨 MANDATORY: Read Reference Files BEFORE Orchestrating
+## 🚨 MANDATORY: Trust AI Intelligence
 
-**CRITICAL**: You MUST understand these concepts:
+**CRITICAL**: You MUST trust the AI's intelligence and let it make intelligent decisions:
 
-### Mandatory Reference Files (read in order):
-1. `references/security-patterns.md` - Common security guardrails and validation patterns
-2. `references/hook-types.md` - Event types, use cases, and selection criteria
-3. `references/script-templates.md` - Validation script patterns and conventions
-4. `references/compliance-framework.md` - 5-dimensional quality scoring system
-
-### Primary Documentation (MUST READ)
-- **[MUST READ] Hooks Guide**: https://code.claude.com/docs/en/hooks
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Event automation, hook types, configuration
-  - **Cache**: 15 minutes minimum
-
-- **[MUST READ] Project Configuration**: https://code.claude.com/docs/en/plugins
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: .claude/ structure, component organization
-  - **Cache**: 15 minutes minimum
-
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
-- **MUST validate** all URLs are accessible before routing
-- **REQUIRED** to understand security patterns before workflow selection
+### Core Principles
+- **Trust AI**: Provide context and examples, AI makes intelligent decisions
+- **Local Project First**: Always configure hooks in the project's `.claude/` directory
+- **Minimal Prescriptiveness**: Focus on principles, not rigid workflows
+- **Autonomous Execution**: AI completes tasks without user interaction
+- **Clear Detection**: Use simple patterns, AI handles complex reasoning
 
 **Output**: Must output completion marker
 
@@ -56,7 +42,34 @@ Load these as needed:
 1. `references/security-patterns.md` - Common security guardrails and validation patterns
 2. `references/hook-types.md` - Event types, use cases, and selection criteria
 3. `references/script-templates.md` - Validation script patterns and conventions
-4. `references/compliance-framework.md` - 5-dimensional quality scoring system
+4. `references/compliance-framework.md` - Quality scoring system
+
+## Model Selection for Security Workflows
+
+When orchestrating security validation with TaskList, select model based on task complexity:
+
+**Simple Security Tasks (haiku)**:
+- Individual hook validation
+- Basic script syntax checks
+- Single hook testing
+- Quick security scans
+- Routine validation checks
+
+**Default Security Tasks (sonnet)**:
+- Security audit workflows
+- Standard compliance validation
+- Typical remediation projects
+- Multi-hook validation
+- Balanced performance for most security work
+
+**Complex Security Tasks (opus)**:
+- Complex security architecture design
+- Multi-phase remediation planning
+- Critical vulnerability analysis
+- Cross-component dependency resolution
+- High-stakes security decisions
+
+**Security Criticality**: Escalate to opus for critical security decisions, use haiku for routine validation.
 
 ## Multi-Workflow Detection Engine
 
@@ -104,14 +117,32 @@ def detect_security_workflow(project_state, conversation_context):
 - Uses clear detection logic instead of asking questions upfront
 - Relies on completion markers for workflow verification
 
-## Hook Configuration Types & Events
+## Hook Configuration Types
 
-### Supported Hook Events
-- **PreToolUse**: Run before tool execution (validation, security checks)
-- **PostToolUse**: Run after tool execution (logging, cleanup, formatting)
-- **Stop**: Run when component completes (final validation, state save)
+### Project Settings (Recommended)
+**Location**: `.claude/settings.json`
 
-### Component-Scoped Hooks (Preferred)
+**Best For**:
+- Team-wide automation and policies
+- Project-specific security guardrails
+- Shared configurations across collaborators
+
+**Configuration**:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Write",
+      "hooks": [{
+        "type": "command",
+        "command": "./.claude/scripts/validate-file.sh"
+      }]
+    }]
+  }
+}
+```
+
+### Component-Scoped Hooks (Preferred for Auto-Cleanup)
 **Location**: YAML frontmatter in skills/commands/agents
 
 **Best For**:
@@ -124,18 +155,10 @@ def detect_security_workflow(project_state, conversation_context):
 - ❌ Agents: Do NOT support `once` option
 - ✅ All events: PreToolUse, PostToolUse, Stop
 
-### Settings-Based Hooks
-**Location**: `.claude/settings.json`, `.claude/settings.local.json`, or `.claude/hooks.json`
+### Legacy Global Hooks
+**Location**: `.claude/hooks.json`
 
-**Best For**:
-- Project-wide preprocessing (e.g., filtering logs to reduce context)
-- Team-wide automation
-- Cross-component policies
-
-**Use Settings-Based When**:
-- Need preprocessing across multiple components
-- Team-wide automation required
-- Project-wide policies needed
+**Note**: This is the legacy format. Use `settings.json` for better maintainability.
 
 ## Four Workflows
 
@@ -145,31 +168,22 @@ def detect_security_workflow(project_state, conversation_context):
 - Empty project (no `.claude/hooks.json` exists)
 - No component-scoped hooks in skills
 - First-time hook setup
-- Team adopting hooks for security
 
 **Why:**
 - Establishes baseline security guardrails
 - Prevents security issues from accumulating
 - Sets up component-scoped hooks by default
-- Creates validation script library
 
 **Process:**
 1. Investigate project structure
-2. Create `.claude/settings.json` template (recommended) or `.claude/hooks.json` (legacy)
+2. Create `.claude/settings.json` template
 3. Generate common security scripts in `.claude/scripts/`
 4. Configure basic PreToolUse validation
-5. Validate security score ≥80/100
 
 **Configuration Options:**
 - **settings.json** (recommended): Modern format, better team collaboration
 - **settings.local.json**: For local overrides (gitignored)
 - **hooks.json** (legacy): Traditional global hooks format
-
-**Required References:**
-- `references/security-patterns.md#init-workflow` - Complete INIT setup guide
-- `references/compliance-framework.md` - Ensure baseline security meets standards
-
-**Example:** New project cloned, no hooks exist → INIT automatically
 
 ---
 
@@ -179,13 +193,11 @@ def detect_security_workflow(project_state, conversation_context):
 - Hooks already exist (global or component-scoped)
 - Want to add more guardrails
 - Security coverage incomplete
-- No critical issues found
 
 **Why:**
 - Improves security posture incrementally
 - Adds specialized guardrails for specific needs
 - Complements existing hooks
-- Targets specific security gaps
 
 **Process:**
 1. Scan existing hooks and scripts
@@ -193,12 +205,6 @@ def detect_security_workflow(project_state, conversation_context):
 3. Suggest additional guardrails based on patterns
 4. Generate specialized validation scripts
 5. Add to appropriate scope (component-scoped preferred)
-
-**Required References:**
-- `references/security-patterns.md#secure-workflow` - Enhancement patterns
-- `references/script-templates.md` - Specialized validation scripts
-
-**Example:** Project has basic hooks, user mentions protecting .env files → SECURE adds PreToolUse .env guard
 
 ---
 
@@ -208,13 +214,11 @@ def detect_security_workflow(project_state, conversation_context):
 - Security assessment requested
 - Compliance check needed
 - Before making changes to understand baseline
-- Regular security health check
 
 **Why:**
 - Provides objective security assessment
 - Identifies specific security gaps
 - Suggests optimal remediation path
-- Establishes baseline for tracking improvements
 
 **Process:**
 1. Scan all hooks (global and component-scoped)
@@ -223,17 +227,11 @@ def detect_security_workflow(project_state, conversation_context):
 4. Assess security coverage
 5. Generate compliance report
 
-**Required References:**
-- `references/compliance-framework.md` - Understanding scoring dimensions
-- `references/hook-types.md#audit-process` - Security validation details
-
 **Score-Based Actions:**
 - 90-100 (A): Excellent security, minor enhancements optional
 - 75-89 (B): Good security, SECURE workflow recommended
 - 60-74 (C): Moderate issues, REMEDIATE workflow required
 - <60 (D/F): Critical issues, REMEDIATE workflow mandatory
-
-**Example:** User asks "Audit my security" → AUDIT with detailed report
 
 ---
 
@@ -243,13 +241,11 @@ def detect_security_workflow(project_state, conversation_context):
 - AUDIT found issues (score <75)
 - Security vulnerabilities detected
 - Non-compliant patterns found
-- High-priority security gaps
 
 **Why:**
 - Fixes critical security issues
 - Removes vulnerable patterns
 - Improves compliance score
-- Blocks potential security breaches
 
 **Process:**
 1. Review audit findings
@@ -258,13 +254,7 @@ def detect_security_workflow(project_state, conversation_context):
 4. Update validation scripts
 5. Re-validate security score
 
-**Required References:**
-- `references/compliance-framework.md#remediation` - Fix strategies
-- `references/security-patterns.md#fixing-patterns` - Common vulnerability fixes
-
-**Example:** AUDIT found score 45/100 → REMEDIATE to fix issues and reach ≥80/100
-
-## Quality Framework (5 Dimensions)
+## Quality Framework
 
 Scoring system (0-100 points):
 
@@ -274,7 +264,7 @@ Scoring system (0-100 points):
 | **2. Validation Patterns** | 20 | Proper input validation and sanitization |
 | **3. Exit Code Usage** | 15 | Correct exit codes (0=success, 2=blocking) |
 | **4. Script Quality** | 20 | Well-written, maintainable scripts |
-| **5. Component Scope** | 20 | Prefer component-scoped over global hooks |
+| **5. Configuration Hierarchy** | 20 | Modern configuration approach |
 
 **Quality Thresholds**:
 - **A (90-100)**: Exemplary security posture
@@ -299,104 +289,6 @@ Automatically detects security-related context:
 - Cloud provider configs (AWS, GCP, Azure)
 - CI/CD configuration files
 - Docker/Kubernetes configs
-
-## Common Hook Patterns
-
-### Component-Scoped (Preferred)
-
-**Location**: `.claude/skills/<skill-name>/SKILL.md` frontmatter
-
-**Use When**:
-- Protecting specific skills
-- Skill-specific validation
-- Temporary or experimental hooks
-- Avoids global impact
-
-**Example**:
-```yaml
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./.claude/scripts/validate-deploy.sh"
-```
-
-### Project Settings Hooks
-
-**Location**: `.claude/settings.json` (team-shared) or `.claude/settings.local.json` (local only)
-
-**Use When**:
-- Team-wide security policies (settings.json)
-- Personal project preferences (settings.local.json)
-- Project-scoped automation
-- Configuration that benefits from JSON format
-
-**Example** (`.claude/settings.json`):
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/guard-sensitive-paths.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Key Differences**:
-- `settings.json`: Committed to git, shared with team
-- `settings.local.json`: Gitignored, personal only
-- Both support the same hook configuration as `hooks.json`
-
-### Global Hooks (Legacy)
-
-**Location**: `.claude/hooks.json`
-
-**Use When**:
-- Traditional global hook configuration
-- Organization-wide security policies
-- Cross-skill protection
-- Environment validation
-- Production safety measures
-
-**Example**:
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": {"tool": "Write"},
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/guard-sensitive-paths.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Note**: `settings.json` is the modern replacement for `.claude/hooks.json`. Both work, but settings.json provides better team collaboration features.
-
-## Quick Reference: Security Guardrails
-
-| Threat | Hook Type | Script Pattern | Exit Code |
-|---------|-----------|----------------|-----------|
-| **File Overwrite** | PreToolUse (Write) | Check file doesn't exist | 2 (block) |
-| **Env Leakage** | PreToolUse (Read) | Validate .env access | 2 (block) |
-| **Dangerous Commands** | PreToolUse (Bash) | Command allowlist | 2 (block) |
-| **Path Traversal** | PreToolUse (Glob) | Validate path patterns | 2 (block) |
-| **Deploy Safety** | PreToolUse (Bash) | Check git status | 1 (warn) |
 
 ## Implementation Guidance
 
@@ -430,11 +322,6 @@ hooks:
 - Path safety: ✅
 - Command validation: ✅
 - Environment protection: ✅
-
-### Configuration Options
-- settings.json: Team-shared hooks (committed to git)
-- settings.local.json: Personal hooks (gitignored)
-- hooks.json: Legacy global hooks (still supported)
 ```
 
 ### SECURE Output
@@ -445,10 +332,6 @@ hooks:
 ### New Guardrails Added
 - [Guardrail 1]: [Purpose]
 - [Guardrail 2]: [Purpose]
-
-### Security Improvements
-- Coverage: XX → YY%
-- Validation: XX patterns added
 ```
 
 ### AUDIT Output
@@ -462,15 +345,11 @@ hooks:
 - Validation Patterns: XX/20
 - Exit Code Usage: XX/15
 - Script Quality: XX/20
-- Component Scope: XX/20
+- Configuration Hierarchy: XX/20
 
 ### Issues
 - [Count] critical issues
 - [Count] warnings
-
-### Recommendations
-1. [Action] → Expected improvement: [+XX points]
-2. [Action] → Expected improvement: [+XX points]
 ```
 
 ### REMEDIATE Output
@@ -481,9 +360,32 @@ hooks:
 ### Issues Fixed
 - [Issue 1]: [Before] → [After]
 - [Issue 2]: [Before] → [After]
-
-### Security Posture
-- Critical vulnerabilities: XX → 0
-- Warnings: XX → YY
-- Recommendations: XX → ZZ
 ```
+
+---
+
+## Task-Integrated Security Workflow
+
+For complex security validation requiring visual progress tracking and dependency enforcement, use TaskList integration:
+
+**When to use**:
+- Multi-hook security audit (5+ hooks to validate)
+- AUDIT workflow with dependency tracking
+- REMEDIATE workflow dependent on AUDIT completion
+- Need visual progress tracking (Ctrl+T)
+
+**AUDIT workflow**:
+
+Use TaskCreate to establish a hooks configuration scan task. Then use TaskCreate to set up parallel validation tasks for security patterns, script quality, and hook execution order — configure these to depend on the scan completion. Use TaskCreate to establish a compliance report generation task that depends on all validation phases completing.
+
+**REMEDIATE workflow** (depends on AUDIT):
+
+After the audit report task completes, use TaskCreate to establish a findings review task that depends on the report. Then use TaskCreate to set up security fix prioritization, remediation, and re-validation tasks in sequence, each depending on the previous.
+
+**Critical dependency**: Remediation tasks must be configured to depend on the audit report task completing, ensuring fixes are based on actual security assessment findings.
+
+**Task tracking provides**:
+- Visual security audit progression (visible in Ctrl+T)
+- Dependency enforcement (remediation tasks blocked by audit completion)
+- Persistent security posture tracking across cycles
+- Clear phase completion markers

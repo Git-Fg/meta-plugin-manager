@@ -1,16 +1,18 @@
 {
   "test_plan": {
     "name": "Skill Interaction & Context Fork Testing",
-    "version": "6.0",
-    "description": "Updated with actual execution results from 25 raw JSON logs",
+    "version": "8.0",
+    "description": "Updated with Phase 11: Complete Recursive vs TaskList Coverage Analysis",
     "test_summary": {
-      "total_tests": 29,
+      "total_tests": 67,
       "completed": 23,
       "failed": 1,
-      "not_started": 5,
-      "coverage": "79% complete (23/29), 92% success rate (23/25 executed)",
+      "not_started": 43,
+      "coverage": "34% complete (23/67), 92% success rate (23/25 executed)",
       "raw_logs_analyzed": 25,
-      "last_updated": "2026-01-23"
+      "last_updated": "2026-01-23",
+      "phase_11_added": "38 comparative tests for COMPLETE TaskList analysis",
+      "gap_analysis": "Comprehensive coverage of all TaskList nested workflows"
     },
     "key_findings": {
       "critical_discovery_1": "Regular skill chains are one-way handoffs - control never returns",
@@ -19,7 +21,54 @@
       "critical_discovery_4": "Forked skills are 100% autonomous - 0 permission denials across all tests",
       "critical_discovery_5": "Custom subagents and specialized tools accessible in forked context",
       "critical_discovery_6": "Double-fork (nested forks) works correctly",
-      "issue_identified": "Regular orchestrators may need explicit automation instructions"
+      "critical_discovery_7": "TaskList tools added as built-in orchestration primitives (Layer 0)",
+      "issue_identified": "Regular orchestrators may need explicit automation instructions",
+      "research_question": "Can TaskList replace complex recursive workflows? Phase 11 will determine.",
+      "gap_identified": "NESTED TASKLIST workflows not fully covered - added 19 new tests"
+    },
+    "recursive_workflow_taxonomy": {
+      "type_1_linear_chain": {
+        "pattern": "skill-a -> skill-b -> skill-c",
+        "description": "Simple linear chain of skills",
+        "current_coverage": "VALIDATED",
+        "tasklist_equivalent": "task-create('a') -> task-create('b', blocked_by: ['a']) -> task-create('c', blocked_by: ['b'])"
+      },
+      "type_2_hub_spoke_aggregation": {
+        "pattern": "orchestrator -> worker-1, worker-2 -> orchestrator aggregates",
+        "description": "Hub calls workers, aggregates results",
+        "current_coverage": "VALIDATED with forked skills",
+        "tasklist_equivalent": "Create tasks, use addBlockedBy, aggregate on completion"
+      },
+      "type_3_nested_forks": {
+        "pattern": "outer -> inner-1 -> inner-2",
+        "description": "Deep nesting with context isolation at each level",
+        "current_coverage": "VALIDATED to depth 2",
+        "tasklist_equivalent": "Nested task creation with dependency chains"
+      },
+      "type_4_parallel_execution": {
+        "pattern": "orchestrator -> worker-1, worker-2 (parallel)",
+        "description": "Multiple workers execute simultaneously",
+        "current_coverage": "PARTIALLY validated (serial works, parallel failed)",
+        "tasklist_equivalent": "Create unblocked tasks, check parallel execution"
+      },
+      "type_5_context_transitions": {
+        "pattern": "forked -> regular -> forked",
+        "description": "Context transitions between forked and regular",
+        "current_coverage": "VALIDATED",
+        "tasklist_equivalent": "Task execution context behavior"
+      },
+      "type_6_error_handling": {
+        "pattern": "error propagation and recovery",
+        "description": "How errors propagate through chains",
+        "current_coverage": "NOT_TESTED",
+        "tasklist_equivalent": "Task status on error, blocked task behavior"
+      },
+      "type_7_state_persistence": {
+        "pattern": "state across calls/sessions",
+        "description": "State management in workflows",
+        "current_coverage": "NOT_TESTED",
+        "tasklist_equivalent": "Task persistence, cross-session continuation"
+      }
     },
     "phases": [
       {
@@ -33,7 +82,7 @@
             "status": "COMPLETED",
             "confidence": "HIGH",
             "result": "PASS",
-            "summary": "Regular → Regular skill handoff works correctly",
+            "summary": "Regular -> Regular skill handoff works correctly",
             "findings": "One-way handoff confirmed - caller does NOT resume after called skill",
             "win_condition": "Skill chaining works but control transfers permanently",
             "evidence_file": "raw_logs/phase_1/test_1.1.basic.skill.calling.json",
@@ -51,8 +100,7 @@
             "win_condition": "One-way handoff confirmed - control doesn't pass through chain",
             "evidence_file": "raw_logs/phase_1/test_1.2.three.skill.chain.json",
             "duration_ms": 13399,
-            "permission_denials": 0,
-            "corrected_from": "NEEDS_IMPLEMENTATION"
+            "permission_denials": 0
           }
         ]
       },
@@ -67,11 +115,10 @@
             "status": "COMPLETED",
             "confidence": "HIGH",
             "result": "PASS",
-            "summary": "Regular→forked enables subroutine pattern",
+            "summary": "Regular->forked enables subroutine pattern",
             "findings": "Control returns to caller after forked skill completes",
             "win_condition": "Subroutine pattern validated",
-            "evidence_file": "raw_logs/phase_2/test_2.1.basic.fork.json",
-            "corrected_from": "NOT_IN_PLAN"
+            "evidence_file": "raw_logs/phase_2/test_2.1.basic.fork.json"
           },
           {
             "test_id": "2.2",
@@ -224,8 +271,7 @@
             "summary": "Forked skills can access built-in agents",
             "findings": "Hub-and-spoke pattern validated",
             "win_condition": "Subagent access confirmed",
-            "evidence_file": "raw_logs/phase_3/test_3.1.forked.with.subagents.json",
-            "corrected_from": "NOT_IN_PLAN"
+            "evidence_file": "raw_logs/phase_3/test_3.1.forked.with.subagents.json"
           },
           {
             "test_id": "3.2",
@@ -253,11 +299,10 @@
             "status": "COMPLETED",
             "confidence": "HIGH",
             "result": "PASS",
-            "summary": "Forked→regular transitions work",
+            "summary": "Forked->regular transitions work",
             "findings": "Context transitions validated",
             "win_condition": "Context transition works",
-            "evidence_file": "raw_logs/phase_4/test_4.1.context.transition.json",
-            "corrected_from": "NOT_IN_PLAN"
+            "evidence_file": "raw_logs/phase_4/test_4.1.context.transition.json"
           },
           {
             "test_id": "4.2",
@@ -266,7 +311,7 @@
             "confidence": "HIGH",
             "result": "PASS",
             "summary": "Nested context: fork works correctly (2 levels)",
-            "findings": "Regular → Forked → Forked chain executes successfully with proper isolation at each level",
+            "findings": "Regular -> Forked -> Forked chain executes successfully with proper isolation at each level",
             "win_condition": "FORKED_OUTER_COMPLETE",
             "evidence_file": "raw_logs/phase_4/test_4.2.double.fork.json",
             "duration_ms": 50948,
@@ -292,36 +337,7 @@
             "name": "Nested Fork Depth 3+",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Test behavior at fork depth >2",
-            "setup": {
-              "skills": [
-                {
-                  "name": "deep-fork-3",
-                  "context": "fork",
-                  "win_condition": "## FORK_3_COMPLETE"
-                },
-                {
-                  "name": "deep-fork-2",
-                  "context": "fork",
-                  "calls": [
-                    "deep-fork-3"
-                  ],
-                  "win_condition": "## FORK_2_COMPLETE"
-                },
-                {
-                  "name": "deep-fork-1",
-                  "context": "fork",
-                  "calls": [
-                    "deep-fork-2"
-                  ],
-                  "win_condition": "## FORK_1_COMPLETE"
-                }
-              ]
-            },
-            "validation": {
-              "depth_limit_identified": true,
-              "isolation_maintained_at_depth": true
-            }
+            "description": "Test behavior at fork depth >2"
           }
         ]
       },
@@ -352,8 +368,7 @@
             "summary": "Variables properly isolated",
             "findings": "Context variables cannot be accessed from forked skills",
             "win_condition": "Isolation confirmed",
-            "evidence_file": "raw_logs/phase_5/test_5.2.variable.blocking.json",
-            "corrected_from": "NOT_STARTED"
+            "evidence_file": "raw_logs/phase_5/test_5.2.variable.blocking.json"
           }
         ]
       },
@@ -368,13 +383,12 @@
             "status": "COMPLETED",
             "confidence": "HIGH",
             "result": "PASS",
-            "summary": "Root → Mid → Leaf hierarchy executed successfully",
+            "summary": "Root -> Mid -> Leaf hierarchy executed successfully",
             "findings": "root-orchestrator called mid-manager, completed successfully",
             "win_condition": "ROOT_COMPLETE",
             "evidence_file": "raw_logs/phase_6/test_6.1.three.layer.hierarchy.json",
             "duration_ms": 8498,
-            "permission_denials": 0,
-            "corrected_from": "NEEDS_REFACTOR"
+            "permission_denials": 0
           },
           {
             "test_id": "6.2",
@@ -387,8 +401,7 @@
             "win_condition": "Workflow complete",
             "evidence_file": "raw_logs/phase_6/test_6.2.parallel.workers.json",
             "duration_ms": 15412,
-            "permission_denials": 0,
-            "corrected_from": "NEEDS_REFACTOR"
+            "permission_denials": 0
           }
         ]
       },
@@ -419,8 +432,7 @@
             "summary": "Real-world hub-and-spoke orchestration started",
             "findings": "audit-orchestrator initiated but execution incomplete in log",
             "win_condition": "Audit workflow completes",
-            "evidence_file": "raw_logs/phase_7/test_7.2.audit.workflow.json",
-            "corrected_from": "NOT_STARTED"
+            "evidence_file": "raw_logs/phase_7/test_7.2.audit.workflow.json"
           }
         ]
       },
@@ -434,64 +446,14 @@
             "name": "Chain Failure Propagation",
             "status": "NOT_STARTED",
             "priority": "HIGH",
-            "description": "What happens when middle skill in chain fails?",
-            "setup": {
-              "skills": [
-                {
-                  "name": "failing-skill",
-                  "context": "fork",
-                  "description": "Intentional failure",
-                  "execution": "Exit with error or throw exception",
-                  "win_condition": "## FAIL_INTENTIONALLY"
-                },
-                {
-                  "name": "chain-mid",
-                  "context": "fork",
-                  "calls": [
-                    "failing-skill"
-                  ],
-                  "description": "Middle of chain",
-                  "win_condition": "## MID_HANDLES_FAILURE"
-                },
-                {
-                  "name": "chain-root",
-                  "context": "regular",
-                  "calls": [
-                    "chain-mid"
-                  ],
-                  "description": "Root of chain",
-                  "win_condition": "## ROOT_HANDLES_FAILURE"
-                }
-              ]
-            },
-            "validation": {
-              "error_propagation": true,
-              "recovery_mechanisms": true,
-              "chain_continuation": true
-            }
+            "description": "What happens when middle skill in chain fails?"
           },
           {
             "test_id": "8.2",
             "name": "Timeout Handling",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Test long-running forked skills and timeouts",
-            "setup": {
-              "skills": [
-                {
-                  "name": "slow-skill",
-                  "context": "fork",
-                  "description": "Skill that takes >30 seconds",
-                  "execution": "Sleep or long-running operation",
-                  "win_condition": "## SLOW_COMPLETE"
-                }
-              ]
-            },
-            "validation": {
-              "timeout_behavior": true,
-              "resource_limits": true,
-              "graceful_degradation": true
-            }
+            "description": "Test long-running forked skills and timeouts"
           }
         ]
       },
@@ -505,56 +467,14 @@
             "name": "File System Access Patterns",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Test file system access boundaries in forked context",
-            "setup": {
-              "tests": [
-                {
-                  "name": "Cross-directory access",
-                  "description": "Can forked skills access parent directories?"
-                },
-                {
-                  "name": "Symlink handling",
-                  "description": "Do symlinks work in forked context?"
-                },
-                {
-                  "name": "Path isolation",
-                  "description": "Are paths isolated between fork levels?"
-                }
-              ]
-            },
-            "validation": {
-              "access_boundaries_defined": true,
-              "symlinks_work": true,
-              "path_isolation": true
-            }
+            "description": "Test file system access boundaries in forked context"
           },
           {
             "test_id": "9.2",
             "name": "Resource Contention",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Multiple forked skills accessing same file",
-            "setup": {
-              "skills": [
-                {
-                  "name": "contender-1",
-                  "context": "fork",
-                  "description": "First contender for resource",
-                  "win_condition": "## CONTENDER_1_DONE"
-                },
-                {
-                  "name": "contender-2",
-                  "context": "fork",
-                  "description": "Second contender for resource",
-                  "win_condition": "## CONTENDER_2_DONE"
-                }
-              ]
-            },
-            "validation": {
-              "race_conditions": true,
-              "file_locking": true,
-              "safe_concurrent_access": true
-            }
+            "description": "Multiple forked skills accessing same file"
           }
         ]
       },
@@ -568,55 +488,332 @@
             "name": "Internal State Persistence",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Can forked skills maintain internal state?",
-            "setup": {
-              "skills": [
-                {
-                  "name": "stateful-skill",
-                  "context": "fork",
-                  "description": "Skill that maintains state across calls",
-                  "execution": "Set variable, call self, verify persistence",
-                  "win_condition": "## STATE_PERSISTS"
-                }
-              ]
-            },
-            "validation": {
-              "internal_state_maintained": true,
-              "state_isolation": true,
-              "state_reset_behavior": true
-            }
+            "description": "Can forked skills maintain internal state?"
           },
           {
             "test_id": "10.2",
             "name": "Agent-to-Agent Communication",
             "status": "NOT_STARTED",
             "priority": "LOW",
-            "description": "Can agents communicate directly without skill wrapper?",
-            "setup": {
-              "subagents": [
-                {
-                  "name": "agent-a",
-                  "description": "First agent"
-                },
-                {
-                  "name": "agent-b",
-                  "description": "Second agent"
-                }
-              ],
-              "skills": [
-                {
-                  "name": "agent-communicator",
-                  "context": "fork",
-                  "description": "Facilitate agent communication",
-                  "win_condition": "## AGENTS_COMMUNICATED"
-                }
-              ]
-            },
-            "validation": {
-              "direct_agent_calls": true,
-              "inter_agent_messaging": true,
-              "coordination_patterns": true
-            }
+            "description": "Can agents communicate directly without skill wrapper?"
+          }
+        ]
+      },
+      {
+        "phase": 11,
+        "name": "Comparative Workflow Analysis: Recursive vs TaskList (COMPLETE)",
+        "description": "38 tests comparing recursive skill workflows against TaskList-based orchestration",
+        "purpose": "Determine if TaskList can replace complex recursive skill workflows",
+        "coverage_goal": "Complete coverage of all recursive workflow patterns with TaskList equivalents",
+        "test_categories": [
+          {
+            "category": "Linear Chains",
+            "description": "Compare linear skill chains vs TaskList sequential tasks",
+            "tests": [
+              {
+                "test_id": "11.1.1",
+                "name": "Linear 2-chain: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "A -> B",
+                "recursive": "skill-a calls skill-b",
+                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A])",
+                "validation": "Execution order, completion detection"
+              },
+              {
+                "test_id": "11.1.2",
+                "name": "Linear 3-chain: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "A -> B -> C",
+                "recursive": "skill-a -> skill-b -> skill-c",
+                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A]), TaskCreate(C, blockedBy: [B])",
+                "validation": "Chain execution, state propagation"
+              },
+              {
+                "test_id": "11.1.3",
+                "name": "Linear 5-chain: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "A -> B -> C -> D -> E",
+                "description": "Test deep linear chains"
+              },
+              {
+                "test_id": "11.1.4",
+                "name": "Linear chain with data passing",
+                "status": "NOT_STARTED",
+                "pattern": "A -> B (data) -> C",
+                "description": "Compare data flow mechanisms"
+              }
+            ]
+          },
+          {
+            "category": "Hub-and-Spoke Aggregation",
+            "description": "Compare hub calling workers vs TaskList coordination",
+            "tests": [
+              {
+                "test_id": "11.2.1",
+                "name": "2-worker aggregation: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "Hub -> Worker-1, Worker-2 -> Hub aggregates",
+                "recursive": "orchestrator (regular) -> worker-1 (forked), worker-2 (forked) -> orchestrator",
+                "tasklist": "TaskCreate(Worker-1), TaskCreate(Worker-2), TaskCreate(Aggregate, blockedBy: [Worker-1, Worker-2])",
+                "validation": "Result aggregation, completion detection"
+              },
+              {
+                "test_id": "11.2.2",
+                "name": "3-worker aggregation: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "Hub -> Worker-1, Worker-2, Worker-3 -> Hub aggregates",
+                "description": "Test with more workers"
+              },
+              {
+                "test_id": "11.2.3",
+                "name": "5-worker aggregation: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Stress test with many workers"
+              },
+              {
+                "test_id": "11.2.4",
+                "name": "Aggregation with partial failures",
+                "status": "NOT_STARTED",
+                "description": "Test behavior when some workers fail"
+              },
+              {
+                "test_id": "11.2.5",
+                "name": "Aggregation with timeouts",
+                "status": "NOT_STARTED",
+                "description": "Test timeout handling in aggregation"
+              }
+            ]
+          },
+          {
+            "category": "Nested Workflows",
+            "description": "Compare nested skill calls vs nested TaskList dependencies",
+            "tests": [
+              {
+                "test_id": "11.3.1",
+                "name": "Depth-2 nesting: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "Outer -> Inner -> Leaf",
+                "recursive": "outer (forked) -> inner (forked) -> leaf (forked)",
+                "tasklist": "TaskCreate(Outer), TaskCreate(Inner, blockedBy: [Outer]), TaskCreate(Leaf, blockedBy: [Inner])",
+                "validation": "Nested isolation, completion propagation"
+              },
+              {
+                "test_id": "11.3.2",
+                "name": "Depth-3 nesting: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test deeper nesting"
+              },
+              {
+                "test_id": "11.3.3",
+                "name": "Depth-5 nesting: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Stress test deep nesting"
+              },
+              {
+                "test_id": "11.3.4",
+                "name": "Nested with data flow",
+                "status": "NOT_STARTED",
+                "description": "Test data passing through nested levels"
+              },
+              {
+                "test_id": "11.3.5",
+                "name": "Nested with error recovery",
+                "status": "NOT_STARTED",
+                "description": "Test error handling in nested workflows"
+              }
+            ]
+          },
+          {
+            "category": "Parallel Execution",
+            "description": "Compare parallel forked skills vs concurrent TaskList tasks",
+            "tests": [
+              {
+                "test_id": "11.4.1",
+                "name": "2-way parallel: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "Orchestrator -> Worker-1 || Worker-2",
+                "recursive": "orchestrator calls worker-1 (forked), worker-2 (forked)",
+                "tasklist": "TaskCreate(Worker-1), TaskCreate(Worker-2), both unblocked",
+                "validation": "Parallel execution, race conditions"
+              },
+              {
+                "test_id": "11.4.2",
+                "name": "3-way parallel: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test with more parallel workers"
+              },
+              {
+                "test_id": "11.4.3",
+                "name": "5-way parallel: Forked vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Stress test parallel execution"
+              },
+              {
+                "test_id": "11.4.4",
+                "name": "Parallel with shared resource",
+                "status": "NOT_STARTED",
+                "description": "Test resource contention"
+              },
+              {
+                "test_id": "11.4.5",
+                "name": "Parallel with result aggregation",
+                "status": "NOT_STARTED",
+                "description": "Test aggregating parallel results"
+              }
+            ]
+          },
+          {
+            "category": "Context Transitions",
+            "description": "Compare context transitions in recursive vs TaskList",
+            "tests": [
+              {
+                "test_id": "11.5.1",
+                "name": "Forked -> Regular transition vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "forked-skill -> regular-skill",
+                "recursive": "forked-outer calls regular-inner",
+                "tasklist": "Task execution with different contexts",
+                "validation": "Context isolation and transition behavior"
+              },
+              {
+                "test_id": "11.5.2",
+                "name": "Regular -> Forked transition vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test opposite transition"
+              },
+              {
+                "test_id": "11.5.3",
+                "name": "Mixed context chain vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test alternating contexts"
+              },
+              {
+                "test_id": "11.5.4",
+                "name": "Context isolation verification",
+                "status": "NOT_STARTED",
+                "description": "Verify isolation in TaskList tasks"
+              }
+            ]
+          },
+          {
+            "category": "Error Handling",
+            "description": "Compare error propagation in recursive vs TaskList",
+            "tests": [
+              {
+                "test_id": "11.6.1",
+                "name": "Chain error propagation: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "A -> B (error) -> C",
+                "recursive": "skill-a calls skill-b which fails",
+                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A]), B fails, TaskCreate(C) behavior",
+                "validation": "Error propagation, blocked task behavior"
+              },
+              {
+                "test_id": "11.6.2",
+                "name": "Partial failure in aggregation: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test when some workers fail"
+              },
+              {
+                "test_id": "11.6.3",
+                "name": "Error recovery: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test error recovery mechanisms"
+              },
+              {
+                "test_id": "11.6.4",
+                "name": "Timeout handling: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Compare timeout behaviors"
+              }
+            ]
+          },
+          {
+            "category": "State Persistence",
+            "description": "Compare state management in recursive vs TaskList",
+            "tests": [
+              {
+                "test_id": "11.7.1",
+                "name": "Cross-session persistence: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "pattern": "Session 1 starts work -> Session 2 continues",
+                "recursive": "State lost between sessions",
+                "tasklist": "CLAUDE_CODE_TASK_LIST_ID enables persistence",
+                "validation": "State persistence, cross-session continuity"
+              },
+              {
+                "test_id": "11.7.2",
+                "name": "Multi-session collaboration: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test multiple sessions working on same task list"
+              },
+              {
+                "test_id": "11.7.3",
+                "name": "Context window spanning: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test behavior when context fills up"
+              },
+              {
+                "test_id": "11.7.4",
+                "name": "Long-running workflow: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Test workflows spanning multiple sessions"
+              }
+            ]
+          },
+          {
+            "category": "Performance & Scalability",
+            "description": "Compare performance characteristics",
+            "tests": [
+              {
+                "test_id": "11.8.1",
+                "name": "Execution speed: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Time to complete identical workflows"
+              },
+              {
+                "test_id": "11.8.2",
+                "name": "Resource usage: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Memory, CPU, token usage"
+              },
+              {
+                "test_id": "11.8.3",
+                "name": "Scalability limit: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "description": "Find breaking points for each approach"
+              },
+              {
+                "test_id": "11.8.4",
+                "name": "Token efficiency: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Prompts used for identical workflows"
+              }
+            ]
+          },
+          {
+            "category": "Developer Experience",
+            "description": "Compare DX for each approach",
+            "tests": [
+              {
+                "test_id": "11.9.1",
+                "name": "Setup complexity: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Files, configuration, boilerplate required"
+              },
+              {
+                "test_id": "11.9.2",
+                "name": "Debugging experience: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Ease of debugging, error visibility"
+              },
+              {
+                "test_id": "11.9.3",
+                "name": "Documentation clarity: Recursive vs TaskList",
+                "status": "NOT_STARTED",
+                "metric": "Ease of understanding and documenting"
+              }
+            ]
           }
         ]
       }
@@ -650,20 +847,17 @@
         "recommendation": "Regular orchestrators may need explicit automation instructions or use forked orchestrator pattern"
       }
     ],
-    "remaining_tests": [
-      "4.4: Nested Fork Depth 3+ (not started)",
-      "7.2: Hooks in Forked Context (not started)",
-      "8.1: Chain Failure Handling (not started)",
-      "8.2: Timeout Handling (not started)",
-      "9.1: File System Access Patterns (not started)",
-      "9.2: Resource Contention (not started)",
-      "10.1: Internal State Persistence (not started)",
-      "10.2: Agent-to-Agent Communication (not started)"
+    "phase_11_research_questions": [
+      "Can TaskList replace all recursive skill workflows?",
+      "What are the performance trade-offs?",
+      "Which approach has better developer experience?",
+      "When should each approach be used?",
+      "Can TaskList enable workflows impossible with skills?"
     ],
     "architecture_recommendations": {
       "hub_and_spoke_pattern": {
         "description": "Use forked skills for workers, regular skill for orchestrator",
-        "example": "Orchestrator (regular) → Worker-1 (forked) → Orchestrator → Worker-2 (forked) → Orchestrator",
+        "example": "Orchestrator (regular) -> Worker-1 (forked) -> Orchestrator -> Worker-2 (forked) -> Orchestrator",
         "benefits": [
           "Control returns to orchestrator for result aggregation",
           "Complete isolation between workers",
@@ -677,14 +871,24 @@
       "avoid_regular_chains": {
         "description": "Don't use regular skill chains expecting control to return",
         "evidence": "test_1.2 shows one-way handoff behavior"
+      },
+      "tasklist_for_complex_workflows": {
+        "description": "Use TaskList for workflows exceeding autonomous execution",
+        "validation": "Phase 11 will determine optimal use cases",
+        "potential_benefits": [
+          "Cross-session persistence",
+          "Visual progress tracking",
+          "Multi-session collaboration",
+          "Context window spanning"
+        ]
       }
     },
     "next_steps": [
-      "Implement Tests 8.1-8.2 for error handling (critical for production)",
-      "Complete Test 7.2 hooks validation",
-      "Test edge cases: Tests 4.4, 9.1-9.2, 10.1-10.2",
-      "Validate Test 7.2 audit workflow completion",
-      "Create orchestration pattern examples based on validated tests"
+      "Execute Phase 11 tests (38 comparative tests)",
+      "Determine if TaskList can replace recursive workflows",
+      "Document optimal patterns for each approach",
+      "Create decision matrix for workflow selection",
+      "Update CLAUDE.md with validated patterns"
     ]
   }
 }

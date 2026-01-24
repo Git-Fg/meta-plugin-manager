@@ -76,6 +76,21 @@ START: What do you need?
 ├─ "Service integration"
 │  └─→ MCP
 │
+├─ "Multi-step workflow with persistence"
+│  └─→ TaskList + forked workers
+│
+├─ "Long-running project"
+│  └─→ TaskList + skills architecture
+│
+├─ "Complex multi-session project"
+│  └─→ TaskList (Layer 0) + task-architect
+│     ├─ Context window spanning
+│     ├─ Real-time collaboration
+│     └─ Distributed subagent coordination
+│
+├─ "Multi-session task"
+│  └─→ TaskList + subagents
+│
 └─ "Isolation/parallelism"
    └─→ Subagent (RARE/ADVANCED)
 ```
@@ -251,6 +266,7 @@ Else:
 
 | Layer               | Purpose                | Priority           | Use For                              |
 | ------------------- | ---------------------- | ------------------ | ------------------------------------ |
+| **TaskList**        | Workflow state engine   | **Infrastructure** | Complex projects, context spanning, multi-session |
 | **CLAUDE.md Rules** | Persistent norms       | **Foundation**     | Project standards, safety boundaries |
 | **Skills**          | Discoverable expertise | **PRIMARY**        | Domain procedures, complex workflows |
 | **Subagents**       | Isolation/parallelism  | **RARE**           | Noisy tasks, separate context        |

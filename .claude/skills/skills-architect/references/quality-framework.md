@@ -29,13 +29,17 @@
 ### 3. Discoverability (15 points)
 **Clear description with triggers**
 
+See `description-guidelines.md` for complete What-When-Not framework.
+
 | Score | Criteria |
 |-------|----------|
-| 13-15 | Clear triggers, discoverable |
-| 10-12 | Good triggers |
-| 7-9 | Adequate triggers |
-| 4-6 | Unclear triggers |
-| 0-3 | No clear triggers |
+| 13-15 | Clear WHAT/WHEN/NOT, discoverable, concise |
+| 10-12 | Good triggers, minor verbosity |
+| 7-9 | Adequate triggers, some ambiguity |
+| 4-6 | Unclear triggers, verbose |
+| 0-3 | No clear triggers, or includes "how" (implementation details) |
+
+**Anti-Pattern**: Over-specified descriptions that include "how" violate progressive disclosure and waste Tier 1 token budget. Descriptions should signal, not manual.
 
 ### 4. Progressive Disclosure (15 points)
 **Tier 1/2/3 properly organized**

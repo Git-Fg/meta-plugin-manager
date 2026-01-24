@@ -50,6 +50,35 @@ Context Applied: [Summary]
 - **REQUIRED** to validate URLs are accessible before MCP integration
 - **MUST understand** Tools, Resources, Prompts primitives before server creation
 
+## Model Selection for MCP Workflows
+
+When orchestrating MCP server configuration with TaskList, select model based on task complexity:
+
+**Simple MCP Tasks (haiku)**:
+- Single server validation
+- Basic transport configuration checks
+- Simple tool schema validation
+- Quick compliance scans
+- Cost-sensitive validation
+
+**Default MCP Tasks (sonnet)**:
+- Multi-server setup and validation
+- Standard compliance validation
+- Typical integration workflows
+- Protocol adherence checking
+- Balanced performance for most MCP work
+
+**Complex MCP Tasks (opus)**:
+- Multi-server architecture design
+- Complex protocol compliance remediation
+- Multi-phase optimization workflows
+- Cross-server dependency management
+- Critical security decisions
+
+**Cost Optimization**: Use haiku for quick validation scans, escalate to opus only for complex architecture decisions.
+
+**See task-knowledge**: [model-selection.md](task-knowledge/references/model-selection.md) for detailed cost optimization strategies.
+
 ## Multi-Workflow Detection Engine
 
 Automatically detects and executes appropriate workflow:
@@ -398,86 +427,11 @@ Scoring system (0-100 points):
 
 ## Output Contracts
 
-### DISCOVER Output
-```markdown
-## MCP Discovery Complete
+For complete output contract templates and examples for all workflows, see **[references/output-contracts.md](references/output-contracts.md)**.
 
-### Existing Servers: [count]
-### Recommendations: [count]
+## Task-Integrated Compliance Workflow
 
-### Suggested Integrations
-1. [Server]: [Purpose] - Transport: [stdio|http]
-2. [Server]: [Purpose] - Transport: [stdio|http]
+For complex MCP validation requiring visual progress tracking and dependency enforcement, use TaskList integration patterns.
 
-### Integration Opportunities
-- [Pattern 1]: Suitable for MCP integration
-- [Pattern 2]: Suitable for MCP integration
-```
+For detailed TaskList workflow patterns and 2026 MCP features reference, see **[references/tasklist-compliance.md](references/tasklist-compliance.md)**.
 
-### INTEGRATE Output
-```markdown
-## MCP Server Integrated: {server_name}
-
-### Transport
-- Type: {stdio|http}
-- Configuration: Valid ✅
-
-### Components
-- Tools: {count} configured
-- Resources: {count} configured
-- Prompts: {count} configured
-
-### Protocol Compliance: XX/100
-### Existing Servers Preserved: ✅
-```
-
-### VALIDATE Output
-```markdown
-## MCP Validation Complete
-
-### Quality Score: XX/100 (Grade: [A/B/C/D/F])
-
-### Breakdown
-- Protocol Compliance: XX/25
-- Transport Configuration: XX/20
-- Component Validity: XX/20
-- Security Hardening: XX/15
-- Maintainability: XX/20
-
-### Issues
-- [Count] protocol violations
-- [Count] warnings
-- [Count] recommendations
-
-### Recommendations
-1. [Action] → Expected improvement: [+XX points]
-2. [Action] → Expected improvement: [+XX points]
-```
-
-### OPTIMIZE Output
-```markdown
-## MCP Optimized: {server_name}
-
-### Quality Score: XX → YY/100 (+ZZ points)
-
-### Improvements Applied
-- {improvement_1}: [Before] → [After]
-- {improvement_2}: [Before] → [After]
-
-### Protocol Compliance
-- Specification: [Version] ✅
-- Transport: [stdio|http] ✅
-- Components: [X/Y] valid ✅
-
-### Status: [Production Ready|Needs More Work]
-```
-
-## 2026 MCP Features
-
-- **Tool Search**: Auto-enabled when tools exceed 10% of context
-- **MCP Resources**: Referenced via `@server:protocol://resource/path` syntax
-- **MCP Prompts**: Available as `/mcp__servername__promptname` commands
-- **Plugin MCP**: Plugins bundle MCP servers via `.mcp.json` or `plugin.json`
-- **Dynamic Tool Updates**: Supports `list_changed` notifications
-- **MCP Output Limits**: Default 25,000 tokens, configurable via `MAX_MCP_OUTPUT_TOKENS`
-- **Environment Variables**: `${CLAUDE_PLUGIN_ROOT}` for plugin paths

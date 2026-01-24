@@ -10,49 +10,20 @@ Claude Code provides multiple hook types for different lifecycle stages and scop
 
 ---
 
-## Hook Scope Hierarchy
+## Hook Configuration Options
 
-### Component-Scoped Hooks (Skill/Command/Agent Frontmatter)
+### Local Project Settings (Default Recommendation)
 **Best For**:
-- **Skills/Commands**: Preprocessing data, validation after edits, one-time setup (with `once: true`)
-- **Agents**: Scoped event handling, automatic cleanup, agent-specific validation
+- Project-specific automation and policies
+- Security guardrails for your project
+- Team collaboration through version control
+- Project-specific validation
 
-**Features**:
-- ✅ Auto-cleanup when component finishes
-- ✅ Skills/Commands: Support `once: true` for one-time setup
-- ❌ Agents: Do NOT support `once` option
-- ✅ All events: PreToolUse, PostToolUse, Stop
-
-**Example**:
-```yaml
----
-name: deploy-skill
-description: "Deploys application"
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "run-tests.sh"
-          once: true  # Only runs once per session
-  PostToolUse:
-    - matcher: "Write|Edit"
-      hooks:
-        - type: command
-          command: "format-code.sh"
----
-```
-
-### Settings-Based Hooks (settings.json/settings.local.json/hooks.json)
-**Best For**:
-- Project-wide preprocessing (e.g., filtering logs to reduce context)
-- Team-wide automation
-- Cross-component policies
-
-**Use Settings-Based When**:
-- Need preprocessing across multiple components
-- Team-wide automation required
-- Project-wide policies needed
+**Use Local Project When**:
+- Working on a specific project
+- Want hooks in project directory
+- Need team sharing through git
+- Project-specific security policies
 
 **Example**:
 ```json
@@ -69,11 +40,121 @@ hooks:
 }
 ```
 
-**Configuration Precedence** (highest to lowest):
-1. `.claude/settings.local.json` (local overrides)
-2. `.claude/settings.json` (team-shared)
-3. `.claude/hooks.json` (legacy global)
-4. Component-scoped hooks (skill/agent frontmatter)
+**Location**: `.claude/settings.json` (project directory)
+
+---
+
+### Component-Scoped Hooks (Auto-Cleanup)
+**Best For**:
+- Skill-specific validation and automation
+- Temporary or experimental hooks
+- One-time setup with `once: true`
+- Avoiding global impact
+
+**Use Component-Scoped When**:
+- Need skill-specific automation
+- Want hooks that auto-cleanup
+- Testing or experimental hooks
+- Avoiding global side effects
+
+**Example**:
+```yaml
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./.claude/scripts/security-check.sh"
+          once: true
+```
+
+**Location**: YAML frontmatter in skills/agents
+
+---
+
+### Local Project Overrides (`.claude/settings.local.json`)
+**Best For**:
+- Personal preferences for this specific project
+- Machine-specific configurations
+- Local testing variations
+- Developer-specific workflows
+
+**Use Local Overrides When**:
+- Personal project customization
+- Machine-specific settings
+- Testing hook variations
+- Local workflow adjustments
+
+**Example**:
+```json
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": "./.claude/scripts/local-stats.sh"
+      }]
+    }]
+  }
+}
+```
+
+**Location**: `.claude/settings.local.json` (gitignored)
+
+---
+
+### User-Wide Settings (`~/.claude/settings.json`)
+**Best For**:
+- Personal workflow hooks you want in ALL projects
+- Universal security policies
+- Cross-project standardization
+
+**Use User-Wide When**:
+- Want hooks in all your projects
+- Global personal preferences
+- Universal productivity enhancements
+
+**Example**:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Write",
+      "hooks": [{
+        "type": "command",
+        "command": "~/.claude/hooks/global-validate.sh"
+      }]
+    }]
+  }
+}
+```
+
+**Location**: `~/.claude/settings.json` (user home directory)
+
+---
+
+### Legacy Global Hooks (`.claude/hooks.json`)
+**Best For**:
+- Maintaining existing configurations
+- Simple single-developer projects
+- Legacy compatibility
+
+**Note**: This is the legacy format. Use `settings.json` for better maintainability.
+
+**Location**: `.claude/hooks.json` (legacy format)
+
+---
+
+## Configuration Selection
+
+**Trust AI to choose the right scope based on use case:**
+
+- **Local Project**: Project-specific automation and security
+- **Component-Scoped**: Skill-specific validation with auto-cleanup
+- **Local Overrides**: Personal project customization
+- **User-Wide**: Universal personal preferences
+- **Legacy Format**: Only for maintaining existing setups
 
 ---
 
@@ -827,62 +908,84 @@ grep -r "PreToolUse" .claude/ | grep -v "guard"
 
 ---
 
-## Integration Examples
+## AI-Guided Configuration Selection
 
-### Complete Setup
-```yaml
-# .claude/skills/my-skill/SKILL.md
+**Trust AI to choose the right configuration based on project context:**
+
+### When AI Should Recommend Local Project:
+- Project-specific automation needed
+- Team collaboration desired
+- Security policies for specific project
+- Version-controlled configuration
+
+### When AI Should Recommend Component-Scoped:
+- Skill-specific validation required
+- Temporary or experimental hooks
+- Need auto-cleanup functionality
+- Avoid global side effects
+
+### When AI Should Recommend Local Overrides:
+- Personal project customization
+- Machine-specific settings
+- Testing different configurations
+- Individual developer preferences
+
+### When AI Should Consider User-Wide:
+- Universal personal workflows
+- Global security policies
+- Cross-project standardization
+- Consistent experience desired
+
+### Core Principles
+
+**Trust AI Intelligence**:
+- AI assesses project needs intelligently
+- AI chooses appropriate configuration scope
+- AI optimizes for team vs individual use
+- AI considers maintainability and clarity
+
+**Local Project Default**:
+- Start with local project configuration
+- Add complexity only when needed
+- Prefer project-specific over global
+- Trust AI to scale appropriately
+
+## Quality Framework
+
+**Trust AI to achieve quality through intelligence**:
+
+### High-Quality Indicators
+- ✅ Uses appropriate events for use case
+- ✅ Configured at appropriate scope
+- ✅ Includes proper error handling
+- ✅ Performs efficiently
+- ✅ Provides clear feedback
+
+### AI-Optimized Quality
+**Trust AI to Determine**:
+- Appropriate event selection based on project needs
+- Smart scope choice (local vs global vs component-scoped)
+- Intelligent validation logic based on project context
+- Optimal performance based on project requirements
+- Clear user feedback appropriate for the use case
+
+### Quality Assessment
+**Let AI Decide**:
+- When quality standards are met
+- What specific improvements are needed
+- How to balance simplicity vs functionality
+- When to add vs remove complexity
+
 ---
-name: my-skill
-description: "My custom skill"
-hooks:
-  PreToolUse:
-    - matcher: {"tool": "Bash"}
-      hooks:
-        - type: command
-          command: "./.claude/scripts/pre-check.sh"
-  PostToolUse:
-    - matcher: {"tool": "Bash"}
-      hooks:
-        - type: command
-          command: "./.claude/scripts/post-check.sh"
----
-```
 
-### Global Security
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": {"tool": "Write"},
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/guard-paths.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+## Core Philosophy
 
----
+**This reference guides concepts, AI implements intelligently**:
 
-## Success Criteria
+1. **Provide Context**: Give AI the right information
+2. **Trust Intelligence**: AI makes smart implementation decisions
+3. **Focus on Principles**: Let AI optimize for specifics
+4. **Enable Autonomy**: AI completes tasks without user interaction
+5. **Embrace Simplicity**: Start simple, AI adds complexity when needed
 
-**Effective Hook Configuration**:
-- ✅ PreToolUse for all validation needs
-- ✅ Component-scoped hooks preferred
-- ✅ Specific matchers (not overly broad)
-- ✅ Fast execution (<100ms)
-- ✅ Clear exit codes (0/1/2)
-- ✅ Informative error messages
-
-**Quality Score Target**:
-- Component Scope: 20/20 (prefer component-scoped)
-- Validation Patterns: 18/20 (comprehensive validation)
-- Exit Code Usage: 15/15 (proper codes)
-- Script Quality: 15/20 (well-structured)
-- Security Coverage: 20/25 (common threats covered)
+**Key Principle**: Trust AI to implement hooks intelligently based on project context and requirements.

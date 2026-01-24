@@ -1,385 +1,299 @@
 # CLAUDE.md
 
-Project scaffolding toolkit for Claude Code focused on .claude/ configuration with skills-first architecture and progressive disclosure.
+**Meta-guide: How to teach Claude to work effectively with your project's .claude/ configuration**
 
-## Critical Gotchas
+This document teaches the core principles for designing skills, workflows, and automation. For specific implementation details, see individual skills referenced throughout.
 
-⚠️ **Context Fork Brittleness**: Regular skill chains >2 levels accumulate noise. Use hub-and-spoke: hub routes to knowledge skills, **never chain regular skills** (one-way handoffs). Forked skills CAN nest properly (Test 4.2 validated).
+---
 
-⚠️ **Progressive Disclosure**: Create references/ only when SKILL.md + references >500 lines total. Under 500? Merge into single SKILL.md.
+# FOR DIRECT USE
 
-⚠️ **Skill Over-Engineering**: Trust, don't micro-manage.
-- **Anti-Pattern**: Creating "logic files" (e.g., `mode-detection.md`) for behaviors Claude inherently understands.
-- **Solution**: Define "Commander's Intent" in `SKILL.md` and let Claude handle execution details.
-- **Constraint**: Reference files should be "Data Libraries" or "Inspiration Patterns", not "Instruction Manuals".
+## Critical Principles
 
-⚠️ **Hooks Configuration**: Hooks can be configured in multiple locations:
-- **Project Settings**: `.claude/settings.json` (team-shared) or `.claude/settings.local.json` (local only)
-- **Global Hooks**: `.claude/hooks.json` (traditional global hooks)
-- **Component-Scoped**: Skill/agent frontmatter (preferred for auto-cleanup)
-- **Plugin Hooks**: `hooks/hooks.json` in plugin directories
-Prefer component-scoped hooks for auto-cleanup; use project settings for team-wide configurations.
+⚠️ **Skills-First Architecture**: Every capability should be a Skill first. Commands and Subagents are orchestrators, not creators.
 
-⚠️ **Empty Scaffolding**: Remove directories with no content immediately. Creates technical debt.
+⚠️ **Hub-and-Spoke Pattern**: Hub Skills (with `disable-model-invocation: true`) delegate to knowledge skills. For aggregation, ALL workers MUST use `context: fork`. Regular→Regular skill handoffs are one-way only.
 
-⚠️ **URL Staleness**: Documentation URLs change. Always verify with mcp__simplewebfetch__simpleWebFetch before implementation.
+⚠️ **Progressive Disclosure**: Tier 1: Metadata (~100 tokens, always loaded), Tier 2: SKILL.md (<500 lines, loaded on activation), Tier 3: references/ (on-demand, zero context cost).
 
-⚠️ **Delta Standard**: Remove Claude-obvious content. Keep only: working commands, non-obvious gotchas, architecture decisions, "NEVER do X because [specific reason]"
+⚠️ **Multi-Dimensional Delta**: Good customization = expert knowledge + working commands + behavioral guidance + reliability patterns. Not just "what Claude doesn't know."
 
-⚠️ **Auto-Discovery**: Claude auto-discovers skills via description keywords. No need for command wrappers.
+⚠️ **Degrees of Freedom**: High freedom (text) when multiple approaches valid. Medium freedom (pseudocode/params) when preferred pattern exists. Low freedom (specific scripts) when fragile/consistent.
 
-⚠️ **Context Fork Requirements**: Always inject parameters for forked execution. Forked contexts don't inherit conversation history, but parameters ARE passed successfully.
+---
 
-**Parameter Passing Pattern**:
+# How to Teach: Core Frameworks
+
+## 1. Teaching Architecture
+
+### Skills-First Principle
+
+Every capability starts as a Skill. Commands and Subagents exist to orchestrate Skills, not create them.
+
+**Why**: Skills are loaded on-demand and provide domain expertise. Commands require explicit invocation. Subagents run in isolated contexts.
+
+**See**: `.claude/skills/skills-architect/SKILL.md` for skill creation workflows.
+
+### Component Selection Heuristics
+
+| Use this | When you want... | Trade-off |
+|---------|-----------------|----------|
+| **Skills** | Specialized knowledge, autonomous operation | Claude chooses when relevant |
+| **Slash commands** | Reusable workflows with explicit invocation | User must type `/command` |
+| **Subagents** | Isolated execution, different tool access | Separate context, no skill inheritance |
+| **Hooks** | Automation on events (file save, tool use) | Fires automatically on events |
+| **MCP** | External tools and data sources | Claude calls tools as needed |
+
+**See**: `.claude/skills/toolkit-architect/SKILL.md` for component routing logic.
+
+### Progressive Disclosure Structure
+
+```
+skill-name/
+├── SKILL.md (<500 lines - Tier 2)
+│   ├── YAML frontmatter (name, description - Tier 1)
+│   └── Essential workflows only
+└── references/ (on-demand - Tier 3)
+    ├── domain-specific patterns
+    ├── detailed examples
+    └── troubleshooting
+```
+
+**Key principle**: Keep references one level deep from SKILL.md. Structure files >100 lines with table of contents.
+
+---
+
+# 2. Teaching Skill Authoring
+
+## Multi-Dimensional Delta
+
+What makes content valuable isn't just "what Claude doesn't know" — it's multi-dimensional:
+
+**Behavioral Delta**: Explicit guidance that shapes behavior vs. relying on inference
+- Example: "Concise is Key" - even though Claude knows conciseness, stating it sets expectations
+
+**Multi-Dimensional Delta**: Project-specific commands, patterns, and constraints
+- Example: `scripts/init_skill.py <name> --path <output>` (not "create a skill directory")
+
+**Reliability Delta**: Patterns that improve consistency and outcomes
+- Example: Sequential workflows with validation gates
+
+**Refined Delta**: Framework enhancements that balance official patterns
+- Example: What-When-Not descriptions for discoverability
+
+## Description Framework: What-When-Not
+
+**Components**:
+- **WHAT**: What the skill does (core function)
+- **WHEN**: When to use it (triggers, contexts)
+- **NOT**: What it doesn't do (boundaries)
+
+**Good example**:
 ```yaml
-# Caller invokes with:
-Skill("analyze-data", args="dataset=production_logs timeframe=24h")
+description: "Build self-sufficient skills following Agent Skills standard. Use when creating, evaluating, or enhancing skills with progressive disclosure. Not for general programming tasks."
+```
 
-# Forked skill receives via $ARGUMENTS:
+**Balanced approach**: Include what/when/not, plus minimal behavioral context. Official skills sometimes include "how" language for helpful guidance.
+
+## Degrees of Freedom
+
+| Freedom | When to Use | Example |
+|---------|-------------|---------|
+| **High** (text) | Multiple valid approaches, context-dependent | Code reviews |
+| **Medium** (pseudocode + params) | Preferred pattern exists, some variation acceptable | Report generation with templates |
+| **Low** (specific scripts) | Fragile, error-prone, consistency critical | Database migrations |
+
+**Analogy**: Narrow bridge with cliffs (low freedom) vs. Open field (high freedom).
+
 ---
-name: analyze-data
-context: fork
+
+# 3. Teaching Workflow Design
+
+## Sequential Workflows
+
+```markdown
+Task involves these steps:
+1. Analyze the form (run analyze_form.py)
+2. Create field mapping (edit fields.json)
+3. Validate mapping (run validate_fields.py)
+4. Fill the form (run fill_form.py)
+5. Verify output (run verify_output.py)
+```
+
+**Why**: Clear steps prevent skipping critical validation.
+
+## Conditional Workflows
+
+```markdown
+1. Determine task type:
+   **New content?** → Follow Creation workflow
+   **Existing content?** → Follow Editing workflow
+```
+
+**Why**: Explicit branching prevents mode confusion.
+
+## Hub-and-Spoke Aggregation
+
+**Hub Skill** (regular, disable-model-invocation: true):
+- Delegates to Worker A (context: fork)
+- Delegates to Worker B (context: fork)
+- Delegates to Worker C (context: fork)
+- Aggregates all results
+
+**Critical**: ALL workers MUST use `context: fork` for hub to aggregate results.
+
+**See**: `.claude/skills/subagents-architect/SKILL.md` for subagent coordination patterns.
+
 ---
-Scan $ARGUMENTS:
-1. Parse: dataset=production_logs timeframe=24h
-2. Execute analysis
-3. Output: ## ANALYZE_COMPLETE
+
+# 4. Teaching Implementation Patterns
+
+## Script Reliability
+
+**Error handling**:
+```bash
+try:
+    with open(path) as f:
+        return f.read()
+except FileNotFoundError:
+    print(f"File {path} not found, creating default")
+    return ''
 ```
 
-⚠️ **Skill Calling Behavior**:
-- **Regular → Regular**: One-way handoff, caller NEVER resumes
-- **Regular → Forked**: ✅ **CONTROL RETURNS** - subroutine pattern with isolated context
+**Documented constants**:
+```bash
+# Three retries balance reliability vs speed
+MAX_RETRIES=3
+```
 
-**Implication**: For hub-and-spoke workflows where orchestrator must aggregate results, ALL worker skills MUST use `context: fork`.
+**Unix-style paths**:
+```bash
+./.claude/scripts/validate.sh
+```
 
-⚠️ **URL Fetching**: Knowledge skills MUST include mandatory URL fetching sections with mcp__simplewebfetch__simpleWebFetch and 15-minute cache minimum.
+**See**: `.claude/skills/skills-knowledge/references/script-best-practices.md` for complete patterns.
 
-## Context Isolation Security Model
+## URL Validation (for knowledge skills)
 
-**🔒 SECURITY ISOLATION**: Forked skills cannot access:
-- Caller's conversation history
-- User preferences (user_preference, session_id)
-- Context variables (project_codename, etc.)
-- Caller's session state
+```markdown
+- **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
+  - Tool: `mcp__simplewebfetch__simpleWebFetch`
+  - Cache: 15 minutes minimum
+```
 
-**✅ WHAT PASSES**:
-- Parameters via `args` (proper data transfer method)
-- Their own isolated execution context
-- Files they create/modify
+**Implementation**: Validate all external URLs before skill creation.
 
-**🛡️ USE FOR**:
-- Parallel processing (secure isolation)
-- Untrusted code execution (security barrier)
-- Multi-tenant processing (isolated contexts)
-- Noisy operations (keep main context clean)
-
-**❌ DON'T FORK WHEN**:
-- Need conversation history
-- Need user preferences
-- Need previous workflow steps
-- Simple sequential tasks
-
-## Subagent Configuration
-
-**Subagents** (`.claude/agents/*.md`) are **different from skills with `context: fork`**. Common confusion leads to incorrect YAML fields.
-
-### ✅ **Custom Subagents Work**
-**Simple configuration** - Test 3.2 validated:
-
-```yaml
 ---
-name: custom-worker
-description: "Custom worker with restricted tools"
-tools: [Read, Grep]  # Only these tools available
+
+# 5. Common Mistakes to Avoid
+
+## Over-Engineering Anti-Pattern
+
+**Problem**: Creating "logic files" (e.g., `mode-detection.md`) for behaviors Claude inherently understands.
+
+**Solution**: Define "Commander's Intent" in SKILL.md, let Claude handle execution details. Keep reference files as "Data Libraries" or "Inspiration Patterns."
+
+## Content Duplication Anti-Pattern
+
+**Problem**: Same information in both SKILL.md and references/.
+
+**Solution**: Information lives in SKILL.md **OR** references/, not both. Keep procedural instructions in SKILL.md, detailed reference material in references/.
+
+## Pure Anti-Patterns (from official skill-creator)
+
+**Do NOT create these files** in skills:
+- README.md
+- INSTALLATION_GUIDE.md
+- QUICK_REFERENCE.md
+- CHANGELOG.md
+
+**Rationale**: Skills should only contain information needed for an AI agent to do the job. Auxiliary documentation adds clutter.
+
 ---
-```
 
-**Focus**: Keep simple and compatible - use `tools` field for restriction
+# Component-Specific Guidance
 
-### Correct Subagent Fields
-```yaml
+## For Skill Creation
+
+**See**: `.claude/skills/skills-architect/SKILL.md`
+- Multi-dimensional delta concept
+- Progressive disclosure patterns
+- What-When-Not description framework
+- Quality validation
+
+## For Subagent Configuration
+
+**See**: `.claude/skills/subagents-architect/SKILL.md`
+- Context detection patterns
+- Coordination patterns
+- Configuration guide
+
+## For Hook Setup
+
+**See**: `.claude/skills/hooks-architect/SKILL.md`
+- Event types (PreToolUse, PostToolUse, Stop)
+- Compliance framework
+- Implementation patterns
+
+## For MCP Integration
+
+**See**: `.claude/skills/mcp-architect/SKILL.md`
+- Protocol guide
+- Transport mechanisms
+- Tool templates
+
+## For TaskList Workflows
+
+**See**: `.claude/skills/task-architect/SKILL.md`
+- Context spanning patterns
+- Multi-session collaboration
+- Dependency tracking
+
+**When to use TaskList**:
+- Work spanning multiple sessions
+- 5+ step workflows with dependencies
+- Visual progress tracking needed
+- Work exceeding context window
+
+**Threshold**: "Would this exceed Claude's autonomous state tracking?"
+
 ---
-name: my-agent              # Required: unique ID
-description: "Does X when Y" # Required: when to delegate
-tools:                       # Optional: tool restrictions
-  - Read
-  - Grep
-  - Glob
-disallowedTools:             # Optional: denied tools
-  - Write
-  - Edit
-skills:                     # Optional: inject skill content
-  - skills-knowledge
-hooks:                      # Optional: lifecycle hooks (PreToolUse, PostToolUse, Stop)
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./scripts/validate.sh"
+
+# Recognition Patterns
+
+## Trust AI Intelligence
+
+Provide concepts, AI makes intelligent implementation decisions. Focus on principles, not prescriptive patterns.
+
+## Local Project Autonomy
+
+Always start with local project configuration. Project directory as default location. Team collaboration through git.
+
+## Autonomous Execution
+
+Skills should work 80-95% without questions. Provide context and examples, trust AI decisions.
+
+## "Unhobbling" Principle
+
+TodoWrite was removed because newer models handle simple tasks autonomously. TaskList exists for complex projects exceeding autonomous state tracking.
+
 ---
-```
 
-**Note**: Agents support component-scoped hooks but do NOT support the `once: true` option (only skills/commands do).
+# INCREMENTAL-UPDATE for Prior Conversation
 
-### Invalid Fields (Don't Use)
-- ❌ `context: fork` - This is for **skills**, not subagents
-- ❌ `agent: Explore` - This field **doesn't exist** for subagents
-- ❌ `user-invocable` - Subagents aren't skills
-- ❌ `disable-model-invocation` - For skills, not subagents
+**RECOGNIZE**: When there is ANY prior conversation in a session, the default behavior should be INCREMENTAL-UPDATE.
 
-### Context Detection
-Determine subagent location based on scope:
-- **Project-level**: `${CLAUDE_PROJECT_DIR}/.claude/agents/`
-- **Plugin-level**: `<plugin>/agents/` (for distribution)
-- **User-level**: `~/.claude/agents/` (all projects)
+- Prior conversation = knowledge has been generated = capture it
+- No explicit request needed — prior conversation IS the trigger
+- Review conversation for: working commands, discovered patterns, errors encountered, new rules learned
+- Update CLAUDE.md and relevant skills based on discoveries
 
-### Common Mistake
-Using subagents-architect incorrectly suggested `agent:` and `context: fork` for subagents. These fields apply to **skills** that delegate TO subagents, not the subagents themselves.
-
-## Skill Calling Behavior (Critical)
-
-### Regular → Regular: One-Way Handoff
-❌ **Caller does NOT resume** - control transfers permanently
-```yaml
-# skill-a calls skill-b → skill-b becomes final output
-# skill-a NEVER resumes
-```
-
-### Regular → Forked: ✅ **SUBROUTINE PATTERN**
-**Forked skill runs in isolation BUT control returns to caller**
-```yaml
-# skill-a calls skill-forked → skill-forked runs isolated → skill-a resumes
-# Forked skill has NO access to caller's conversation context
-```
-
-| Aspect | Regular → Regular | Regular → Forked |
-|--------|------------------|------------------|
-| Control returns | ❌ NO | ✅ YES |
-| Context access | ✅ Preserved | ❌ Isolated |
-| Arguments pass | ✅ Yes | ✅ Yes |
-| Use case | Handoff | Subroutine |
-
-**Critical Discovery**: Forked skills enable hub-and-spoke architectures. Hub orchestrates → workers execute → hub aggregates.
-
-### Nested Forks Work (Validated)
-✅ Forked skills can call other forked skills (Test 4.2)
-- Outer (forked) calls Inner (forked)
-- Both isolated, both complete
-- Control returns properly at each level
-- **Not limited by ">2 deep" warning** (that applies to REGULAR chains)
-
-### Forked Skills: 100% Autonomous
-**Test Evidence**: Forked skills achieve 100% autonomy (0 permission denials)
-- Test 2.3: Made independent decision without questions
-- Test 3.2: Completed with custom subagent, no user interaction
-- Test 4.2: Nested execution, autonomous completion
-- Test 5.1: Parameter processing, independent execution
-
-**Why Forked Skills Are Autonomous**:
-- Isolated from caller context (can't ask about main conversation)
-- Parameters provide all necessary context
-- Must complete with structured output
-- No access to user for clarification
-
-**Verification**: Run with `--dangerously-skip-permissions` → `"permission_denials": []`
-
-## Skill Portability
-
-**Default to portable skills**: Create skills usable across any Agent Skills-compatible product.
-
-**Claude Code Extensions** (use ONLY in `.claude/skills/` or plugin contexts with `.claude-plugin`/`plugin.json`):
-- `context: fork` - Runs skill in isolated subagent context
-- `agent: <name>` - Specifies agent type for execution
-- `user-invocable: false` - Hides from slash command menu
-- `hooks` in frontmatter - Lifecycle event bindings
-
-⚠️ **`disable-model-invocation` Anti-Pattern**: Turns skills into "pure commands"—rigid, manually-triggered workflows. **Pure commands are an anti-pattern for skills.** A well-crafted description usually suffices. Reserve for genuinely destructive operations (deploy, delete, send) where user timing is critical.
-
-## Project Structure
-
-```
-.claude/
-├── skills/                      # Skills are PRIMARY building blocks
-│   └── skill-name/
-│       ├── SKILL.md            # <500 lines (Tier 2)
-│       └── references/          # On-demand (Tier 3)
-├── agents/                      # Context fork isolation
-├── hooks/                       # Event automation (component-scoped preferred)
-├── commands/                     # Legacy: manual workflows
-├── settings.json                # Project-wide hooks & configuration (team-shared)
-├── settings.local.json          # Local overrides (gitignored)
-└── .mcp.json                   # MCP server configuration
-```
-
-**Hooks Configuration Options**:
-- **settings.json**: Team-shared hooks (committed to git)
-- **settings.local.json**: Personal hooks (gitignored)
-- **hooks.json**: Legacy global hooks format
-- **Component-scoped**: Hooks in skill/agent frontmatter
-
-## Layer Selection
-
-```
-Need persistent norms? → CLAUDE.md rules
-Need domain expertise? → Skill (user-invocable: true)
-  Simple task? → Skill (regular)
-  Complex workflow? → Skill (context: fork)
-Need explicit workflow? → Command (disable-model-invocation: true)
-Need isolation/parallelism? → Subagent
-```
-
-## Hooks Configuration
-
-Hooks can be configured in **four locations**, each with different scopes and use cases.
-
-### Supported Events
-
-All hook locations support three event types:
-- **PreToolUse**: Run before tool execution
-- **PostToolUse**: Run after tool execution
-- **Stop**: Run when component completes
-
-### 1. Component-Scoped Hooks (Preferred for Auto-Cleanup)
-
-**Location**: Skill/command/agent YAML frontmatter
-
-**Best For**:
-- **Skills/Commands**: Preprocessing data, validation after edits, one-time setup (with `once: true`)
-- **Agents**: Scoped event handling, automatic cleanup, agent-specific validation
-- Component-specific automation
-- Auto-cleanup when component finishes
-
-**Key Features**:
-- ✅ Auto-cleanup when component completes
-- ✅ Skills/Commands support `once: true` (run only once per session)
-- ❌ Agents do NOT support `once` option
-
-**Examples**:
-
-**Skill with Preprocessing and Validation**:
-```yaml
 ---
-name: deploy-skill
-description: "Deploys application with validation"
-hooks:
-  PreToolUse:
-    - matcher: "Bash"
-      hooks:
-        - type: command
-          command: "./scripts/run-tests.sh"
-          once: true  # Only runs once per session
-  PostToolUse:
-    - matcher: "Write|Edit"
-      hooks:
-        - type: command
-          command: "./scripts/format-code.sh"
----
-```
 
-**Agent with Automatic Cleanup**:
-```yaml
----
-name: data-processor
-description: "Processes data with scoped validation"
-hooks:
-  PreToolUse:
-    - matcher: "Read|Grep"
-      hooks:
-        - type: command
-          command: "./validate-input.sh"
----
-```
+# See Also
 
-### 2. Project Settings - Team Shared
-
-**Location**: `.claude/settings.json`
-
-**Best For**:
-- Project-wide preprocessing (e.g., filtering logs to reduce context)
-- Team-wide security policies
-- Standardized configurations across collaborators
-- General automation (NOT component-specific)
-- Version-controlled hook configurations
-
-**Use for**: General preprocessing or project-wide automation that applies across all skills/commands
-
-**Example**:
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "WebFetch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/cache-web-content.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### 3. Project Settings - Local Overrides
-
-**Location**: `.claude/settings.local.json`
-
-**Best For**:
-- Personal project preferences
-- Machine-specific configurations
-- Testing hook variations
-- Local preprocessing workflows (gitignored)
-
-**Use for**: Local automation that doesn't need to be shared with team
-
-**Example**:
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./.claude/scripts/local-stats.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### 4. Global Hooks (Legacy Format)
-
-**Location**: `.claude/hooks.json`
-
-**Best For**:
-- Traditional global hook configuration
-- Organization-wide security policies
-- Cross-skill protection (deprecated)
-
-**Note**: `settings.json` is the modern replacement. Both work, but settings.json provides better team collaboration.
-
-**Supported Events**: PreToolUse, PostToolUse, Stop (all events work in all four locations)
-
-### Quick Decision Guide
-
-**Use component-scoped hooks when**:
-- Hook applies to specific skill/command/agent
-- Need `once: true` for one-time setup
-- Want auto-cleanup when component finishes
-
-**Use settings-based hooks when**:
-- Need preprocessing across multiple components
-- Team-wide automation required
-- Project-wide policies needed
-
-### Configuration Precedence** (highest to lowest):
-1. `.claude/settings.local.json` (local overrides)
-2. `.claude/settings.json` (team-shared)
-3. `.claude/hooks.json` (legacy global)
-4. Component-scoped hooks (skill/agent frontmatter)
+- **Skill creation**: `.claude/skills/skills-architect/SKILL.md`
+- **Subagents**: `.claude/skills/subagents-architect/SKILL.md`
+- **Hooks**: `.claude/skills/hooks-architect/SKILL.md`
+- **MCP**: `.claude/skills/mcp-architect/SKILL.md`
+- **TaskList**: `.claude/skills/task-architect/SKILL.md`

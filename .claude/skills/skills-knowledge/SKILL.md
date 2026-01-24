@@ -1,5 +1,6 @@
 ---
 name: skills-knowledge
+context: fork
 description: "Create self-sufficient skills following Agent Skills standard. Use when building autonomous capabilities with progressive disclosure. Do not use for general programming or non-Claude contexts."
 user-invocable: true
 ---
@@ -273,14 +274,30 @@ description: "WHAT + WHEN + NOT formula"
 ```
 
 ### Step 3: Add Supporting Files (Optional)
-```bash
-# references/ - Detailed documentation
-echo "# Detailed Reference" > references/detailed.md
 
-# scripts/ - Executable utilities
+**references/** - Detailed documentation
+```bash
+echo "# Detailed Reference" > references/detailed.md
+```
+
+**scripts/** - Executable utilities (use sparingly)
+```bash
 echo "#!/bin/bash" > scripts/validate.sh
 chmod +x scripts/validate.sh
 ```
+
+**When to include scripts**:
+- Complex operations (>3-5 lines) that benefit from determinism
+- Reusable utilities called multiple times
+- Performance-sensitive operations where native tool speed matters
+- Operations requiring explicit error handling patterns
+
+**When to avoid scripts**:
+- Simple 1-2 line operations (use native tools directly)
+- Highly variable tasks where Claude's adaptability is valuable
+- One-time operations that don't warrant automation
+
+See **[references/script-best-practices.md](references/script-best-practices.md)** for comprehensive script implementation patterns.
 
 See **[references/creation.md](references/creation.md)** for complete creation guide.
 
@@ -376,6 +393,8 @@ See **[references/troubleshooting.md](references/troubleshooting.md)** for compl
 - **[audit.md](references/audit.md)** - Quality framework and checklist
 - **[patterns.md](references/patterns.md)** - Refinement patterns and examples
 - **[troubleshooting.md](references/troubleshooting.md)** - Common issues and solutions
+- **[official-features.md](references/official-features.md)** - Official Agent Skills features (allowed-tools, MCP, runtime, etc.)
+- **[script-best-practices.md](references/script-best-practices.md)** - Script implementation patterns: Solve, don't punt; avoid magic numbers; self-contained scripts; edge case handling; exit codes; plan-validate-execute pattern
 
 ### External Resources
 - **Agent Skills Specification**: https://github.com/agentskills/agentskills
@@ -465,3 +484,11 @@ agent: Explore
 - ❌ Need conversation history
 - ❌ Need user preferences
 - ❌ Need project context
+
+---
+
+## TaskList Integration Patterns
+
+TaskList tools are **built-in Layer 1 orchestration primitives** that skills can USE for coordinating complex workflows.
+
+For complete TaskList integration patterns and examples, see **[references/tasklist-integration.md](references/tasklist-integration.md)**.

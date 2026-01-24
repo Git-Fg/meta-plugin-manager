@@ -127,6 +127,8 @@ description: "Create self-sufficient skills following Agent Skills standard. Use
 - NOT: "Do not use for general programming"
 - Includes specific keywords: "Agent Skills", "progressive disclosure"
 
+**Critical**: Descriptions must NOT include implementation details ("how"). See `skills-architect/references/description-guidelines.md` for the complete What-When-Not framework and why over-specified descriptions are an anti-pattern.
+
 ## Pattern 3: Enhance Progressive Disclosure
 
 **Problem**: SKILL.md too long, no Tier 3 content

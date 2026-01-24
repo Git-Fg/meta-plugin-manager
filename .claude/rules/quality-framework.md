@@ -2,6 +2,20 @@
 
 Skills must score ≥80/100 on 11-dimensional framework before production.
 
+## When to Apply
+
+**FOR DIRECT USE**: Apply this framework when:
+- Creating new skills
+- Auditing existing skills before production
+- Evaluating skill quality for deployment
+- Ensuring autonomous execution (80-95% without questions)
+
+**TO KNOW WHEN**: Recognize that:
+- Quality frameworks guide but don't replace intelligent decision-making
+- Context matters - some dimensions may be more critical than others
+- TaskList enables quality validation for complex multi-skill workflows
+- Progressive disclosure affects what belongs in Tier 1 vs Tier 2/3
+
 ## 11-Dimensional Framework
 
 1. **Knowledge Delta** - Expert-only vs Claude-obvious
@@ -16,7 +30,7 @@ Skills must score ≥80/100 on 11-dimensional framework before production.
 10. **Maintainability** - Well-structured
 11. **Innovation** - Unique value
 
-## Autonomy Scoring (from skills/claude-cli-non-interactive/references/autonomy-scoring.md)
+## Autonomy Scoring (from skills/test-runner/references/autonomy-testing.md)
 
 **From test-output.json, check line 3:**
 ```json

@@ -1,5 +1,6 @@
 ---
 name: subagents-knowledge
+context: fork
 description: "Complete guide to subagents for project-scoped workers in Claude Code. Use when creating .claude/agents/*.md files or configuring subagent frontmatter. Do not use for standalone plugin agent development."
 user-invocable: true
 ---
@@ -78,6 +79,72 @@ See **[coordination.md](references/coordination.md)** for coordination patterns 
 | **Plan** | Architecture planning | Implementation strategy, breaking down tasks |
 | **General-Purpose** | Full capabilities | Complex workflows, research + execution |
 | **Bash** | Command execution | Git operations, terminal tasks |
+
+## Agent Type Selection
+
+Four agent types with specialized capabilities and different tool access:
+
+### general-purpose (Default)
+- **Tools**: All tools available
+- **Use When**: Full capability needed, no specialization required
+- **Performance**: Balanced for most tasks
+- **Cost**: Inherits parent model (sonnet by default)
+
+### bash
+- **Tools**: Bash only
+- **Use When**: Pure command execution, no file operations needed
+- **Performance**: Optimized for shell workflows
+- **Cost**: Lower overhead for command-focused tasks
+
+### explore
+- **Tools**: All tools except Task
+- **Use When**: Fast codebase exploration, no nested TaskList needed
+- **Performance**: Optimized for quick navigation
+- **Constraint**: Cannot spawn additional TaskList workflows
+
+### plan
+- **Tools**: All tools except Task
+- **Use When**: Software architecture design, complex decision-making
+- **Performance**: Optimized for reasoning workflows
+- **Constraint**: Cannot spawn additional TaskList workflows
+
+## Agent Selection Decision Tree
+
+```
+Need command execution only?
+└─ Yes → bash agent
+└─ No
+   └─ Need architecture design?
+      └─ Yes → plan agent
+      └─ No
+         └─ Fast exploration without TaskList?
+            └─ Yes → explore agent
+            └─ No → general-purpose agent
+```
+
+## Model Selection for Subagents
+
+Explicit model selection affects cost and performance:
+
+| Model | Use Case | When to Specify | Cost Factor |
+|-------|----------|-----------------|-------------|
+| **haiku** | Fast, straightforward tasks | Simple analysis, quick operations | 1x (baseline) |
+| **sonnet** | Default | Balanced performance, most cases | 3x haiku |
+| **opus** | Complex reasoning | Architecture design, complex decisions | 10x haiku |
+
+**Guidance**:
+- Default to sonnet (inherited from parent)
+- Use haiku for: Simple grep, basic file operations, quick validation
+- Use opus for: Architecture design, complex refactoring, multi-stage planning
+
+**Cost Optimization Strategy**:
+1. Start with haiku for simple exploration
+2. Escalate to sonnet for standard workflows
+3. Use opus only when complex reasoning is critical
+
+**See task-knowledge for detailed patterns**:
+- [agent-types.md](task-knowledge/references/agent-types.md) - Complete agent type guide
+- [model-selection.md](task-knowledge/references/model-selection.md) - Cost optimization strategies
 
 ## Context: Fork - Use Sparingly
 
