@@ -5,7 +5,7 @@
 - [Pre-Review Validation](#pre-review-validation)
 - [Structural Validation](#structural-validation)
 - [Skills Validation](#skills-validation)
-- [🚨 MANDATORY: Read BEFORE Proceeding](#mandatory-read-before-proceeding)
+- [RECOMMENDED: Context Validation](#recommended-context-validation)
 - [Commands Validation](#commands-validation)
 - [Agents Validation](#agents-validation)
 - [Hooks Validation](#hooks-validation)
@@ -109,22 +109,33 @@ disable-model-invocation: true       ⚠️ Optional
 ---
 ```
 
-### Mandatory URLs
-- [ ] URL sections present
+## RECOMMENDED: Context Validation
+
+### Recommended URLs
+- [ ] URL sections present (RECOMMENDED pattern)
 - [ ] 2026-compliant URLs
 - [ ] Official documentation links
 - [ ] Cache time specified
+- [ ] "When to Fetch vs Skip" guidance included
+- [ ] Trust AI judgment statement present
 
-**Required Sections**:
+**Recommended Sections**:
 ```markdown
-## 🚨 MANDATORY: Read BEFORE Proceeding
+## RECOMMENDED: Context Validation
 
-### Primary Documentation (MUST READ)
-- **[MUST READ] Official Skills Guide**: https://code.claude.com/docs/en/skills
+Read these URLs when accuracy matters for skill work:
+
+### Primary Documentation
+- **Official Skills Guide**: https://code.claude.com/docs/en/skills
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **When to Read**: Before any skill creation
-  - **Content**: Skills architecture, progressive disclosure
   - **Cache**: 15 minutes minimum
+  - **Content**: Skills architecture, progressive disclosure
+
+### When to Fetch vs Skip
+**Fetch when**: Documentation may have changed, user requests verification
+**Skip when**: Simple modifications, local-only work, recently read
+
+**Trust your judgment**: You know when validation is needed.
 ```
 
 ### Trigger Quality

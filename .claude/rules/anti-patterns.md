@@ -121,9 +121,26 @@ fi
 ## Documentation Anti-Patterns
 
 **❌ Stale URLs** - Always verify with mcp__simplewebfetch__simpleWebFetch before implementation
-**❌ Missing URL sections** - Knowledge skills MUST include mandatory URL fetching
+
+**❌ Missing URL sections** - Knowledge skills SHOULD include URL fetching with context
+
 **❌ Drift** - Same concept in multiple places
+
 **❌ Generic tutorials** - Mixed with project-specific rules
+
+**❌ Extraneous documentation files in skills** - From skill-creator best practices
+**Do NOT create in skills**:
+- README.md
+- INSTALLATION_GUIDE.md
+- QUICK_REFERENCE.md
+- CHANGELOG.md
+- TUTORIAL.md
+- GUIDE.md
+- Any auxiliary documentation about the creation process
+
+**Rationale**: Skills should only contain information needed for an AI agent to do the job. They should not contain auxiliary context about setup, testing procedures, or user-facing documentation. Creating additional documentation files just adds clutter and confusion.
+
+**Recognition**: If you're creating a file that explains "how to use" or "how to set up" a skill, you're creating the wrong kind of documentation. Skills are for AI agents, not human users.
 
 **❌ Updating CLAUDE.md without checking .claude/rules/** - Documentation synchronization failure
 - CLAUDE.md and .claude/rules/ are a single unit — always review both together

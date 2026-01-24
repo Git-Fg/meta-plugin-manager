@@ -17,7 +17,7 @@ find_next_test() {
         exit 1
     fi
 
-    NEXT_TEST=$(cat "$TEST_PLAN" | jq -r '.test_plan.tests[] | select(.status == "NOT_STARTED") | .test_id' | head -1)
+    NEXT_TEST=$(cat "$TEST_PLAN" | jq -r '.test_plan.phases[] | .tests[]? | select(.status == "NOT_STARTED") | .test_id' | head -1)
 
     if [ -z "$NEXT_TEST" ] || [ "$NEXT_TEST" = "null" ]; then
         echo "No more tests to run"
@@ -42,20 +42,20 @@ update_test_status() {
 
     # Update status
     cat "$TEST_PLAN" | jq --arg test "$test_id" --arg st "$status" \
-        '.test_plan.tests[] | select(.test_id == $test) | .status = $st' \
+        '.test_plan.phases[] | .tests[]? | select(.test_id == $test) | .status = $st' \
         > "${TEST_PLAN}.tmp" && mv "${TEST_PLAN}.tmp" "$TEST_PLAN"
 
     # Update autonomy if provided
     if [ -n "$autonomy" ]; then
         cat "$TEST_PLAN" | jq --arg test "$test_id" --arg score "$autonomy" \
-            '.test_plan.tests[] | select(.test_id == $test) | .autonomy_score = ($score | tonumber)' \
+            '.test_plan.phases[] | .tests[]? | select(.test_id == $test) | .autonomy_score = ($score | tonumber)' \
             > "${TEST_PLAN}.tmp" && mv "${TEST_PLAN}.tmp" "$TEST_PLAN"
     fi
 
     # Update duration if provided
     if [ -n "$duration" ]; then
         cat "$TEST_PLAN" | jq --arg test "$test_id" --arg dur "$duration" \
-            '.test_plan.tests[] | select(.test_id == $test) | .duration_ms = ($dur | tonumber)' \
+            '.test_plan.phases[] | .tests[]? | select(.test_id == $test) | .duration_ms = ($dur | tonumber)' \
             > "${TEST_PLAN}.tmp" && mv "${TEST_PLAN}.tmp" "$TEST_PLAN"
     fi
 
@@ -69,10 +69,10 @@ get_progress() {
         exit 1
     fi
 
-    TOTAL=$(cat "$TEST_PLAN" | jq '.test_plan.tests | length')
-    COMPLETED=$(cat "$TEST_PLAN" | jq '[.test_plan.tests[] | select(.status == "COMPLETED")] | length')
-    FAILED=$(cat "$TEST_PLAN" | jq '[.test_plan.tests[] | select(.status == "FAILED")] | length')
-    NOT_STARTED=$(cat "$TEST_PLAN" | jq '[.test_plan.tests[] | select(.status == "NOT_STARTED")] | length')
+    TOTAL=$(cat "$TEST_PLAN" | jq '[.test_plan.phases[] | .tests[]?] | length')
+    COMPLETED=$(cat "$TEST_PLAN" | jq '[.test_plan.phases[] | .tests[]? | select(.status == "COMPLETED")] | length')
+    FAILED=$(cat "$TEST_PLAN" | jq '[.test_plan.phases[] | .tests[]? | select(.status == "FAILED")] | length')
+    NOT_STARTED=$(cat "$TEST_PLAN" | jq '[.test_plan.phases[] | .tests[]? | select(.status == "NOT_STARTED")] | length')
 
     echo "Progress: $COMPLETED/$TOTAL completed, $FAILED failed, $NOT_STARTED remaining"
 }
@@ -239,7 +239,7 @@ update_lifecycle_stage() {
 
     # Valid stages: setup, execute, validate, document, archived
     cat "$TEST_PLAN" | jq --arg test "$test_id" --arg stage "$stage" \
-        '.test_plan.tests[] | select(.test_id == $test_id) | .lifecycle_stage = $stage' \
+        '.test_plan.phases[].tests[] | select(.test_id == $test) | .lifecycle_stage = $stage' \
         > "${TEST_PLAN}.tmp" && mv "${TEST_PLAN}.tmp" "$TEST_PLAN"
 
     echo "Updated test $test_id to lifecycle stage: $stage"
@@ -274,7 +274,7 @@ add_finding() {
 
     # Append finding to test record
     cat "$TEST_PLAN" | jq --arg test "$test_id" --arg finding "$finding" \
-        '.test_plan.tests[] | select(.test_id == $test) | .findings += [$finding]' \
+        '.test_plan.phases[] | .tests[]? | select(.test_id == $test) | .findings += [$finding]' \
         > "${TEST_PLAN}.tmp" && mv "${TEST_PLAN}.tmp" "$TEST_PLAN"
 
     echo "Added finding to test $test_id"

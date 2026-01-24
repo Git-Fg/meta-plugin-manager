@@ -130,8 +130,10 @@ if [ -n "$FORKED_SKILLS" ]; then
         echo "  - Forked Skill: $SKILL_NAME"
         echo "    Agent ID: $AGENT_ID"
     done
+    FORKED_COUNT=$(echo "$FORKED_SKILLS" | wc -l | tr -d ' ')
 else
     echo "ℹ️  No forked skill executions detected"
+    FORKED_COUNT=0
 fi
 
 echo ""
@@ -172,13 +174,19 @@ if [ -n "$TASKLIST_TOOLS" ]; then
         echo "    Tool ID: $TOOL_ID"
     done
 
-    # Count by tool type
+    # Count by tool type (initialize to 0 for use in JSON output)
     echo ""
     echo "**By Tool Type:**"
     TASKCREATE_COUNT=$(grep '"type":"tool_use"' "$JSON_FILE" | grep '"name":"TaskCreate"' | wc -l | tr -d ' ')
     TASKUPDATE_COUNT=$(grep '"type":"tool_use"' "$JSON_FILE" | grep '"name":"TaskUpdate"' | wc -l | tr -d ' ')
     TASKGET_COUNT=$(grep '"type":"tool_use"' "$JSON_FILE" | grep '"name":"TaskGet"' | wc -l | tr -d ' ')
     TASKLIST_COUNT=$(grep '"type":"tool_use"' "$JSON_FILE" | grep '"name":"TaskList"' | wc -l | tr -d ' ')
+else
+    # Initialize counts to 0 when no TaskList tools found
+    TASKCREATE_COUNT=0
+    TASKUPDATE_COUNT=0
+    TASKGET_COUNT=0
+    TASKLIST_COUNT=0
 
     echo "  - TaskCreate: $TASKCREATE_COUNT invocation(s)"
     echo "  - TaskUpdate: $TASKUPDATE_COUNT invocation(s)"

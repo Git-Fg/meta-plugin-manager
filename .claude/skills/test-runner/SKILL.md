@@ -56,6 +56,19 @@ grep '"permission_denials":\s*\[\]' /ABSOLUTE/PATH/tests/test_X_X/test-output.js
 
 **EVERY test execution MUST be followed by this exact verification sequence.**
 
+### Results Location Rule
+
+```
+tests/
+├── test_X_X/              # PRIMARY: Write results here first
+│   └── test-output.json   # Fresh execution output
+└── raw_logs/              # SECONDARY: Archive here AFTER validation
+    └── phase_X/
+        └── test_X_Y.description.json  # Archived/renamed copy
+```
+
+**WORKFLOW**: Always write to `test_X_X/test-output.json` first. Only migrate to `raw_logs/` AFTER successful validation.
+
 ### Step 1: Verify NDJSON Structure
 
 ```bash
@@ -70,7 +83,7 @@ wc -l /ABSOLUTE/PATH/tests/test_X_X/test-output.json
 
 ```bash
 # This script verifies: real skill calls, success status, autonomy, hallucination detection
-bash /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.claude/skills/test-runner/scripts/analyze_tools.sh \
+bash scripts/analyze_tools.sh \
   /ABSOLUTE/PATH/tests/test_X_X/test-output.json
 ```
 
@@ -85,7 +98,32 @@ bash /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.claude/skill
 - ✅ Permission denials counting
 - ✅ Final verdict (PASS/FAIL/PARTIAL)
 
-### Step 3: Verify Critical Indicators (Manual Confirmation)
+**Script output shows**: Verdict + autonomy score + detailed breakdown
+
+### Step 3: Migrate to raw_logs (AFTER validation passes)
+
+```bash
+# ONLY after analyze_tools.sh shows PASS or acceptable PARTIAL
+# Rename and move to raw_logs with descriptive name
+mv /ABSOLUTE/PATH/tests/test_X_X/test-output.json \
+   /ABSOLUTE/PATH/tests/raw_logs/phase_X/test_X_Y.description.json
+
+# Where:
+# - phase_X = the test phase number (1-7)
+# - test_X_Y = test ID (e.g., test_2_3)
+# - description = brief test name (e.g., forked_subagent)
+```
+
+**When to migrate**:
+- ✅ AFTER analyze_tools.sh completes successfully
+- ✅ AFTER you record the verdict/autonomy score
+- ✅ BEFORE starting the next test
+
+**When NOT to migrate**:
+- ❌ If test failed and needs re-execution (keep in test_X_X folder)
+- ❌ If you need to manually inspect the raw output
+
+### Step 4: Verify Critical Indicators (Manual Confirmation)
 
 After script completes, verify these specific metrics:
 
@@ -153,7 +191,7 @@ Update TaskList status with:
 
 8. **MANDATORY: Run comprehensive analysis script**:
    ```bash
-   bash /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.claude/skills/test-runner/scripts/analyze_tools.sh \
+   bash scripts/analyze_tools.sh \
      /ABSOLUTE/PATH/tests/test_X_X/test-output.json
    ```
 
@@ -169,31 +207,92 @@ Update TaskList status with:
     - Duration from result.duration_ms
     - Turn count from result.num_turns
 
-### Phase 4: Document
+### Phase 4: Archive (After Validation)
 
-11. **Update TaskList** status to completed
-12. **Record findings** in test plan or results
+11. **Migrate to raw_logs AFTER validation passes**:
+   ```bash
+   # Move archived log with descriptive name
+   mv /ABSOLUTE/PATH/tests/test_X_X/test-output.json \
+      /ABSOLUTE/PATH/tests/raw_logs/phase_X/test_X_Y.description.json
+   ```
+
+**Naming convention**: `test_X_Y.description.json`
+- `X_Y` = test ID from test plan (e.g., 2_3)
+- `description` = brief descriptive name (e.g., forked_subagent, hub_spoke)
+
+**Only migrate when**:
+- ✅ Validation passed (acceptable verdict from analyze_tools.sh)
+- ✅ Metrics recorded (autonomy, duration, etc.)
+- ❌ Keep in test_X_X folder if test needs re-execution
+
+### Phase 5: Document
+
+12. **Update TaskList** status to completed
+13. **Record findings** in test plan or results
 
 ---
 
-## 🚨 MANDATORY: Read BEFORE Testing
+## Test Folder Lifecycle (When to Clean Up)
 
-**CRITICAL**: You MUST read and understand these URLs:
+```
+tests/
+├── test_X_X/              # ACTIVE: Test in progress or needs review
+│   ├── .claude/skills/    # Test skills
+│   └── test-output.json   # Fresh output (before analysis)
+│
+└── raw_logs/              # ARCHIVED: Validated test results
+    └── phase_X/
+        └── test_X_Y.description.json
+```
 
-### Primary Documentation (MUST READ)
-- **[MUST READ] CLI Reference Guide**: https://code.claude.com/docs/en/cli-reference
+**Lifecycle states**:
+1. **Setup** → test_X_X folder created, skills added
+2. **Execute** → test-output.json written
+3. **Validate** → analyze_tools.sh run on test-output.json
+4. **Archive** → test-output.json moved to raw_logs/ (rename with description)
+5. **Cleanup** → test_X_X folder removed (if migration successful)
+
+**When to delete test_X_X folder**:
+- ✅ After successful migration to raw_logs
+- ✅ After recording all metrics
+- ❌ Keep if test failed and needs re-execution
+
+**When to keep test_X_X folder**:
+- ❌ Test failed and needs debugging
+- ❌ Need to re-execute with different parameters
+- ❌ Manual inspection of raw output needed
+
+---
+
+## RECOMMENDED: Context Validation
+
+Read these URLs when accuracy matters for testing work:
+
+### Primary Documentation
+- **CLI Reference Guide**: https://code.claude.com/docs/en/cli-reference
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Cache**: 15 minutes minimum
   - **Content**: Print mode, stream-json output, testing workflows
-  - **Cache**: 15 minutes minimum
 
-- **[MUST READ] Agent Skills Testing**: https://code.claude.com/docs/en/skills
+- **Agent Skills Testing**: https://code.claude.com/docs/en/skills
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Skill testing patterns, autonomy validation
   - **Cache**: 15 minutes minimum
+  - **Content**: Skill testing patterns, autonomy validation
 
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've read the mandatory reference files
-- **REQUIRED** to understand CLI testing before running test workflows
+### When to Fetch vs Skip
+**Fetch when**:
+- Documentation may have changed since last read
+- User requests verification of CLI testing patterns
+- Starting new test suite or debugging test issues
+- Uncertain about current testing best practices
+
+**Skip when**:
+- Running tests based on established patterns
+- Local-only work without external dependencies
+- Working offline
+- Recently read and documentation is stable
+
+**Trust your judgment**: You know when validation is needed for accurate test execution.
 
 ## WIN CONDITION
 
@@ -244,15 +343,17 @@ wc -l /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/tests/test_1
 **CRITICAL: Every test execution MUST be followed by analysis using the analysis script.**
 
 ```bash
-# REQUIRED: Analyze single test output after execution
-bash /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.claude/skills/test-runner/scripts/analyze_tools.sh \
+# Step 1: REQUIRED - Analyze fresh test output
+bash scripts/analyze_tools.sh \
   /ABSOLUTE/PATH/tests/test_X_X/test-output.json
 
-# OPTIONAL: Show test plan progress
-bash /Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/.claude/skills/test-runner/scripts/test_runner_helper.sh progress
+# Step 2: AFTER validation passes - migrate to raw_logs
+mv /ABSOLUTE/PATH/tests/test_X_X/test-output.json \
+   /ABSOLUTE/PATH/tests/raw_logs/phase_X/test_X_Y.description.json
 
-# OPTIONAL: Discover next test to run
-bash /Users/felix/Documents/claude-plugins-custom/thecatoolkit_v3/.claude/skills/test-runner/scripts/test_runner_helper.sh find-next
+# Step 3: OPTIONAL - JSON test plan operations
+uv run scripts/test_runner_helper.py progress
+uv run scripts/test_runner_helper.py find-next
 ```
 
 **Analysis Script Output:**
@@ -263,6 +364,8 @@ bash /Users/felix/Documents/claude-plugins-custom/thecatoolkit_v3/.claude/skills
 - Completion markers found
 - Hallucination detection
 - Tool usage breakdown
+
+**Remember**: Only migrate to raw_logs AFTER analyze_tools.sh confirms acceptable results.
 
 ### Autonomous Mode (For Batch Execution)
 
@@ -352,15 +455,20 @@ Check: `grep '"permission_denials"' test-output.json`
 ✅ **ALWAYS**: Execute SYNCHRONONOUSLY - wait for command to complete
 ✅ **ALWAYS**: Use ABSOLUTE paths - never relative paths or /tmp/
 ✅ **ALWAYS**: Include `2>&1` to capture stderr in output
+✅ **ALWAYS**: Write to `test_X_X/test-output.json` first (NOT raw_logs yet)
+✅ **ALWAYS**: Run `analyze_tools.sh` on test-output.json after execution
 ✅ **ALWAYS**: Verify 3-line NDJSON structure after execution
 ✅ **ALWAYS**: Check autonomy score in permission_denials field
 ✅ **ALWAYS**: Create ONE folder per test with test_X_X naming
+✅ **ALWAYS**: Migrate to `raw_logs/phase_X/test_X_Y.description.json` AFTER validation
 
 ❌ **NEVER**: Use `run_in_background: true` for test execution
 ❌ **NEVER**: Use `timeout` command - use `--max-turns` instead
 ❌ **NEVER**: Execute without `cd /ABSOLUTE/PATH &&` prefix
 ❌ **NEVER**: Create test skills in /tmp/ or any temporary location
 ❌ **NEVER**: Skip verifying the 3-line NDJSON output structure
+❌ **NEVER**: Migrate to raw_logs BEFORE running analyze_tools.sh
+❌ **NEVER**: Archive failed tests (keep in test_X_X for re-execution)
 
 ### For TaskList Integration
 
@@ -626,40 +734,97 @@ See [references/skills-best-practices.md](references/skills-best-practices.md) f
 
 ## Helper Scripts Available (For Test Plan Management)
 
-### Primary Analysis Script (MANDATORY after every test)
-**Script**: `scripts/analyze_tools.sh`
+### Script 1: analyze_tools.sh (MANDATORY - Run After EVERY Test)
 
-**Usage** (REQUIRED after each test execution):
+**Purpose**: Validates test execution, detects real tool usage, scores autonomy
+
+**WHEN to use**:
+- ✅ **MANDATORY**: After EVERY test execution (no exceptions)
+- ✅ Before migrating logs to raw_logs
+- ✅ Before recording results/documentation
+
+**HOW to use**:
 ```bash
-bash /Users/felix/Documents/claude-plugins-custom/thecatoolkit_v3/.claude/skills/test-runner/scripts/analyze_tools.sh \
+# Run on fresh test output (in test_X_X folder)
+bash scripts/analyze_tools.sh \
   /ABSOLUTE/PATH/tests/test_X_X/test-output.json
+
+# Optional: JSON output for automation
+bash .../analyze_tools.sh /ABSOLUTE/PATH/tests/test_X_X/test-output.json --json
 ```
 
-**What it does**:
-- Verifies real Skill tool invocations (not hallucinated)
-- Checks tool result success/failure
-- Detects forked execution patterns
-- Tracks TaskList tool usage
-- Performs anti-hallucination checks
-- Verifies completion markers
-- Counts permission denials for autonomy score
-- Outputs final verdict (PASS/FAIL/PARTIAL)
+**What it outputs**:
+```
+## 1. Actual Skill Tool Invocations (Critical)
+✅ **VERIFIED**: Found actual Skill tool invocations
 
-### Test Plan Helper Script (OPTIONAL for batch operations)
-**Script**: `scripts/test_runner_helper.sh`
+## 2. Tool Result Verification (Success Check)
+✅ test-skill - SUCCESS (ID: call_function_...)
+**Summary:** 1/1 skills succeeded
 
-**Available Commands**:
-- `find-next` - Find next test to run
-- `update-status` - Update test status and metrics
-- `progress` - Show overall test progress
-- `lifecycle-stage` - Track test lifecycle stage
-- `phase-complete` - Mark phase as complete
-- `add-finding` - Record discovery/finding
+## 3-7. [Additional verification sections...]
 
-**Usage** (OPTIONAL - only for complex JSON operations):
+## Final Verification Summary
+✅ **PASS**: All 1 skills successfully invoked via Skill tool
+```
+
+**Key metrics to record**:
+- Verdict (PASS/FAIL/PARTIAL)
+- Autonomy score (0-100%)
+- Permission denials count
+- Duration in ms
+- Turn count
+
+---
+
+### Script 2: test_runner_helper.sh (OPTIONAL - For Complex JSON Operations)
+
+**Purpose**: JSON test plan parsing, batch operations, lifecycle tracking
+
+**WHEN to use**:
+- ✅ When you need to find the next NOT_STARTED test
+- ✅ When updating JSON test plan status
+- ✅ When tracking lifecycle stages
+- ✅ When doing batch operations on multiple tests
+- ❌ NOT needed for single test execution (use jq directly instead)
+
+**HOW to use**:
 ```bash
-bash /Users/felix/Documents/claude-plugins-custom/thecatoolkit_v3/.claude/skills/test-runner/scripts/test_runner_helper.sh \
-  [find-next|update-status|progress|lifecycle-stage|phase-complete|add-finding] [args...]
+# Find next test to run
+uv run scripts/test_runner_helper.py find-next
+
+# Update test status in JSON
+uv run scripts/test_runner_helper.py update-status "2.3" "COMPLETED" "100" "5432"
+
+# Show overall progress
+uv run scripts/test_runner_helper.py progress
+
+# Other commands (less common):
+# lifecycle-stage <test_id> <stage>
+# phase-complete <phase_number>
+# add-finding <test_id> <finding>
+```
+
+**When NOT to use**:
+- ❌ For simple test execution (not needed)
+- ❌ For basic JSON queries (use `jq` directly)
+- ❌ When TaskList tracking is sufficient
+
+---
+
+### Summary: Script Usage Decision Tree
+
+```
+After test execution?
+├─ YES → Run analyze_tools.sh (MANDATORY)
+│         ├─ Verdict PASS/PARTIAL? → Migrate to raw_logs
+│         └─ Verdict FAIL? → Keep in test_X_X, re-execute
+└─ NO → Don't run yet
+
+Need to update JSON test plan?
+├─ Complex batch operation? → test_runner_helper.sh (OPTIONAL)
+├─ Simple status update? → Use jq directly
+└─ Using TaskList? → Skip JSON operations
 ```
 
 ---
@@ -670,10 +835,11 @@ The test-runner skill provides a complete testing framework for validating skill
 
 **Complete Lifecycle Coverage**:
 - **Setup**: Pre-flight checklist, folder structure, skill generation
-- **Execute**: CLI testing with mandatory flags, NDJSON capture
-- **Validate**: Structure check, autonomy scoring, completion verification
+- **Execute**: CLI testing with mandatory flags, NDJSON capture to `test_X_X/test-output.json`
+- **Validate**: Run `analyze_tools.sh`, structure check, autonomy scoring
+- **Archive**: Migrate to `raw_logs/phase_X/test_X_Y.description.json` AFTER validation
+- **Cleanup**: Remove test_X_X folder after successful migration
 - **Document**: Status updates, progress tracking, finding recording
-- **Archive**: Successful tests to .attic/, failed test analysis
 - **Deliverables**: Comprehensive documentation and pattern catalog
 
 **Key Requirements**:

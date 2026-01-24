@@ -4,25 +4,35 @@ description: "Project scaffolding router for .claude/ configuration and local-fi
 user-invocable: false
 ---
 
-## 🚨 MANDATORY: Read BEFORE Routing
+## RECOMMENDED: Context Validation
 
-**CRITICAL**: You MUST read and understand these URLs:
+Read these URLs when accuracy matters for your workflow:
 
-### Primary Documentation (MUST READ)
-- **[MUST READ] Project Customization Guide**: https://code.claude.com/docs/en/skills
+### Primary Documentation
+- **Project Customization Guide**: https://code.claude.com/docs/en/skills
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Cache**: 15 minutes minimum
   - **Content**: Project-scoped skills, .claude/ directory structure
-  - **Cache**: 15 minutes minimum
 
-- **[MUST READ] Local-First Configuration**: https://code.claude.com/docs/en/plugins
+- **Local-First Configuration**: https://code.claude.com/docs/en/plugins
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: .claude/ configuration patterns
   - **Cache**: 15 minutes minimum
+  - **Content**: .claude/ configuration patterns
 
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
-- **MUST validate** all URLs are accessible before routing
-- **REQUIRED** to understand project-scoped configuration before routing
+### When to Fetch vs Skip
+**Fetch when**:
+- Documentation may have changed since last read
+- Haven't read these docs recently
+- User requests verification of current practices
+- Starting a new project configuration
+
+**Skip when**:
+- Local-only work without external dependencies
+- Working offline
+- Documentation is known-stable and recently read
+- Simple routing decisions that don't require current docs
+
+**Trust your judgment**: You know when validation is needed for accurate work.
 
 ---
 

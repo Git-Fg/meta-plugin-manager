@@ -283,28 +283,28 @@ The adaptive framework enforces:
 
 ## Reading Guide
 
-### MANDATORY READING (Read before any Ralph work)
+### RECOMMENDED READING (Read when Ralph work is needed)
 
-**An AI agent has zero knowledge of Ralph initially. You MUST read all these files to understand Ralph's multi-agent architecture:**
+Read these reference files when accuracy matters for Ralph orchestration:
 
-#### 1. **references/preset-patterns.md** (Required)
+#### 1. **references/preset-patterns.md** (Recommended)
 - Multi-agent architecture patterns (Pipeline, Critic-Actor, etc.)
 - Event coordination system - how hats communicate via triggers and publications
 - Understanding hat coordination through events
 - Quality gates and backpressure enforcement
 - All 13+ preset patterns explained with YAML examples
 
-**When**: Always, before any Ralph work
+**When**: Before Ralph work, or when unsure about patterns
 
-#### 2. **references/quick-start.md** (Required)
+#### 2. **references/quick-start.md** (Recommended)
 - 5 most common workflows with step-by-step instructions
 - Copy-pasteable commands and expected outputs
 - Customization patterns and quality gates
 - Real examples of feature, debug, review, refactor, and learning workflows
 
-**When**: First time using Ralph, or when you need a refresher on basic workflows
+**When**: First time using Ralph, or when needing a refresher on basic workflows
 
-#### 3. **references/workflow-selection.md** (Required)
+#### 3. **references/workflow-selection.md** (Recommended)
 - Investigation workflow for unclear tasks
 - How to analyze a codebase and propose workflow options
 - 3 Simple + 2 Standard + 2 Custom workflow categories
@@ -312,21 +312,36 @@ The adaptive framework enforces:
 
 **When**: When user wants to use Ralph but task is unclear
 
-#### 4. **references/prompt-engineering.md** (Required)
+#### 4. **references/prompt-engineering.md** (Recommended)
 - Ralph-specific prompt patterns (Fresh Context, Event Emission, etc.)
 - Hat instruction patterns (Builder, Reviewer, Planner hats)
 - Quality gate enforcement techniques
 - Error handling and retry logic
 
-**When**: Always, to understand how to write effective Ralph prompts
+**When**: To understand how to write effective Ralph prompts
 
-#### 5. **references/troubleshooting.md** (Required)
+#### 5. **references/troubleshooting.md** (Recommended)
 - Common issues and diagnostic procedures
 - Event flow debugging techniques
 - Hat coordination problems and solutions
 - Debugging checklist and emergency procedures
 
-**When**: Always, to understand how Ralph works and how to fix issues
+**When**: To understand how Ralph works and how to fix issues
+
+### When to Read vs Skip
+**Read when**:
+- Starting new Ralph orchestration work
+- User requests verification of Ralph patterns
+- Encountering issues with Ralph workflows
+- Documentation may have changed recently
+
+**Skip when**:
+- Simple Ralph execution following known patterns
+- Local-only work without external dependencies
+- Working offline
+- Recently read and patterns are stable
+
+**Trust your judgment**: You know when validation is needed for accurate Ralph orchestration.
 
 ### REFERENCE MATERIALS (Available when needed)
 

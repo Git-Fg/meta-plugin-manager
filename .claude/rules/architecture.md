@@ -1,10 +1,22 @@
 # Architecture Philosophy
 
+**Philosophy Before Process**
+
+This document teaches architectural patterns grounded in core philosophy. Understanding WHY before HOW enables intelligent adaptation.
+
+**See**: @.laude/rules/philosophy.md for foundational principles:
+- Context Window as Public Good
+- Degrees of Freedom Framework
+- Trust AI Intelligence
+- Local Project Autonomy
+- The Delta Standard
+- Progressive Disclosure Philosophy
+
 ---
 
 # FOR DIRECT USE
 
-⚠️ **Follow these patterns when building skills and workflows**
+⚠️ **Apply these patterns when building skills and workflows**
 
 ## Skills-First Architecture
 

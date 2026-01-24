@@ -28,25 +28,35 @@ Issues: [List]
 
 Validate .claude/ configuration quality and compliance with skills-first architecture and 2026 best practices.
 
-## 🚨 MANDATORY: Read BEFORE Validation
+## RECOMMENDED: Context Validation
 
-**CRITICAL**: You MUST read and understand these URLs:
+Read these URLs when accuracy matters for quality validation work:
 
-### Primary Documentation (MUST READ)
-- **[MUST READ] Skills Guide**: https://code.claude.com/docs/en/skills
+### Primary Documentation
+- **Skills Guide**: https://code.claude.com/docs/en/skills
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
+  - **Cache**: 15 minutes minimum
   - **Content**: Skills-first architecture, progressive disclosure
-  - **Cache**: 15 minutes minimum
 
-- **[MUST READ] Plugin Architecture**: https://code.claude.com/docs/en/plugins
+- **Plugin Architecture**: https://code.claude.com/docs/en/plugins
   - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Content**: Plugin structure, component organization
   - **Cache**: 15 minutes minimum
+  - **Content**: Plugin structure, component organization
 
-### ⚠️ BLOCKING RULES
-- **DO NOT proceed** until you've fetched and reviewed Primary Documentation
-- **MUST validate** all URLs are accessible before validation
-- **REQUIRED** to understand skills-first architecture before validation
+### When to Fetch vs Skip
+**Fetch when**:
+- Documentation may have changed since last read
+- User requests verification of quality standards
+- Starting new quality audit
+- Uncertain about current best practices
+
+**Skip when**:
+- Simple validation based on known patterns
+- Local-only work without external dependencies
+- Working offline
+- Recently read and documentation is stable
+
+**Trust your judgment**: You know when validation is needed for accurate quality assessment.
 
 ## Core Responsibilities
 

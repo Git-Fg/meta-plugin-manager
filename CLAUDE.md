@@ -1,299 +1,274 @@
 # CLAUDE.md
 
-**Meta-guide: How to teach Claude to work effectively with your project's .claude/ configuration**
+**IMPORTANT: This file has TWO purposes - see sections below.**
 
-This document teaches the core principles for designing skills, workflows, and automation. For specific implementation details, see individual skills referenced throughout.
+## Purpose 1: Project Operational Rules (FOR AI AGENTS)
+
+This section contains rules for AI agents working on THIS specific project. When you work on this project, these are your operational constraints.
+
+**Examples:**
+- Project-specific conventions
+- Local environment quirks
+- Business logic constraints
+- Non-obvious workarounds discovered through experience
+
+## Purpose 2: Meta-Skill Teaching (FOR SKILL CREATORS)
+
+This section teaches HOW to create effective meta-skills for ANY project. It's educational content for building the skill ecosystem.
+
+**Why this distinction matters:**
+- AI agents using your skills will NOT have access to CLAUDE.md
+- Skills must be SELF-SUFFICIENT - they must contain everything needed to function
+- Referencing CLAUDE.md from a skill breaks portability
 
 ---
 
-# FOR DIRECT USE
-
-## Critical Principles
-
-⚠️ **Skills-First Architecture**: Every capability should be a Skill first. Commands and Subagents are orchestrators, not creators.
-
-⚠️ **Hub-and-Spoke Pattern**: Hub Skills (with `disable-model-invocation: true`) delegate to knowledge skills. For aggregation, ALL workers MUST use `context: fork`. Regular→Regular skill handoffs are one-way only.
-
-⚠️ **Progressive Disclosure**: Tier 1: Metadata (~100 tokens, always loaded), Tier 2: SKILL.md (<500 lines, loaded on activation), Tier 3: references/ (on-demand, zero context cost).
-
-⚠️ **Multi-Dimensional Delta**: Good customization = expert knowledge + working commands + behavioral guidance + reliability patterns. Not just "what Claude doesn't know."
-
-⚠️ **Degrees of Freedom**: High freedom (text) when multiple approaches valid. Medium freedom (pseudocode/params) when preferred pattern exists. Low freedom (specific scripts) when fragile/consistent.
+Project scaffolding toolkit for Claude Code focused on .claude/ configuration with skills-first architecture and progressive disclosure.
 
 ---
 
-# How to Teach: Core Frameworks
+# SECTION 1: PROJECT OPERATIONAL RULES
 
-## 1. Teaching Architecture
+**When working on THIS project, apply these rules:**
 
-### Skills-First Principle
+## Local Project Conventions
 
-Every capability starts as a Skill. Commands and Subagents exist to orchestrate Skills, not create them.
+[This section should contain ONLY what makes this project unique]
 
-**Why**: Skills are loaded on-demand and provide domain expertise. Commands require explicit invocation. Subagents run in isolated contexts.
+## Working Patterns Discovered
 
-**See**: `.claude/skills/skills-architect/SKILL.md` for skill creation workflows.
+[Capture commands and patterns that work well in THIS environment]
 
-### Component Selection Heuristics
+## Project-Specific Constraints
 
-| Use this | When you want... | Trade-off |
-|---------|-----------------|----------|
-| **Skills** | Specialized knowledge, autonomous operation | Claude chooses when relevant |
-| **Slash commands** | Reusable workflows with explicit invocation | User must type `/command` |
-| **Subagents** | Isolated execution, different tool access | Separate context, no skill inheritance |
-| **Hooks** | Automation on events (file save, tool use) | Fires automatically on events |
-| **MCP** | External tools and data sources | Claude calls tools as needed |
+[Any constraints specific to this codebase]
 
-**See**: `.claude/skills/toolkit-architect/SKILL.md` for component routing logic.
+---
 
-### Progressive Disclosure Structure
+# SECTION 2: META-SKILL TEACHING
+
+**Educational content for creating effective meta-skills**
+
+## Core Philosophy for Skill Building
+
+**Key Principles**:
+
+1. **Context Window is a Public Good**: Challenge every token. Only add what Claude doesn't already know.
+2. **Degrees of Freedom**: Match specificity to task fragility (High/Medium/Low).
+3. **Trust AI Intelligence**: Claude is smart. Provide principles, not prescriptions.
+4. **Local Project Autonomy**: Start with project config, expand scope only when needed.
+5. **Delta Standard**: Keep expert-only knowledge, remove generic information.
+6. **Progressive Disclosure**: Tier 1 (metadata) → Tier 2 (SKILL.md <500 lines) → Tier 3 (references/).
+
+**Key insight**: Philosophy before process. Principles enable adaptation; prescriptions create brittleness.
+
+## Critical Actions for Meta-Skill Creation
+
+⚠️ **Skills-First Architecture**: Every capability starts as a Skill. Skills are PRIMARY building blocks. Commands and Subagents are orchestrators, not creators.
+
+⚠️ **Hub-and-Spoke for Aggregation**: Hub Skills delegate to Workers. For result aggregation, ALL workers MUST use `context: fork`. Regular→Regular skill handoffs are one-way only (no return).
+
+⚠️ **Progressive Disclosure**: Create references/ only when SKILL.md + references >500 lines total. Keep SKILL.md under 500 lines for tier 2 efficiency.
+
+⚠️ **What-When-Not Descriptions**: Skill descriptions must signal WHAT (core function), WHEN (triggers), NOT (boundaries). No "Use to CREATE/REFACTOR" language.
+
+⚠️ **Trust AI Judgment**: URL fetching is RECOMMENDED when accuracy matters, not MANDATORY. You know when validation is needed.
+
+⚠️ **Natural Language for Built-in Tools**: When citing TaskList (Layer 0) or Agent/Task tools (Layer 1), describe workflows in natural language. No code examples.
+
+---
+
+## Layer Selection Decision Tree (Meta-Skill Pattern)
 
 ```
-skill-name/
-├── SKILL.md (<500 lines - Tier 2)
-│   ├── YAML frontmatter (name, description - Tier 1)
-│   └── Essential workflows only
-└── references/ (on-demand - Tier 3)
-    ├── domain-specific patterns
-    ├── detailed examples
-    └── troubleshooting
+START: What do you need?
+│
+├─ "Persistent project norms"
+│  └─→ Project rules (this file, Section 1)
+│
+├─ "Domain expertise to discover"
+│  └─→ Skill (create using skills-architect)
+│     ├─ "Simple, focused task" → Skill (regular)
+│     └─ "Complex workflow needing isolation" → Skill (context: fork)
+│
+├─ "Event automation"
+│  └─→ Hook
+│
+├─ "Service integration"
+│  └─→ MCP
+│
+├─ "Multi-step workflow with persistence"
+│  └─→ TaskList + forked workers
+│
+├─ "Long-running project"
+│  └─→ TaskList + skills architecture
+│
+├─ "Complex multi-session project"
+│  └─→ TaskList (Layer 0) + task-domain
+│     ├─ Context window spanning
+│     ├─ Real-time collaboration
+│     └─ Distributed subagent coordination
+│
+├─ "Multi-session task"
+│  └─→ TaskList + subagents
+│
+└─ "Isolation/parallelism"
+   └─→ Subagent (RARE/ADVANCED)
 ```
 
-**Key principle**: Keep references one level deep from SKILL.md. Structure files >100 lines with table of contents.
+**Context: Fork Triggers:**
+- High-volume output (extensive grep, repo traversal)
+- Noisy exploration that clutters conversation
+- Tasks needing separate context window
+
+**When NOT to fork**:
+- Need conversation history
+- Need user preferences
+- Simple sequential tasks
+
+## TaskList: When and How to Use (Meta-Skill Guidance)
+
+**TaskList is Layer 0** - a fundamental primitive for complex workflow orchestration, NOT on the same layer as skills.
+
+**ALWAYS use TaskList for**:
+- Work spanning multiple sessions (set `CLAUDE_CODE_TASK_LIST_ID`)
+- Complex workflows with 5+ steps requiring dependency tracking
+- Visual progress tracking (Ctrl+T)
+- Work exceeding context window limits
+
+**NEVER use TaskList for**:
+- Simple 2-3 step workflows (use skills directly)
+- Session-bound work without dependencies
+- One-shot operations not requiring persistence
+
+**"Unhobbling" Principle**: TaskList exists specifically for complex projects exceeding autonomous state tracking. TodoWrite was removed because newer models handle simple tasks autonomously.
+
+**Threshold**: "Would this exceed Claude's autonomous state tracking?"
+
+## Agent Type Selection (Meta-Skill Pattern)
+
+**ALWAYS select based on needs**:
+- **general-purpose**: Default, balanced performance
+- **bash**: Command execution specialist work
+- **Explore**: Fast exploration, no nested workflows
+- **Plan**: Complex reasoning, architecture design
+
+## Model Selection (Meta-Skill Pattern)
+
+**ALWAYS consider cost**:
+- **haiku**: 1x cost - use for quick validation
+- **sonnet**: 3x cost - default for most work
+- **opus**: 10x cost - only for complex reasoning
 
 ---
 
-# 2. Teaching Skill Authoring
+# TO KNOW WHEN (Recognition Patterns)
 
-## Multi-Dimensional Delta
+These patterns help you recognize when to apply specific approaches.
 
-What makes content valuable isn't just "what Claude doesn't know" — it's multi-dimensional:
+## Core Principles to Recognize
 
-**Behavioral Delta**: Explicit guidance that shapes behavior vs. relying on inference
-- Example: "Concise is Key" - even though Claude knows conciseness, stating it sets expectations
+**Trust AI Intelligence** means:
+- Provide concepts, AI makes intelligent implementation decisions
+- Focus on principles, not prescriptive patterns
+- Let AI choose appropriate configuration scope
 
-**Multi-Dimensional Delta**: Project-specific commands, patterns, and constraints
-- Example: `scripts/init_skill.py <name> --path <output>` (not "create a skill directory")
+**Local Project Autonomy** means:
+- Always start with local project configuration
+- Project directory as default location
+- Team collaboration through git
 
-**Reliability Delta**: Patterns that improve consistency and outcomes
-- Example: Sequential workflows with validation gates
+**Autonomous Execution** means:
+- Skills work without user interaction
+- AI completes tasks independently
+- Self-sufficient implementation guidance
 
-**Refined Delta**: Framework enhancements that balance official patterns
-- Example: What-When-Not descriptions for discoverability
+## TaskList: Layer 0 Architecture (Meta-Skill)
 
-## Description Framework: What-When-Not
+**RECOGNIZE** TaskList as:
+- Fundamental primitive for complex workflows
+- Layer 0 workflow state engine below built-in tools
+- Enables indefinitely long projects via context window spanning
+
+**CONTEXT WINDOW SPANNING pattern**:
+1. Conversation approaches context limit
+2. **RECOGNIZE** need to persist: Note `CLAUDE_CODE_TASK_LIST_ID`
+3. **START** new session with same `CLAUDE_CODE_TASK_LIST_ID`
+4. New session **AUTOMATICALLY** picks up where previous left off
+5. Work **CONTINUES** across context boundaries
+
+**MULTI-SESSION COLLABORATION pattern**:
+- When one session updates a Task, changes **BROADCAST** to ALL sessions
+- Multiple sessions see updates **IMMEDIATELY**
+- Enables true collaborative workflows across terminals
+
+## Skill Over-Engineering Anti-Pattern (Meta-Skill)
+
+**RECOGNIZE** this anti-pattern:
+- Creating "logic files" (e.g., `mode-detection.md`) for behaviors Claude inherently understands
+
+**APPLY** this solution:
+- Define "Commander's Intent" in `SKILL.md`
+- Let Claude handle execution details
+- Keep reference files as "Data Libraries" or "Inspiration Patterns", not "Instruction Manuals"
+
+## "Unhobbling" Principle (Meta-Skill)
+
+**UNDERSTAND**: Newer models handle simple tasks autonomously. TaskList exists for **complex projects exceeding autonomous state tracking**.
+
+**THRESHOLD QUESTION**: "Would this exceed Claude's autonomous state tracking?"
+- Yes → Use TaskList
+- No → Use skills directly
+
+## Skill Description: What-When-Not Framework (Meta-Skill)
+
+**RECOGNIZE**: Skill descriptions must signal WHAT/WHEN/NOT, not prescribe HOW.
 
 **Components**:
 - **WHAT**: What the skill does (core function)
 - **WHEN**: When to use it (triggers, contexts)
 - **NOT**: What it doesn't do (boundaries)
 
-**Good example**:
-```yaml
-description: "Build self-sufficient skills following Agent Skills standard. Use when creating, evaluating, or enhancing skills with progressive disclosure. Not for general programming tasks."
-```
+**Anti-Pattern**: "Use to CREATE (new projects), REFACTOR (cleanup)" — contains "how" language
+**Good Pattern**: "Maintain CLAUDE.md project memory. Use when: new project setup, documentation is messy, conversation revealed insights" — describes what + when
 
-**Balanced approach**: Include what/when/not, plus minimal behavioral context. Official skills sometimes include "how" language for helpful guidance.
-
-## Degrees of Freedom
-
-| Freedom | When to Use | Example |
-|---------|-------------|---------|
-| **High** (text) | Multiple valid approaches, context-dependent | Code reviews |
-| **Medium** (pseudocode + params) | Preferred pattern exists, some variation acceptable | Report generation with templates |
-| **Low** (specific scripts) | Fragile, error-prone, consistency critical | Database migrations |
-
-**Analogy**: Narrow bridge with cliffs (low freedom) vs. Open field (high freedom).
-
----
-
-# 3. Teaching Workflow Design
-
-## Sequential Workflows
-
-```markdown
-Task involves these steps:
-1. Analyze the form (run analyze_form.py)
-2. Create field mapping (edit fields.json)
-3. Validate mapping (run validate_fields.py)
-4. Fill the form (run fill_form.py)
-5. Verify output (run verify_output.py)
-```
-
-**Why**: Clear steps prevent skipping critical validation.
-
-## Conditional Workflows
-
-```markdown
-1. Determine task type:
-   **New content?** → Follow Creation workflow
-   **Existing content?** → Follow Editing workflow
-```
-
-**Why**: Explicit branching prevents mode confusion.
-
-## Hub-and-Spoke Aggregation
-
-**Hub Skill** (regular, disable-model-invocation: true):
-- Delegates to Worker A (context: fork)
-- Delegates to Worker B (context: fork)
-- Delegates to Worker C (context: fork)
-- Aggregates all results
-
-**Critical**: ALL workers MUST use `context: fork` for hub to aggregate results.
-
-**See**: `.claude/skills/subagents-architect/SKILL.md` for subagent coordination patterns.
-
----
-
-# 4. Teaching Implementation Patterns
-
-## Script Reliability
-
-**Error handling**:
-```bash
-try:
-    with open(path) as f:
-        return f.read()
-except FileNotFoundError:
-    print(f"File {path} not found, creating default")
-    return ''
-```
-
-**Documented constants**:
-```bash
-# Three retries balance reliability vs speed
-MAX_RETRIES=3
-```
-
-**Unix-style paths**:
-```bash
-./.claude/scripts/validate.sh
-```
-
-**See**: `.claude/skills/skills-knowledge/references/script-best-practices.md` for complete patterns.
-
-## URL Validation (for knowledge skills)
-
-```markdown
-- **MUST READ**: [Official Skills Guide](https://code.claude.com/docs/en/skills)
-  - Tool: `mcp__simplewebfetch__simpleWebFetch`
-  - Cache: 15 minutes minimum
-```
-
-**Implementation**: Validate all external URLs before skill creation.
-
----
-
-# 5. Common Mistakes to Avoid
-
-## Over-Engineering Anti-Pattern
-
-**Problem**: Creating "logic files" (e.g., `mode-detection.md`) for behaviors Claude inherently understands.
-
-**Solution**: Define "Commander's Intent" in SKILL.md, let Claude handle execution details. Keep reference files as "Data Libraries" or "Inspiration Patterns."
-
-## Content Duplication Anti-Pattern
-
-**Problem**: Same information in both SKILL.md and references/.
-
-**Solution**: Information lives in SKILL.md **OR** references/, not both. Keep procedural instructions in SKILL.md, detailed reference material in references/.
-
-## Pure Anti-Patterns (from official skill-creator)
-
-**Do NOT create these files** in skills:
-- README.md
-- INSTALLATION_GUIDE.md
-- QUICK_REFERENCE.md
-- CHANGELOG.md
-
-**Rationale**: Skills should only contain information needed for an AI agent to do the job. Auxiliary documentation adds clutter.
-
----
-
-# Component-Specific Guidance
-
-## For Skill Creation
-
-**See**: `.claude/skills/skills-architect/SKILL.md`
-- Multi-dimensional delta concept
-- Progressive disclosure patterns
-- What-When-Not description framework
-- Quality validation
-
-## For Subagent Configuration
-
-**See**: `.claude/skills/subagents-architect/SKILL.md`
-- Context detection patterns
-- Coordination patterns
-- Configuration guide
-
-## For Hook Setup
-
-**See**: `.claude/skills/hooks-architect/SKILL.md`
-- Event types (PreToolUse, PostToolUse, Stop)
-- Compliance framework
-- Implementation patterns
-
-## For MCP Integration
-
-**See**: `.claude/skills/mcp-architect/SKILL.md`
-- Protocol guide
-- Transport mechanisms
-- Tool templates
-
-## For TaskList Workflows
-
-**See**: `.claude/skills/task-architect/SKILL.md`
-- Context spanning patterns
-- Multi-session collaboration
-- Dependency tracking
-
-**When to use TaskList**:
-- Work spanning multiple sessions
-- 5+ step workflows with dependencies
-- Visual progress tracking needed
-- Work exceeding context window
-
-**Threshold**: "Would this exceed Claude's autonomous state tracking?"
-
----
-
-# Recognition Patterns
-
-## Trust AI Intelligence
-
-Provide concepts, AI makes intelligent implementation decisions. Focus on principles, not prescriptive patterns.
-
-## Local Project Autonomy
-
-Always start with local project configuration. Project directory as default location. Team collaboration through git.
-
-## Autonomous Execution
-
-Skills should work 80-95% without questions. Provide context and examples, trust AI decisions.
-
-## "Unhobbling" Principle
-
-TodoWrite was removed because newer models handle simple tasks autonomously. TaskList exists for complex projects exceeding autonomous state tracking.
-
----
-
-# INCREMENTAL-UPDATE for Prior Conversation
+## Default: INCREMENTAL-UPDATE for Prior Conversation (Meta-Skill)
 
 **RECOGNIZE**: When there is ANY prior conversation in a session, the default behavior should be INCREMENTAL-UPDATE.
 
 - Prior conversation = knowledge has been generated = capture it
 - No explicit request needed — prior conversation IS the trigger
 - Review conversation for: working commands, discovered patterns, errors encountered, new rules learned
-- Update CLAUDE.md and relevant skills based on discoveries
+- Update CLAUDE.md based on discoveries
 
----
+## Skills Must Be Self-Sufficient (Meta-Skill)
 
-# See Also
+**CRITICAL**: Skills MUST NOT reference CLAUDE.md or any external files outside their own directory.
 
-- **Skill creation**: `.claude/skills/skills-architect/SKILL.md`
-- **Subagents**: `.claude/skills/subagents-architect/SKILL.md`
-- **Hooks**: `.claude/skills/hooks-architect/SKILL.md`
-- **MCP**: `.claude/skills/mcp-architect/SKILL.md`
-- **TaskList**: `.claude/skills/task-architect/SKILL.md`
+**Why:**
+- AI agents using your skills will NOT have access to CLAUDE.md
+- AI agents will NOT have the same folder structure as this project
+- Skills must be SELF-CONTAINED to work in any context
+
+**What this means for skill creation:**
+- ✅ Include all necessary patterns IN the skill's SKILL.md or references/
+- ✅ Skills can cite other skills or built-in tools
+- ✅ Skills can reference their OWN references/ files
+- ❌ Skills MUST NOT reference CLAUDE.md
+- ❌ Skills MUST NOT reference .claude/rules/
+- ❌ Skills MUST NOT reference external project files
+
+**Think of it this way:** CLAUDE.md teaches YOU how to build skills. The skills you build must then stand on their own, without needing CLAUDE.md.
+
+## Documentation Anti-Pollution Rule (Meta-Skill)
+
+**CRITICAL**: CLAUDE.md must contain ONLY lasting project knowledge.
+
+**NEVER create**:
+- Update logs, changelogs, or date-stamped sections
+- Temporary files like "CLAUDE_MD_UPDATE.md"
+- "Update on [date]" or version tracking entries
+
+**Each addition should be as permanent as architecture decisions.**
+
+**Why**: CLAUDE.md is project memory, not a changelog. Temporary pollution reduces signal-to-noise ratio.

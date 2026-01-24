@@ -1,10 +1,12 @@
 # Quick Reference
 
+**Philosophy-First Reference**: See @.claude/rules/philosophy.md for core principles before applying patterns. See @.laude/rules/teaching.md for how to structure knowledge effectively.
+
 ---
 
 # FOR DIRECT USE
 
-⚠️ **Use these patterns when building skills and workflows**
+⚠️ **Trust your intelligence. These are patterns and reference materials, not prescriptions. Adapt based on context.**
 
 ## Skill Calling Cheat Sheet
 
@@ -136,36 +138,6 @@ main "$@"
     └─ Yes → Use TaskList for orchestration
 ```
 
-## Testing Commands (from skills/test-runner/references/execution-patterns.md)
-
-### Skill Discovery Test
-```bash
-!pwd
-mkdir <use-actual-path>test-discovery
-cd <use-actual-path>test-discovery && claude --dangerously-skip-permissions -p "List all available skills" --output-format stream-json --verbose --debug --no-session-persistence --max-turns 5 > <use-actual-path>test-discovery/test-output.json 2>&1
-cat <use-actual-path>test-discovery/test-output.json
-```
-**Verify**: Line 1 shows your test skills in `"skills"` array.
-
-### Autonomy Test
-```bash
-!pwd
-mkdir <use-actual-path>test-autonomy
-cd <use-actual-path>test-autonomy && claude --dangerously-skip-permissions -p "Create README with project structure" --output-format stream-json --verbose --debug --no-session-persistence --max-turns 8 > <use-actual-path>test-autonomy/test-output.json 2>&1
-cat <use-actual-path>test-autonomy/test-output.json
-```
-**Verify**: No `"permission_denials"` in line 3, README created.
-
-### Context Fork Isolation Test
-```bash
-!pwd
-mkdir <use-actual-path>test-fork
-# Create forked skill with context: fork in frontmatter
-cd <use-actual-path>test-fork && claude --dangerously-skip-permissions -p "Call forked skill, verify context isolation" --output-format stream-json --verbose --debug --no-session-persistence --max-turns 15 > <use-actual-path>test-fork/test-output.json 2>&1
-cat <use-actual-path>test-fork/test-output.json
-```
-**Verify**: Forked skill executes without accessing main conversation variables.
-
 ## Parameter Passing Pattern
 
 **Caller invokes with:**
@@ -185,50 +157,6 @@ Scan $ARGUMENTS:
 3. Output: ## ANALYZE_COMPLETE
 ```
 
-## Context Isolation Model
-
-**🔒 SECURITY ISOLATION**: Forked skills cannot access:
-- Caller's conversation history
-- User preferences (user_preference, session_id)
-- Context variables (project_codename, etc.)
-- Caller's session state
-
-**✅ WHAT PASSES**:
-- Parameters via `args` (proper data transfer method)
-- Their own isolated execution context
-- Files they create/modify
-
-**🛡️ USE FOR**:
-- Parallel processing (secure isolation)
-- Untrusted code execution (security barrier)
-- Multi-tenant processing (isolated contexts)
-- Noisy operations (keep main context clean)
-
-**❌ DON'T FORK WHEN**:
-- Need conversation history
-- Need user preferences
-- Need previous workflow steps
-- Simple sequential tasks
-
-## Autonomy Levels (from skills/test-runner/references/autonomy-testing.md)
-
-**Check test-output.json line 3:**
-```json
-"permission_denials": [
-  {
-    "tool_name": "AskUserQuestion",
-    "tool_input": { "questions": [...] }
-  }
-]
-```
-
-| Score | Questions | Grade |
-|-------|-----------|-------|
-| 95% | 0-1 | Excellence |
-| 85% | 2-3 | Good |
-| 80% | 4-5 | Acceptable |
-| <80% | 6+ | Fail |
-
 ## Skill Completion Markers
 
 **Each skill must output:**
@@ -242,26 +170,7 @@ Scan $ARGUMENTS:
 - `## CUSTOM_AGENT_COMPLETE`
 - `## ANALYZE_COMPLETE`
 
-## Test-Validated Patterns (from tests/results/TEST_RESULTS_SUMMARY.md)
 
-✅ **Test 2.2**: Context isolation confirmed
-✅ **Test 2.3**: 100% autonomy validated
-✅ **Test 3.2**: Custom subagents work (Read+Grep, Haiku)
-✅ **Test 4.2**: Nested forks validated
-✅ **Test 5.1**: Parameter passing works
-✅ **Test 7.1**: Hub-and-spoke pattern validated
-
-## Testing Workflow
-
-**MANDATORY**:
-1. **First**: Call `test-runner` skill to automate pattern detection
-2. **Then**: Read full log manually if analyzer output unclear
-3. **Watch for**: synthetic skill use (hallucinated) vs. real tool/task/skill use
-
-**NEVER**:
-- Create test runner scripts (run_*.sh, batch_*.sh)
-- Use `cd` to navigate (unreliable)
-- Run multiple tests in monitoring loops
 
 ## Project Structure Quick Reference
 
@@ -379,49 +288,6 @@ TaskCreate(subject="Scan .claude/ structure")
 TaskCreate(subject="Validate skills", addBlockedBy=["Scan .claude/ structure"])
 ```
 
-## Task Integration Patterns
-
-**Complex workflows (5+ steps)**: Use TaskList for orchestration
-- Visual progress tracking (Ctrl+T)
-- Dependency management between steps
-- Persistent state across invocations
-
-**Context window spanning**: TaskList enables indefinitely long projects
-- When conversation exceeds context window, start new session with same CLAUDE_CODE_TASK_LIST_ID
-- New session picks up where previous left off
-- Work continues across context boundaries
-- Without TaskList: work lost when context fills up
-
-**Multi-session collaboration**: Real-time synchronization
-- When one session updates a Task, broadcasted to all sessions working on same Task List
-- Multiple sessions collaborate on single project
-- Environment variable: CLAUDE_CODE_TASK_LIST_ID=my-project
-
-**Subagent trigger pattern**: TaskList + Subagents is the intended pattern
-- Primary trigger: spawning subagents for distributed work
-- Use owner field to assign tasks to specific subagents
-- Multiple subagents work on same task list simultaneously
-
-**Dependency tracking**: Use addBlockedBy for sequential steps
-- Ensures proper sequencing (e.g., execution blocked by pre-flight)
-- Prevents skipping critical validation steps
-
-**Session-spanning work**: Set CLAUDE_CODE_TASK_LIST_ID for persistence
-- Tasks survive across sessions
-- Stored in ~/.claude/tasks/[id]/
-
-**"Unhobbling" principle**: Claude already knows what to do for smaller tasks
-- TodoWrite was removed because newer models handle simple tasks autonomously
-- TaskList (Layer 0) is for complex projects exceeding autonomous state tracking
-- **Threshold**: "Would this exceed Claude's autonomous state tracking?"
-- TaskList enables indefinitely long projects through context window spanning
-
-**Skill-integrated patterns**: Individual skills may use TaskList tools for their own workflows
-- test-runner: Unified testing with pre-flight blocking
-- skills-architect: ENHANCE blocked by EVALUATE results
-- task-architect: User-invoked session-spanning workflows
-
----
 
 # TO KNOW WHEN
 

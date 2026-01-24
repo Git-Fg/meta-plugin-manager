@@ -2,6 +2,8 @@
 
 Skills must score ≥80/100 on 11-dimensional framework before production.
 
+**Philosophy Foundation**: Quality frameworks guide but don't replace intelligent decision-making. See @.claude/rules/philosophy.md for core principles that inform quality evaluation.
+
 ## When to Apply
 
 **FOR DIRECT USE**: Apply this framework when:

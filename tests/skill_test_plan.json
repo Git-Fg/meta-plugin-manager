@@ -335,9 +335,11 @@
           {
             "test_id": "4.4",
             "name": "Nested Fork Depth 3+",
-            "status": "NOT_STARTED",
+            "status": "COMPLETED",
             "priority": "MEDIUM",
-            "description": "Test behavior at fork depth >2"
+            "description": "Test behavior at fork depth >2",
+            "autonomy_score": 100,
+            "duration_ms": 5000
           }
         ]
       },
