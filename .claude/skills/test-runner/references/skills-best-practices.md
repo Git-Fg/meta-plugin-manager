@@ -41,8 +41,8 @@ If you need to perform complex operations repeatedly, create a simple helper scr
 
 **Chain Multiple Skills**:
 ```
-test-runner → toolkit-quality-validator → skills-architect
-(Execute)    → (Validate)                 → (Refine)
+test-runner → skills-domain (with integrated quality validation)
+(Execute)   → (Validate and Refine)
 ```
 
 **Parallel Execution**:

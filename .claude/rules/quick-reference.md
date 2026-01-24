@@ -187,13 +187,6 @@ Scan $ARGUMENTS:
 └── .mcp.json                   # MCP server configuration
 ```
 
-## Router Logic (from toolkit-architect/SKILL.md)
-
-**Route to specialized architects:**
-- "I need a skill" → Route to skills-architect
-- "I want web search" → Route to mcp-architect
-- "I need hooks" → Route to hooks-architect
-- "I need a PR reviewer" → Route to skills-architect or subagents-architect
 
 ## When in Doubt
 
@@ -209,84 +202,6 @@ All skills must score ≥80/100 on 11-dimensional framework before production.
 
 **Reference**: [CLAUDE.md rules/quality-framework](rules/quality-framework.md)
 
-## Tool Layer Architecture (CRITICAL)
-
-TaskList is a **fundamental primitive for complex workflows**, NOT on the same layer as skills.
-
-### Layer 0: Workflow State Engine
-
-**TaskList**: Fundamental primitive for complex workflows
-- Context window spanning across sessions
-- Multi-session collaboration with real-time updates
-- Enables indefinitely long projects
-
-### Layer 1: Built-In Claude Code Tools
-
-**Execution Primitives**: `Write`, `Edit`, `Read`, `Bash`, `Grep`, `Glob`, `LSP`
-
-**Orchestration Tools**:
-- `Skill` tool - Built-in skill invoker (loads user content)
-- `Task` tool - Built-in subagent launcher
-
-### Layer 2: User-Defined Content (Invoked BY Layer 1)
-
-```
-Skill tool (built-in) → loads → .claude/skills/*/SKILL.md (user content)
-                                              ↓
-                                  May use TaskList (Layer 0) for complex workflows
-                                              ↓
-                                  May call Task tool (built-in)
-                                              ↓
-                                  launches → .claude/agents/*.md (user content)
-```
-
-### Key Distinction
-
-| Aspect | TaskList (Layer 0) | Agent/Task Tools (Layer 1) | Skills (Layer 2) |
-|--------|-------------------|-----------------------------|------------------|
-| **Layer** | Workflow state engine | Built-in tools | User content |
-| **Purpose** | Complex workflow orchestration | Tool invocation | Domain workflows |
-| **Scope** | Multi-session, indefinite projects | Session-bound execution | Task-specific expertise |
-| **Relationship** | Enables long-running workflows | Execute operations | Implement functionality |
-
-**TaskList is to workflow state what Write/Edit are to file operations.**
-
-### ABSOLUTE CONSTRAINT: Natural Language Only
-
-**❌ NEVER use code examples when citing TaskList/Agent/Task tools**:
-- TaskList (Layer 0) - fundamental primitive
-- Agent tool (Layer 1) - launches subagents
-- Task tool (Layer 1) - built-in subagent launcher
-
-**Why these tools are different**:
-- TaskList is a **fundamental primitive** for complex workflows
-- Agent/Task tools are **built-in** to Claude Code (Layer 1)
-- Claude **already knows** their structure and API
-- Code examples add context drift risk and token waste
-- The AI reading your skill knows how to use them
-
-**✅ ALWAYS use natural language**:
-- Describe **WHAT** needs to happen in **WHAT ORDER**
-- Describe dependencies (e.g., "validation must complete before optimization")
-- Describe the workflow, not the tool invocation
-- Trust Claude's intelligence to use built-in tools correctly
-
-**Example**:
-```markdown
-## Task-Integrated Quality Validation
-
-For complex audits requiring visual progress tracking and dependency enforcement:
-
-First scan the .claude/ structure to identify all components, then validate each component type in parallel (skills, subagents, hooks, MCP), check standards compliance after all component validation completes, and finally generate the quality report.
-
-**Critical dependency**: Component validation waits for structure scan to complete, ensuring comprehensive evaluation.
-```
-
-**Not this** (anti-pattern):
-```python
-TaskCreate(subject="Scan .claude/ structure")
-TaskCreate(subject="Validate skills", addBlockedBy=["Scan .claude/ structure"])
-```
 
 
 # TO KNOW WHEN

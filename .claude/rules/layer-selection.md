@@ -34,7 +34,7 @@ START: What do you need?
 │  └─→ TaskList + skills architecture
 │
 ├─ "Complex multi-session project"
-│  └─→ TaskList (Layer 0) + task-domain
+│  └─→ TaskList (Layer 0) for workflow orchestration
 │     ├─ Context window spanning
 │     ├─ Real-time collaboration
 │     └─ Distributed subagent coordination

@@ -164,7 +164,7 @@ fi
 
 ✅ **Chaining**:
 ```
-test-runner → toolkit-quality-validator → skills-architect
+test-runner → skills-domain (with quality validation)
 ```
 
 ✅ **Context Fork**:

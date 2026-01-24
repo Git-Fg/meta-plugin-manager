@@ -33,15 +33,66 @@ Project scaffolding toolkit for Claude Code focused on .claude/ configuration wi
 
 ## Local Project Conventions
 
-[This section should contain ONLY what makes this project unique]
+- This project uses **Knowledge-Factory architecture (v4)** - clean separation of knowledge and execution
+- **Knowledge Skills** (passive reference): knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents
+- **Factory Skills** (script-based execution): create-skill, create-mcp-server, create-hook, create-subagent
+- All factory skills have bash/python scripts in `scripts/` directory
+- test-runner is the reference pattern for script-based skills
+
+## v4 Architecture (2026-01-24)
+
+This project uses **Knowledge-Factory architecture** with clean separation between knowledge and execution.
+
+### Knowledge Skills (Passive Reference)
+
+Pure reference information without execution logic:
+- **knowledge-skills**: Agent Skills standard, Progressive Disclosure, quality framework
+- **knowledge-mcp**: Model Context Protocol, transports (stdio/http), primitives (tools/resources/prompts)
+- **knowledge-hooks**: Events (PreToolUse/PostToolUse/Stop), security patterns, exit codes
+- **knowledge-subagents**: Agent types, frontmatter fields, context detection, coordination patterns
+
+**Usage Pattern**: Load knowledge to understand concepts, then use factory for execution.
+
+### Factory Skills (Script-Based Execution)
+
+Active execution with deterministic bash/python scripts:
+- **create-skill**: Skill scaffolding (scaffold_skill.sh, validate_structure.sh)
+- **create-mcp-server**: MCP registration (add_server.sh, validate_mcp.sh, merge_config.py)
+- **create-hook**: Hook creation (add_hook.sh, scaffold_script.sh, validate_hook.sh)
+- **create-subagent**: Agent creation (create_agent.sh, validate_agent.sh, detect_context.sh)
+
+**Usage Pattern**:
+```bash
+# Learn concepts (Knowledge)
+Skill("knowledge-skills")
+
+# Execute operations (Factory)
+Skill("create-skill", args="name=my-skill description='My skill'")
+```
+
+### Migration from v3
+
+Architect skills (skill-architect, mcp-architect, hooks-architect, subagents-architect) were split into:
+- Knowledge component (pure reference)
+- Factory component (script-based execution)
+
+See `.attic/V4_MIGRATION_SUMMARY.md` for complete migration details.
 
 ## Working Patterns Discovered
 
-[Capture commands and patterns that work well in THIS environment]
+- **Test commands**: Use `claude --dangerously-skip-permissions` with stream-json output
+- **Test execution**: Always use absolute paths, never /tmp/ for tests
+- **Reference documentation**: Each meta-skill has extensive references/ directory with detailed patterns
+- **Context fork**: Use for isolation, parallel processing, or untrusted code
+- **Completion markers**: Skills should output `## SKILL_NAME_COMPLETE`
 
 ## Project-Specific Constraints
 
-[Any constraints specific to this codebase]
+- **Comprehensive meta-skills**: test-runner (915 lines), skills-domain (16 reference files), toolkit-architect (18 reference files)
+- **No duplication**: Meta-skills contain all specific patterns - rules/ contains only universal principles
+- **Quality standards**: All skills should score ≥80/100 on autonomy (check permission_denials)
+- **Progressive disclosure**: Tier 1 (metadata) → Tier 2 (SKILL.md <500 lines) → Tier 3 (references/)
+- **Layer architecture**: TaskList (Layer 0) → Built-in tools (Layer 1) → Skills (Layer 2)
 
 ---
 
@@ -87,15 +138,20 @@ START: What do you need?
 │  └─→ Project rules (this file, Section 1)
 │
 ├─ "Domain expertise to discover"
-│  └─→ Skill (create using skills-architect)
-│     ├─ "Simple, focused task" → Skill (regular)
-│     └─ "Complex workflow needing isolation" → Skill (context: fork)
+│  └─→ Knowledge Skills (knowledge-skills, knowledge-mcp, etc.)
+│
+├─ "Create new component"
+│  └─→ Factory Skills (create-skill, create-mcp-server, etc.)
+│     ├─ "Need skill" → create-skill
+│     ├─ "Need MCP server" → create-mcp-server
+│     ├─ "Need hook" → create-hook
+│     └─ "Need subagent" → create-subagent
 │
 ├─ "Event automation"
-│  └─→ Hook
+│  └─→ create-hook factory
 │
 ├─ "Service integration"
-│  └─→ MCP
+│  └─→ create-mcp-server factory
 │
 ├─ "Multi-step workflow with persistence"
 │  └─→ TaskList + forked workers
@@ -104,10 +160,7 @@ START: What do you need?
 │  └─→ TaskList + skills architecture
 │
 ├─ "Complex multi-session project"
-│  └─→ TaskList (Layer 0) + task-domain
-│     ├─ Context window spanning
-│     ├─ Real-time collaboration
-│     └─ Distributed subagent coordination
+│  └─→ TaskList (Layer 0) for workflow orchestration
 │
 ├─ "Multi-session task"
 │  └─→ TaskList + subagents

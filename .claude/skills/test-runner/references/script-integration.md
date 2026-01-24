@@ -239,8 +239,9 @@ Chain skills with script data:
 2. Analyze with script
    !`bash scripts/analyze_tools.sh test-output.json --json`
 
-3. Validate with quality checker
-   → Calls toolkit-quality-validator
+3. Validate with quality framework
+   → Apply dimensional scoring (0-10 scale): Structural (30%), Components (50%), Standards (20%)
+   → Check for anti-patterns and validate 2026 standards
 
 4. Update JSON
    → Auto-updates test plan

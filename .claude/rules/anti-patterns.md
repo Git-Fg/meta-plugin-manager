@@ -6,25 +6,6 @@
 
 ⚠️ **Follow these rules when building skills and workflows** - these are actions to avoid.
 
-## Testing Anti-Patterns
-
-**❌ NEVER create test runner scripts:**
-- run_*.sh
-- batch_*.sh
-- test_runner.sh
-- Multiple tests in monitoring loops
-
-**❌ NEVER use `cd` to navigate** - it's unreliable and causes confusion about current directory.
-
-**ONLY TWO EXCEPTIONS for cd:**
-1. Setting claude's working directory: `cd /path && claude ...`
-2. Both cd and command in same line
-
-**✅ ALWAYS**:
-- Create ONE new folder per test
-- Execute tests individually
-- Read entire test-output.json before concluding pass/fail
-- Use `test-runner` skill first for pattern detection
 
 ## Architectural Anti-Patterns
 
@@ -116,7 +97,7 @@ fi
 - Performance-sensitive operations
 - Explicit error handling and validation
 
-**See**: [skills-knowledge/references/script-best-practices.md](../skills/skills-knowledge/references/script-best-practices.md) for complete patterns.
+**See**: [skills-domain/references/script-best-practices.md](../skills/skills-domain/references/script-best-practices.md) for complete patterns.
 
 ## Documentation Anti-Patterns
 
@@ -162,24 +143,6 @@ fi
 
 **❌ Using `disable-model-invocation` in subagents** - For skills, not subagents
 
-## Skill Structure Anti-Patterns
-
-**❌ Over-specified descriptions** - Including "how" in descriptions
-- Descriptions should **signal**, not **manual** — specify WHAT/WHEN/NOT, not HOW
-- Implementation details belong in SKILL.md (Tier 2), not description (Tier 1)
-- Tier 1 is always loaded; verbose descriptions waste token budget
-- **Why it matters**: Trust Claude's intelligence. Over-specifying treats Claude like a script executor
-- **Solution**: Use What-When-Not framework. See `skills-architect/references/description-guidelines.md`
-
-**❌ Kitchen sink approach** - Everything included
-- Remove Claude-obvious content
-- Keep only: working commands, non-obvious gotchas, architecture decisions
-- "NEVER do X because [specific reason]"
-
-**❌ Missing references when needed** - SKILL.md + references >500 lines
-- Create references/ directory
-- Extract deep details
-- Keep SKILL.md <500 lines
 
 ## Hooks Anti-Patterns
 
@@ -195,55 +158,6 @@ fi
 - Subagents consume multiple prompts
 - Critical for limited prompts (150 prompts/5h plans)
 
-## Task Management Anti-Patterns
-
-**❌ Code examples when citing TaskList/Agent/Task tools** - ABSOLUTE CONSTRAINT
-- TaskList (Layer 0) is a **fundamental primitive** for complex workflows
-- Agent tool and Task tool are **built-in** (Layer 1)
-- Claude **already knows** their structure and how to use them
-- Code examples add risk of context drift and token waste
-- **✅ ALWAYS use natural language** to describe workflow and dependencies
-- Describe WHAT needs to happen in what order, not HOW to invoke the tools
-- Trust Claude's intelligence to use built-in tools correctly
-
-**❌ Confusing TaskList with skills** - Architectural layer mistake
-- TaskList is **Layer 0** - workflow state engine for complex workflows
-- Skills are **Layer 2** - user content loaded by Skill tool
-- TaskList enables indefinitely long projects through context spanning
-- Skills execute domain tasks, TaskList orchestrates them
-
-**❌ Using TaskList for workflows Claude can handle autonomously** - Overengineering
-- Claude already knows what to do for smaller tasks (TodoWrite was removed for this reason)
-- TaskList is for complex projects exceeding autonomous execution
-- **Threshold question**: "Would this exceed Claude's autonomous state tracking?"
-- Use skills directly for work Claude can complete independently
-
-**❌ Using TaskList for simple workflows** - Tasks add overhead
-- Simple 2-3 step work? Use skills directly
-- Tasks shine at 5+ steps with dependencies
-- Consider cognitive load vs. benefit
-
-**❌ Tasks without dependencies** - Missing the point
-- If no tasks block other tasks, you're not using dependencies
-- Consider simpler skill-based workflow
-
-**❌ Tasks for one-shot work** - Persistence unnecessary
-- Session-bound work? Skills are sufficient
-- Use tasks when work spans sessions or requires multi-subagent coordination
-
-**❌ Missing TaskList for multi-session workflows** - Context window limit
-- When conversation exceeds context window, start new session with same CLAUDE_CODE_TASK_LIST_ID
-- TaskList enables indefinitely long projects across context boundaries
-- Without TaskList: work lost when context fills up
-
-**❌ Not capturing conversation knowledge** - Missing INCREMENTAL-UPDATE default
-- When there is ANY prior conversation in a session, default to INCREMENTAL-UPDATE
-- Prior conversation = knowledge has been generated = capture it
-- No explicit request needed — prior conversation IS the trigger
-- Review conversation for: working commands, discovered patterns, errors encountered, new rules learned
-- **Recognition pattern**: "Is there prior conversation with discoverable knowledge?"
-
----
 
 # TO KNOW WHEN
 

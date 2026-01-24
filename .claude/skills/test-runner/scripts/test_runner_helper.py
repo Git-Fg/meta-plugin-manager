@@ -418,7 +418,7 @@ def detect_tool_usage(file_path: str) -> None:
             except json.JSONDecodeError:
                 pass  # Skip invalid lines
 
-    # Count tool invocations
+    # Count tool invocations (check nested content in assistant messages)
     tools_used = {
         'Skill': 0,
         'TaskList': 0,
@@ -428,6 +428,7 @@ def detect_tool_usage(file_path: str) -> None:
     }
 
     for item in data:
+        # Check at top level
         if item.get('type') == 'tool_use':
             name = item.get('name', '')
             if name == 'Skill':
@@ -440,6 +441,24 @@ def detect_tool_usage(file_path: str) -> None:
                 tools_used['WriteEdit'] += 1
             elif name == 'Bash':
                 tools_used['Bash'] += 1
+
+        # Check in assistant message content (nested structure)
+        message = item.get('message', {})
+        content = message.get('content', [])
+        if isinstance(content, list):
+            for c in content:
+                if isinstance(c, dict) and c.get('type') == 'tool_use':
+                    name = c.get('name', '')
+                    if name == 'Skill':
+                        tools_used['Skill'] += 1
+                    elif name in ['TaskList', 'TaskCreate', 'TaskUpdate', 'TaskGet']:
+                        tools_used['TaskList'] += 1
+                    elif name == 'Read':
+                        tools_used['Read'] += 1
+                    elif name in ['Write', 'Edit']:
+                        tools_used['WriteEdit'] += 1
+                    elif name == 'Bash':
+                        tools_used['Bash'] += 1
 
     total = sum(tools_used.values())
 
@@ -483,9 +502,19 @@ def analyze_execution(file_path: str) -> None:
     print("### Tool Invocation Details")
     tool_counts = {}
     for item in data:
+        # Check top level
         if item.get('type') == 'tool_use':
             name = item.get('name', 'Unknown')
             tool_counts[name] = tool_counts.get(name, 0) + 1
+
+        # Check in assistant message content
+        message = item.get('message', {})
+        content = message.get('content', [])
+        if isinstance(content, list):
+            for c in content:
+                if isinstance(c, dict) and c.get('type') == 'tool_use':
+                    name = c.get('name', 'Unknown')
+                    tool_counts[name] = tool_counts.get(name, 0) + 1
 
     if tool_counts:
         for tool, count in sorted(tool_counts.items()):
@@ -500,7 +529,8 @@ def analyze_execution(file_path: str) -> None:
     # Check for forked execution
     forked = False
     for item in data:
-        content = item.get('content', [])
+        message = item.get('message', {})
+        content = message.get('content', [])
         if isinstance(content, list):
             for c in content:
                 if isinstance(c, dict) and 'text' in c:

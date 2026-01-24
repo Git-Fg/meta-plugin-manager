@@ -22,16 +22,45 @@ This document teaches architectural patterns grounded in core philosophy. Unders
 
 Every capability should be a Skill first. Commands and Subagents are orchestrators, not creators.
 
-**Reference**: [toolkit-architect/SKILL.md](skills/toolkit-architect/SKILL.md)
+### Project Scaffolding Router
 
-### Router Logic (from toolkit-architect/SKILL.md)
-1. Validate: User's project has .claude/ directory
-2. Determine component type:
-   - "I need a skill" → Route to skills-architect
-   - "I want web search" → Route to mcp-architect
-   - "I need hooks" → Route to hooks-architect
-3. Scan existing structure: `ls -la .claude/` to see what exists
-4. Check for existing components in skills/, agents/, settings.json, hooks.json
+Use factory skills directly for component creation:
+
+#### Router Decision Tree
+1. **Validate**: User's project has .claude/ directory
+2. **Scan existing structure**: `ls -la .claude/` to see what exists
+3. **Determine component type**:
+   - "I need a skill" → Use create-skill factory
+   - "I want web search/MCP" → Use create-mcp-server factory
+   - "I need hooks/automation" → Use create-hook factory
+   - "I need subagents" → Use create-subagent factory
+   - "Multi-session workflow" → Use TaskList directly
+   - "I need CLAUDE.md or memory management" → Use claude-md-archivist
+
+#### Autonomy Pattern
+Smart defaults based on exploration:
+- **No .claude/ exists** → Create .claude/ directory structure first
+- **Empty .claude/** → Infer from request keywords (skill/MCP/hook/agent/CLAUDE.md)
+- **Has skills/** → Suggest skill enhancements or new skills
+- **Has .mcp.json** → Suggest additional MCP servers
+- **Has messy/outdated CLAUDE.md** → Suggest claude-md-archivist for refactoring
+- **No CLAUDE.md exists** → Suggest claude-md-archivist for creation
+
+#### Output Clarification Patterns
+
+When delegating to skills or subagents, follow these patterns:
+
+**Delegation to Knowledge Skills**:
+1. **Source Attribution**: Always mark the source clearly
+2. **Context Bridge**: Explain how knowledge applies to current request
+3. **Summarize Key Points**: Extract actionable insights, don't dump full reference
+4. **Maintain Voice Separation**: Keep architect's voice distinct from knowledge skill's voice
+
+**Forked Worker Results**:
+1. **Mark as Subagent Output**: Clearly identify as subagent result
+2. **Parse and Summarize**: Extract insights from noisy output
+3. **Present Key Findings First**: Lead with scores and critical issues
+4. **Acknowledge Isolation**: Note this is from isolated context
 
 ## Hub-and-Spoke Pattern
 
@@ -40,6 +69,58 @@ Hub Skills (routers with disable-model-invocation: true) delegate to knowledge s
 **CRITICAL**: For hub to aggregate results, ALL delegate skills MUST use `context: fork`. Regular skill handoffs are one-way only.
 
 **See**: [CLAUDE.md](../../CLAUDE.md) for complete hub-and-spoke pattern documentation and test validation results.
+
+## v4 Knowledge-Factory Architecture (2026-01-24)
+
+### Separation of Concerns
+
+**Knowledge Skills** (Passive Reference):
+- Contain ONLY reference information
+- NO execution logic, workflows, or scripts
+- user-invocable: false (background context)
+- Used for: Understanding concepts, patterns, standards
+
+**Factory Skills** (Script-Based Execution):
+- Contain ONLY execution logic
+- NO theory, philosophy, or detailed explanations
+- user-invocable: true
+- Have scripts/ directory with bash/python scripts
+- Used for: Creating components, running operations
+
+### Usage Pattern
+
+```bash
+# Learn concepts (Knowledge)
+Skill("knowledge-skills")
+
+# Execute operations (Factory)
+Skill("create-skill", args="name=my-skill description='My skill'")
+```
+
+### Reference Pattern
+
+See test-runner skill for complete script-based skill pattern:
+- scripts/ directory with executable scripts
+- README.md documenting script usage
+- SKILL.md provides usage guidance, not detailed script docs
+
+### Knowledge Skills
+
+| Skill | Content |
+|-------|---------|
+| knowledge-skills | Agent Skills standard, Progressive Disclosure, quality framework |
+| knowledge-mcp | Model Context Protocol, transports, primitives |
+| knowledge-hooks | Events, security patterns, exit codes |
+| knowledge-subagents | Agent types, frontmatter, context detection |
+
+### Factory Skills
+
+| Skill | Scripts | Purpose |
+|-------|---------|---------|
+| create-skill | scaffold_skill.sh, validate_structure.sh | Skill scaffolding |
+| create-mcp-server | add_server.sh, validate_mcp.sh, merge_config.py | MCP registration |
+| create-hook | add_hook.sh, scaffold_script.sh, validate_hook.sh | Hook creation |
+| create-subagent | create_agent.sh, validate_agent.sh, detect_context.sh | Agent creation |
 
 ## Progressive Disclosure
 
@@ -56,15 +137,17 @@ Minimize API call count ("prompts" = one request + all tool calls). Critical for
 
 ## Component Patterns
 
-**Reference**: [toolkit-architect/references/component-patterns.md](skills/toolkit-architect/references/component-patterns.md)
-
-### Project Structure
+### Project Structure (v4)
 ```
 .claude/
-├── skills/                      # Skills are PRIMARY building blocks
-│   └── skill-name/
-│       ├── SKILL.md            # <500 lines (Tier 2)
-│       └── references/          # On-demand (Tier 3)
+├── skills/                      # Skills organized by type
+│   ├── knowledge-*/             # Knowledge Skills (passive reference)
+│   │   ├── SKILL.md            # <500 lines, pure knowledge
+│   │   └── references/          # On-demand (Tier 3)
+│   ├── create-*/                # Factory Skills (script-based execution)
+│   │   ├── SKILL.md            # Execution guidance
+│   │   └── scripts/            # Bash/python scripts
+│   └── test-runner/             # Reference pattern for script-based skills
 ├── agents/                      # Context fork isolation
 ├── hooks/                       # Event automation
 ├── settings.json                # Project-wide hooks & configuration
@@ -85,98 +168,6 @@ Required fields:
 - Must be unique across installed plugins
 - Example: `code-review-assistant`, `test-runner`
 
-## Hooks Configuration
-
-Hooks follow a modern hierarchy emphasizing **local project autonomy** and **trust in AI intelligence**.
-
-### Modern Configuration Hierarchy
-
-**Configuration Locations** (trust AI to choose appropriate scope):
-
-#### 1. Local Project Settings (Default Recommendation)
-**Location**: `.claude/settings.json`
-
-**Best For**:
-- Project-specific automation and security
-- Team collaboration through version control
-- Project-specific validation and guardrails
-- Shared configurations across collaborators
-
-**Example**:
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Write",
-      "hooks": [{
-        "type": "command",
-        "command": "./.claude/scripts/validate-file.sh"
-      }]
-    }]
-  }
-}
-```
-
-#### 2. Component-Scoped Hooks (Auto-Cleanup)
-**Location**: YAML frontmatter in skills/agents
-
-**Best For**:
-- Skill-specific validation and automation
-- Temporary or experimental hooks
-- One-time setup with `once: true`
-- Avoiding global side effects
-
-**Features**:
-- ✅ Auto-cleanup when component finishes
-- ✅ Skills/Commands support `once: true`
-- ❌ Agents do NOT support `once` option
-
-#### 3. Local Project Overrides
-**Location**: `.claude/settings.local.json`
-
-**Best For**:
-- Personal project customization
-- Machine-specific configurations
-- Individual developer preferences
-
-#### 4. User-Wide Settings
-**Location**: `~/.claude/settings.json`
-
-**Best For**:
-- Universal personal workflows
-- Global security policies
-- Cross-project standardization
-
-#### 5. Legacy Global Hooks (Deprecated)
-**Location**: `.claude/hooks.json`
-
-**Note**: Use `settings.json` format for better maintainability.
-
-### Hooks Refactoring Insights (2026)
-
-**Key Learning**: Modern hooks prioritize **local project autonomy** and **trust in AI intelligence**.
-
-#### Philosophical Changes
-- **Local Project First**: Default to `.claude/settings.json` for project-specific automation
-- **Trust AI Intelligence**: Provide concepts, let AI make implementation decisions
-- **Autonomous by Default**: Skills work without user interaction
-- **Minimal Prescriptiveness**: Focus on principles, not rigid patterns
-- **Clean Architecture**: Remove deprecated patterns and legacy knowledge
-
-#### Quality Indicators
-**High-Quality Hook Implementation**:
-- ✅ Uses appropriate events for use case
-- ✅ Configured at appropriate scope
-- ✅ Includes proper error handling
-- ✅ Performs efficiently
-- ✅ Provides clear feedback
-
-**Trust AI to Achieve**:
-- Appropriate event selection
-- Smart scope choice
-- Intelligent validation logic
-- Optimal performance
-- Clear user experience
 
 ## Tool Layer Architecture
 
@@ -300,6 +291,50 @@ TodoWrite was removed because newer models (Opus 4.5) can handle simpler tasks a
 - Tasks stored in `~/.claude/tasks/[task-list-id]/`
 - Intentional for interoperability and external tooling
 - Task files as API surface for utilities
+
+### Task-Integrated Quality Validation
+
+For complex quality audits requiring visual progress tracking and dependency enforcement, use TaskList integration:
+
+**When to use**:
+- Multi-component validation (skills + subagents + hooks + MCP)
+- Need to enforce scan completion before validation
+- Want visual progress tracking (Ctrl+T)
+- Quality tracking across audit iterations
+
+**Workflow description**:
+
+Use TaskList to create a multi-phase validation workflow. First use TaskCreate to establish the structure scan task that identifies all .claude/ components. Then use TaskCreate to set up parallel component validation tasks for skills (15 points), subagents (10 points), hooks (10 points), and MCP (5 points) — configure these with dependencies so they wait for the structure scan to complete. Use TaskCreate to establish the standards compliance check (20 points) with dependencies on all component validations. Finally use TaskCreate to create the final report generation task that depends on the standards check. Use TaskUpdate to mark tasks as completed as each phase finishes, and use TaskList to check overall progress.
+
+**Critical dependency**: Component validation tasks must be configured to wait for the structure scan task to complete. The standards check task must wait for all component validation tasks. This ensures comprehensive evaluation before scoring begins and a complete picture before final scoring.
+
+**Task tracking provides**:
+- Visual progression through validation phases (visible in Ctrl+T)
+- Dependency enforcement (tasks block until dependencies complete)
+- Persistent quality tracking across audit iterations
+- Clear phase completion markers
+
+### Task-Integrated Audit Workflow
+
+For complex .claude/ audits requiring visual progress tracking and dependency enforcement:
+
+**When to use**:
+- Multi-component validation (skills + subagents + hooks + MCP)
+- Need to enforce scan completion before component validation
+- Want visual progress tracking (Ctrl+T)
+- Quality tracking across audit iterations
+
+**Workflow description**:
+
+Use TaskCreate to establish a .claude/ structure scan task first. Then use TaskCreate to set up parallel component validation tasks for skills (15 points), subagents (10 points), hooks (10 points), and MCP (5 points) — configure these to depend on the scan completion. Use TaskCreate to establish a standards compliance check task (20 points) that depends on all component validations completing. Finally use TaskCreate to establish a final audit report generation task. Use TaskUpdate to mark tasks complete as each phase finishes, and use TaskList to check overall progress and identify any blocked tasks.
+
+**Critical dependency**: Component validation tasks must be configured to depend on the structure scan task completing. The standards check task must depend on all component validation tasks. This ensures comprehensive evaluation before scoring and a complete picture before final reporting.
+
+**Task tracking provides**:
+- Visual progression through audit phases (visible in Ctrl+T)
+- Dependency enforcement (tasks block until dependencies complete)
+- Persistent quality tracking across audit iterations
+- Clear phase completion markers
 
 ---
 
