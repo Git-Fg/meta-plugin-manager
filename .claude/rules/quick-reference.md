@@ -175,6 +175,40 @@ For forked skills with context: fork, parse $ARGUMENTS to extract parameters pro
 ```
 
 
+## Meta-Critic Quick Reference
+
+**Purpose**: Quality validation and alignment checking for v4 workflows.
+
+**Three-Way Comparison**:
+1. **What was Requested**: User's original intent and requirements
+2. **What was Done**: Actual actions taken and outputs produced
+3. **What Standards Specify**: knowledge-skills reference baseline
+
+**When to invoke meta-critic**:
+- After complex multi-step workflows
+- Post-factory skill execution
+- When quality validation needed
+- Detecting drift between request and execution
+- Standards compliance review
+
+**Output format**:
+- Alignment assessment (Request vs Delivery)
+- Standards compliance check
+- Quality score (Intent/Completeness/Standards)
+- Findings (Strengths/Issues/Critical)
+- Actionable recommendations
+
+**Analysis dimensions**:
+| Dimension | Check | Pass Criteria |
+|-----------|-------|---------------|
+| Intent | Actions match user's goal? | Direct alignment |
+| Standards | Output complies with knowledge-skills? | No violations |
+| Completeness | All requirements addressed? | 100% covered |
+| Quality | Production-ready? | ≥80/100 score |
+
+**See**: `.claude/skills/meta-critic/references/analysis-framework.md` for detailed methodology.
+
+
 ## When in Doubt
 
 **Most customization needs** met by CLAUDE.md + one Skill.

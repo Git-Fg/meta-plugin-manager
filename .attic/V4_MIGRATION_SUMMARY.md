@@ -58,6 +58,15 @@
 | create-hook | add_hook.sh, scaffold_script.sh, validate_hook.sh | Hook creation |
 | create-subagent | create_agent.sh, validate_agent.sh, detect_context.sh | Agent creation |
 
+### Meta-Critic (1)
+| Skill | References | Purpose |
+|-------|------------|---------|
+| meta-critic | analysis-framework.md, workflow-examples.md | Quality validation and alignment checking |
+
+**Three-Way Comparison**:
+- What was Requested vs What was Done vs What Standards Specify
+- Use when: Quality checks, workflow validation, drift detection
+
 ---
 
 ## Migration Benefits
@@ -162,10 +171,11 @@ Skill("create-skill", args="name=my-skill description='My skill'")
 | All 4 knowledge skills created | ✅ Complete |
 | All reference files migrated (29) | ✅ Complete |
 | All 4 factory skills created | ✅ Complete |
+| Meta-critic created | ✅ Complete |
 | All scripts executable | ✅ Complete |
 | No execution logic in knowledge skills | ✅ Complete |
 | No theory in factory skills | ✅ Complete |
-| Documentation updated (CLAUDE.md, architecture.md) | ✅ Complete |
+| Documentation updated (CLAUDE.md, architecture.md, quick-reference.md) | ✅ Complete |
 | Archive created with all old skills | ✅ Complete |
 | Factory execution test passed | ✅ Complete |
 
@@ -174,9 +184,9 @@ Skill("create-skill", args="name=my-skill description='My skill'")
 ## Next Steps
 
 1. ✅ Migration complete - all components created
-2. ⏳ Create git commit with migration changes
-3. ⏳ Test full workflow: knowledge → factory execution
-4. ⏳ Update any remaining documentation references
+2. ✅ Meta-critic feedback loop implemented
+3. ⏳ Create git commit with meta-critic additions
+4. ⏳ Test full workflow: knowledge → factory → meta-critic validation
 
 ---
 

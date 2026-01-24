@@ -116,6 +116,24 @@ See test-runner skill for complete script-based skill pattern:
 | create-hook | add_hook.sh, scaffold_script.sh, validate_hook.sh | Hook creation |
 | create-subagent | create_agent.sh, validate_agent.sh, detect_context.sh | Agent creation |
 
+### Meta-Critic (Feedback Loop)
+
+Quality validation and alignment checking:
+
+| Skill | Purpose | Use When |
+|-------|---------|----------|
+| meta-critic | Three-way comparison: Request vs Delivery vs Standards | Quality checks, workflow validation, drift detection |
+
+**Analysis Framework**:
+- **Intent Alignment**: Did actions match user's goal?
+- **Standards Compliance**: Does output comply with knowledge-skills?
+- **Completeness**: Were all requirements addressed?
+- **Quality**: Is work production-ready? (≥80/100 score)
+
+**Output**: Constructive critique with specific, actionable recommendations.
+
+See `.claude/skills/meta-critic/references/analysis-framework.md` for detailed methodology.
+
 ## Progressive Disclosure
 
 **See**: [CLAUDE.md](../../CLAUDE.md) for complete Progressive Disclosure documentation (Tier 1/2/3 structure, line count rules, implementation guidance).

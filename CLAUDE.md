@@ -65,6 +65,17 @@ Active execution with deterministic bash/python scripts:
 
 Load knowledge skills to understand concepts and patterns, then use factory skills to execute operations (create skills, add MCP servers, configure hooks, create agents).
 
+### Meta-Critic (Feedback Loop)
+
+Quality validation and alignment checking for v4 workflows:
+- **meta-critic**: Audits conversation alignment between requests, actions, and knowledge standards
+- Analyzes: What was requested vs What was done vs What standards specify
+- Use when: Quality checks, workflow validation, standards compliance review, drift detection
+
+**Usage Pattern**:
+
+Invoke meta-critic after complex workflows to validate alignment with knowledge-skills standards and ensure delivered work matches original intent.
+
 ### Migration from v3
 
 Architect skills (skill-architect, mcp-architect, hooks-architect, subagents-architect) were split into:
