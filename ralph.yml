@@ -1,87 +1,94 @@
-# Research Preset
+# Component Development Orchestrator
 #
-# For deep exploration tasks: codebase analysis, architecture review,
-# technology evaluation, competitive analysis.
+# Test, create, and validate any .claude component (skills, commands, hooks, agents, MCPs)
+# Uses Ralph's native memory and task systems for persistent learning and work tracking.
 #
-# Key behavior: NO code changes, NO commits. Pure information gathering.
+# Pattern: TDD + Confession Loop (memories track patterns, tasks track work items)
 #
 # Usage:
-#   ralph run --config presets/research.yml --prompt "Analyze the authentication flow"
+#   ralph run -p "create a skill for X"
+#   ralph run -p "test the command Y"
+#   ralph run -p "validate all skills in tests/"
+#
+# Task CLI:
+#   ralph tools task add "implement skill X" -p 2
+#   ralph tools task list
+#   ralph tools task ready
+#   ralph tools task close <id>
+#
+# Memory CLI:
+#   ralph tools memory add "pattern: skill triggering works best with..." -t pattern
+#   ralph tools memory search "portability"
+#   ralph tools memory list
 
 event_loop:
   prompt_file: "PROMPT.md"
-  completion_promise: "RESEARCH_COMPLETE"
-  max_iterations: 20
-  max_runtime_seconds: 3600
-  starting_event: "research.start"  # Ralph publishes this after coordination
+  completion_promise: "WORKFLOW_COMPLETE"
+  max_iterations: 100
+  max_runtime_seconds: 7200
+  idle_timeout_secs: 600
+  checkpoint_interval: 5
 
 cli:
   backend: "claude"
+  prompt_mode: "arg"
 
 core:
-  specs_dir: "./specs/"
+  specs_dir: "./tests/"
+  guardrails:
+    - "Fresh context each iteration - memories and scratchpad persist"
+    - "Parse raw_log.json for verification - don't trust stdout"
+    - "Backpressure is law - tests must pass before validation"
+
+tasks:
+  enabled: true
+
+memories:
+  enabled: true
+  inject: auto
+  budget: 2500
+  filter:
+    types: []
+    tags: []
+    recent: 0
 
 hats:
-  researcher:
-    name: "Researcher"
-    description: "Gathers information and analyzes patterns. No code changes."
-    triggers: ["research.start", "research.followup"]
-    publishes: ["research.finding", "research.question"]
-    instructions: |
-      ## RESEARCHER MODE
+  coordinator:
+    name: "🎯 Coordinator"
+    description: "Detect mode (CREATE/AUDIT/BATCH/TEST/FIX), build dependency graph, create tasks, prepare sandbox(es). Routes to designer or executor."
+    triggers: ["workflow.start", "test.failed"]
+    publishes: ["design.tests", "execution.ready", "WORKFLOW_COMPLETE"]
+    default_publishes: "design.tests"
+    instructions_file: ".agent/hats/coordinator-instructions.md"
 
-      You're researching, not implementing. Gather information, analyze patterns, synthesize insights.
+  test_designer:
+    name: "📝 Test Designer"
+    description: "Generate test_spec.json for single/batch components. Portability checks for audit mode. Record design decisions as memories."
+    triggers: ["design.tests"]
+    publishes: ["tests.designed", "WORKFLOW_COMPLETE"]
+    default_publishes: "tests.designed"
+    instructions_file: ".agent/hats/test-designer-instructions.md"
 
-      ### Process
-      1. **Scope the question.** What exactly are we trying to learn?
-      2. **Search broadly.** Use grep, find, read files. Follow the trail.
-      3. **Document findings.** Record discoveries as you go.
-      4. **Identify gaps.** What's still unclear? Publish `research.followup` if needed.
+  executor:
+    name: "⚡ Executor"
+    description: "Execute tests, verify component loading, update results.json. Supports batch execution and test re-runs."
+    triggers: ["tests.designed", "execution.ready"]
+    publishes: ["test.passed", "test.failed", "design.tests", "WORKFLOW_COMPLETE"]
+    default_publishes: "WORKFLOW_COMPLETE"
+    instructions_file: ".agent/hats/executor-instructions.md"
 
-      ### Scratchpad Format
-      ```markdown
-      # Research: [Topic]
+  validator:
+    name: "✅ Validator"
+    description: "Cross-reference raw_log.json against test_spec.json. Produce confession report."
+    triggers: ["test.passed"]
+    publishes: ["confession.clean", "confession.issues_found", "WORKFLOW_COMPLETE"]
+    default_publishes: "confession.clean"
+    instructions_file: ".agent/hats/validator-instructions.md"
 
-      ## Questions
-      - [ ] Primary question
-      - [ ] Secondary questions discovered
-
-      ## Findings
-      ### [Area 1]
-      - Finding with file:line references
-
-      ## Open Questions
-      - Things that need more investigation
-
-      ## Summary
-      [Synthesized answer to the original question]
-      ```
-
-      ### DON'T
-      - ❌ Write or modify code
-      - ❌ Make commits
-      - ❌ Suggest implementations (unless asked)
-      - ❌ Make assumptions—verify with code search
-
-      ### DONE
-      When the original question is answered with evidence, output: RESEARCH_COMPLETE
-
-  synthesizer:
-    name: "Synthesizer"
-    description: "Reviews findings and creates coherent summary."
-    triggers: ["research.finding"]
-    publishes: ["research.followup", "synthesis.complete"]
-    instructions: |
-      ## SYNTHESIZER MODE
-
-      Review findings and create coherent summary.
-
-      1. Read all findings from research
-      2. Identify patterns and connections
-      3. Note contradictions or gaps
-      4. If gaps exist, publish `research.followup`
-      5. If complete, provide Summary
-
-      ### DON'T
-      - ❌ Do new research (that's researcher's job)
-      - ❌ Make code changes
+  confession_handler:
+    name: "🔍 Confession Handler"
+    description: "Verify validator's claims. Decide whether to iterate, release, or escalate."
+    triggers: ["confession.clean", "confession.issues_found"]
+    publishes: ["design.tests", "escalate.human", "WORKFLOW_COMPLETE"]
+    default_publishes: "WORKFLOW_COMPLETE"
+    instructions_file: ".agent/hats/confession-handler-instructions.md"
