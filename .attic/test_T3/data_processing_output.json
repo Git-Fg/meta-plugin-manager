@@ -1,0 +1,76 @@
+{
+  "source": "data-processor",
+  "data": [
+    {
+      "id": 1,
+      "name": "Sample Record 1",
+      "original_value": 100,
+      "category": "A",
+      "normalized_value": 0.3125,
+      "tier": "Standard",
+      "discount_applied": 0
+    },
+    {
+      "id": 2,
+      "name": "Sample Record 2",
+      "original_value": 250,
+      "category": "B",
+      "normalized_value": 0.78125,
+      "tier": "Premium",
+      "discount_applied": 0
+    },
+    {
+      "id": 3,
+      "name": "Sample Record 3",
+      "original_value": 175,
+      "category": "A",
+      "normalized_value": 0.546875,
+      "tier": "Standard",
+      "discount_applied": 0
+    },
+    {
+      "id": 4,
+      "name": "Sample Record 4",
+      "original_value": 320,
+      "category": "C",
+      "normalized_value": 1.0,
+      "tier": "Premium",
+      "discount_applied": 0
+    },
+    {
+      "id": 5,
+      "name": "Sample Record 5",
+      "original_value": 90,
+      "category": "B",
+      "normalized_value": 0.28125,
+      "tier": "Basic",
+      "discount_applied": 0
+    }
+  ],
+  "statistics": {
+    "total_records": 5,
+    "sum": 935,
+    "average": 187.0,
+    "min_value": 90,
+    "max_value": 320,
+    "median": 175
+  },
+  "category_breakdown": {
+    "A": {
+      "count": 2,
+      "sum": 275,
+      "average": 137.5
+    },
+    "B": {
+      "count": 2,
+      "sum": 340,
+      "average": 170.0
+    },
+    "C": {
+      "count": 1,
+      "sum": 320,
+      "average": 320.0
+    }
+  },
+  "status": "success"
+}

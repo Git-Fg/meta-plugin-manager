@@ -1,81 +1,108 @@
 ---
 name: knowledge-subagents
-description: Reference for Agent Types, Contexts, and Coordination. Use to understand subagent architecture before creating them. For execution, use create-subagent.
+description: Subagent architecture knowledge. Use when understanding agent types, coordination, or configuration. For creating agents, use create-subagent factory.
 user-invocable: false
 ---
 
 # Knowledge: Subagents
 
-Reference knowledge for Claude Code subagents. **For execution (creating agents), use `create-subagent`**.
+Subagents are **isolated workers** that execute tasks in a separate context window. They exist to prevent conversation pollution when tasks produce high-volume output or require dedicated focus.
 
-## 1. Core Concepts
+**For creating agents**: Use the `create-subagent` factory skill.
 
-### Agent Types
+## Core Principle: The Clutter Test
 
-| Type | Use Case |
-|------|----------|
-| **general-purpose** | Default. Full toolkit access. |
-| **bash** | Shell/Script execution specialist. |
-| **explore** | Fast navigation (ReadOnly). |
-| **plan** | Architecture & complex reasoning (Opus). |
+> **"Would this task clutter the conversation?"**
 
-### Context & Location
+- **Yes** → Spawn a subagent
+- **No** → Use native tools (Read, Grep, Bash)
 
-| Context | Path | Use When |
-|---------|------|----------|
-| **Project** | `.claude/agents/` | Logic specific to THIS project. |
-| **Plugin** | `plugin/agents/` | Logic shared across multiple projects. |
-| **User** | `~/.claude/agents/` | Personal automation. |
+Subagent overhead (new context + initialization) is only justified when isolation provides value.
 
-## 2. Configuration & Reference
+## Anatomy of a Subagent
 
-**Detailed Guides:**
-
-- **Configuration**: [configuration-guide.md](references/configuration-guide.md) (Full Frontmatter API)
-- **Validation**: [validation-framework.md](references/validation-framework.md) (Quality Scoring >80%)
-- **When to Use**: [when-to-use.md](references/when-to-use.md) (Decision Matrix)
-
-### Critical Rules
-
-1. **Never** use `context: fork` in subagents (Skills only).
-2. **Never** use `user-invocable` (Subagents are tools).
-3. **Always** define explicit `tools` (Allowlist) or `disallowedTools` (Denylist).
-
-### Frontmatter Quick Reference
+Subagents are `.md` files with YAML frontmatter:
 
 ```yaml
 ---
-name: agent-name              # Required
-description: Purpose          # Required
-model: sonnet                 # Optional: haiku | sonnet | opus
-tools:                        # Optional: Allowlist
-  - Bash
-  - Read
-disallowedTools:              # Optional: Denylist
+name: code-analyzer                    # Required: unique identifier
+description: "Analyze code when..."    # Required: when to delegate
+model: haiku                           # Optional: haiku | sonnet | opus
+disallowedTools:                       # Optional: restrict capabilities
   - Write
   - Edit
-permissionMode: default       # Optional
-skills:                       # Optional: Inject skill content
-  - skill-name
 ---
+
+# Body: Instructions for the subagent
+Analyze the codebase for patterns...
 ```
 
-## 3. Coordination Patterns
+**Location determines scope:**
 
-**Full Patterns**: [coordination.md](references/coordination.md)
+| Path | Scope |
+|------|-------|
+| `.claude/agents/` | This project only |
+| `plugin/agents/` | All projects using this plugin |
+| `~/.claude/agents/` | Personal (all projects) |
 
-| Pattern | Description |
-|---------|-------------|
-| **Hub-and-Spoke** | Main agent delegates to specialized workers. |
-| **Sequential** | Chain: Architect → Coder → Reviewer. |
-| **Parallel** | Multiple isolated agents for speed. |
+## Agent Types
 
-## 4. Context Detection
+| Type | Tools | Use When |
+|------|-------|----------|
+| **general-purpose** | All | Default, no specialization needed |
+| **explore** | Read-only | Fast search, codebase navigation |
+| **plan** | All except Task | Architecture design, complex reasoning |
+| **bash** | Bash only | Shell workflows, git operations |
 
-Automatic detection based on file location. See [context-detection.md](references/context-detection.md).
+## Configuration Essentials
 
+### Required Fields
+
+```yaml
+name: unique-hyphenated-name
+description: "Purpose when situation. Use for specific tasks."
 ```
-.claude-plugin/plugin.json exists → Plugin context
-.claude/agents/ exists           → Project context
-~/.claude/agents/ exists         → User context
+
+### Tool Restriction (Choose ONE)
+
+```yaml
+# Allowlist: ONLY these tools
+tools:
+  - Read
+  - Grep
+
+# OR Denylist: ALL tools EXCEPT these
+disallowedTools:
+  - Write
+  - Edit
 ```
+
+### Critical Rules
+
+1. **Never** use `context: fork` (Skills only)
+2. **Never** use `user-invocable` (Subagents aren't user-invocable)
+3. **Always** restrict tools appropriately
+
+**Full API**: See [configuration-guide.md](references/configuration-guide.md)
+
+## Coordination Patterns
+
+When orchestrating multiple subagents:
+
+| Pattern | Use When |
+|---------|----------|
+| **Hub-and-Spoke** | Central coordinator delegates to specialists |
+| **Pipeline** | Sequential: A → B → C |
+| **Parallel** | Independent tasks, combine results |
+
+**Full Patterns**: See [coordination.md](references/coordination.md)
+
+## Quality Gate
+
+Subagents should score ≥80/100 on validation. Key dimensions:
+
+- Configuration validity (valid YAML, required fields)
+- Tool restrictions (appropriate allow/deny)
+- Documentation quality (clear description with trigger)
+
+**Validation Details**: See [validation-framework.md](references/validation-framework.md)
