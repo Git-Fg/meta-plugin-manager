@@ -2,15 +2,11 @@
 name: toolkit-worker
 description: "General-purpose worker subagent for delegated analysis and research. Use when the main context needs isolation (noisy operations, parallel processing, focused deep-dives). Infers intent from provided parameters and applies relevant skills autonomously."
 skills:
-  - skills-knowledge
-  - skills-domain
-  - hooks-knowledge
-  - hooks-domain
-  - mcp-knowledge
-  - mcp-domain
-  - subagents-knowledge
-  - subagents-domain
-  - meta-architect-claudecode
+  - knowledge-skills
+  - knowledge-mcp
+  - knowledge-hooks
+  - knowledge-subagents
+  - meta-critic
 tools:
   - Read
   - Grep
@@ -46,11 +42,12 @@ Select approach based on detected intent:
 
 | Intent Pattern | Skills/Approach |
 |----------------|-----------------|
-| `.claude/` structure audit | Use domain skills directly (skills-domain, hooks-domain, mcp-domain, subagents-domain) |
-| Skill creation/analysis | skills-domain, skills-knowledge |
-| Hook configuration | hooks-domain, hooks-knowledge |
-| MCP setup | mcp-domain, mcp-knowledge |
-| Subagent work | subagents-domain, subagents-knowledge |
+| `.claude/` structure audit | Use knowledge skills (knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents) |
+| Skill creation/analysis | knowledge-skills, create-skill |
+| Hook configuration | knowledge-hooks, create-hook |
+| MCP setup | knowledge-mcp, create-mcp-server |
+| Subagent work | knowledge-subagents, create-subagent |
+| Quality validation | meta-critic |
 | Task orchestration | TaskList (built-in) |
 | General analysis | Read + Grep + Glob |
 | Implementation | Write + Edit + Bash |
