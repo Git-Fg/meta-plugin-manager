@@ -225,6 +225,56 @@ Remember that the skill is for another Claude instance to use. Focus on procedur
 
 ---
 
+## Mandatory Reference Consumption
+
+### The Problem
+
+References exist to provide essential context that affects task quality. Simply pointing to them doesn't ensure consumption. Users often skip references, leading to incomplete understanding and lower quality output.
+
+### The Solution: Make References Mandatory
+
+**Use imperative "You MUST" language:**
+
+✅ **From command-development:**
+```
+You MUST read references/frontmatter-reference.md before configuring any command frontmatter.
+```
+
+✅ **Pattern recognition:**
+- "You MUST read X before doing Y"
+- "References contain validation rules..."
+- "Skip references → incomplete understanding"
+
+**Enforcement in navigation tables:**
+
+```
+| If you are... | You MUST read... |
+|---------------|------------------|
+| Creating commands | You MUST read references/executable-examples.md |
+| Configuring frontmatter | You MUST read references/frontmatter-reference.md |
+```
+
+**Progressive disclosure with enforcement:**
+
+```
+## CRITICAL: Frontmatter Validation
+
+You MUST read references/frontmatter-reference.md before configuring command frontmatter.
+
+Invalid frontmatter causes silent failures. The reference contains:
+- Required fields and validation rules
+- Common error patterns and fixes
+- Testing strategies for frontmatter
+```
+
+### Recognition Questions
+
+- "What happens if this reference is skipped?" (significant = mandate it)
+- "Is this context critical for quality?" (yes = use "MUST")
+- "Could the task be completed without this?" (no = make it mandatory)
+
+---
+
 ## Summary
 
 **Voice:**
@@ -236,6 +286,11 @@ Remember that the skill is for another Claude instance to use. Focus on procedur
 - Match specificity to task fragility
 - Increase when Claude can handle autonomy
 - Decrease only when necessary
+
+**References:**
+- Make them mandatory with "You MUST" language
+- Explain WHY skipping is problematic
+- Use progressive disclosure to ensure consumption
 
 **Both Together:**
 - Voice = HOW we write (imperative but natural)
