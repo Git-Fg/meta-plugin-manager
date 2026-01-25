@@ -65,88 +65,43 @@ Implement JWT-based authentication for the API.
 ---
 
 ## Running Ralph
- 
- ### Production Grade Execution (Best Practice)
 
-For AI agents, the most robust pattern is to redirect output entirely to a file. This avoids pipe complexity, ensures clean exit codes, and prevents context window overflow.
+### 1. Create your Prompt File (Required)
 
-```bash
-# 1. Prepare log directory
-mkdir -p .ralph/logs/
-LOG_FILE=".ralph/logs/run_$(date +%Y%m%d_%H%M%S).log"
+Ralph **always** reads instructions from `PROMPT.md` in the project root.
+Refer to `PROMPT_example.txt` (in project root) for high-quality templates.
 
-# 2. Run with redirection (cleanest for agents)
-ralph run --no-tui --verbose > "$LOG_FILE" 2>&1
-```
+1. Edit `PROMPT.md`:
+   ```markdown
+   # My Task Title
+   
+   Detailed description...
+   ```
 
-### Post-Execution Verification
+2. Save the file.
 
-After the command finishes, ALWAYS read the log to verify success (since correct exit code doesn't guarantee logic success).
+### 2. Execute
 
-```bash
-# Check the last 50 lines for success/failure signals
-tail -n 50 "$LOG_FILE"
-
-# Or search for specific errors
-grep -i "error" "$LOG_FILE"
-```
-
-### Why --no-tui + redirection?
-- **Stability**: No TUI control characters in the log.
-- **Simplicity**: No pipes (`|`) mean the exit code is exactly from `ralph`.
-- **Focus**: The agent sees "command done" and then deliberately inspects the log, rather than handling a massive output stream.
- 
- ### Basic Execution (Interactive)
- 
- ```bash
- # Standard TUI run (only for simple, short tasks)
- ralph run --max-iterations 20
- ```
-
-### Continue Previous Session
+**Best Practice (AI Agents & Headless):**
+Use `--no-tui` for clean output.
 
 ```bash
-# Resume from last checkpoint
-ralph run --continue --verbose 2>&1
+# Standard execution (reads from PROMPT.md)
+ralph run --no-tui --verbose 2>&1
 ```
 
----
+**Interactive Mode:**
+```bash
+ralph run --max-iterations 20
+```
 
-## Monitoring Output
-
-### Key Indicators to Watch
+### 3. Monitoring
 
 | Output Pattern | Meaning |
 |----------------|---------|
 | `[iter N]` | Current iteration number |
 | `🎩 Hat Name` | Active hat processing |
-| `publish: event.name` | Event emitted, triggering next hat |
-| `LOOP_COMPLETE` | Orchestration finished successfully |
-| `idle timeout` | No activity, possible stuck state |
-
-### Verbose Output Structure
-
-```
-[iter 1] 🎩 Planner - Starting task analysis
-         Reading PROMPT.md
-         Publishing: planning.done
-         
-[iter 2] 🎩 Builder - Implementing solution
-         Creating src/auth/login.ts
-         Running tests...
-         Publishing: build.done
-```
-
-### Capturing Logs
-
-Always capture output for debugging:
-
-```bash
-# Full log capture with timestamps
-ralph run --max-iterations 20 --verbose 2>&1 | \
-  while IFS= read -r line; do echo "$(date +%H:%M:%S) $line"; done | \
-  tee ralph_$(date +%Y%m%d_%H%M%S).log
-```
+| `publish: ...` | Event emitted |
 
 ---
 
@@ -154,21 +109,17 @@ ralph run --max-iterations 20 --verbose 2>&1 | \
 
 ### Choosing Max Iterations
 
-| Task Complexity | Recommended | Rationale |
-|-----------------|-------------|-----------|
-| Simple fix | 10-15 | Few hat transitions |
-| Feature work | 20-30 | Planning + implementation + review |
-| Complex refactor | 40-50 | Multiple cycles of analysis/change |
-| Full TDD cycle | 50-75 | Red-green-refactor iterations |
+| Task Complexity | Recommended |
+|-----------------|-------------|
+| Simple fix | 10-15 |
+| Feature work | 20-30 |
+| Complex refactor | 40-50 |
 
 ### Preventing Runaway Loops
 
 ```bash
-# Conservative limit for unknown tasks
-ralph run --max-iterations 20 --verbose 2>&1
-
-# Watch for repeating patterns indicating loops
-# If same event publishes 3+ times, investigate
+# Cap iterations to prevent infinite loops
+ralph run --max-iterations 20 --no-tui --verbose 2>&1
 ```
 
 ---
@@ -178,55 +129,34 @@ ralph run --max-iterations 20 --verbose 2>&1
 ### Common Issues
 
 **No Progress / Idle Timeout**
-- Check PROMPT.md is readable
-- Verify ralph.yml has valid configuration
-- Look for events that no hat triggers on
+- Check `PROMPT.md` exists and is readable.
+- Verify `ralph.yml` has valid hat triggers.
 
 **Same Hat Activates Repeatedly**
-- Event loop: hat publishing event that triggers itself
-- Check `triggers` and `publishes` in ralph.yml
-
-**Unexpected Completion**
-- Verify completion_promise matches expected event
-- Check if a hat published LOOP_COMPLETE too early
+- Check for event loops in `ralph.yml`.
 
 ### Quick Diagnostics
 
 ```bash
-# Check configuration is valid
+# Validate config
 ralph validate
 
-# Dry run to see event routing
+# Dry run event routing (reads PROMPT.md)
 ralph run --dry-run --verbose
-```
-
----
-
-## Execution Patterns
-
-### Pattern: Test-Monitor-Adjust
-
-```bash
-# 1. Short test run
-ralph run --max-iterations 3 --verbose 2>&1
-
-# 2. If looks good, full run with cap
-ralph run --max-iterations 30 --verbose 2>&1
-
-# 3. If stuck, continue after fixing
-# (edit PROMPT.md or ralph.yml)
-ralph run --continue --verbose 2>&1
 ```
 
 ---
 
 ## Integration with Claude
 
-For programmatic execution within Claude workflows:
+For programmatic execution, simply run the command. Ensure `PROMPT.md` is populated first.
 
 ```bash
-# Non-interactive with full capture
-ralph run --max-iterations 20 --verbose 2>&1 | tee output.log
+# Prepare prompt
+echo "# Task..." > PROMPT.md
+
+# Run
+ralph run --no-tui --verbose 2>&1
 ```
 
 ---
