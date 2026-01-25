@@ -21,57 +21,54 @@ Commands with bash injection (`!` backtick syntax) or file references (`@` synta
 
 **How to validate (simulated environment):**
 
-Think of this like running through scenarios in your head, but with bash doing the heavy lifting. You're checking if the logic actually works before trusting it in production.
+Validate bash commands before deployment using simulated environment testing. This catches syntax errors and logic issues without requiring full Claude Code invocation.
 
-**Start with the basics:**
-Run the exact bash commands in a terminal to make sure they don't explode. If your command has `if [ -d "$ARGUMENTS" ]`, test that pattern directly. If it uses `find "$ARGUMENTS" -name "*.md"`, try that in a real directory.
+**Test bash syntax:**
+Run the exact bash commands in a terminal. If the command uses `if [ -d "$ARGUMENTS" ]`, test that pattern directly. If it uses `find "$ARGUMENTS" -name "*.md"`, try it in a real directory first.
 
-**Test what happens with weird inputs:**
-What if someone calls your command with no arguments? What if they pass empty quotes? What if the path doesn't exist? Try these scenarios and see if your command handles them gracefully or spits out ugly error messages.
+**Test edge cases:**
+Test what happens with no arguments, empty quotes, and non-existent paths. Verify the command handles these scenarios gracefully rather than producing errors.
 
-**Verify the fallbacks work:**
-If your command says "if it's a directory, do this; otherwise do that," make sure both paths actually work. Test with a real directory, a real file, and something that doesn't exist.
+**Validate fallbacks:**
+Ensure all branches of conditional logic work. Test with a directory, a file, and a non-existent path to verify fallback logic executes correctly.
 
-**The quick validation pattern:**
+**Quick validation pattern:**
 ```bash
-# Just run your bash logic with test data
-bash -c 'your-bash-command-here' -- "test-argument"
-
-# If it works, you're good
-# If it errors, fix the logic
+bash -c 'bash-command-here' -- "test-argument"
 ```
+If the command executes without errors, it's ready for deployment. If errors occur, fix the logic and retest.
 
 **Quick validation patterns:**
 
-You don't need to overthink this. Just run your bash commands with some test data and make sure they don't crash.
+Validate bash commands before deployment. Run commands in a terminal with test data to verify functionality.
 
-- **Bash commands**: Just run them in a terminal first. If they work there, they'll work in your command.
-- **Conditional logic**: Test each branch. What happens with a directory? A file? Nothing at all?
-- **File references**: Try reading a file that exists and one that doesn't. Both should behave sensibly.
+- **Bash commands**: Execute in terminal first. Verify they work correctly before embedding in commands.
+- **Conditional logic**: Test each branch. Verify behavior with directory, file, and non-existent path inputs.
+- **File references**: Test with existing and non-existing files. Ensure graceful handling in both cases.
 
-**What usually breaks:**
+**Common failure modes:**
 
-The big one is empty arguments. If `$ARGUMENTS` is empty and you do `cat "$ARGUMENTS"`, bash tries to read a file with no name and fails hard. The fix is simple: check if the variable has content first.
+Empty arguments cause the most issues. If `$ARGUMENTS` is empty and the command does `cat "$ARGUMENTS"`, bash fails with `cat: : No such file or directory`. Fix this by checking if the variable has content before using it: `[ -n "$TARGET" ] && cat "$TARGET"`.
 
-Quoted arguments can be tricky too. If someone passes `"path with spaces"`, make sure your bash command handles it. Most of the time, proper quoting (`"$ARGUMENTS"` not `$ARGUMENTS`) solves this.
+Quoted arguments require proper handling. When passing paths with spaces, use proper quoting (`"$ARGUMENTS"` not `$ARGUMENTS`) to prevent word splitting.
 
-Bash conditionals are surprisingly fragile. A missing `fi` or wrong bracket will quietly fail. Test them in bash first.
+Bash conditionals fail with syntax errors. A missing `fi` or incorrect bracket will cause failures. Test all conditionals in bash before deployment.
 
-**What to check before committing:**
+**Validation checklist:**
 
-Just a few quick validations:
-- Does your bash run without errors when you test it directly?
-- What happens if arguments are empty or weird?
-- Do your file operations handle missing files gracefully?
-- Did you test the actual command logic, not just write it and hope?
+Execute these validations before committing:
+- Test bash commands directly in terminal for syntax errors
+- Verify behavior with empty, null, and special character arguments
+- Ensure file operations handle non-existent files gracefully
+- Validate all conditional branches work correctly
 
-If you're unsure, run it in bash with some test data. Your future self will thank you.
+Use bash tool to test command logic before deployment.
 
-**The thing to avoid:**
+**Anti-pattern:**
 
-Don't write a command with `!` or `@` syntax, think "that looks about right," and commit it. Five minutes of validation saves an hour of debugging when someone tries to use it and it explodes.
+Do not write commands with `!` or `@` syntax and commit without validation. Always test bash commands using the Bash tool before deployment. Five minutes of validation prevents hours of debugging when commands fail in production.
 
-Bash is pretty forgiving, but it won't save you from logic errors. Run your commands in bash first. It's really that simple.
+Bash tolerates many issues but cannot prevent logic errors. Test all command logic thoroughly before deployment.
 
 ### Level 1: Syntax and Structure Validation
 
