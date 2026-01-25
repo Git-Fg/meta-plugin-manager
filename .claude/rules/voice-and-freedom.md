@@ -313,42 +313,36 @@ Remember that the skill is for another Claude instance to use. Focus on procedur
 
 ---
 
-## Mandatory Reference Consumption
+## Reference Guidelines
 
-### The Problem
+### Why References Matter
 
-References exist to provide essential context that affects task quality. Simply pointing to them doesn't ensure consumption. Users often skip references, leading to incomplete understanding and lower quality output.
+References provide essential context that affects task quality. Simply linking to them doesn't ensure consumption. When users skip references, it often leads to incomplete understanding and lower quality output.
 
-### The Solution: Make References Mandatory
+### Making References Clear
 
-**Use High-Trust imperative language:**
+**Use clear language:**
 
-✅ **From command-development:**
+✅ **Good examples:**
 ```
 Read references/frontmatter-reference.md before configuring command frontmatter.
 Remember that invalid frontmatter causes silent failures.
 ```
 
-✅ **Pattern recognition:**
-- "Read X before doing Y"
-- "References contain validation rules..."
-- "Skip references → incomplete understanding"
-
-**Enforcement in navigation tables:**
-
+**Navigation patterns:**
 ```
 | If you are... | Read... |
 |---------------|---------|
 | Creating commands | references/executable-examples.md |
 | Configuring frontmatter | references/frontmatter-reference.md |
 
-Remember that these references contain validation rules preventing common errors.
+These references contain validation rules that prevent common errors.
 ```
 
-**Progressive disclosure with enforcement:**
+**Progressive disclosure:**
 
 ```
-## CRITICAL: Frontmatter Validation
+## Frontmatter Validation
 
 Read references/frontmatter-reference.md before configuring command frontmatter.
 
@@ -358,11 +352,10 @@ Invalid frontmatter causes silent failures. The reference contains:
 - Testing strategies for frontmatter
 ```
 
-### Recognition Questions
-
-- "What happens if this reference is skipped?" (significant = mandate it)
-- "Is this context critical for quality?" (yes = use "MUST")
-- "Could the task be completed without this?" (no = make it mandatory)
+**Questions to consider:**
+- What happens if this reference is skipped?
+- Is this context critical for quality?
+- Could the task be completed without this?
 
 ---
 
@@ -380,11 +373,11 @@ Invalid frontmatter causes silent failures. The reference contains:
 - Ask "What breaks if Claude chooses differently?"
 
 **References:**
-- Mark critical references as mandatory
+- Make critical references clear
 - Explain WHY skipping is problematic
 - Use progressive disclosure to ensure consumption
 
-**Teaching Pattern:**
+**Natural Communication:**
 - Explain WHY alongside HOW
 - "Think of this as..." / "Remember that..." / "Benefits:"
 - Use examples and rationale
