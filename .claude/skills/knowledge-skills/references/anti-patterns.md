@@ -108,7 +108,9 @@ Count files.
 
 ### Anti-Pattern 5: Regular Skill Chains Expecting Return
 
-**Problem**: Regular→Regular skill chains are one-way handoff only
+**Problem**: Regular→Regular skill chains are PROVEN to be one-way handoff only
+
+**Evidence**: Test 1.2 confirmed execution flow: `User → skill-a → skill-b → END` (skill-a never resumes, skill-c never called)
 
 **Recognition**: "Does the first skill expect results back from the second?"
 
@@ -118,8 +120,10 @@ Count files.
 ```
 
 **Fix**:
-- For one-way workflows: Use hub-and-spoke or sequential scripts
+- For one-way workflows: Accept the handoff, design accordingly
 - For result aggregation: ALL workers MUST use `context: fork`
+
+**Critical**: This is not a limitation - it's the designed behavior. Plan accordingly.
 
 ---
 
@@ -488,6 +492,80 @@ fi
 grep "pattern" file.txt | ./process.py
 ```
 
+### Anti-Pattern 22: Assuming Context Inheritance in Forked Skills
+
+**Problem**: Expecting forked skills to have access to caller's context
+
+**Evidence**: Tests 2.2, 2.4 confirmed complete context isolation
+
+**Recognition**: "Does the forked skill need conversation history or variables?"
+
+**Bad**:
+```yaml
+# Hub skill
+# Assumes worker has access to project_root variable
+Call: worker-skill
+```
+
+**Good**:
+```yaml
+# Hub skill
+# Pass everything explicitly
+Call: worker-skill with args="project_root=/path/to/project user_preference=dark_mode"
+```
+
+**Fix**: Always pass required data via `args` parameter. Forked skills receive NO caller context.
+
+### Anti-Pattern 23: Assuming Nested Forking Doesn't Work
+
+**Problem**: Avoiding nested hub-and-spoke patterns due to unfounded assumptions
+
+**Evidence**: Test 4.2 confirmed nested forking works correctly: forked-outer → forked-inner → forked-outer
+
+**Recognition**: "Is this a complex hierarchical workflow?"
+
+**Bad**:
+```
+[Root] → [Worker-A] → [Worker-B] → END
+(Everything in one level to "avoid complexity")
+```
+
+**Good**:
+```
+[Root Hub]
+  ↓
+[Mid Hub] (fork)
+  ↓
+[Worker A] (fork) → Result
+[Worker B] (fork) → Result
+```
+
+**Fix**: Use nested hub-and-spoke for complex hierarchical workflows. Validated to depth 2+.
+
+### Anti-Pattern 24: Assuming System-Level Error Detection in Forked Skills
+
+**Problem**: Expecting to catch forked skill "failures" at system level
+
+**Evidence**: Test 8.1 confirmed that when forked skills "fail", they complete normally from system perspective
+
+**Recognition**: "Is this checking for errors in a forked skill?"
+
+**Bad**:
+```yaml
+# This won't work - no system-level error thrown
+Call: worker-skill (context: fork)
+HandleError: [system error detected]
+```
+
+**Good**:
+```yaml
+# Parse output for error indicators
+Call: worker-skill (context: fork)
+Parse output for "## WORKER_COMPLETE" or "## WORKER_FAILED"
+```
+
+**Fix**: Error detection requires parsing output content, not checking system states.
+
 ---
 
 ## Quick Recognition Questions
@@ -498,6 +576,10 @@ grep "pattern" file.txt | ./process.py
 | Non-Self-Sufficient | Can this work standalone? |
 | Context Fork Misuse | Is the overhead justified? |
 | Linear Chain Brittleness | Does this have >3 steps with decisions? |
+| Regular Skill Chains | Does the first skill expect results back? |
+| Context Inheritance | Does forked skill need caller variables? |
+| Nested Forking | Is this a complex hierarchical workflow? |
+| Error Detection | Is this checking for errors in forked skills? |
 | "Use to" Language | Does this signal WHAT/WHEN/NOT? |
 | Vague Purpose | Could multiple skills match this? |
 | Missing Triggers | Would Claude know when to trigger this? |

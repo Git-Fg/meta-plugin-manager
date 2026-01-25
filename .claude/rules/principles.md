@@ -1,14 +1,14 @@
-# Philosophy
+# Core Principles
 
-**Core Principles Before Process**
-
-This document teaches the foundational philosophy for creating effective skills and documentation. Understanding WHY before HOW enables intelligent adaptation.
+Think of this as the "why" behind skill creation. Understanding principles enables intelligent adaptation; recipes only work for specific situations.
 
 ---
 
 ## Context Window as Public Good
 
 The context window is a shared resource. Everything loaded competes for space: system prompt, conversation history, skill metadata, other skills, and the actual user request.
+
+Think of it like a shared refrigerator - everything you put in takes space others could use. Be a good roommate.
 
 **Principle**: Challenge every piece of information. "Does Claude really need this?" and "Does this justify its token cost?"
 
@@ -19,17 +19,17 @@ The context window is a shared resource. Everything loaded competes for space: s
 - Keep SKILL.md under 500 lines (Tier 2)
 - Move detailed content to references/ (Tier 3, on-demand)
 
-**Recognition**: If you're explaining something Claude already knows from training, delete it.
+**Recognition**: If you're explaining something Claude already knows from training, delete it. Every token must earn its place.
 
 ---
 
 ## Degrees of Freedom Framework
 
-Match specificity to task fragility and variability. Think of Claude as exploring a path: narrow bridges need guardrails, open fields allow many routes.
+Match specificity to task fragility. Think of Claude as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
 
 ### High Freedom (Text-based Instructions)
 
-**Use when**: Multiple approaches are valid, decisions depend on context, heuristics guide the approach.
+**Use when**: Multiple approaches are valid, decisions depend on context, or heuristics guide the approach.
 
 **Characteristics**:
 - Principles and patterns, not prescriptions
@@ -40,7 +40,7 @@ Match specificity to task fragility and variability. Think of Claude as explorin
 
 ### Medium Freedom (Pseudocode or Scripts with Parameters)
 
-**Use when**: A preferred pattern exists, some variation is acceptable, configuration affects behavior.
+**Use when**: A preferred pattern exists, some variation is acceptable, or configuration affects behavior.
 
 **Characteristics**:
 - Suggested structure with flexibility
@@ -51,7 +51,7 @@ Match specificity to task fragility and variability. Think of Claude as explorin
 
 ### Low Freedom (Specific Scripts, Few Parameters)
 
-**Use when**: Operations are fragile and error-prone, consistency is critical, a specific sequence must be followed.
+**Use when**: Operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed.
 
 **Characteristics**:
 - Exact steps to follow
@@ -68,6 +68,8 @@ Match specificity to task fragility and variability. Think of Claude as explorin
 
 **Default assumption**: Claude is already very smart. Only add context Claude doesn't already have.
 
+Think of it this way: You're talking to a senior engineer who joined your team. You don't need to explain how to write code, use Git, or read files. You only need to explain what makes YOUR project unique.
+
 **What this means**:
 - Don't explain basic programming concepts
 - Don't prescribe every step of obvious workflows
@@ -79,6 +81,8 @@ Match specificity to task fragility and variability. Think of Claude as explorin
 **Recognition**: If you're writing "how to use Python" or "what YAML is," delete it.
 
 **Application**: When creating skills, ask: "Is this expert knowledge or general information?" Keep only the expert.
+
+**Imagine**: Would you explain this to a senior engineer on your team? If no, remove it.
 
 ---
 
@@ -175,7 +179,7 @@ Basic content here.
 
 ---
 
-## Recognition Questions
+## Summary: Recognition Questions
 
 Use these questions to apply the philosophy:
 
@@ -187,7 +191,7 @@ Use these questions to apply the philosophy:
 - "Is this a narrow bridge or open field?"
 - "How much variability exists?"
 
-**Trust AI Intelligence**:
+**Trust AI**:
 - "Would Claude know this without being told?"
 - "Is this expert-only or generic?"
 
@@ -204,60 +208,6 @@ Use these questions to apply the philosophy:
 - "Should this be on-demand instead of always-loaded?"
 
 ---
-
-## Philosophy in Action
-
-**Example: Creating a Skill**
-
-**Anti-pattern** (prescriptive, no philosophy):
-```yaml
----
-name: api-helper
-description: "Use this to create API endpoints. Follow these steps: 1. Create file, 2. Add endpoints, 3. Test."
----
-# How to Create API Endpoints
-## Step 1: Create the file
-API endpoints go in src/api/ folder...
-```
-
-**Best practice** (philosophy-first):
-```yaml
----
-name: api-conventions
-description: "API design patterns for this codebase. Use when writing API endpoints for: (1) New resources, (2) Modifying existing endpoints, (3) Understanding naming conventions."
----
-# API Conventions
-
-## Location
-API endpoints: `src/api/{resource}.ts`
-
-## Naming Pattern
-- Routes: `/api/{resource}` (plural)
-- Methods: get{Resource}, create{Resource}, update{Resource}, delete{Resource}
-- Parameters: interface based, validated
-
-## Response Format
-Standard: `{ data, error, meta }`
-
-See [response-patterns.md](references/response-patterns.md) for complete guide.
-
-**Trust**: You know how to structure API files. These are our project's specific conventions.
-```
-
-**Difference**: The second teaches WHAT (conventions) and WHEN (writing endpoints), not HOW (create file, write code). Trusts AI intelligence for the HOW.
-
----
-
-## Summary
-
-| Principle | Core Question | Recognition |
-|-----------|---------------|-------------|
-| **Context Window** | Does this justify its token cost? | Delete Claude-obvious content |
-| **Degrees of Freedom** | Narrow bridge or open field? | Match specificity to fragility |
-| **Trust AI** | Would Claude know this? | Keep only expert-only knowledge |
-| **Local Autonomy** | Most local scope? | Start with project directory |
-| **Delta Standard** | What's the knowledge delta? | Remove generic information |
-| **Progressive Disclosure** | Tier 1, 2, or 3? | Split when >500 lines |
 
 **Teaching > Prescribing**: Philosophy enables intelligent adaptation. Process prescriptions create brittle systems.
 

@@ -1,7 +1,6 @@
 ---
 name: knowledge-skills
 description: "Reference knowledge for Agent Skills standard: YAML format, Progressive Disclosure tiers, quality dimensions. Use when creating, evaluating, or understanding skills. No execution logic - pure reference."
-user-invocable: false
 ---
 
 # Knowledge: Skills
@@ -19,7 +18,7 @@ Reference knowledge for Agent Skills standard. This skill provides pure knowledg
 
 **Progressive Disclosure**: Tier 1 (metadata) → Tier 2 (SKILL.md <500 lines) → Tier 3 (references/)
 
-**Quality Framework**: 11-dimensional scoring system (0-160 scale)
+**Quality Framework**: Practical checklist for skill quality assessment
 
 **What-When-Not Framework**: Skill descriptions must signal WHAT (core function), WHEN (triggers), NOT (boundaries)
 
@@ -60,8 +59,27 @@ Load these as needed for comprehensive guidance:
 
 | File | Content | When to Read |
 |------|---------|--------------|
+| [quality-framework.md](references/quality-framework.md) | Practical quality checklist | Assessing skill quality |
 | [progressive-disclosure.md](references/progressive-disclosure.md) | Tier 1/2/3 structure, decision trees | Designing skill structure |
-| [quality-framework.md](references/quality-framework.md) | 11-dimensional scoring (0-160 scale) | Assessing skill quality |
+| [description-guidelines.md](references/description-guidelines.md) | What-When-Not framework | Writing skill descriptions |
+| [autonomy-design.md](references/autonomy-design.md) | 80-95% completion patterns | Improving skill autonomy |
+| [orchestration-patterns.md](references/orchestration-patterns.md) | Hub-and-spoke, context fork | Multi-skill workflows |
+| [anti-patterns.md](references/anti-patterns.md) | Complete anti-pattern catalog | Troubleshooting |
+
+## Quick Assessment Checklist
+
+**Essential (All Must Pass)**:
+- [ ] Description clearly describes WHAT/WHEN/NOT
+- [ ] Can complete without asking user questions (80-95% autonomy)
+- [ ] SKILL.md under 500 lines
+- [ ] Self-contained (no external dependencies)
+
+See [quality-framework.md](references/quality-framework.md) for complete checklist.
+
+| File | Content | When to Read |
+|------|---------|--------------|
+| [progressive-disclosure.md](references/progressive-disclosure.md) | Tier 1/2/3 structure, decision trees | Designing skill structure |
+| [quality-framework.md](references/quality-framework.md) | Practical quality checklist | Assessing skill quality |
 | [description-guidelines.md](references/description-guidelines.md) | What-When-Not framework | Writing skill descriptions |
 | [autonomy-design.md](references/autonomy-design.md) | 80-95% completion patterns | Improving skill autonomy |
 | [orchestration-patterns.md](references/orchestration-patterns.md) | Hub-and-spoke, context fork | Multi-skill workflows |
@@ -69,21 +87,12 @@ Load these as needed for comprehensive guidance:
 
 ## Quality Dimensions
 
-### 11-Dimensional Framework
-
-| Dimension | Focus | Recognition |
-|-----------|-------|-------------|
-| **Knowledge Delta** | Expert-only vs Claude-obvious | If Claude knows it, remove |
-| **Autonomy** | 80-95% completion without questions | Count questions in output |
-| **Discoverability** | Description signals WHEN to use | Apply What-When-Not |
-| **Progressive Disclosure** | Tier 2 lean, Tier 3 for depth | Check SKILL.md < 500 lines |
-| **Clarity** | Unambiguous instructions | No vague terms |
-| **Completeness** | Covers all scenarios | No missing use cases |
-| **Standards Compliance** | Follows Agent Skills spec | Valid YAML, required fields |
-| **Security** | Validation, safe execution | Input sanitization |
-| **Performance** | Efficient workflows | Minimal token cost |
-| **Maintainability** | Well-structured | Clean organization |
-| **Innovation** | Unique value | Provides new capability |
+See [quality-framework.md](references/quality-framework.md) for complete practical checklist covering:
+- Knowledge Delta (expert-only vs Claude-obvious)
+- Autonomy (80-95% completion without questions)
+- Discoverability (clear WHAT/WHEN/NOT triggers)
+- Progressive Disclosure (proper tier structure)
+- Clarity, Completeness, Standards Compliance, Security, Performance, Maintainability
 
 ### Autonomy Scoring
 

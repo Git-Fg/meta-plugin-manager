@@ -1,16 +1,31 @@
 ---
 name: knowledge-hooks
-description: "Reference knowledge for hooks: events (PreToolUse/PostToolUse/Stop), security patterns, exit codes, configuration types. Use when understanding hooks. No execution logic."
-user-invocable: false
+description: "Reference knowledge for hooks: events (PreToolUse/PostToolUse/Stop), security patterns, exit codes, prompt-based vs command hooks. Use when understanding or implementing hooks. No execution logic."
 ---
 
 # Knowledge: Hooks
 
-Reference knowledge for Claude Code hooks. Pure knowledge without execution logic.
+Reference knowledge for Claude Code hooks. This skill provides pure knowledge without execution logic.
+
+**Think of hooks as event-driven automation** - they execute at specific points during Claude's operation, enabling validation, security checks, logging, and more.
 
 ## Quick Reference
 
 **Official Hooks Docs**: https://code.claude.com/docs/en/hooks
+
+### Why Use Hooks
+
+**Prompt-based hooks** (modern approach):
+- Context-aware decisions via natural language
+- Flexible evaluation without bash scripting
+- Better edge case handling
+- Easier to maintain
+
+**Command hooks** (deterministic):
+- Fast validations
+- File system operations
+- External tool integrations
+- Performance-critical checks
 
 ### Hook Events
 

@@ -1,12 +1,13 @@
 ---
 name: knowledge-mcp
-description: "Reference knowledge for Model Context Protocol: transports (stdio/http), primitives (tools/resources/prompts), integration patterns. Use when understanding MCP. No execution logic."
-user-invocable: false
+description: "Reference knowledge for Model Context Protocol: transports (stdio/http/SSE/WebSocket), primitives (tools/resources/prompts), integration patterns. Use when understanding or implementing MCP. No execution logic."
 ---
 
 # Knowledge: MCP
 
-Reference knowledge for Model Context Protocol (MCP). Pure knowledge without execution logic.
+Reference knowledge for Model Context Protocol (MCP). This skill provides pure knowledge without execution logic.
+
+**Think of MCP as a universal bridge** - it enables Claude Code to connect with external services (databases, APIs, file systems) through a standardized protocol.
 
 ## Quick Reference
 
@@ -20,6 +21,18 @@ Reference knowledge for Model Context Protocol (MCP). Pure knowledge without exe
 | **Tools** | Callable functions | Need to expose operations or actions |
 | **Resources** | Read-only data | Need to provide data access |
 | **Prompts** | Reusable workflows | Need predefined prompt templates |
+
+### Why MCP Matters
+
+**Before MCP**: Each service integration required custom code
+
+**With MCP**: Standardized protocol for connecting any external service
+
+**Benefits**:
+- 10+ related tools from a single service
+- OAuth and complex authentication handled automatically
+- Bundled with plugins for automatic setup
+- Stateless, scalable architecture
 
 ### Transports
 

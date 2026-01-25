@@ -1,19 +1,20 @@
 {
   "test_plan": {
-    "name": "Skill Interaction & Context Fork Testing",
-    "version": "8.0",
-    "description": "Updated with Phase 11: Complete Recursive vs TaskList Coverage Analysis",
+    "name": "Skill Interaction & Context Fork Testing - Extended",
+    "version": "9.0",
+    "description": "Extended with 20 critical orchestration tests for complete validation",
     "test_summary": {
-      "total_tests": 32,
-      "completed": 25,
+      "total_tests": 52,
+      "completed": 28,
+      "completed_partial": 1,
       "failed": 1,
-      "not_started": 4,
-      "in_progress": 2,
-      "coverage": "25/32 completed (78% complete)",
-      "raw_logs_analyzed": 26,
-      "last_updated": "2026-01-24",
-      "success_rate": "96% (25/26 executed)",
-      "note": "Updated to reflect actual test count and status"
+      "not_started": 23,
+      "in_progress": 0,
+      "coverage": "28/52 completed (54% complete)",
+      "raw_logs_analyzed": 31,
+      "last_updated": "2026-01-25",
+      "success_rate": "100% (4/4 archetype tests)",
+      "note": "Sprint 0 COMPLETED: 4 archetype tests (T21-T24) all PASSED. Next: Sprint 1 (T1-T5) TaskList foundation. See ARCHETYPE_TEST_RESULTS.md"
     },
     "key_findings": {
       "critical_discovery_1": "Regular skill chains are one-way handoffs - control never returns",
@@ -23,55 +24,150 @@
       "critical_discovery_5": "Custom subagents and specialized tools accessible in forked context",
       "critical_discovery_6": "Double-fork (nested forks) works correctly",
       "critical_discovery_7": "TaskList tools added as built-in orchestration primitives (Layer 0)",
-      "issue_identified": "Regular orchestrators may need explicit automation instructions",
-      "research_question": "Can TaskList replace complex recursive workflows? Phase 11 will determine.",
-      "gap_identified": "NESTED TASKLIST workflows not fully covered - added 19 new tests"
+      "discovery_8": "Test design matters - artificial scenarios don't work in non-interactive mode",
+      "discovery_9": "Real conditions are essential - tests must mirror actual usage patterns",
+      "discovery_10": "Prompt specificity is critical - 'Execute X' works, 'Use skill' doesn't",
+      "discovery_11": "20 new orchestration patterns identified for complete validation",
+      "action_required": "Sprint 0 COMPLETE! Proceed to Sprint 1 (T1-T5) TaskList foundation, then Sprints 2-5"
     },
-    "recursive_workflow_taxonomy": {
-      "type_1_linear_chain": {
-        "pattern": "skill-a -> skill-b -> skill-c",
-        "description": "Simple linear chain of skills",
-        "current_coverage": "VALIDATED",
-        "tasklist_equivalent": "task-create('a') -> task-create('b', blocked_by: ['a']) -> task-create('c', blocked_by: ['b'])"
-      },
-      "type_2_hub_spoke_aggregation": {
-        "pattern": "orchestrator -> worker-1, worker-2 -> orchestrator aggregates",
-        "description": "Hub calls workers, aggregates results",
-        "current_coverage": "VALIDATED with forked skills",
-        "tasklist_equivalent": "Create tasks, use addBlockedBy, aggregate on completion"
-      },
-      "type_3_nested_forks": {
-        "pattern": "outer -> inner-1 -> inner-2",
-        "description": "Deep nesting with context isolation at each level",
-        "current_coverage": "VALIDATED to depth 2",
-        "tasklist_equivalent": "Nested task creation with dependency chains"
-      },
-      "type_4_parallel_execution": {
-        "pattern": "orchestrator -> worker-1, worker-2 (parallel)",
-        "description": "Multiple workers execute simultaneously",
-        "current_coverage": "PARTIALLY validated (serial works, parallel failed)",
-        "tasklist_equivalent": "Create unblocked tasks, check parallel execution"
-      },
-      "type_5_context_transitions": {
-        "pattern": "forked -> regular -> forked",
-        "description": "Context transitions between forked and regular",
-        "current_coverage": "VALIDATED",
-        "tasklist_equivalent": "Task execution context behavior"
-      },
-      "type_6_error_handling": {
-        "pattern": "error propagation and recovery",
-        "description": "How errors propagate through chains",
-        "current_coverage": "NOT_TESTED",
-        "tasklist_equivalent": "Task status on error, blocked task behavior"
-      },
-      "type_7_state_persistence": {
-        "pattern": "state across calls/sessions",
-        "description": "State management in workflows",
-        "current_coverage": "NOT_TESTED",
-        "tasklist_equivalent": "Task persistence, cross-session continuation"
-      }
+    "orchestration_coverage": {
+      "already_validated": [
+        "Regular→Regular (one-way)",
+        "Regular→Forked (subroutine)",
+        "Context isolation (complete)",
+        "Parameter passing (via args)",
+        "Double-fork depth 2",
+        "Hub-and-spoke (forked workers)",
+        "Subagent skill injection",
+        "Forked skill autonomy",
+        "Error propagation (content-level)"
+      ],
+      "critical_gaps": [
+        "TaskList sequential workflow",
+        "TaskList parallel execution",
+        "TaskList with forked skills",
+        "TaskList error handling",
+        "Cross-session TaskList",
+        "Subagent skill composition",
+        "Dynamic context injection",
+        "Subagent error recovery",
+        "Multi-subagent coordination",
+        "Subagent timeout handling",
+        "Skill→Subagent→Skill chains",
+        "Hub-and-spoke with TaskList",
+        "Nested TaskList with forked skills",
+        "Error recovery in skill chains",
+        "Skill aggregation from subagents",
+        "Triple-level forking",
+        "Forked skill with TaskList",
+        "Circular dependency detection",
+        "State persistence in forked context",
+        "Multi-session workflows"
+      ]
     },
     "phases": [
+      {
+        "phase": 11,
+        "name": "Sprint 0: Skill Archetype Testing",
+        "description": "Validate 4 fundamental skill archetypes",
+        "sprint_goal": "Test auto-applied knowledge, workflow skills, safety-critical skills, and dynamic context injection",
+        "tests": [
+          {
+            "test_id": "T21",
+            "name": "typescript-conventions",
+            "archetype": "Reference Skill (Auto-Applied Knowledge)",
+            "real_scenario": "Team conventions that Claude auto-discovers and applies",
+            "status": "COMPLETED",
+            "priority": "HIGH",
+            "description": "Test auto-applied knowledge skill pattern",
+            "validation": "Skill auto-loads without explicit invocation, Claude applies conventions when writing TypeScript",
+            "skill_file": "phase_11/test_T21.typescript.conventions.skill.md",
+            "test_prompt": "Write a TypeScript function following team conventions",
+            "success_criteria": [
+              "Skill auto-loads without explicit invocation",
+              "Claude applies conventions when writing TypeScript",
+              "Conventions guide code style decisions",
+              "No explicit skill call needed"
+            ],
+            "key_config": {
+              "user-invocable": false,
+              "disable-model-invocation": false,
+              "allowed-tools": ["Read"]
+            }
+          },
+          {
+            "test_id": "T22",
+            "name": "api-endpoint-builder",
+            "archetype": "Workflow Skill (Multi-Step Process)",
+            "real_scenario": "Complex workflows with templates, scripts, examples",
+            "status": "COMPLETED",
+            "priority": "HIGH",
+            "description": "Test multi-step workflow skill pattern",
+            "validation": "Executes multi-step process autonomously using plan agent",
+            "skill_file": "phase_11/test_T22.api.endpoint.builder.skill.md",
+            "test_prompt": "Execute the api-endpoint-builder autonomous workflow",
+            "success_criteria": [
+              "Executes multi-step process autonomously",
+              "Uses plan agent for workflow decisions",
+              "Creates API endpoint following best practices",
+              "Implements validation and error handling"
+            ],
+            "key_config": {
+              "context": "fork",
+              "agent": "Plan",
+              "allowed-tools": ["Read", "Write", "Edit", "Bash"]
+            }
+          },
+          {
+            "test_id": "T23",
+            "name": "deploy-production",
+            "archetype": "Safety-Critical Skill (Manual-Only)",
+            "real_scenario": "Deployment, data deletion, or other risky operations",
+            "status": "COMPLETED",
+            "priority": "HIGH",
+            "description": "Test manual-only safety-critical skill pattern",
+            "validation": "Skill requires explicit user invocation, auto-invocation blocked",
+            "skill_file": "phase_11/test_T23.deploy.production.skill.md",
+            "test_prompt": "Deploy to production with verification",
+            "success_criteria": [
+              "Skill requires explicit user invocation",
+              "Auto-invocation blocked (safety check)",
+              "Includes danger zone warnings",
+              "Implements proper safety checks"
+            ],
+            "key_config": {
+              "disable-model-invocation": true,
+              "user-invocable": true,
+              "context": "fork",
+              "agent": "Plan"
+            }
+          },
+          {
+            "test_id": "T24",
+            "name": "pr-reviewer",
+            "archetype": "Skill with Dynamic Context Injection",
+            "real_scenario": "Skills that need live data, git info, environment details",
+            "status": "COMPLETED",
+            "priority": "HIGH",
+            "description": "Test dynamic context injection skill pattern",
+            "validation": "Dynamic context (!command) executes before skill, live data injected",
+            "skill_file": "phase_11/test_T24.pr.reviewer.skill.md",
+            "test_prompt": "Execute the pr-reviewer capability with dynamic context",
+            "success_criteria": [
+              "Dynamic context (!command) executes before skill",
+              "Live PR data injected into skill content",
+              "Review analyzes actual PR diff",
+              "Structured feedback with severity levels"
+            ],
+            "key_config": {
+              "context": "fork",
+              "agent": "Explore",
+              "uses_dynamic_context": true,
+              "allowed-tools": ["Read", "Grep", "Glob", "Bash"]
+            }
+          }
+        ]
+      },
       {
         "phase": 1,
         "name": "Basic Skill Calling",
@@ -332,19 +428,6 @@
             "permission_denials": 0,
             "issue": "Failed - Assistant asked questions instead of executing autonomously",
             "root_cause": "Skill not written for true autonomy, missing explicit automation"
-          },
-          {
-            "test_id": "4.4",
-            "name": "Nested Fork Depth 3+",
-            "status": "COMPLETED",
-            "priority": "MEDIUM",
-            "description": "Test behavior at fork depth >2",
-            "autonomy_score": 100,
-            "duration_ms": 5000,
-            "lifecycle_stage": "validate",
-            "findings": [
-              "Test completed successfully"
-            ]
           }
         ]
       },
@@ -451,463 +534,525 @@
           {
             "test_id": "8.1",
             "name": "Chain Failure Propagation",
-            "status": "IN_PROGRESS",
+            "status": "COMPLETED",
+            "confidence": "HIGH",
+            "result": "PASS",
             "priority": "HIGH",
             "description": "What happens when middle skill in chain fails?",
-            "autonomy_score": 95,
-            "duration_ms": 5000,
-            "lifecycle_stage": "execute",
-            "findings": [
-              "Python script validation test"
+            "summary": "Forked skill 'failures' are just content, not system errors",
+            "findings": "Forked skills always complete normally from system perspective - errors are text content, not exceptions. No automatic error propagation mechanism exists.",
+            "win_condition": "CHAIN_PROPAGATION_COMPLETE",
+            "evidence_file": "raw_logs/phase_8/test_8_1_chain_failure_propagation.json",
+            "duration_ms": 57767,
+            "permission_denials": 0,
+            "autonomy_score": 100
+          }
+        ]
+      },
+      {
+        "phase": 12,
+        "name": "Sprint 1: TaskList Orchestration",
+        "description": "Validate TaskList as orchestration primitive",
+        "sprint_goal": "TaskList executes dependencies, parallel tasks, coordinates with forked skills, handles errors, persists across sessions",
+        "tests": [
+          {
+            "test_id": "T1",
+            "name": "deployment-pipeline-orchestrator",
+            "pattern": "TaskList sequential workflow",
+            "real_scenario": "Multi-step deployment pipeline",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Orchestrate deployment pipeline using TaskList with sequential dependencies",
+            "validation": "TaskList creates proper dependency chains, tasks execute in correct order",
+            "skill_file": "phase_12/test_T1.deployment.pipeline.orchestrator.skill.md",
+            "test_prompt": "Execute the deployment-pipeline-orchestrator autonomous workflow",
+            "success_criteria": [
+              "Tasks created with proper dependencies",
+              "Sequential execution order validated",
+              "Completion markers present",
+              "Results aggregated correctly"
             ]
           },
           {
-            "test_id": "8.2",
-            "name": "Timeout Handling",
-            "status": "IN_PROGRESS",
-            "priority": "MEDIUM",
-            "description": "Test long-running forked skills and timeouts",
-            "autonomy_score": 95,
-            "duration_ms": 5000,
-            "lifecycle_stage": "execute",
-            "findings": [
-              "Test completed successfully"
+            "test_id": "T2",
+            "name": "parallel-analysis-coordinator",
+            "pattern": "TaskList parallel execution",
+            "real_scenario": "Parallel code analysis",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Coordinate parallel analysis tasks using TaskList",
+            "validation": "TaskList executes tasks concurrently, properly aggregates results",
+            "skill_file": "phase_12/test_T2.parallel.analysis.coordinator.skill.md",
+            "test_prompt": "Execute the parallel-analysis-coordination capability",
+            "success_criteria": [
+              "Independent tasks created without blocking",
+              "Concurrent execution achieved",
+              "Results aggregated into report"
+            ]
+          },
+          {
+            "test_id": "T3",
+            "name": "distributed-processor",
+            "pattern": "TaskList + forked skills",
+            "real_scenario": "Distributed data processing",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Process data using TaskList and forked skills",
+            "context": "fork",
+            "validation": "TaskList coordinates with forked skills correctly",
+            "skill_file": "phase_12/test_T3.distributed.processor.skill.md",
+            "test_prompt": "Execute the distributed-processor autonomous workflow",
+            "success_criteria": [
+              "TaskList tasks invoke forked skills via Skill tool",
+              "Parallel execution with isolation",
+              "Results aggregation works"
+            ]
+          },
+          {
+            "test_id": "T4",
+            "name": "ci-pipeline-manager",
+            "pattern": "TaskList error handling",
+            "real_scenario": "CI pipeline with failure recovery",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Test TaskList error handling and recovery",
+            "context": "fork",
+            "validation": "TaskList properly handles task failures and dependent task blocking",
+            "skill_file": "phase_12/test_T4.ci.pipeline.manager.skill.md",
+            "test_prompt": "Execute the ci-pipeline-management autonomous workflow",
+            "success_criteria": [
+              "Task failure simulated correctly",
+              "Blocked tasks don't execute",
+              "Cleanup tasks execute on failure"
+            ]
+          },
+          {
+            "test_id": "T5",
+            "name": "multi-session-orchestrator",
+            "pattern": "Cross-session TaskList",
+            "real_scenario": "Long-running multi-session workflow",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Test TaskList cross-session persistence",
+            "validation": "TaskList persists state across sessions, tasks maintain status",
+            "skill_file": "phase_12/test_T5.multi.session.orchestrator.skill.md",
+            "test_prompt": "Execute the multi-session-orchestrator test",
+            "success_criteria": [
+              "TaskList ID persisted",
+              "Task status preserved across sessions",
+              "Continuation works correctly"
             ]
           }
         ]
       },
       {
-        "phase": 9,
-        "name": "File System & Resource Access",
-        "description": "Test file system boundaries and resource contention",
+        "phase": 13,
+        "name": "Sprint 2: Subagent Orchestration",
+        "description": "Validate subagent orchestration capabilities",
+        "sprint_goal": "Subagents use injected skills correctly, dynamic context passes, handle errors autonomously, coordinate properly, handle timeouts",
         "tests": [
           {
-            "test_id": "9.1",
-            "name": "File System Access Patterns",
+            "test_id": "T6",
+            "name": "code-reviewer-subagent",
+            "pattern": "Subagent skill composition",
+            "real_scenario": "Code reviewer with quality checks",
             "status": "NOT_STARTED",
-            "priority": "MEDIUM",
-            "description": "Test file system access boundaries in forked context"
+            "priority": "HIGH",
+            "description": "Subagent that reviews code using injected skills",
+            "agent": "general-purpose",
+            "injected_skills": ["security-review", "style-review", "test-coverage"],
+            "validation": "Subagent successfully uses injected skills, composes results",
+            "skill_file": "phase_13/test_T6.code.reviewer.subagent.skill.md",
+            "test_prompt": "Execute the code-review-subagent autonomous workflow",
+            "success_criteria": [
+              "Subagent uses all injected skills",
+              "Findings aggregated into report",
+              "Review completed autonomously"
+            ]
           },
           {
-            "test_id": "9.2",
-            "name": "Resource Contention",
+            "test_id": "T7",
+            "name": "context-aware-analyzer",
+            "pattern": "Dynamic context injection",
+            "real_scenario": "Context-aware specialist",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Analyzer that receives project context dynamically",
+            "context": "fork",
+            "validation": "Subagent receives and utilizes dynamic context correctly",
+            "skill_file": "phase_13/test_T7.context.aware.analyzer.skill.md",
+            "test_prompt": "Execute the context-aware-analysis capability",
+            "success_criteria": [
+              "Context parsed from args",
+              "Analysis tailored to context",
+              "Recommendations context-aware"
+            ]
+          },
+          {
+            "test_id": "T8",
+            "name": "resilient-processor",
+            "pattern": "Subagent error recovery",
+            "real_scenario": "Robust data processor",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Subagent that handles errors gracefully",
+            "agent": "general-purpose",
+            "validation": "Subagent implements error recovery logic autonomously",
+            "skill_file": "phase_13/test_T8.resilient.processor.skill.md",
+            "test_prompt": "Execute the resilient-processor autonomous workflow",
+            "success_criteria": [
+              "Primary attempt executed",
+              "Fallback executed on failure",
+              "Recovery suggestions provided"
+            ]
+          },
+          {
+            "test_id": "T9",
+            "name": "distributed-validator",
+            "pattern": "Multi-subagent coordination",
+            "real_scenario": "Distributed system validation",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Coordinate multiple subagents for system validation",
+            "validation": "Multiple subagents coordinate properly, results aggregated",
+            "skill_file": "phase_13/test_T9.distributed.validator.skill.md",
+            "test_prompt": "Execute the distributed-validation capability",
+            "success_criteria": [
+              "Multiple subagents spawned",
+              "All subagents complete work",
+              "Results synthesized into report"
+            ]
+          },
+          {
+            "test_id": "T10",
+            "name": "big-data-processor",
+            "pattern": "Subagent timeout",
+            "real_scenario": "Big data processing",
             "status": "NOT_STARTED",
             "priority": "MEDIUM",
-            "description": "Multiple forked skills accessing same file"
+            "description": "Test subagent timeout handling",
+            "agent": "general-purpose",
+            "validation": "Subagent handles timeouts gracefully with progress preservation",
+            "skill_file": "phase_13/test_T10.big.data.processor.skill.md",
+            "test_prompt": "Execute the big-data-processing capability",
+            "success_criteria": [
+              "Progress made within time budget",
+              "Checkpoint saved on timeout",
+              "Continuation instructions provided"
+            ]
           }
         ]
       },
       {
-        "phase": 10,
-        "name": "Memory & State Persistence",
-        "description": "Test state management in forked contexts",
+        "phase": 14,
+        "name": "Sprint 3: Skill-Subagent Orchestration",
+        "description": "Validate skill-subagent-TaskList integration",
+        "sprint_goal": "Skills call subagents that call skills, TaskList coordinates with forked skills, nested TaskList structures work, error recovery across chains, aggregation works",
         "tests": [
           {
-            "test_id": "10.1",
-            "name": "Internal State Persistence",
+            "test_id": "T11",
+            "name": "multi-phase-analyzer",
+            "pattern": "Skill→Subagent→Skill",
+            "real_scenario": "Multi-phase analysis",
             "status": "NOT_STARTED",
-            "priority": "MEDIUM",
-            "description": "Can forked skills maintain internal state?"
+            "priority": "HIGH",
+            "description": "Orchestrate multi-phase analysis with subagent and skill",
+            "validation": "Three-layer coordination works (skill → subagent → forked skill)",
+            "skill_file": "phase_14/test_T11.multi.phase.analyzer.skill.md",
+            "test_prompt": "Execute the multi-phase-analysis capability",
+            "success_criteria": [
+              "Phase 1: Subagent spawned for codebase exploration",
+              "Phase 2: Forked skill called for vulnerability scanning",
+              "Phase 3: Findings aggregated successfully"
+            ]
           },
           {
-            "test_id": "10.2",
-            "name": "Agent-to-Agent Communication",
+            "test_id": "T12",
+            "name": "tasklist-audit-hub",
+            "pattern": "Hub-and-Spoke with TaskList",
+            "real_scenario": "Complex audit orchestration",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Orchestrate audit using TaskList for coordination",
+            "validation": "TaskList + forked skills coordination works",
+            "skill_file": "phase_14/test_T12.tasklist.audit.hub.skill.md",
+            "test_prompt": "Execute the tasklist-audit-hub autonomous workflow",
+            "success_criteria": [
+              "TaskList creates worker tasks",
+              "Each task calls forked skill",
+              "Aggregation task waits for all audits",
+              "Comprehensive report generated"
+            ]
+          },
+          {
+            "test_id": "T13",
+            "name": "hierarchical-builder",
+            "pattern": "Nested TaskList + forked skills",
+            "real_scenario": "Hierarchical build system",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Test nested TaskList with forked skill workers",
+            "validation": "Nested TaskList with forked skills works correctly",
+            "skill_file": "phase_14/test_T13.hierarchical.builder.skill.md",
+            "test_prompt": "Execute the hierarchical-build autonomous workflow",
+            "success_criteria": [
+              "Parent TaskList created",
+              "Child TaskLists created within parent tasks",
+              "Forked skills called from child tasks",
+              "All complete successfully"
+            ]
+          },
+          {
+            "test_id": "T14",
+            "name": "resilient-workflow",
+            "pattern": "Error recovery in skill chains",
+            "real_scenario": "Resilient workflow",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Handle failures in skill-subagent chains",
+            "validation": "Skill chains handle subagent failures with fallbacks",
+            "skill_file": "phase_14/test_T14.resilient.workflow.skill.md",
+            "test_prompt": "Execute the resilient-workflow autonomous workflow",
+            "success_criteria": [
+              "Primary path attempted",
+              "Fallback executed on failure",
+              "Path taken reported"
+            ]
+          },
+          {
+            "test_id": "T15",
+            "name": "system-reporter",
+            "pattern": "Skill aggregation from subagents",
+            "real_scenario": "Comprehensive system report",
+            "status": "NOT_STARTED",
+            "priority": "HIGH",
+            "description": "Aggregate results from multiple specialist subagents",
+            "validation": "Skill successfully collects and synthesizes multi-subagent results",
+            "skill_file": "phase_14/test_T15.system.reporter.skill.md",
+            "test_prompt": "Execute the system-reporting autonomous workflow",
+            "success_criteria": [
+              "Multiple subagents spawned",
+              "All results collected",
+              "Comprehensive report synthesized"
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 15,
+        "name": "Sprint 4: Advanced Nesting Patterns",
+        "description": "Validate complex nesting and edge cases",
+        "sprint_goal": "Three-level nesting works, forked skills can use TaskList, circular dependencies detected",
+        "tests": [
+          {
+            "test_id": "T16",
+            "name": "deep-analysis-pipeline",
+            "pattern": "Triple-level forking",
+            "real_scenario": "Deep analysis pipeline",
+            "status": "NOT_STARTED",
+            "priority": "MEDIUM",
+            "description": "Test triple-level forking with real analysis",
+            "validation": "Three-level nesting works with proper isolation",
+            "skill_file": "phase_15/test_T16.deep.analysis.pipeline.skill.md",
+            "test_prompt": "Execute the deep-analysis-pipeline autonomous workflow",
+            "success_criteria": [
+              "Level 1: Subagent spawned",
+              "Level 2: Subagent calls forked skill",
+              "Level 3: Forked skill calls another forked skill",
+              "Findings reported with level information"
+            ]
+          },
+          {
+            "test_id": "T17",
+            "name": "isolated-coordinator",
+            "pattern": "Forked skill with TaskList",
+            "real_scenario": "Isolated parallel processing",
+            "status": "NOT_STARTED",
+            "priority": "MEDIUM",
+            "description": "Forked skill that uses TaskList internally",
+            "context": "fork",
+            "validation": "Forked skill can use TaskList for internal coordination",
+            "skill_file": "phase_15/test_T17.isolated.coordinator.skill.md",
+            "test_prompt": "Execute the isolated-coordination autonomous workflow",
+            "success_criteria": [
+              "TaskList used within forked context",
+              "All processing happens in isolation",
+              "Merged results returned to caller"
+            ]
+          },
+          {
+            "test_id": "T18",
+            "name": "dependency-resolver",
+            "pattern": "Circular dependency detection",
+            "real_scenario": "Build system with circular refs",
             "status": "NOT_STARTED",
             "priority": "LOW",
-            "description": "Can agents communicate directly without skill wrapper?"
+            "description": "Detect and resolve circular dependencies",
+            "context": "fork",
+            "validation": "System detects and reports circular dependencies correctly",
+            "skill_file": "phase_15/test_T18.dependency.resolver.skill.md",
+            "test_prompt": "Execute the dependency-resolution capability",
+            "success_criteria": [
+              "Circular references detected",
+              "All circular dependency chains reported",
+              "Breaking points identified",
+              "Resolution strategies recommended"
+            ]
           }
         ]
       },
       {
-        "phase": 11,
-        "name": "Comparative Workflow Analysis: Recursive vs TaskList (COMPLETE)",
-        "description": "38 tests comparing recursive skill workflows against TaskList-based orchestration",
-        "purpose": "Determine if TaskList can replace complex recursive skill workflows",
-        "coverage_goal": "Complete coverage of all recursive workflow patterns with TaskList equivalents",
-        "test_categories": [
+        "phase": 16,
+        "name": "Sprint 5: State & Session Patterns",
+        "description": "Validate state and session management",
+        "sprint_goal": "Forked skills maintain state across invocations, TaskList enables cross-session workflow continuation",
+        "tests": [
           {
-            "category": "Linear Chains",
-            "description": "Compare linear skill chains vs TaskList sequential tasks",
-            "tests": [
-              {
-                "test_id": "11.1.1",
-                "name": "Linear 2-chain: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "A -> B",
-                "recursive": "skill-a calls skill-b",
-                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A])",
-                "validation": "Execution order, completion detection"
-              },
-              {
-                "test_id": "11.1.2",
-                "name": "Linear 3-chain: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "A -> B -> C",
-                "recursive": "skill-a -> skill-b -> skill-c",
-                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A]), TaskCreate(C, blockedBy: [B])",
-                "validation": "Chain execution, state propagation"
-              },
-              {
-                "test_id": "11.1.3",
-                "name": "Linear 5-chain: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "A -> B -> C -> D -> E",
-                "description": "Test deep linear chains"
-              },
-              {
-                "test_id": "11.1.4",
-                "name": "Linear chain with data passing",
-                "status": "NOT_STARTED",
-                "pattern": "A -> B (data) -> C",
-                "description": "Compare data flow mechanisms"
-              }
+            "test_id": "T19",
+            "name": "incremental-analyzer",
+            "pattern": "State persistence in forked context",
+            "real_scenario": "Incremental analysis",
+            "status": "NOT_STARTED",
+            "priority": "MEDIUM",
+            "description": "Test state persistence across skill invocations",
+            "context": "fork",
+            "validation": "Forked skill can maintain state across separate invocations",
+            "skill_file": "phase_16/test_T19.incremental.analyzer.skill.md",
+            "test_prompt": "Execute the incremental-analysis autonomous workflow",
+            "success_criteria": [
+              "First invocation: Creates state file",
+              "Subsequent invocations: Load and continue",
+              "Final invocation: Reports complete analysis"
             ]
           },
           {
-            "category": "Hub-and-Spoke Aggregation",
-            "description": "Compare hub calling workers vs TaskList coordination",
-            "tests": [
-              {
-                "test_id": "11.2.1",
-                "name": "2-worker aggregation: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "Hub -> Worker-1, Worker-2 -> Hub aggregates",
-                "recursive": "orchestrator (regular) -> worker-1 (forked), worker-2 (forked) -> orchestrator",
-                "tasklist": "TaskCreate(Worker-1), TaskCreate(Worker-2), TaskCreate(Aggregate, blockedBy: [Worker-1, Worker-2])",
-                "validation": "Result aggregation, completion detection"
-              },
-              {
-                "test_id": "11.2.2",
-                "name": "3-worker aggregation: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "Hub -> Worker-1, Worker-2, Worker-3 -> Hub aggregates",
-                "description": "Test with more workers"
-              },
-              {
-                "test_id": "11.2.3",
-                "name": "5-worker aggregation: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Stress test with many workers"
-              },
-              {
-                "test_id": "11.2.4",
-                "name": "Aggregation with partial failures",
-                "status": "NOT_STARTED",
-                "description": "Test behavior when some workers fail"
-              },
-              {
-                "test_id": "11.2.5",
-                "name": "Aggregation with timeouts",
-                "status": "NOT_STARTED",
-                "description": "Test timeout handling in aggregation"
-              }
-            ]
-          },
-          {
-            "category": "Nested Workflows",
-            "description": "Compare nested skill calls vs nested TaskList dependencies",
-            "tests": [
-              {
-                "test_id": "11.3.1",
-                "name": "Depth-2 nesting: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "Outer -> Inner -> Leaf",
-                "recursive": "outer (forked) -> inner (forked) -> leaf (forked)",
-                "tasklist": "TaskCreate(Outer), TaskCreate(Inner, blockedBy: [Outer]), TaskCreate(Leaf, blockedBy: [Inner])",
-                "validation": "Nested isolation, completion propagation"
-              },
-              {
-                "test_id": "11.3.2",
-                "name": "Depth-3 nesting: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test deeper nesting"
-              },
-              {
-                "test_id": "11.3.3",
-                "name": "Depth-5 nesting: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Stress test deep nesting"
-              },
-              {
-                "test_id": "11.3.4",
-                "name": "Nested with data flow",
-                "status": "NOT_STARTED",
-                "description": "Test data passing through nested levels"
-              },
-              {
-                "test_id": "11.3.5",
-                "name": "Nested with error recovery",
-                "status": "NOT_STARTED",
-                "description": "Test error handling in nested workflows"
-              }
-            ]
-          },
-          {
-            "category": "Parallel Execution",
-            "description": "Compare parallel forked skills vs concurrent TaskList tasks",
-            "tests": [
-              {
-                "test_id": "11.4.1",
-                "name": "2-way parallel: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "Orchestrator -> Worker-1 || Worker-2",
-                "recursive": "orchestrator calls worker-1 (forked), worker-2 (forked)",
-                "tasklist": "TaskCreate(Worker-1), TaskCreate(Worker-2), both unblocked",
-                "validation": "Parallel execution, race conditions"
-              },
-              {
-                "test_id": "11.4.2",
-                "name": "3-way parallel: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test with more parallel workers"
-              },
-              {
-                "test_id": "11.4.3",
-                "name": "5-way parallel: Forked vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Stress test parallel execution"
-              },
-              {
-                "test_id": "11.4.4",
-                "name": "Parallel with shared resource",
-                "status": "NOT_STARTED",
-                "description": "Test resource contention"
-              },
-              {
-                "test_id": "11.4.5",
-                "name": "Parallel with result aggregation",
-                "status": "NOT_STARTED",
-                "description": "Test aggregating parallel results"
-              }
-            ]
-          },
-          {
-            "category": "Context Transitions",
-            "description": "Compare context transitions in recursive vs TaskList",
-            "tests": [
-              {
-                "test_id": "11.5.1",
-                "name": "Forked -> Regular transition vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "forked-skill -> regular-skill",
-                "recursive": "forked-outer calls regular-inner",
-                "tasklist": "Task execution with different contexts",
-                "validation": "Context isolation and transition behavior"
-              },
-              {
-                "test_id": "11.5.2",
-                "name": "Regular -> Forked transition vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test opposite transition"
-              },
-              {
-                "test_id": "11.5.3",
-                "name": "Mixed context chain vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test alternating contexts"
-              },
-              {
-                "test_id": "11.5.4",
-                "name": "Context isolation verification",
-                "status": "NOT_STARTED",
-                "description": "Verify isolation in TaskList tasks"
-              }
-            ]
-          },
-          {
-            "category": "Error Handling",
-            "description": "Compare error propagation in recursive vs TaskList",
-            "tests": [
-              {
-                "test_id": "11.6.1",
-                "name": "Chain error propagation: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "A -> B (error) -> C",
-                "recursive": "skill-a calls skill-b which fails",
-                "tasklist": "TaskCreate(A), TaskCreate(B, blockedBy: [A]), B fails, TaskCreate(C) behavior",
-                "validation": "Error propagation, blocked task behavior"
-              },
-              {
-                "test_id": "11.6.2",
-                "name": "Partial failure in aggregation: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test when some workers fail"
-              },
-              {
-                "test_id": "11.6.3",
-                "name": "Error recovery: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test error recovery mechanisms"
-              },
-              {
-                "test_id": "11.6.4",
-                "name": "Timeout handling: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Compare timeout behaviors"
-              }
-            ]
-          },
-          {
-            "category": "State Persistence",
-            "description": "Compare state management in recursive vs TaskList",
-            "tests": [
-              {
-                "test_id": "11.7.1",
-                "name": "Cross-session persistence: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "pattern": "Session 1 starts work -> Session 2 continues",
-                "recursive": "State lost between sessions",
-                "tasklist": "CLAUDE_CODE_TASK_LIST_ID enables persistence",
-                "validation": "State persistence, cross-session continuity"
-              },
-              {
-                "test_id": "11.7.2",
-                "name": "Multi-session collaboration: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test multiple sessions working on same task list"
-              },
-              {
-                "test_id": "11.7.3",
-                "name": "Context window spanning: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test behavior when context fills up"
-              },
-              {
-                "test_id": "11.7.4",
-                "name": "Long-running workflow: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Test workflows spanning multiple sessions"
-              }
-            ]
-          },
-          {
-            "category": "Performance & Scalability",
-            "description": "Compare performance characteristics",
-            "tests": [
-              {
-                "test_id": "11.8.1",
-                "name": "Execution speed: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Time to complete identical workflows"
-              },
-              {
-                "test_id": "11.8.2",
-                "name": "Resource usage: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Memory, CPU, token usage"
-              },
-              {
-                "test_id": "11.8.3",
-                "name": "Scalability limit: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "description": "Find breaking points for each approach"
-              },
-              {
-                "test_id": "11.8.4",
-                "name": "Token efficiency: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Prompts used for identical workflows"
-              }
-            ]
-          },
-          {
-            "category": "Developer Experience",
-            "description": "Compare DX for each approach",
-            "tests": [
-              {
-                "test_id": "11.9.1",
-                "name": "Setup complexity: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Files, configuration, boilerplate required"
-              },
-              {
-                "test_id": "11.9.2",
-                "name": "Debugging experience: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Ease of debugging, error visibility"
-              },
-              {
-                "test_id": "11.9.3",
-                "name": "Documentation clarity: Recursive vs TaskList",
-                "status": "NOT_STARTED",
-                "metric": "Ease of understanding and documenting"
-              }
+            "test_id": "T20",
+            "name": "migration-orchestrator",
+            "pattern": "Multi-session workflow with TaskList",
+            "real_scenario": "Long-running project migration",
+            "status": "NOT_STARTED",
+            "priority": "MEDIUM",
+            "description": "Test multi-session workflow with TaskList persistence",
+            "validation": "TaskList enables workflow continuation across sessions",
+            "skill_file": "phase_16/test_T20.migration.orchestrator.skill.md",
+            "test_prompt": "Execute the migration-orchestrator autonomous workflow",
+            "success_criteria": [
+              "Session 1: TaskList created, phase-1 completed",
+              "Session 2: TaskList loaded, phase-2 completed",
+              "Migration finished across sessions"
             ]
           }
         ]
       }
     ],
-    "completed_tests_summary": {
-      "critical_findings_validated": [
-        "1.1, 1.2: Regular skill chains are one-way handoffs",
-        "2.1, 4.2, 6.1, 6.2: Forked skills enable subroutine pattern",
-        "2.2, 2.4.x, 5.2: Context isolation is complete",
-        "2.3: Forked skills are 100% autonomous",
-        "3.1, 3.2, 7.1: Custom subagents and specialized tools accessible",
-        "4.2: Double-fork (nested forks) works correctly",
-        "5.1: Parameters pass correctly"
-      ],
-      "evidence_files": {
-        "phase_1": "2 files - test_1.1, test_1.2",
-        "phase_2": "12 files - comprehensive isolation proof",
-        "phase_3": "2 files - subagent access validated",
-        "phase_4": "3 files - nested forks and parallel execution",
-        "phase_5": "2 files - parameter passing validated",
-        "phase_6": "2 files - hierarchical orchestration works",
-        "phase_7": "2 files - real-world workflows"
-      }
-    },
-    "failed_tests": [
-      {
-        "test_id": "4.3",
-        "name": "Parallel forked execution",
-        "status": "FAILED",
-        "issue": "Orchestrator asked for clarification instead of executing autonomously",
-        "recommendation": "Regular orchestrators may need explicit automation instructions or use forked orchestrator pattern"
-      }
-    ],
-    "phase_11_research_questions": [
-      "Can TaskList replace all recursive skill workflows?",
-      "What are the performance trade-offs?",
-      "Which approach has better developer experience?",
-      "When should each approach be used?",
-      "Can TaskList enable workflows impossible with skills?"
-    ],
-    "architecture_recommendations": {
-      "hub_and_spoke_pattern": {
-        "description": "Use forked skills for workers, regular skill for orchestrator",
-        "example": "Orchestrator (regular) -> Worker-1 (forked) -> Orchestrator -> Worker-2 (forked) -> Orchestrator",
-        "benefits": [
-          "Control returns to orchestrator for result aggregation",
-          "Complete isolation between workers",
-          "Parallel execution safe"
+    "implementation_roadmap": {
+      "sprint_0": {
+        "name": "Skill Archetypes",
+        "tests": ["T21", "T22", "T23", "T24"],
+        "duration": "Foundation",
+        "priority": "HIGH",
+        "success_criteria": [
+          "Reference skills auto-apply without invocation",
+          "Workflow skills execute multi-step processes autonomously",
+          "Safety-critical skills require explicit invocation",
+          "Dynamic context skills inject live data correctly"
+        ],
+        "quick_wins": "Provides immediate validation of skill archetype patterns"
+      },
+      "sprint_1": {
+        "name": "TaskList Foundation",
+        "tests": ["T1", "T2", "T3", "T4", "T5"],
+        "duration": "Week 1",
+        "priority": "HIGH",
+        "success_criteria": [
+          "TaskList executes dependencies correctly",
+          "TaskList handles parallel execution",
+          "TaskList coordinates with forked skills",
+          "TaskList handles errors with proper blocking",
+          "TaskList persists across sessions"
+        ],
+        "quick_wins": "Provides immediate TaskList validation"
+      },
+      "sprint_2": {
+        "name": "Subagent Patterns",
+        "tests": ["T6", "T7", "T8", "T9", "T10"],
+        "duration": "Week 2",
+        "priority": "HIGH",
+        "success_criteria": [
+          "Subagents use injected skills correctly",
+          "Dynamic context passes to subagents",
+          "Subagents handle errors autonomously",
+          "Multiple subagents coordinate properly",
+          "Subagents handle timeouts gracefully"
         ]
       },
-      "parameter_passing": {
-        "description": "Use args for all data transfer to forked skills",
-        "validation": "test_5.1 confirms parameters pass correctly"
+      "sprint_3": {
+        "name": "Orchestration Integration",
+        "tests": ["T11", "T12", "T13", "T14", "T15"],
+        "duration": "Week 3",
+        "priority": "HIGH",
+        "success_criteria": [
+          "Skills successfully call subagents that call skills",
+          "TaskList coordinates with forked skills",
+          "Nested TaskList structures work",
+          "Error recovery works across skill chains",
+          "Skills aggregate multi-subagent results"
+        ]
       },
-      "avoid_regular_chains": {
-        "description": "Don't use regular skill chains expecting control to return",
-        "evidence": "test_1.2 shows one-way handoff behavior"
+      "sprint_4": {
+        "name": "Advanced Nesting",
+        "tests": ["T16", "T17", "T18"],
+        "duration": "Week 4",
+        "priority": "MEDIUM",
+        "success_criteria": [
+          "Three-level nesting works with isolation",
+          "Forked skills can use TaskList internally",
+          "Circular dependencies are detected and reported"
+        ]
       },
-      "tasklist_for_complex_workflows": {
-        "description": "Use TaskList for workflows exceeding autonomous execution",
-        "validation": "Phase 11 will determine optimal use cases",
-        "potential_benefits": [
-          "Cross-session persistence",
-          "Visual progress tracking",
-          "Multi-session collaboration",
-          "Context window spanning"
+      "sprint_5": {
+        "name": "State Patterns",
+        "tests": ["T19", "T20"],
+        "duration": "Week 5",
+        "priority": "MEDIUM",
+        "success_criteria": [
+          "Forked skills can maintain state across invocations",
+          "TaskList enables cross-session workflow continuation"
         ]
       }
     },
-    "next_steps": [
-      "Execute Phase 11 tests (38 comparative tests)",
-      "Determine if TaskList can replace recursive workflows",
-      "Document optimal patterns for each approach",
-      "Create decision matrix for workflow selection",
-      "Update CLAUDE.md with validated patterns"
+    "quality_gates": {
+      "autonomy_check": {
+        "max_denials": 1,
+        "completion_marker_required": true,
+        "user_intervention_allowed": false
+      },
+      "real_condition_check": {
+        "scenario_must_mirror_actual_usage": true,
+        "data_fixtures_must_be_realistic": true,
+        "must_test_actual_capability": true
+      },
+      "flexibility_check": {
+        "specifies_what_not_how": true,
+        "allows_claudes_intelligence_to_work": true,
+        "not_over_prescriptive": true
+      }
+    },
+    "success_metrics": {
+      "after_all_24_tests": {
+        "coverage": "33 patterns validated (9 existing + 4 archetypes + 20 orchestration)",
+        "autonomy_target": "95%+ average (0-1 denials per test)",
+        "representativeness": "100% of tests use real scenarios",
+        "completeness": "All skill archetypes and orchestration patterns covered"
+      }
+    },
+    "next_actions": [
+      "Start with Sprint 0 (T21-T24): Skill archetype validation",
+      "Create test directories for phase_11 tests",
+      "Implement archetype test skills T21-T24",
+      "Execute Sprint 0 tests using test-manager and runner",
+      "Validate archetype patterns work correctly",
+      "Proceed to Sprint 1 (T1-T5): TaskList orchestration patterns"
     ]
   }
 }

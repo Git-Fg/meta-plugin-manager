@@ -1,163 +1,43 @@
 # Quick Reference
 
-**Philosophy-First Reference**: See @.claude/rules/philosophy.md for core principles before applying patterns. See @.laude/rules/teaching.md for how to structure knowledge effectively.
+**Navigation guide for this project's architecture. Use to find what you need.**
 
 ---
-
-# FOR DIRECT USE
-
-⚠️ **Trust your intelligence. These are patterns and reference materials, not prescriptions. Adapt based on context.**
-
-## Skill Calling Cheat Sheet
-
-```
-Need orchestration? → Hub (regular) calls Workers (forked)
-Need data transfer? → Use parameters (args="key=value")
-Need isolation? → Forked skill (context: fork)
-Need control return? → Forked skill (not regular)
-Need nested workflows? → Forked can call forked (validated)
-Need autonomy? → 80-95% without questions
-Need custom tools? → Custom subagent (tools + model fields)
-```
-
-## Script Implementation Quick Reference
-
-**When to include scripts in skills**:
-- Complex operations (>3-5 lines) that benefit from determinism
-- Reusable utilities called multiple times
-- Performance-sensitive operations where native tool speed matters
-- Operations requiring explicit error handling patterns
-
-**When to avoid scripts**:
-- Simple 1-2 line operations (use native tools directly)
-- Highly variable tasks where Claude's adaptability is valuable
-- One-time operations that don't warrant automation
-
-**Core Script Principles**:
-- **Solve, Don't Punt**: Handle errors explicitly with try/except and fallbacks
-- **Avoid Magic Numbers**: Document all config constants with rationale (WHY chosen)
-- **Self-Contained**: Validate dependencies, document prerequisites
-- **Edge Cases**: Handle empty files, missing directories, permissions
-- **Meaningful Exit Codes**: 0=success, 1=input error, 2=system error, 3=blocked
-- **Forward Slashes**: Use Unix-style paths for cross-platform compatibility
-
-**Script Structure Template**:
-```bash
-#!/usr/bin/env bash
-# Script Name - Brief single-line description
-#
-# Dependencies: jq 1.6+, curl 7.79+
-#
-# Exit Codes:
-#   0 - Success
-#   1 - Input validation error
-#   2 - System configuration error
-#   3 - Permission denied
-#
-set -euo pipefail
-
-# Configuration - All values documented
-# Three retries balance reliability vs speed
-DEFAULT_RETRIES=3
-
-validate_dependencies() {
-    command -v jq >/dev/null 2>&1 || { echo "Missing jq"; exit 2; }
-}
-
-main() {
-    validate_dependencies
-    # Process...
-}
-
-main "$@"
-```
-
-**See**: [skills-knowledge/references/script-best-practices.md](../skills/skills-knowledge/references/script-best-practices.md) for comprehensive patterns.
-
-## Skill Description: What-When-Not Framework
-
-**Component parts**:
-- **WHAT**: What the skill does (core function)
-- **WHEN**: When to use it (triggers, contexts)
-- **NOT**: What it doesn't do (boundaries)
-
-**Anti-Pattern**: "Use to CREATE (new projects), REFACTOR (cleanup)"
-- Contains "how" language ("Use to")
-- Describes implementation, not purpose
-
-**Good Pattern**: "Maintain CLAUDE.md project memory. Use when: new project setup, documentation is messy, conversation revealed insights"
-- Describes what + when
-- No "how" language
-- Trusts Claude's intelligence
-
-## INCREMENTAL-UPDATE Default Pattern
-
-**Default behavior when prior conversation exists**:
-- ANY prior conversation → Default to INCREMENTAL-UPDATE
-- No explicit request needed — prior conversation IS the trigger
-- Review conversation for: working commands, discovered patterns, errors encountered, new rules learned
-
-**Recognition question**: "Is there prior conversation with discoverable knowledge?"
-- Yes → INCREMENTAL-UPDATE (capture knowledge)
-- No → Use appropriate mode based on explicit request
-
-## Unified Documentation Rule
-
-**CLAUDE.md + .claude/rules/ are a single unit**:
-- Always review and update both together
-- When CLAUDE.md changes → Check .claude/rules/ for updates
-- When .claude/rules/ change → Check CLAUDE.md for updates
-- CLAUDE.md may reference .claude/rules/ that no longer exist
-- **Prevents drift** between documentation layers
-
-**Recognition question**: "Did I check both files when updating documentation?"
 
 ## Decision Tree
 
 ```
-├─ Multi-step workflow?
-│  └─ Yes → Use forked skills (context: fork)
+Need to build something?
 │
-├─ Need to aggregate results?
-│  └─ Yes → ALL workers MUST be forked
+├─ "Create a skill" → Load knowledge-skills + use create-skill factory
+├─ "Add MCP server" → Load knowledge-mcp + use create-mcp-server factory
+├─ "Add a hook" → Load knowledge-hooks + use create-hook factory
+├─ "Create subagent" → Load knowledge-subagents + use create-subagent factory
 │
-├─ Need caller context?
-│  ├─ Yes → DON'T fork
-│  └─ No → Use fork (context: fork)
+├─ "Quality assessment" → Load knowledge-skills → quality-framework.md
+├─ "Write description" → Load knowledge-skills → description-guidelines.md
+├─ "Script patterns" → Load knowledge-skills → script-patterns.md (if exists)
 │
-├─ Need parallel execution?
-│  └─ Yes → Use forked skills (security isolation)
-│
-└─ Need custom tools?
-   └─ Yes → Custom subagent (tools + model)
-│
-├─ Need persistent task tracking?
-│  └─ Yes → Use TaskList for orchestration
-│
-└─ Complex multi-step with dependencies?
-    └─ Yes → Use TaskList for orchestration
+└─ "Complex multi-session project" → Use TaskList
 ```
 
-## Parameter Passing Pattern
+---
 
-**Caller provides arguments as key=value pairs, forked skill receives via $ARGUMENTS:**
+## Where to Find Technical Specifications
 
-For forked skills with context: fork, parse $ARGUMENTS to extract parameters provided by the caller.
+**For skill/command/hook/subagent creation:**
+- **knowledge-skills**: Agent Skills standard, YAML format, tier structure, quality checklist
+- **knowledge-mcp**: MCP integration patterns, server types, configuration
+- **knowledge-hooks**: Event types, security patterns, prompt-based vs command hooks
+- **knowledge-subagents**: Agent types, frontmatter fields, coordination patterns
 
-## Skill Completion Markers
+**For philosophical foundation:**
+- **principles.md**: Core philosophy (Context Window, Trust AI, Delta Standard, Progressive Disclosure)
 
-**Each skill must output:**
-```
-## SKILL_NAME_COMPLETE
-```
+**For project-specific rules:**
+- **CLAUDE.md**: v4 architecture, local conventions, this project's approach
 
-**Expected formats:**
-- `## SKILL_A_COMPLETE`
-- `## FORKED_OUTER_COMPLETE`
-- `## CUSTOM_AGENT_COMPLETE`
-- `## ANALYZE_COMPLETE`
-
-
+---
 
 ## Project Structure Quick Reference
 
@@ -169,87 +49,68 @@ For forked skills with context: fork, parse $ARGUMENTS to extract parameters pro
 │       └── references/          # On-demand (Tier 3)
 ├── agents/                      # Context fork isolation
 ├── hooks/                       # Event automation
+├── rules/                       # Core philosophy + navigation
+│   ├── principles.md           # Philosophical foundation
+│   ├── quick-reference.md      # This file (navigation)
+│   └── anti-patterns.md        # Common mistakes to avoid
 ├── settings.json                # Project-wide hooks & configuration
 ├── settings.local.json          # Local overrides (gitignored)
 └── .mcp.json                   # MCP server configuration
 ```
 
+---
 
-## Meta-Critic Quick Reference
+## Recognition Questions
 
-**Purpose**: Quality validation and alignment checking for v4 workflows.
+Use these questions to navigate to the right knowledge:
 
-**Three-Way Comparison**:
-- **Request**: What user asked for
-- **Delivery**: What agent implemented
-- **Standards**: What knowledge-skills specify
+**"What am I trying to build?"**
+- Skill → knowledge-skills
+- MCP integration → knowledge-mcp
+- Hook → knowledge-hooks
+- Subagent → knowledge-subagents
 
-**When to invoke meta-critic**:
-- After complex workflows
-- Post-factory execution
-- Quality validation needed
-- Drift detection
-- Standards compliance review
+**"How do I assess quality?"**
+- Load knowledge-skills → quality-framework.md
 
-**Output**: Specific, actionable recommendations organized by severity (Critical/High/Medium/Low).
+**"How do I write a good description?"**
+- Load knowledge-skills → description-guidelines.md
 
-**Principles**: Trust AI intelligence for quality evaluation — no prescriptive scoring grids.
+**"What's the philosophical approach?"**
+- Read principles.md
 
+---
 
-## When in Doubt
+## Project-Specific Patterns (v4 Architecture)
 
-**Most customization needs** met by CLAUDE.md + one Skill.
+This project uses **Knowledge-Factory architecture**:
 
-**Build from skills up** - Every capability should be a Skill first. Commands and Subagents are orchestrators, not creators.
+**Knowledge Skills** (passive reference): knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents
 
-**Reference**: [Official docs](https://agentskills.io/home)
+**Factory Skills** (script-based execution): create-skill, create-mcp-server, create-hook, create-subagent
+
+**Meta-Critic**: Quality validation and alignment checking
+
+**Usage**: Load knowledge skills to understand concepts, then use factory skills to execute operations.
+
+---
+
+## Anti-Pattern Quick Recognition
+
+**"Could the description alone suffice?"** → Command wrapper anti-pattern
+
+**"Can this work standalone?"** → Non-self-sufficient skills
+
+**"Is the overhead justified?"** → Context fork misuse
+
+**"Would Claude know this without being told?"** → Zero/negative delta
+
+See **anti-patterns.md** for complete catalog with recognition patterns and fixes.
+
+---
 
 ## Quality Gate
 
-All skills must score ≥80/100 on 11-dimensional framework before production.
+All skills should achieve 80-95% autonomy (0-5 questions per session).
 
-**Reference**: [CLAUDE.md rules/quality-framework](rules/quality-framework.md)
-
-
-
-# TO KNOW WHEN
-
-Understanding these patterns helps make better architectural decisions.
-
-## Layer Architecture Recognition
-
-**Three-Layer Model**:
-- **Layer 0 (TaskList)**: Workflow state engine for complex, multi-session projects
-- **Layer 1 (Built-in Tools)**: Execution and orchestration primitives
-- **Layer 2 (User Content)**: Skills, subagents, commands
-
-**Recognition Pattern**:
-- Simple, session-bound work → Layer 1 tools directly
-- Complex, multi-session work → Layer 0 (TaskList) orchestrates Layer 1
-- Domain expertise → Layer 2 (Skills) implement
-
-## "Unhobbling" Principle
-
-**When to recognize**: TodoWrite was removed because newer models handle simple tasks autonomously.
-
-**Threshold Decision**:
-- **Yes**: "Would this exceed Claude's autonomous state tracking?" → Use TaskList
-- **No**: Can Claude complete this independently? → Use skills directly
-
-**Context Spanning Recognition**:
-- Projects requiring context window spanning need TaskList
-- Multi-session collaboration requires TaskList
-- Work that must survive context limits needs Layer 0
-
-## Natural Language Citations
-
-**Built-in tools** (Layer 0/1) require natural language:
-- TaskList: Fundamental primitive, Claude knows how to use
-- Agent/Task tools: Built-in orchestration, Claude knows structure
-
-**Why natural language**:
-- Claude already knows built-in tool APIs
-- Code examples add context drift risk
-- Trust AI intelligence for tool usage
-
-**Recognition**: If you're writing code examples for TaskList/Agent/Task tools → anti-pattern
+See **knowledge-skills → quality-framework.md** for complete quality assessment checklist.

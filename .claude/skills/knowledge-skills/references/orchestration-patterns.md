@@ -4,6 +4,93 @@ Patterns for coordinating multiple skills, workflows, and context isolation.
 
 ---
 
+## CRITICAL: Control Flow Behavior
+
+### Regular Skills → One-Way Handoff Only
+
+**PROVEN BEHAVIOR**: Test 1.2 confirmed that when `skill-a` calls `skill-b`, control NEVER returns to `skill-a`.
+
+**Evidence**: Test 1.2 execution flow: `User → skill-a → skill-b → END` (skill-a never resumes, skill-c never called)
+
+**Implication**: Regular skill chains CANNOT be used for workflows requiring:
+- Result aggregation
+- Multi-step orchestration
+- Sequential processing with control return
+
+**Bad Pattern**:
+```
+skill-a → skill-b → END (skill-a never resumes, skill-c never called)
+```
+
+### Hub-and-Spoke: ALL Workers MUST Use context: fork
+
+**CRITICAL REQUIREMENT**: For a hub skill to aggregate results from workers, ALL workers MUST use `context: fork`.
+
+**Evidence**: Tests 6.1, 6.2 - Three-layer hierarchy with parallel workers all completed successfully
+
+**Why**: Forked skills return control to caller. Regular skills do not.
+
+**Valid Pattern**:
+```
+Hub (regular) → Worker-A (fork) → returns to Hub
+              → Worker-B (fork) → returns to Hub
+              → Aggregate results
+```
+
+**Invalid Pattern**:
+```
+Hub (regular) → Worker-A (regular) → one-way handoff, END
+```
+
+### Data Transfer: Explicit Parameters Only
+
+**PROVEN**: Forked skills receive NO caller context except `args`.
+
+**Evidence**: Tests 2.2, 5.1 - Parameter passing works reliably, context variables do not
+
+**What's NOT available in forked context**:
+- Conversation history
+- Context variables
+- Environment variables
+- User preferences
+
+**What's available**: Only the `args` parameter string
+
+**Pattern**:
+```yaml
+# Hub skill
+Call: worker-skill with args="project_root=/path/to/project config=production"
+
+# Worker skill receives $ARGUMENTS
+parse $ARGUMENTS to extract parameters
+```
+
+### Nested Forking Works Correctly
+
+**PROVEN**: Forked skills can call other forked skills and return control properly.
+
+**Evidence**: Test 4.2 - forked-outer → forked-inner → forked-outer completed successfully
+
+**Implication**: Hub-and-spoke can be nested to depth 2+ for complex hierarchical workflows.
+
+### Error Handling: Errors Are Content, Not System States
+
+**PROVEN**: When forked skills "fail", they complete normally from system perspective.
+
+**Evidence**: Test 8.1 - Forked "failures" are content, not system errors
+
+**Implication**: Error detection requires parsing output content, not checking system states.
+
+**Pattern**:
+```yaml
+# Hub skill
+Call: worker-skill (context: fork)
+Parse output for "## WORKER_COMPLETE" or "## WORKER_FAILED"
+Handle accordingly
+```
+
+---
+
 ## Pattern: Hub-and-Spoke Orchestration
 
 **When**: Multi-step workflows (>3 steps) with high-volume intermediate output

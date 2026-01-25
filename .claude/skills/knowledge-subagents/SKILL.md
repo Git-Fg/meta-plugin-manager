@@ -1,12 +1,14 @@
 ---
 name: knowledge-subagents
-description: Subagent architecture knowledge. Use when understanding agent types, coordination, or configuration. For creating agents, use create-subagent factory.
+description: "Subagent architecture knowledge: types, frontmatter fields, context detection, coordination patterns. Use when understanding agents or designing workflows. For creating agents, use create-subagent factory."
 user-invocable: false
 ---
 
 # Knowledge: Subagents
 
 Subagents are **isolated workers** that execute tasks in a separate context window. They exist to prevent conversation pollution when tasks produce high-volume output or require dedicated focus.
+
+**Think of subagents as specialist consultants** - you bring them in when their specific expertise is needed, and they work in their own dedicated space.
 
 **For creating agents**: Use the `create-subagent` factory skill.
 
@@ -17,7 +19,20 @@ Subagents are **isolated workers** that execute tasks in a separate context wind
 - **Yes** → Spawn a subagent
 - **No** → Use native tools (Read, Grep, Bash)
 
-Subagent overhead (new context + initialization) is only justified when isolation provides value.
+**Why it matters**: Subagent overhead (new context + initialization) is only justified when isolation provides value. If a task won't clutter the conversation, the overhead isn't worth it.
+
+## When to Use Subagents
+
+**Use subagents for**:
+- High-volume output (extensive grep, repo traversal)
+- Noisy exploration that clutters conversation
+- Tasks requiring separate context window
+- Specialized expertise (analysis, review, testing)
+
+**Don't use subagents for**:
+- Simple tasks (use native tools directly)
+- Tasks that need conversation history
+- Low-volume operations
 
 ## Anatomy of a Subagent
 

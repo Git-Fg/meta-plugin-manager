@@ -1,17 +1,43 @@
 # Common Anti-Patterns
 
+**Trust your intelligence. These patterns help recognize when things go wrong. Adapt based on context.**
+
 ---
 
-# FOR DIRECT USE
+## Recognition-First Approach
 
-⚠️ **Follow these rules when building skills and workflows** - these are actions to avoid.
+Think of anti-patterns as "smell tests" - quick checks that reveal deeper issues. Instead of memorizing rules, ask recognition questions:
 
+- "Could the description alone suffice?"
+- "Can this work standalone?"
+- "Is the overhead justified?"
+
+If the answer suggests a problem, look deeper.
+
+---
+
+## DO/DON'T Quick Reference
+
+**DO:**
+- ✅ Trust AI intelligence for quality evaluation
+- ✅ Use conversational tone ("you might", "consider")
+- ✅ Provide principles, not prescriptions
+- ✅ Include "Why it matters" explanations
+
+**DON'T:**
+- ❌ Use "ALWAYS/NEVER/MUST" for non-critical things
+- ❌ Provide exhaustive examples for simple patterns
+- ❌ Explain Claude-obvious concepts
+- ❌ Create skills that just invoke commands
+
+---
 
 ## Architectural Anti-Patterns
 
 **❌ Regular skill chains expecting return** - Regular→Regular is one-way handoff
 - skill-a calls skill-b → skill-b becomes final output
 - skill-a NEVER resumes
+- **Evidence**: Test 1.2 - skill-a → skill-b → END (skill-c never called)
 
 **❌ Context-dependent forks** - Don't fork if you need caller context
 - Forked skills cannot access caller's conversation history
@@ -26,6 +52,16 @@
 - Hub Skills delegate to knowledge skills
 - For aggregation, ALL workers MUST use `context: fork`
 
+**❌ Assuming nested forking doesn't work** - Forked skills can call other forked skills
+- Nested forking validated to depth 2+
+- Control returns properly at each level
+- **Evidence**: Test 4.2 - forked-outer → forked-inner → forked-outer
+
+**❌ Assuming system-level error detection in forked skills** - Forked failures are content
+- When forked skills fail, they complete normally from system perspective
+- Error detection requires parsing output content
+- **Evidence**: Test 8.1 - Errors are content, not system states
+
 **❌ Non-self-sufficient skills** - Must achieve 80-95% autonomy
 - 0 questions = 95-100% autonomy
 - 1-3 questions = 85-95% autonomy
@@ -38,6 +74,7 @@
 ## Script Anti-Patterns
 
 **❌ Punting to Claude** - Handle error conditions explicitly
+
 ```bash
 # Bad: Just fails and lets Claude figure it out
 return open(path).read()
@@ -53,7 +90,14 @@ except FileNotFoundError:
     return ''
 ```
 
+**Recognition**: Script assumes success, no error handling
+
+**Fix**: Add try/except with fallback behavior
+
+---
+
 **❌ Magic numbers** - Undocumented configuration constants
+
 ```bash
 # Bad: Why 47? Why 5?
 TIMEOUT=47
@@ -64,7 +108,14 @@ RETRIES=5
 MAX_RETRIES=3
 ```
 
+**Recognition**: Numbers without explanation
+
+**Fix**: Add comments explaining WHY values chosen
+
+---
+
 **❌ Brittle paths** - Windows-style backslashes or relative cd
+
 ```bash
 # Bad: Unreliable, breaks context
 cd ../scripts
@@ -74,7 +125,14 @@ scripts\validate.sh
 ./.claude/scripts/validate.sh
 ```
 
+**Recognition**: Relative paths, backslashes
+
+**Fix**: Use Unix-style forward slashes, project-relative paths
+
+---
+
 **❌ No validation** - Missing format and error checks
+
 ```bash
 # Bad: Fails cryptically
 jq '.result' "$FILE"
@@ -86,7 +144,15 @@ if ! jq empty "$FILE" 2>/dev/null; then
 fi
 ```
 
+**Recognition**: No input validation before processing
+
+**Fix**: Validate format before operations
+
+---
+
 **❌ Over-scripting** - Scripts for simple or variable tasks
+
+**Recognition**:
 - Simple 1-2 line operations → Use native tools directly
 - Highly variable tasks → Let Claude adapt intelligently
 - One-time operations → Don't script, execute directly
@@ -97,7 +163,7 @@ fi
 - Performance-sensitive operations
 - Explicit error handling and validation
 
-**See**: [skills-domain/references/script-best-practices.md](../skills/skills-domain/references/script-best-practices.md) for complete patterns.
+**See also**: Script Implementation Quick Reference in quick-reference.md
 
 ## Documentation Anti-Patterns
 
@@ -158,43 +224,46 @@ fi
 - Subagents consume multiple prompts
 - Critical for limited prompts (150 prompts/5h plans)
 
+---
 
-# TO KNOW WHEN
+## Troubleshooting Guide
 
-Understanding these patterns helps recognize when anti-patterns emerge.
+### Skill Not Triggering
 
-## Architectural Understanding
+**Recognition**: Description unclear or missing triggers
 
-**Layer 0 (TaskList) vs Layer 2 (Skills)**:
-- TaskList orchestrates complex workflows exceeding autonomous execution
-- Skills implement domain-specific functionality
-- Anti-patterns arise when this relationship is confused
+**Fix**: Rewrite description using What-When-Not framework
+```yaml
+description: "WHAT the skill does. Use when: trigger1, trigger2, trigger3. Not for: anti-triggers."
+```
 
-**"Unhobbling" Principle**:
-- TodoWrite was removed because newer models handle simple tasks autonomously
-- TaskList exists for **complex projects** exceeding autonomous state tracking
-- **Recognition pattern**: "Would this exceed Claude's autonomous state tracking?"
-- If yes → Use TaskList; If no → Use skills directly
+### Constant Questions
 
-**Context Window Spanning**:
-- TaskList enables indefinitely long projects
-- Multi-session collaboration with real-time updates
-- **When to recognize**: Complex workflows that must survive context limits
+**Recognition**: 6+ questions per session (autonomy <80%)
 
-**Natural Language Citations**:
-- TaskList (Layer 0) and built-in tools (Layer 1) require natural language
-- **Why**: Claude already knows how to use them
-- Code examples add context drift risk
-- **Recognition**: Trust AI intelligence for built-in tool usage
+**Fix**: Add concrete patterns, examples, and decision criteria
 
-**Unified Documentation Recognition**:
-- CLAUDE.md and .claude/rules/ are a single unit — always review both together
-- **Recognition pattern**: "Did I check both files when updating documentation?"
-- **Why**: Prevents drift between documentation layers
-- **When to recognize**: Any time CLAUDE.md or .claude/rules/ are modified
+### SKILL.md Too Long
 
-**INCREMENTAL-UPDATE Default Recognition**:
-- Prior conversation exists → Default to INCREMENTAL-UPDATE
-- **Recognition pattern**: "Is there prior conversation with discoverable knowledge?"
-- **Why**: Prior conversation = knowledge generated = capture it
-- **When to recognize**: ANY prior conversation in session, no explicit request needed
+**Recognition**: File exceeds 500 lines
+
+**Fix**: Move detailed content to references/, keep core in SKILL.md
+
+### Commands Not Working
+
+**Recognition**: Command fails or produces wrong output
+
+**Fix**: Verify command is written FOR Claude (instructions), not TO user (messages)
+
+---
+
+## Summary
+
+**Recognition questions beat memorized rules:**
+
+- "Could the description alone suffice?" → Command wrapper anti-pattern
+- "Can this work standalone?" → Non-self-sufficient skills
+- "Is the overhead justified?" → Context fork misuse
+- "Would Claude know this without being told?" → Zero/negative delta
+
+**Think of it this way**: These patterns help recognize problems, not prescribe solutions. Use your judgment based on context.

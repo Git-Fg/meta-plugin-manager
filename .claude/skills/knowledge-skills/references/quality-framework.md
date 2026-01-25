@@ -1,113 +1,99 @@
 # Quality Framework
 
-11-dimensional scoring system for skill quality assessment and production readiness.
+Practical checklist for skill quality assessment and production readiness.
 
 ---
 
-## Scoring Dimensions
+## Quick Assessment Checklist
 
-### 1. Knowledge Delta (20 points)
+Before deploying a skill, run through these practical checks:
+
+### Essential (All Must Pass)
+
+**Description Quality**:
+- [ ] Clearly describes WHAT the skill does
+- [ ] Specifies WHEN to use it (concrete triggers)
+- [ ] Defines boundaries (NOT for X)
+- [ ] No "Use to CREATE/REFACTOR" language
+
+**Autonomy**:
+- [ ] Can complete without asking user questions
+- [ ] Has clear completion marker
+- [ ] Self-contained (no external dependencies assumed)
+- [ ] Trusts AI intelligence (no micromanagement)
+
+**Structure**:
+- [ ] YAML frontmatter valid (name, description)
+- [ ] SKILL.md under 500 lines (or split to references/)
+- [ ] Progressive disclosure: Tier 1 (metadata) → Tier 2 (SKILL.md) → Tier 3 (references)
+- [ ] No extraneous files (README.md, INSTALLATION_GUIDE.md, etc.)
+
+### Important (Apply When Relevant)
+
+**Content Quality**:
+- [ ] Expert-only knowledge (no Claude-obvious explanations)
+- [ ] Principles over prescriptions (teaches WHY, not just HOW)
+- [ ] Practical examples when style matters
+- [ ] Conversational tone (trusts intelligence)
+
+**Trust AI Intelligence**:
+- [ ] No "Step 1, Step 2, Step 3" for obvious operations
+- [ ] No "You must", "You shall", "Required" for non-critical things
+- [ ] "Consider X" rather than "Do X" (allows judgment)
+- [ ] Focuses on domain expertise, not basic programming
+
+### Nice to Have
+
+**Innovation**: Provides unique capability not easily replicated
+**Performance**: Token-efficient workflows
+**Maintainability**: Well-organized, easy to update
+
+---
+
+## Quality Dimensions
+
+### Knowledge Delta
 
 **CRITICAL: Expert-only vs Claude-obvious**
-
-| Score | Criteria |
-|-------|----------|
-| 17-20 | 100% Project-Specific. Zero tutorials. |
-| 13-16 | Mostly expert knowledge. |
-| 8-12  | Contains some generic info. |
-| 0-7   | Fails Delta Principle (tutorials found). |
 
 **Recognition Questions**:
 - Would Claude know this without being told?
 - Is this expert-only or generic information?
 - Does this justify its token cost?
 
-**High Score Indicators**:
+**High Quality Indicators**:
 - 100% project-specific
 - No generic tutorials
 - Expert patterns only
 - Non-obvious insights
 
-**Example**:
-```markdown
-# API Convention Skill
-
-## Our Pattern
-- Routes: `/api/users` (plural)
-- Response: `{ data, error, meta }`
-- Error codes: 400 (validation), 401 (auth), 404 (not found)
-
-## Why This Matters
-Plural routes support HATEOAS. Separate error field prevents data pollution.
-```
-
-**Low Score (0-8)**:
+**Low Quality Indicators**:
 - Generic programming concepts
 - Tutorial-style content
 - Information Claude already knows
 
-### 2. Autonomy (15 points)
+### Autonomy
 
 **80-95% completion without questions**
 
-| Score | Criteria |
-|-------|----------|
-| 13-15 | 90-95% autonomous |
-| 10-12 | 85-89% autonomous |
-| 8-9   | 80-84% autonomous |
-| 0-7   | <80% autonomous |
-
-**How to measure**:
-```bash
-# Test skill execution
-claude --dangerously-skip-permissions -p "Use skill-name" \
-  --output-format stream-json \
-  > test-output.json
-
-# Check for permission denials
-grep '"permission_denials":\s*\[\]' test-output.json && echo "100% autonomy"
-```
-
 **Recognition**: Count questions in test output. 0-1 questions = 95%, 2-3 = 85-90%, 6+ = <80%
 
-**High Score Indicators**:
+**High Quality Indicators**:
 - 0-2 questions asked
 - Completes tasks independently
 - Clear decision criteria
 - Concrete patterns provided
 
-**Example**:
-```markdown
-# Security Scanner
-
-Scan for:
-1. SQL injection (string concat in queries)
-2. XSS (no output encoding)
-3. Auth bypass (missing checks)
-
-Generate report with severity.
-```
-
-**Low Score (0-7)**:
+**Low Quality Indicators**:
 - 6+ questions needed
 - Requires constant guidance
 - Vague instructions
 
-### 3. Discoverability (15 points)
+### Discoverability
 
 **Clear description with triggers (What-When-Not framework)**
 
-| Score | Criteria |
-|-------|----------|
-| 13-15 | Clear WHAT/WHEN/NOT, discoverable, concise |
-| 10-12 | Good triggers, minor verbosity |
-| 7-9   | Adequate triggers, some ambiguity |
-| 4-6   | Unclear triggers, verbose |
-| 0-3   | No clear triggers, or includes "how" language |
-
-**See**: [description-guidelines.md](description-guidelines.md) for complete What-When-Not framework.
-
-**High Score Example**:
+**High Quality Example**:
 ```yaml
 ---
 name: api-conventions
@@ -115,184 +101,39 @@ description: "API design patterns for this codebase. Use when writing endpoints,
 ---
 ```
 
-**Low Score Example**:
+**Low Quality Example**:
 ```yaml
 ---
-name: api-helper
-description: "Helps with API development"
+name: helper
+description: "A helpful skill for development"
 ---
 ```
 
-### 4. Progressive Disclosure (15 points)
+### Progressive Disclosure
 
 **Tier 1/2/3 properly organized**
-
-| Score | Criteria |
-|-------|----------|
-| 13-15 | Perfect tier structure |
-| 10-12 | Good tier structure |
-| 7-9   | Adequate tiers |
-| 4-6   | Poor tiers |
-| 0-3   | No tiers |
 
 **Targets**:
 - Tier 1: ~100 tokens (metadata)
 - Tier 2: <500 lines (SKILL.md)
 - Tier 3: Unlimited (references/)
 
-**See**: [progressive-disclosure.md](progressive-disclosure.md) for complete guide.
-
-**High Score Indicators**:
+**High Quality Indicators**:
 - Tier 1: ~100 token description
 - Tier 2: <500 lines core content
 - Tier 3: references/ for deep details
 
-**Low Score Indicators**:
+**Low Quality Indicators**:
 - Everything in one tier
 - Missing references when needed
 - Tier 2 too long (>500 lines)
 
-### 5. Clarity (15 points)
-**Focus**: Unambiguous instructions
-
-**High Score (14-15)**:
-- Clear, concise language
-- Specific examples
-- No jargon
-- Scannable structure
-
-**Example**:
-```markdown
-## When to Use
-- New API endpoints
-- Modifying existing endpoints
-- Code reviews
-
-## Pattern
-- Route: `/api/{resource}` (plural)
-- Methods: get, post, put, delete
-```
-
-### 6. Completeness (15 points)
-**Focus**: Covers all scenarios
-
-**High Score (14-15)**:
-- Main use cases covered
-- Edge cases addressed
-- Error handling included
-- Integration points clear
-
-### 7. Standards Compliance (15 points)
-**Focus**: Follows Agent Skills spec
-
-**High Score (14-15)**:
-- Valid YAML frontmatter
-- Proper structure
-- Completion markers
-- Agent Skills features used correctly
-
-### 8. Security (10 points)
-**Focus**: Validation, safe execution
-
-**High Score (9-10)**:
-- Input validation
-- Safe defaults
-- No dangerous operations
-- Clear security guidance
-
-### 9. Performance (10 points)
-**Focus**: Efficient workflows
-
-**High Score (9-10)**:
-- Minimal context needed
-- Fast execution
-- Parallelizable when possible
-- No unnecessary operations
-
-### 10. Maintainability (10 points)
-**Focus**: Well-structured
-
-**High Score (9-10)**:
-- Modular design
-- Clear organization
-- Easy to update
-- Minimal dependencies
-
-### 11. Innovation (5 points)
-**Focus**: Unique value
-
-**High Score (5)**:
-- Novel approach
-- Unique insights
-- Creative problem-solving
-- Adds genuine value
-
-## Quality Assessment Example
-
-### Skill: "api-conventions"
-
-**YAML Frontmatter**:
-```yaml
 ---
-name: api-conventions
-description: "RESTful API design patterns for this project. Use when creating, modifying, or reviewing endpoints."
-user-invocable: false
----
-```
-**Score**: 15/15 (Perfect)
-
-**Tier 1**: ✅ Clear description, proper length
-
-**Tier 2** (SKILL.md):
-```markdown
-# API Conventions
-
-## Our Standards
-- Base: `/api/v1/{resource}`
-- Plural resources: `/api/v1/users` not `/api/v1/user`
-- Methods: GET (read), POST (create), PUT (replace), PATCH (update), DELETE (remove)
-- Response: `{ data, error, meta }`
-
-## Examples
-
-**Create User**:
-```http
-POST /api/v1/users
-Content-Type: application/json
-
-{ "email": "user@example.com", "name": "User Name" }
-
-Response:
-{
-  "data": { "id": 1, "email": "user@example.com", "name": "User Name" },
-  "error": null,
-  "meta": { "version": "v1" }
-}
-```
-
-## Error Handling
-- 400: Validation error (missing fields, invalid format)
-- 401: Authentication required
-- 403: Insufficient permissions
-- 404: Resource not found
-- 409: Conflict (duplicate email)
-- 500: Server error
-
-See [errors.md](references/errors.md) for complete error catalog.
-```
-**Score**: 12/15 (Good - some scenarios missing)
-
-**Progressive Disclosure**:
-- Tier 1: ✅ ~80 tokens
-- Tier 2: ✅ ~150 lines
-- Tier 3: ✅ references/errors.md
-**Score**: 14/15 (Excellent)
-
-**Total Score**: 14+12+14+... = 140/160 (Grade: B+, Production Ready)
 
 ## Common Quality Issues
 
 ### Issue 1: Generic Knowledge (Low Delta)
+
 **Problem**:
 ```markdown
 # API Skill
@@ -314,10 +155,11 @@ POST - Create data
 - Response: `{ data, error, meta }`
 
 ## Why This Matters
-Separate error field prevents data pollution...
+Plural routes support HATEOAS. Separate error field prevents data pollution.
 ```
 
 ### Issue 2: Low Autonomy
+
 **Problem**:
 ```markdown
 # File Organizer
@@ -340,6 +182,7 @@ Output: List of moves.
 Questions: 0
 
 ### Issue 3: Poor Discoverability
+
 **Problem**:
 ```yaml
 ---
@@ -357,6 +200,7 @@ description: "API design standards for this project. Use when creating, modifyin
 ```
 
 ### Issue 4: Missing Progressive Disclosure
+
 **Problem**:
 ```markdown
 # API Skill (800 lines)
@@ -374,103 +218,43 @@ See [advanced.md](references/advanced.md) for advanced scenarios.
 See [troubleshooting.md](references/troubleshooting.md) for issues.
 ```
 
-## Quick Assessment Checklist
+---
 
-**Before production, verify**:
-- [ ] Knowledge Delta: Is this expert-only? (18-20/20)
-- [ ] Autonomy: 0-3 questions? (12-15/15)
-- [ ] Discoverability: Clear triggers? (12-15/15)
-- [ ] Progressive Disclosure: Proper tiers? (12-15/15)
-- [ ] Clarity: Unambiguous? (12-15/15)
-- [ ] Completeness: All scenarios? (12-15/15)
-- [ ] Standards: Agent Skills spec? (12-15/15)
-- [ ] Security: Safe execution? (8-10/10)
-- [ ] Performance: Efficient? (8-10/10)
-- [ ] Maintainability: Well-structured? (8-10/10)
-- [ ] Innovation: Unique value? (4-5/5)
+## Recognition Questions
 
-**Total Score**: ≥128/160 (8.0/10) for production
+Use these questions to assess quality:
 
-## Improving Low Scores
+**Knowledge Delta**:
+- "Would Claude know this without being told?"
+- "Is this expert-only or generic?"
+- "Does this justify its token cost?"
 
-### If Knowledge Delta <15:
-- Remove generic content
-- Add project-specific patterns
-- Include expert insights
-- Focus on non-obvious decisions
+**Autonomy**:
+- "How many questions does this skill ask?"
+- "Can it complete tasks independently?"
+- "Are concrete patterns provided?"
 
-### If Autonomy <12:
-- Add concrete patterns
-- Define clear outputs
-- Include decision criteria
-- Provide examples
+**Discoverability**:
+- "Does description signal WHAT/WHEN/NOT?"
+- "Are triggers specific and clear?"
+- "Can Claude tell when to use this?"
 
-### If Discoverability <12:
-- Rewrite description with WHAT/WHEN/NOT
-- Use specific triggers
-- Avoid vague language
-- Be explicit about use cases
-
-### If Progressive Disclosure <12:
-- Split into tiers
-- Move details to references/
-- Keep Tier 2 <500 lines
-- Create references/ when needed
-
-## Quality Grades
-
-| Grade | Score Range | Description | Production Ready |
-|-------|-------------|-------------|------------------|
-| **A** | 144-160 | Exemplary skill | Yes |
-| **B** | 128-143 | Good skill | Yes |
-| **C** | 112-127 | Adequate skill | No (needs work) |
-| **D** | 96-111 | Poor skill | No (major issues) |
-| **F** | 0-95 | Failing skill | No (critical errors) |
+**Progressive Disclosure**:
+- "Is SKILL.md under 500 lines?"
+- "Are details in references/ when needed?"
+- "Is tier structure clear?"
 
 ---
 
 ## Success Criteria
 
-**Production Ready**: ≥128/160 (Grade B)
+**Production Ready**: Pass all Essential checks + most Important checks
 
-**Minimum Scores for Production**:
-- Knowledge Delta: ≥16/20 (CRITICAL)
-- Autonomy: ≥10/15
-- Discoverability: ≥12/15
-- Progressive Disclosure: ≥12/15
-- Clarity: ≥12/15
-- Completeness: ≥12/15
-- Standards Compliance: ≥12/15
-- Security: ≥8/10
-- Performance: ≥8/10
-- Maintainability: ≥8/10
-- Innovation: ≥3/5
-
----
-
-## Enhancement Priorities
-
-**High Impact Improvements (+16-32 points)**:
-
-| Improvement | Points Impact | Dimension |
-|-------------|---------------|-----------|
-| Fix description (What-When-Not) | +4 | Discoverability |
-| Add concrete examples | +8 | Autonomy |
-| Implement progressive disclosure | +4 | Progressive Disclosure |
-| Remove generic content | +6 | Knowledge Delta |
-| Add validation | +3 | Security |
-
-**Quick Reference - What to prioritize first**:
-1. **Knowledge Delta** (20 pts) - Remove all generic/tutorial content
-2. **Autonomy** (15 pts) - Add examples, reduce questions
-3. **Discoverability** (15 pts) - Fix description using What-When-Not
-4. **Progressive Disclosure** (15 pts) - Ensure proper tier structure
-
-**See also**:
-- [autonomy-design.md](autonomy-design.md) - Improving autonomy scores
-- [description-guidelines.md](description-guidelines.md) - What-When-Not framework
-- [progressive-disclosure.md](progressive-disclosure.md) - Tier structure patterns
-- [anti-patterns.md](anti-patterns.md) - Common quality issues
+**Minimum for Production**:
+- Knowledge Delta: Expert-only (no generic content)
+- Autonomy: 80%+ (0-5 questions per session)
+- Discoverability: Clear WHAT/WHEN/NOT triggers
+- Progressive Disclosure: Proper tier structure
 
 ---
 
@@ -482,4 +266,4 @@ See [troubleshooting.md](references/troubleshooting.md) for issues.
 3. **Clarity**: Easy to understand and apply
 4. **Structure**: Well-organized and maintainable
 
-**Target**: 8.0/10 (128/160) for production readiness
+**Recognition over prescription**: Use these questions as guideposts, not rigid rules. Context matters.
