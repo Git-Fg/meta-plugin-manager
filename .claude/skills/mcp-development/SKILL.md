@@ -3,114 +3,37 @@ name: mcp-development
 description: This skill should be used when the user asks to "add MCP server", "integrate MCP", "configure MCP", "build MCP tool", "use .mcp.json", mentions Model Context Protocol, or needs guidance on MCP transports (HTTP, stdio), primitives (tools/resources/prompts), plugin integration, or 2026 features (Tool Search, Resources, Prompts).
 ---
 
-# MCP Development: Architectural Refiner
+# MCP Development Guide
 
-**Role**: Transform intent into portable, integrated MCP servers
-**Mode**: Architectural pattern application (ensure output has specific traits)
-
----
-
-## Architectural Pattern Application
-
-When building an MCP server, apply this process:
-
-1. **Analyze Intent** - What type of MCP server and what traits needed?
-2. **Apply Teaching Formula** - Bundle condensed philosophy into output
-3. **Enforce Portability Invariant** - Ensure works in isolation
-4. **Verify Traits** - Check transport mechanisms, server configuration, Success Criteria
+**Purpose**: Help you create Model Context Protocol servers that connect Claude to external systems
 
 ---
 
-## Core Understanding: What MCP Servers Are
+## What MCP Servers Are
 
-**Metaphor**: MCP servers are "connection bridges"—they connect Claude to external systems, providing tools, resources, and prompts through standardized protocols.
+MCP (Model Context Protocol) servers are connectors that give Claude access to external systems, databases, APIs, and data sources through standardized primitives.
 
-**Definition**: MCP (Model Context Protocol) servers are open-source standard connectors that give Claude Code access to external systems, databases, APIs, and data sources through unified primitives.
+**Key point**: Good MCP servers work independently and don't need external documentation to configure properly.
 
-**Key insight**: MCP servers bundle their own transport logic and server configuration. They don't depend on external documentation to integrate properly.
-
-✅ Good: MCP server includes bundled transport configuration with authentication patterns
+✅ Good: MCP server includes complete transport configuration with authentication
 ❌ Bad: MCP server references external documentation for configuration
 Why good: MCP servers must self-configure without external dependencies
 
-Recognition: "Would this MCP server work if moved to a project with no rules?" If no, bundle the configuration philosophy.
+**Question**: Would this MCP server work if moved to a project with no rules? If no, include the necessary configuration directly.
 
 ---
 
-## MCP Server Traits: What Portable MCP Servers Must Have
+## What Good MCP Servers Have
 
-### Trait 1: Portability (MANDATORY)
+### 1. Complete Transport Configuration
 
-**Requirement**: MCP server works in isolation without external dependencies
+**Good MCP servers define specific transport with all necessary details.**
 
-**Enforcement**:
-- Bundle condensed Seed System philosophy (Delta Standard, Transport Mechanisms, Teaching Formula)
-- Include Success Criteria for self-validation
-- Provide complete server configuration examples
-- Never reference .claude/rules/ files
+Choose the right transport type:
+- **HTTP** - For remote/cloud services
+- **stdio** - For local processes
 
-**Example**:
-```
-## Core Philosophy
-
-Think of MCP servers like connection bridges: they connect Claude to external systems.
-
-✅ Good: Include complete transport configuration with auth patterns
-❌ Bad: Vague transport setup without specific examples
-Why good: Complete configuration enables reliable integration
-
-Recognition: "Could this MCP server configure itself without external documentation?" If no, add configuration patterns.
-```
-
-### Trait 2: Teaching Formula Integration
-
-**Requirement**: Every MCP server must teach through metaphor, contrast, and recognition
-
-**Enforcement**: Include all three elements:
-1. **1 Metaphor** - For understanding (e.g., "Think of X like a Y")
-2. **2 Contrast Examples** - Good vs Bad with rationale
-3. **3 Recognition Questions** - Binary self-checks
-
-**Template**:
-```
-Metaphor: [Understanding aid]
-
-✅ Good: [Concrete example]
-❌ Bad: [Concrete example]
-Why good: [Reason]
-
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-```
-
-### Trait 3: Self-Containment
-
-**Requirement**: MCP server owns all its content
-
-**Enforcement**:
-- Include all configuration examples directly
-- Provide complete .mcp.json setup
-- Bundle necessary transport philosophy
-- Never reference external files
-
-✅ Good: Complete .mcp.json with embedded transport logic
-❌ Bad: "See external documentation for configuration"
-Why good: Self-contained servers work without external references
-
-Recognition: "Does MCP server reference files outside itself?" If yes, inline the content.
-
-### Trait 4: Transport Mechanisms
-
-**Requirement**: MCP server defines specific transport with clear configuration
-
-**Enforcement**:
-- Specific transport type (HTTP, stdio)
-- Complete configuration schema
-- Authentication patterns included
-- Best practices embedded
-
-**Example**:
+**HTTP Example**:
 ```json
 {
   "mcpServers": {
@@ -125,181 +48,7 @@ Recognition: "Does MCP server reference files outside itself?" If yes, inline th
 }
 ```
 
-### Trait 5: Success Criteria Invariant
-
-**Requirement**: MCP server includes self-validation logic
-
-**Template**:
-```
-## Success Criteria
-
-This MCP server is complete when:
-- [ ] Valid .mcp.json configuration
-- [ ] Specific transport type with complete configuration
-- [ ] Teaching Formula: 1 Metaphor + 2 Contrasts + 3 Recognition
-- [ ] Portability: Works in isolation, bundled philosophy, no external refs
-- [ ] Transport: HTTP or stdio with auth patterns
-- [ ] Primitives: Tools, Resources, or Prompts defined
-
-Self-validation: Verify each criterion without external dependencies. If all checked, MCP server meets Seed System standards.
-```
-
-**Recognition**: "Could a user validate this MCP server using only its content?" If no, add Success Criteria.
-
----
-
-## Anatomical Requirements
-
-### Required: MCP Server Configuration
-
-**Location:** `.mcp.json` or settings.json
-
-**Structure**:
-```json
-{
-  "mcpServers": {
-    "server-name": {
-      "type": "http|stdio",
-      "url|command": "[configuration]",
-      "headers|env": "[auth configuration]"
-    }
-  }
-}
-```
-
-### Required: Transport Types
-
-**HTTP** (recommended for remote):
-- Remote/cloud services
-- OAuth and Bearer token auth
-- Stateless interactions
-
-**stdio** (local processes):
-- Local file system access
-- Custom MCP servers
-- Environment variable auth
-
-### Required: MCP Primitives
-
-**Tools**: Callable functions with input validation
-**Resources**: Read-only data via @-mentions
-**Prompts**: Reusable workflow templates
-
-**Recognition**: "Which primitive matches the integration need?" Select specific primitive for targeted functionality.
-
----
-
-## Pattern Application Framework
-
-### Step 1: Analyze Intent
-
-**Question**: What type of MCP server and what traits needed?
-
-**Analysis**:
-- Remote API integration? → HTTP transport with OAuth
-- Local file access? → stdio transport with filesystem server
-- Database connection? → HTTP transport with Bearer tokens
-- Custom tools? → stdio transport with custom server
-
-**Example**:
-```
-Intent: Build MCP server for remote API
-Analysis:
-- Remote service → Need HTTP transport
-- API integration → Include Bearer token auth
-- Stateless → Use HTTP with proper headers
-Output traits: Portability + Teaching Formula + Transport + Success Criteria
-```
-
-### Step 2: Apply Teaching Formula
-
-**Requirement**: Bundle condensed Seed System philosophy
-
-**Elements to include**:
-1. **Metaphor**: "MCP servers are connection bridges..."
-2. **Delta Standard**: Good Component = Expert Knowledge - What Claude Knows
-3. **Transport Mechanisms**: HTTP vs stdio explained
-4. **2 Contrast Examples**: Good vs Bad server configuration
-5. **3 Recognition Questions**: Binary self-checks for quality
-
-**Template integration**:
-```markdown
-## Core Philosophy
-
-Metaphor: "Think of MCP servers like [metaphor]..."
-
-✅ Good: type: "http" with complete URL and auth
-❌ Bad: type: "stdio" without command configuration
-Why good: Complete configuration enables reliable connection
-
-Recognition: "Does server include specific transport configuration?" → If no, add transport patterns
-Recognition: "Is authentication properly configured?" → If no, include auth patterns
-Recognition: "Could this work without external documentation?" → If no, bundle philosophy
-```
-
-### Step 3: Enforce Portability Invariant
-
-**Requirement**: Ensure MCP server works in isolation
-
-**Checklist**:
-- [ ] Condensed philosophy bundled (Delta Standard, Transport, Teaching Formula)
-- [ ] Success Criteria included
-- [ ] Complete transport configuration
-- [ ] No external .claude/rules/ references
-- [ ] Authentication patterns embedded
-
-**Verification**: "Could this MCP server survive being moved to a fresh project with no .claude/rules?" If no, fix portability issues.
-
-### Step 4: Verify Traits
-
-**Requirement**: Check all mandatory traits present
-
-**Verification**:
-- Portability Invariant ✓
-- Teaching Formula (1 Metaphor + 2 Contrasts + 3 Recognition) ✓
-- Self-Containment ✓
-- Transport Mechanisms ✓
-- Success Criteria Invariant ✓
-
-**Recognition**: "Does MCP server meet all five traits?" If any missing, add them.
-
----
-
-## Architecture Patterns
-
-### Pattern 1: HTTP Transport Configuration
-
-**Trait**: Remote service integration
-
-**Application**: Use HTTP for cloud APIs and services
-
-**Example**:
-```json
-{
-  "mcpServers": {
-    "service-name": {
-      "type": "http",
-      "url": "https://api.example.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${API_TOKEN}"
-      }
-    }
-  }
-}
-```
-
-**Best practices**:
-- Always use HTTPS
-- Use OAuth when supported
-- Store tokens in environment variables
-
-### Pattern 2: stdio Transport Configuration
-
-**Trait**: Local process integration
-
-**Application**: Use stdio for local servers
-
-**Example**:
+**stdio Example**:
 ```json
 {
   "mcpServers": {
@@ -314,19 +63,47 @@ Recognition: "Could this work without external documentation?" → If no, bundle
 }
 ```
 
-**Best practices**:
-- Use ${CLAUDE_PROJECT_DIR} for local paths
-- Use ${CLAUDE_PLUGIN_ROOT} for plugin portability
-- Set PYTHONUNBUFFERED for Python servers
-- Log to stderr, not stdout
+✅ Good: Complete transport configuration with URL/command and auth
+❌ Bad: Vague transport setup without specific details
+Why good: Complete configuration enables reliable connection
 
-### Pattern 3: MCP Primitives Definition
+### 2. Proper Authentication
 
-**Trait**: Tools, Resources, and Prompts
+**Good MCP servers include authentication patterns.**
 
-**Application**: Define specific primitives for integration
+For HTTP:
+- Use HTTPS always
+- Include Authorization headers
+- Store tokens in environment variables
 
-**Tools example**:
+```json
+{
+  "type": "http",
+  "url": "https://api.example.com/mcp",
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}"
+  }
+}
+```
+
+For stdio:
+- Use environment variables
+- Set process-specific env vars
+
+```json
+{
+  "command": "server",
+  "env": {
+    "API_TOKEN": "${API_TOKEN}"
+  }
+}
+```
+
+### 3. Defined Primitives
+
+**Good MCP servers define specific primitives for integration.**
+
+**Tools** - Callable functions:
 ```json
 {
   "name": "get_weather",
@@ -344,115 +121,287 @@ Recognition: "Could this work without external documentation?" → If no, bundle
 }
 ```
 
----
+**Resources** - Read-only data via @-mentions
+**Prompts** - Reusable workflow templates
 
-## Common Transformations
+### 4. No External Dependencies
 
-### Transform Tutorial → Architectural
+**Good MCP servers work in isolation.**
 
-**Before** (tutorial):
-```
-Step 1: Understand MCP basics
-Step 2: Configure transport
-Step 3: Add primitives
-...
-```
+- Don't reference .claude/rules/ files
+- Don't link to external documentation
+- Include all configuration directly
+- Bundle necessary patterns
 
-**After** (architectural):
-```
-Analyze Intent → Apply Teaching Formula → Enforce Portability → Verify Traits
-```
+✅ Good: Self-contained with all configuration included
+❌ Bad: References external files for critical setup
+Why good: Self-contained servers work anywhere
 
-**Why**: Architectural patterns ensure output has required traits, not just follows steps.
-
-### Transform Reference → Bundle
-
-**Before** (referenced):
-```
-"See MCP documentation for configuration"
-```
-
-**After** (bundled):
-```
-## Core Philosophy
-
-Bundle transport patterns directly in server:
-
-Think of MCP servers like connection bridges...
-
-✅ Good: [example]
-❌ Bad: [example]
-Why good: [reason]
-```
-
-**Why**: MCP servers must work in isolation.
+**Question**: Does this server assume external documentation? If yes, include that configuration directly.
 
 ---
 
-## Quality Validation
+## How to Structure MCP Servers
 
-### Portability Test
+### Configuration Location
 
-**Question**: "Could this MCP server work if moved to a project with zero .claude/rules?"
+MCP servers configure in `.mcp.json` or `settings.json`:
 
-**If NO**:
-- Bundle condensed philosophy
-- Add Success Criteria
-- Remove external references
-- Include complete transport configuration
+```json
+{
+  "mcpServers": {
+    "server-name": {
+      "type": "http|stdio",
+      "url|command": "[configuration]",
+      "headers|env": "[auth configuration]"
+    }
+  }
+}
+```
 
-### Teaching Formula Test
+### Transport Types
 
-**Checklist**:
-- [ ] 1 Metaphor present
-- [ ] 2 Contrast Examples (good/bad) with rationale
-- [ ] 3 Recognition Questions (binary self-checks)
+**HTTP Transport** - For remote services:
+- Use for cloud APIs and remote services
+- Include proper authentication
+- Always use HTTPS
 
-**If any missing**: Add them using Teaching Formula Arsenal
+**stdio Transport** - For local processes:
+- Use for local file system access
+- Good for custom MCP servers
+- Use environment variables for auth
 
-### Transport Configuration Test
+### MCP Primitives
 
-**Question**: "Does server include complete transport configuration?"
+**Tools** - Callable functions with input validation
+**Resources** - Read-only data via @-mentions
+**Prompts** - Reusable workflow templates
 
-**If NO**: Add specific transport patterns with auth
-
-### Primitive Definition Test
-
-**Question**: "Are MCP primitives properly defined?"
-
-**If NO**: Include Tools, Resources, or Prompts schema
-
----
-
-## Success Criteria
-
-This MCP-development guidance is complete when:
-
-- [ ] Architectural pattern clearly defined (Analyze → Apply → Enforce → Verify)
-- [ ] Teaching Formula integrated (1 Metaphor + 2 Contrasts + 3 Recognition)
-- [ ] Portability Invariant explained with enforcement checklist
-- [ ] All five traits defined (Portability, Teaching Formula, Self-Containment, Transport Mechanisms, Success Criteria)
-- [ ] Pattern application framework provided
-- [ ] Transport configurations included
-- [ ] Quality validation tests included
-- [ ] Success Criteria present for self-validation
-
-Self-validation: Verify MCP-development meets Seed System standards using only this content. No external dependencies required.
+**Question**: Which primitive matches your integration need? Choose the specific primitive for your use case.
 
 ---
 
-## Reference: The Five Mandatory Traits
+## Common Patterns
 
-Every MCP server must have:
+### HTTP Transport for Remote APIs
 
-1. **Portability** - Works in isolation
-2. **Teaching Formula** - 1 Metaphor + 2 Contrasts + 3 Recognition
-3. **Self-Containment** - Owns all content
-4. **Transport Mechanisms** - HTTP or stdio configuration
-5. **Success Criteria** - Self-validation logic
+Use HTTP for cloud services and remote APIs:
 
-**Recognition**: "Does this MCP server have all five traits?" If any missing, add them.
+```json
+{
+  "mcpServers": {
+    "remote-api": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${API_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**Best practices**:
+- Always use HTTPS
+- Store tokens in environment variables
+- Include proper headers
+
+### stdio Transport for Local Servers
+
+Use stdio for local file system and custom servers:
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/allowed/path"],
+      "env": {
+        "LOG_LEVEL": "debug"
+      }
+    }
+  }
+}
+```
+
+**Best practices**:
+- Use `${CLAUDE_PROJECT_DIR}` for portable paths
+- Use `${CLAUDE_PLUGIN_ROOT}` for plugin distribution
+- Log to stderr, not stdout
+
+### Defining MCP Tools
+
+Tools are callable functions with validation:
+
+```json
+{
+  "name": "query_database",
+  "description": "Query the database for records",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "table": {
+        "type": "string",
+        "description": "Table name to query"
+      },
+      "filter": {
+        "type": "string",
+        "description": "SQL WHERE clause"
+      }
+    },
+    "required": ["table"]
+  }
+}
+```
+
+**Required fields**:
+- `name` - Function identifier
+- `description` - What it does
+- `inputSchema` - Validation rules
 
 ---
 
-**Remember**: MCP servers are connection bridges. They connect Claude to external systems through standardized protocols. Bundle the philosophy. Enforce the invariants. Verify the traits.
+## Common Mistakes
+
+### Mistake 1: Incomplete Transport Configuration
+
+❌ Bad:
+```json
+{
+  "mcpServers": {
+    "server": {
+      "type": "http"
+    }
+  }
+}
+```
+
+✅ Good:
+```json
+{
+  "mcpServers": {
+    "server": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${API_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**Why**: Complete configuration enables reliable connection.
+
+### Mistake 2: Missing Authentication
+
+❌ Bad:
+```json
+{
+  "type": "http",
+  "url": "https://api.example.com/mcp"
+}
+```
+
+✅ Good:
+```json
+{
+  "type": "http",
+  "url": "https://api.example.com/mcp",
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}"
+  }
+}
+```
+
+**Why**: Authentication is required for secure access.
+
+### Mistake 3: Hardcoded Credentials
+
+❌ Bad:
+```json
+{
+  "headers": {
+    "Authorization": "Bearer abc123secret"
+  }
+}
+```
+
+✅ Good:
+```json
+{
+  "headers": {
+    "Authorization": "Bearer ${API_TOKEN}"
+  }
+}
+```
+
+**Why**: Environment variables keep credentials secure.
+
+### Mistake 4: Vague Tool Definitions
+
+❌ Bad:
+```json
+{
+  "name": "tool",
+  "description": "Does something"
+}
+```
+
+✅ Good:
+```json
+{
+  "name": "get_user_data",
+  "description": "Get user profile information by ID",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "description": "User ID to retrieve"
+      }
+    },
+    "required": ["userId"]
+  }
+}
+```
+
+**Why**: Clear definitions enable proper validation.
+
+---
+
+## Quality Checklist
+
+A good MCP server:
+
+- [ ] Has complete transport configuration (HTTP or stdio)
+- [ ] Includes proper authentication
+- [ ] Uses environment variables for credentials
+- [ ] Defines primitives clearly (Tools, Resources, Prompts)
+- [ ] Works without external dependencies
+- [ ] Has no references to .claude/rules/ files
+
+**Self-check**: Could this server work in a fresh project? If not, it needs more configuration.
+
+---
+
+## Summary
+
+MCP servers are connectors that give Claude access to external systems. Good servers:
+
+- **Connect properly** - Complete transport configuration
+- **Authenticate securely** - Use environment variables
+- **Define clearly** - Specific primitives with validation
+- **Work anywhere** - No external dependencies
+
+Keep the focus on:
+- Completeness over minimalism
+- Security over convenience
+- Clarity over complexity
+- Self-contained over dependent
+
+**Question**: Is your MCP server clear enough that it would configure correctly without external documentation?
+
+---
+
+**Final tip**: The best MCP server is one that connects reliably without requiring external setup. Focus on that.

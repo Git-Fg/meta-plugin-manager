@@ -6,199 +6,141 @@ user-invocable: true
 
 # MD Metacritic
 
-This is the **MD Metacritic**, an expert execution skill that autonomously investigates conversations to diagnose issues and improve project rules for preventing future problems.
+Think of MD Metacritic as a **diagnostic detective**—investigating conversations to identify patterns of mistakes, extracting root causes, and proposing specific rules to prevent future issues.
 
-You must NOT use "agents", when the users ask you to read the history it means look back at our actual conversation. 
+## Core Directive
 
-**Execution Mode**: This skill is manually invoked by the user. Execute:
-1. **Autonomously investigate** the previous conversation and all available context
-2. **Diagnose issues** that could have been prevented with better project rules
-3. **Intelligently determine** which questions to ask and when
-4. **Propose specific improvements** to CLAUDE.md or .claude/rules/ based on user input
+**Execute autonomously:**
+1. Investigate conversation and context
+2. Diagnose preventable issues
+3. Propose specific, actionable rules
+4. Apply selected improvements
 
-## Recommended Context Validation
+**You must NOT use "agents"** - when users ask to read history, examine the actual conversation.
 
-Read these URLs when accuracy matters for diagnosing project rule gaps:
+## Recognition Patterns
 
-### Primary Documentation
-- **Agent Skills Specification**: https://code.claude.com/docs/en/memory
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Cache**: 15 minutes minimum
-  - **Content**: Learn how to manage Claude Code’s memory across sessions with different memory locations and best practices.
+**When to use learn-mdrules:**
+```
+✅ Good: "What went wrong in our conversation?"
+✅ Good: "How can we prevent these issues?"
+✅ Good: "Improve project rules"
+✅ Good: "Analyze recurring mistakes"
+❌ Bad: Simple file edits
+❌ Bad: Single-purpose tool requests
 
-- **CLAUDE.md Best Practices**: https://code.claude.com/docs/en/best-practices
-  - **Tool**: `mcp__simplewebfetch__simpleWebFetch`
-  - **Cache**: 15 minutes minimum
-  - **Content**: Tips and patterns for getting the most out of Claude Code, from configuring your environment to scaling across parallel sessions.
+Why good: Pattern-based diagnosis requires systematic investigation and rule formulation.
+```
 
-### When to Fetch vs Skip
-**Fetch when**:
-- Documentation may have changed since last diagnosis
-- Starting new type of project analysis
-- Uncertain about current best practices for project rules
+**Pattern Match:**
+- User mentions "diagnose", "analyze what went wrong", "improve rules"
+- Recurring issues or repeated questions
+- Mistakes that could be prevented
+- Need to propose rules for CLAUDE.md
 
-**Skip when**:
-- Simple pattern recognition based on known issues
-- Working on familiar codebase structure
-- Recently read and documentation is stable
-
-Apply judgment: Validation is needed for accurate diagnosis when uncertain about current best practices.
+**Recognition:** "Do you need systematic diagnosis of conversation issues?" → Use learn-mdrules.
 
 ## The Loop
 
-Execute this iterative loop to diagnose and improve project rules.
+Execute this iterative process:
 
-### Phase 1: Autonomous Investigation & Analysis
-1. **Scan Context**: Review all available information:
+### Phase 1: Autonomous Investigation
+1. **Scan Context**
    - Previous conversation history
-   - Current project structure (.claude/, CLAUDE.md, etc.)
-   - User remarks or prompts about issues
-   - Files in the repository
-   - Any error logs or patterns
+   - Project structure (.claude/, CLAUDE.md)
+   - User remarks about issues
+   - Error logs or patterns
 
-2. **Identify Issues**: Look for:
+2. **Identify Issues**
    - Mistakes or errors made
-   - Repeated questions or clarifications needed
+   - Repeated questions needed
    - Suboptimal approaches taken
    - User corrections or interventions
    - Time wasted on obvious things
    - Assumptions that led to errors
 
-3. **Extract Patterns**: Analyze:
-   - What could have been known upfront from project rules?
+3. **Extract Patterns**
+   - What could have been known from project rules?
    - What repeated explanations were needed?
    - What context was missing?
    - What assumptions caused problems?
 
-4. **Determine Root Cause**: Classify missing knowledge:
-   - **Project-specific** (should be in CLAUDE.md)
-   - **Universal principle** (should be in .claude/rules/)
-   - **Tool pattern** (should be documented)
-   - **Workflow guidance** (should be in project memory)
-
-**Concrete Example**:
-```markdown
-# Issue Analysis:
-Conversation: User asked to "setup testing"
-Result: Created Jest config, but project uses Vitest
-Error: Wasted 15 minutes on wrong testing framework
-
-# Root Cause:
-Missing project rule: "Testing: This project uses Vitest, NOT Jest"
-Should be in: CLAUDE.md → Testing section
-```
+4. **Determine Root Cause**
+   - **Project-specific** (CLAUDE.md)
+   - **Universal principle** (.claude/rules/)
+   - **Tool pattern** (documentation)
+   - **Workflow guidance** (project memory)
 
 ### Phase 2: Iterative Clarification
 
-**Goal**: Ask targeted questions to refine understanding through iterative dialogue.
+**Ask targeted questions when:**
+- Investigation reveals ambiguity
+- User preference needed on approach
+- Understanding needs confirmation
+- Priorities or context unclear
 
-**When to Ask Questions**:
-- Investigation reveals ambiguity or multiple possibilities
-- User preference needed on approach, placement, or wording
-- Understanding of issues needs confirmation
-- Clarification needed on priorities or context
+**Question Strategy:**
+- Ask one question at a time
+- Build on previous answers
+- Research between questions
+- Continue until sufficient clarity
 
-**Question Strategy**:
-- Use `AskUserQuestions` tool when available to ask one question at a time
-- Ask questions iteratively, one at a time, building on previous answers
-- Allow for intermediary research, analysis, or investigation between questions
-- Continue asking until you have sufficient clarity to formulate propositions
-
-**Question Flow**:
-- Start with what will have the biggest impact (prioritization, scope)
-- Drill down into specific issues as needed
-- Ask for preferences when multiple good options exist
-- Seek clarification when something is unclear
-- Continue asking questions until you have clear direction for propositions
-
-**When NOT to Ask Questions**:
+**Ask when NOT needed:**
 - Investigation provides complete clarity
 - Issue has one obvious solution
-- Autonomous action explicitly requested by user
+- Autonomous action explicitly requested
 
-### Phase 3: Autonomous Rule Formulation
+### Phase 3: Rule Formulation
 
-**After Investigation** (and optional questions), formulate specific rules:
+**After investigation** (and optional questions):
 
-1. **Analyze Findings**: Synthesize investigation results
-2. **Craft Specific Rules**: Create actionable text for insertion
-3. **Ensure Actionability**: Each rule must be immediately implementable
-4. **Prepare Proposals**: Format for user selection
+1. **Analyze Findings** - Synthesize investigation results
+2. **Craft Specific Rules** - Create actionable text for insertion
+3. **Ensure Actionability** - Each rule must be immediately implementable
+4. **Prepare Proposals** - Format for user selection
 
-**Rule**: Propositions must be SPECIFIC and ACTIONABLE — not abstract suggestions.
+**Rule**: Propositions must be SPECIFIC and ACTIONABLE.
 
-**Each proposition must be**:
-- Actual text to insert into CLAUDE.md or .claude/rules/
-- A specific rule or constraint
-- A concrete example or pattern
-- Immediately implementable via Edit tool
+**Each proposition must be:**
+- Actual text to insert into files
+- Specific rule or constraint
+- Concrete example or pattern
+- Immediately implementable via Edit
 
-**Format for presenting propositions**:
+**Format:**
 ```
 **Proposition A**: [2-3 word summary]
 [Concrete rule text to add]
 
 **Proposition B**: [2-3 word summary]
 [Concrete rule text to add]
-
-**Proposition C**: [2-3 word summary]
-[Concrete rule text to add]
 ```
 
-**Anti-pattern** — Do NOT use abstract labels:
-- ❌ "A (Add Documentation)" — Too vague
-- ✅ "A: Add testing framework constraint" — Clear action
-- ❌ "B (Improve Rules)" — Category not action
-- ✅ "B: Insert command pattern example" — Specific
+**Contrast:**
+```
+✅ Good: "Add testing framework constraint" - Clear action
+❌ Bad: "Add Documentation" - Too vague
 
-### Phase 4: User Selection & Application
-1. **Present Propositions**: Show all options to user with clear explanations
-2. **Apply Selected Rules**:
-   - For individual changes: Use Edit tool directly
-   - For comprehensive changes: Create orchestration plan using TaskList tools
-3. **Verify**: Read files to confirm changes are correct
-4. **Continue Loop**: Return to Phase 1 to address remaining issues
-5. **Exit**: When user confirms all critical issues are resolved
-
-**Concrete Example**:
-```markdown
-# User selects: Proposition A (Add testing framework constraint)
-
-# Skill immediately applies:
-Edit file: CLAUDE.md
-Section: Testing
-Add: "IMPORTANT: This project uses Vitest for testing, NOT Jest.
-All test files use .test.ts extension. Run tests with: npm test"
-
-# Verification:
-Read file back - change applied correctly ✅
-Return to Phase 1 for next issue
+Why good: Specific rules are immediately implementable.
 ```
 
-**Comprehensive Implementation Example**:
-```markdown
-# User selects: "Apply Full Changes with Orchestration"
+### Phase 4: Application
 
-# Skill creates systematic plan:
-Create TaskList with tasks for:
-1. Update CLAUDE.md Testing section
-2. Add convention rules to .claude/rules/
-3. Update project structure documentation
-4. Verify all changes
+1. **Present Propositions** - Show all options with clear explanations
+2. **Apply Selected Rules**
+   - Individual changes: Use Edit tool
+   - Comprehensive changes: Create TaskList plan
+3. **Verify** - Read files to confirm changes
+4. **Continue Loop** - Return to Phase 1 for remaining issues
+5. **Exit** - When user confirms resolution
 
-# Execute tasks systematically:
-Each task includes verification step
-Progress tracked visually
-Dependencies managed automatically
-```
-
-## Issue Categories to Diagnose
+## Issue Categories
 
 ### 1. Missing Project Knowledge
-- Technology stack confusion (wrong framework chosen)
+- Technology stack confusion
 - Undocumented architecture decisions
 - Missing file structure guidance
-- Configuration quirks not documented
+- Configuration quirks
 
 ### 2. Workflow Inefficiencies
 - Repeated clarification questions
@@ -213,168 +155,41 @@ Dependencies managed automatically
 - Missing gotchas or warnings
 
 ### 4. Rule Violations
-- Actions taken against project standards
+- Actions against project standards
 - Missing validation steps
-- Wrong tool for the job
+- Wrong tool for job
 - Ignored best practices
 
 ### 5. Communication Breakdowns
 - Assumptions not validated
 - Missing context in explanations
-- User corrections that could have been avoided
-- Clarification patterns that repeat
+- User corrections avoidable
+- Clarification patterns repeat
 
 ## Critical Rules
 
-### Autonomous Investigation
-- **Investigate thoroughly**: Scan conversation, context, and project files before asking questions
-- **Diagnose first**: Understand root causes before proposing solutions
-- **Reason about patterns**: Each issue reveals insights about missing project knowledge
-- **Focus on preventability**: What rule would have stopped this issue?
-- **Apply intelligence**: Use judgment to determine what questions to ask and when
+### Investigation
+- **Investigate thoroughly** - Scan conversation, context, files before asking
+- **Diagnose first** - Understand root causes before proposing
+- **Reason about patterns** - Each issue reveals missing knowledge
+- **Focus on preventability** - What rule would stop this issue?
 
-### Question Strategy
-- **Investigate first**: Build understanding through thorough scanning
-- **Ask what matters**: Determine which questions are relevant based on investigation
-- **Use AskUserQuestions**: Ask one question at a time when clarification is needed
-- **Adapt to context**: Let the situation guide the questioning approach
-- **Build understanding**: Ask questions that will genuinely help resolve the issues
-- **Remain flexible**: Adjust strategy based on what emerges from each response
-- **Consider orchestration**: For multiple changes, ask about creating a systematic plan
+### Questions
+- **Investigate first** - Build understanding through scanning
+- **Ask what matters** - Determine relevance based on investigation
+- **Ask one at a time** - Use AskUserQuestions when needed
+- **Build understanding** - Questions should help resolve issues
 
-### Rule Propositions
-- **Show the actual text**: Propositions must display exact words to insert
-- **No abstract categories**: Don't use "Add Documentation" — describe the actual rule
-- **Immediately actionable**: Display exactly what will be written
-- **Tailored to issue**: Generic boilerplate is worse than targeted fixes
-- **Offer orchestration**: Include "Apply Full Changes" option using TaskList tools when multiple changes are needed
-- **Plan-based implementation**: For comprehensive updates, propose systematic plan with task orchestration
+### Propositions
+- **Show actual text** - Display exact words to insert
+- **No abstract categories** - Don't use "Add Documentation"
+- **Immediately actionable** - Show exactly what will be written
+- **Tailored to issue** - Targeted fixes beat generic boilerplate
 
-### Quality Standards
-- **One issue per iteration**: Surgical fixes, not wholesale rewrites
-- **No hallucination**: Only critique what actually happened or is evident
-- **User-guided refinement**: If user selects "Other" or provides input, incorporate it
-- **Ensure persistent value**: Each rule should prevent recurring issues
+### Quality
+- **One issue per iteration** - Surgical fixes, not rewrites
+- **No hallucination** - Only critique what actually happened
+- **User-guided refinement** - Incorporate user input
+- **Ensure persistent value** - Each rule prevents recurring issues
 
-## Examples
-
-### Example: General Issue Selection & Refinement
-
-**Scenario**: A conversation where Claude made suboptimal decisions.
-
-**Step 1: Autonomous Investigation**
-After thorough investigation, I identify multiple issues that could have been prevented with better project rules. The issues range from missing documentation to unclear workflows.
-
-**Step 2: Iterative Clarification**
-
-**Q1**: "Which issues from my investigation should we prioritize fixing?"
-[Presents the identified issues]
-→ User selects one or more issues
-
-**Follow-up Analysis**: Based on user's selection, I analyze those specific issues in depth.
-
-**Q2**: "For [selected issue], which approach would you prefer?"
-[Presents 2-4 solution approaches based on the specific issue]
-→ User selects preferred approach
-
-**Follow-up Research**: I investigate the selected approach, potentially asking more targeted questions about placement, wording, or scope.
-
-**Q3**: "Should I proceed with this approach, or do you have a different preference?"
-→ User confirms or provides alternative direction
-
-**Optional Q4**: "Would you like me to create a comprehensive plan to implement all the changes systematically?"
-→ User may choose this if multiple issues need addressing
-
-**Step 3: Rule Formulation**
-Based on the iterative dialogue and investigation:
-
-**Proposition**: [Concrete text to add]
-- Shows exactly what will be inserted
-- Provides rationale for the choice
-- Includes implementation details
-
-**Proposition Option**: "Apply Full Changes with Plan"
-- Creates comprehensive orchestration using TaskList tools
-- Breaks down all identified changes into actionable steps
-- Provides systematic implementation plan
-- May involve multiple files and coordinated updates
-
-### Example: Adapting to Different Project Types
-
-**Scenario**: Analyzing any project - the approach adapts automatically.
-
-**Step 1: Autonomous Investigation**
-I scan the conversation and project structure, identifying patterns regardless of project type:
-- What repeated clarifications were needed?
-- What assumptions led to errors?
-- What context was missing?
-- What workflows were unclear?
-
-**Step 2: Dynamic Question Strategy**
-The questions I ask depend on what I find:
-
-- **For a web project**: "Which framework conventions should be documented?"
-- **For a data project**: "What analysis workflows need clarification?"
-- **For a API project**: "Which endpoint patterns caused confusion?"
-- **For a mobile project**: "What build/deployment issues arose?"
-
-**Step 3: Adaptive Propositions**
-Based on the project type and user input:
-
-**Proposition formats adapt**:
-- **Documentation-heavy projects**: Focus on guides and references
-- **Code-heavy projects**: Focus on conventions and patterns
-- **Workflow-heavy projects**: Focus on processes and automation
-- **Configuration-heavy projects**: Focus on setup and environment
-
-**Comprehensive Option**: "Apply Full Changes with Orchestration"
-- Creates systematic plan using TaskList tools
-- Coordinates multiple file edits and updates
-- Breaks complex changes into manageable steps
-- Provides visual progress tracking
-
-### Example: Handling Multiple Issue Types
-
-**Scenario**: Investigation reveals diverse issue categories.
-
-**Step 1: Autonomous Investigation**
-I find issues across multiple categories:
-- Missing documentation
-- Wrong tool choices
-- Unclear workflows
-- Configuration gaps
-
-**Step 2: Iterative Prioritization**
-
-**Q1**: "Which issue type is most critical to address first?"
-[Groups issues by type]
-→ User selects priority
-
-**For each selected issue type**:
-
-**Q2**: "For [issue type], what's the best solution approach?"
-[Presents relevant options for that specific issue type]
-→ User selects
-
-**Q3**: "Where should this be documented in your project?"
-[Presents file/location options based on project structure]
-→ User selects
-
-**Optional**: "Would you prefer me to create a comprehensive implementation plan?"
-→ User may select for systematic coordination
-
-**Step 3: Comprehensive Formulation**
-Creates targeted propositions for each addressed issue type, showing exactly what text to add where.
-
-**Comprehensive Proposition**: "Full Implementation Plan"
-- Uses TaskList tools to orchestrate all changes
-- Creates structured workflow for systematic updates
-- Coordinates multiple file edits across the project
-- Provides dependency tracking and progress visibility
-
-**When to Offer Orchestration**:
-- Multiple distinct issues identified
-- Changes span multiple files
-- Dependencies exist between updates
-- User wants systematic implementation
-- Complex coordination required
+**Recognition:** "Does this investigation reveal preventable patterns?" → Extract root causes and propose specific rules.

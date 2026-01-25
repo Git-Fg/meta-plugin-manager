@@ -6,38 +6,42 @@ user-invocable: true
 
 # Manual E2E Testing with Appium & Dart MCP
 
-## What This Skill Does
-Provides systematic procedures for manual E2E testing using text-first validation instead of screenshots. Integrates Appium MCP for element interaction with Dart MCP for widget tree analysis, runtime error diagnosis, and hot reload capabilities.
-
-## When to Use
-- Testing Flutter app interactions without visual analysis
-- Validating UI state changes through text content
-- Verifying element presence and accessibility
-- Validating recording workflows, settings configuration, and navigation flows
-- Executing element-based test procedures (not visual testing)
+Think of E2E testing as **detecting lies through text**—instead of relying on visual inspection (which can be deceptive), verify reality through programmatically checkable text content and element states.
 
 ## Core Philosophy: Text-First Testing
 
-### Why Avoid Screenshots?
+**Why avoid screenshots?**
 - Vision LLMs are unreliable for precise UI validation
 - Visual changes break tests unnecessarily
 - Hard to verify logical state changes
 - **Text and properties are more reliable**
 - **Element states are programmatically verifiable**
 
-### Core Principles
-1. **Text Content Verification** - Verify visible text matches expected content
-2. **Element State Checks** - Confirm enabled/disabled/visible states
-3. **Attribute Validation** - Check data attributes, IDs, accessibility labels
-4. **List Enumeration** - Verify expected elements exist in collections
-5. **Navigation Flow** - Validate page transitions via element presence
+## Recognition Patterns
+
+**When to use manual-e2e-testing:**
+```
+✅ Good: "Test Flutter app interactions"
+✅ Good: "Validate UI state changes through text"
+✅ Good: "Verify element presence programmatically"
+✅ Good: "Test recording workflows"
+❌ Bad: Visual testing with screenshots
+❌ Bad: Manual app exploration
+
+Why good: Text-based validation provides reliable, programmatic verification.
+```
+
+**Pattern Match:**
+- User mentions "E2E testing", "Flutter app", "validate element states"
+- Need to verify UI changes programmatically
+- Testing mobile app workflows
+
+**Recognition:** "Do you need to programmatically verify UI states?" → Use manual-e2e-testing.
 
 ## Dual MCP Architecture
 
-### Appium MCP + Dart MCP Integration
-
 **Appium MCP** handles:
-- Element discovery and interaction on the device/emulator
+- Element discovery and interaction
 - UI state verification through programmatic access
 - Text content retrieval and validation
 - Scrolling and gesture simulation
@@ -48,153 +52,133 @@ Provides systematic procedures for manual E2E testing using text-first validatio
 - Hot reload capabilities for faster iteration
 - App state inspection and debugging
 
-### Best Combined Workflow
-1. **Pre-Test Setup**: Connect to Dart Tooling Daemon + Create Appium session
-2. **Widget Analysis**: Use `get_widget_tree` to understand UI hierarchy
-3. **Element Discovery**: Use Appium `appium_find_element` for interaction
-4. **State Validation**: Combine Appium text checks with Dart runtime analysis
-5. **Error Diagnosis**: Use `get_runtime_errors` when issues occur
-6. **Hot Reload**: Use Dart MCP for rapid iteration during test development
+**Combined workflow:**
+1. Connect to Dart Tooling Daemon + Create Appium session
+2. Widget analysis with `get_widget_tree`
+3. Element discovery with Appium
+4. State validation (both Appium + Dart)
+5. Error diagnosis with `get_runtime_errors`
+6. Hot reload for rapid iteration
 
-## Pre-Test Setup Workflow
+## Pre-Test Setup
 
-### Step 1: Verify Emulator
+**Step 1: Verify Emulator**
 ```bash
 adb devices
 ```
 - Ensure device shows as "device" (not "offline" or "unauthorized")
 - If no device: `emulator -avd <device_name>`
 
-### Step 2: Clear App Data
+**Step 2: Clear App Data**
 ```bash
 adb shell pm clear com.voicenoteplus.app
 ```
-- Ensures clean state for testing
 
-### Step 3: Connect to Dart Tooling Daemon
-- Use `mcp__dart__connect_dart_tooling_daemon` to enable:
-  - Hot reload capabilities
-  - Widget tree introspection
-  - Runtime error analysis
-  - App state debugging
+**Step 3: Connect to Dart Tooling Daemon**
+- Use `mcp__dart__connect_dart_tooling_daemon`
 
-### Step 4: Launch Flutter App
-- Ensure Flutter app is running: `flutter run`
-- Note the DTD URI from the connection
+**Step 4: Launch Flutter App**
+- Ensure running: `flutter run`
 
-### Step 5: Create Appium Session
-- Use `mcp__appium-mcp__select_platform` with platform: `android`
-- Use `mcp__appium-mcp__create_session` with capabilities:
-  - platformVersion: "14"
-  - deviceName: your_emulator_name
-  - automationName: "UiAutomator2"
+**Step 5: Create Appium Session**
+- Platform: `android`
+- Capabilities: platformVersion, deviceName, automationName
 
-### Step 6: Verify App Launch
-- Tool: `mcp__appium-mcp__appium_find_element`
-- Strategy: `id`, Selector: `com.voicenoteplus.app:id/dashboard`
-- Expected: Element found (app launched successfully)
-- Cross-verify: `mcp__dart__get_widget_tree` should show active widgets
+**Step 6: Verify App Launch**
+- Find element by ID: `com.voicenoteplus.app:id/dashboard`
+- Cross-verify with widget tree
 
-## Element Discovery Strategies
+## Element Discovery
 
-### Priority Order
+**Priority Order:**
 1. **Resource IDs** (most stable)
    - Example: `com.voicenoteplus.app:id/record_button`
-   - Use when available
 2. **Accessibility IDs** (second most stable)
    - Example: `Record`, `Settings`, `Save`
-   - Good fallback when IDs not available
 3. **Class names** (moderately stable)
    - Example: `android.widget.Button`
-   - Use for general element types
-4. **XPath** (least stable, use as last resort)
+4. **XPath** (least stable, last resort)
    - Example: `//*[contains(@content-desc, "Record")]`
-   - Fragile, avoid unless necessary
 
-**For comprehensive element discovery patterns**, see [element-discovery.md](references/element-discovery.md)
+**Contrast:**
+```
+✅ Good: Find by resource ID "record_button"
+❌ Bad: Find by XPath "//Button[1]"
 
-## Content Validation Techniques
+Why good: Resource IDs are most stable across app updates.
+```
 
-### Appium Text Content Verification
+**Recognition:** "Is the element stable across app updates?" → Use resource ID or accessibility ID.
+
+## Validation Techniques
+
+### Text Content Verification
 ```bash
 mcp__appium-mcp__appium_get_text
   elementUUID: [from discovery]
 ```
-- Verify button text contains "Record" or "🎤"
-- Check transcription area is empty initially
-- Verify state changes (Record → Stop)
+- Verify button text contains expected content
+- Check transcription area state
+- Verify state changes
 
-### Appium Element State Checks
+### Element State Checks
 ```bash
 mcp__appium-mcp__appium_get_element_attribute
   elementUUID: [from discovery]
   attribute: enabled
 ```
-- Check `enabled` attribute: expects `true`
-- Check `displayed` attribute: expects `true`
+- Check `enabled` attribute
+- Check `displayed` attribute
 
-### Appium Page Source Analysis
-```bash
-mcp__appium-mcp__appium_get_page_source
-```
-- Search for patterns: `note_item_`
-- Count occurrences
-- Verify expected number of elements
-- Search for status messages: `Transcribing...`
-
-### Dart Widget Tree Analysis
+### Widget Tree Analysis
 ```bash
 mcp__dart__get_widget_tree
   summaryOnly: false
 ```
 - Extract complete widget hierarchy
-- Identify widget types and properties
-- Verify layout structure matches expectations
-- Analyze widget tree depth and composition
+- Verify layout structure
+- Analyze widget composition
 
-### Dart Runtime Error Analysis
+### Runtime Error Analysis
 ```bash
 mcp__dart__get_runtime_errors
   clearRuntimeErrors: true
 ```
-- Check for runtime exceptions before test execution
-- Analyze stack traces for crash diagnosis
-- Verify no errors present during UI interactions
+- Check for runtime exceptions
+- Analyze stack traces
+- Verify no errors during interactions
 
-**For detailed state validation workflows**, see [state-validation.md](references/state-validation.md)
+## Test Procedures
 
-## Test Procedures Overview
+### Basic Interaction Test
+1. Pre-check: Runtime errors
+2. Widget tree analysis
+3. Find element by accessibility ID
+4. Verify initial state
+5. Tap element
+6. Wait for state change
+7. Verify state changed (both Appium + Dart)
 
-### Procedure 1: Basic Interaction Test
-1. Pre-check: Runtime errors with `mcp__dart__get_runtime_errors`
-2. Widget tree analysis with `mcp__dart__get_widget_tree`
-3. Find record button (accessibility id: `Record`)
-4. Verify initial state (Appium + Dart)
-5. Tap record button
-6. Wait for state change (2 seconds)
-7. Verify state changed (Appium + Dart)
-
-### Procedure 2: Complete Recording Workflow
-1. Start recording (find `record_fab` by ID, click)
-2. Verify recording indicator (Appium + Dart)
-3. Simulate audio capture (wait 5 seconds)
-4. Monitor runtime state with Dart MCP
+### Complete Workflow
+1. Start recording
+2. Verify recording indicator
+3. Simulate audio capture
+4. Monitor runtime state
 5. Stop recording
-6. Verify transcription (Appium + Dart)
-7. Verify magic toolbar (Appium + Dart)
+6. Verify transcription
+7. Verify toolbar state
 
-### Procedure 3: Settings Configuration
-1. Navigate to settings (Appium + Dart verification)
-2. Verify API key field (Appium + Dart)
+### Settings Configuration
+1. Navigate to settings
+2. Verify API key field
 3. Input API key
-4. Verify input (Appium + Dart)
+4. Verify input
 5. Save settings
 6. Verify success message
-7. Post-save validation with Dart MCP
 
-**For complete detailed procedures**, see [detailed-procedures.md](references/detailed-procedures.md)
+**Recognition:** "Does this procedure validate state changes programmatically?" → Use text content and element attributes.
 
-## Error Handling & Recovery
+## Error Handling
 
 ### Retry Pattern
 - **Attempt 1**: Try immediately
@@ -216,144 +200,80 @@ mcp__dart__get_runtime_errors
 - **After action**: Verify expected state
 - **If state incorrect**: Retry or report failure
 
-**For comprehensive error recovery patterns**, see [error-recovery.md](references/error-recovery.md)
-
 ## Best Practices
 
-### Before Testing
-- ✅ Verify emulator running: `adb devices`
-- ✅ Clear app data: `adb shell pm clear com.voicenoteplus.app`
-- ✅ Connect to Dart Tooling Daemon early for hot reload
-- ✅ Launch Flutter app and note DTD URI
-- ✅ Create Appium session with correct capabilities
-- ✅ Check runtime errors: `mcp__dart__get_runtime_errors`
-- ✅ Get initial widget tree: `mcp__dart__get_widget_tree`
-- ✅ Check device logs: `adb logcat | grep -i error`
+**Before Testing:**
+- ✅ Verify emulator running
+- ✅ Clear app data
+- ✅ Connect Dart Tooling Daemon early
+- ✅ Launch Flutter app
+- ✅ Create Appium session
+- ✅ Check runtime errors
+- ✅ Get initial widget tree
 
-### During Testing
-- ✅ Always verify element presence before interaction (Appium)
+**During Testing:**
+- ✅ Always verify element presence before interaction
 - ✅ Cross-verify widget state with Dart MCP
 - ✅ Use text content for validation (not visual)
-- ✅ Implement retry logic for flaky elements
+- ✅ Implement retry logic
 - ✅ Log every step with timestamps
-- ✅ Verify state changes after each action (both Appium & Dart)
-- ✅ Use accessibility IDs when available (Appium)
-- ✅ Use hot reload for rapid iteration: `mcp__dart__hot_reload`
-- ✅ Check runtime errors periodically: `mcp__dart__get_runtime_errors`
-- ✅ Use `mcp__dart__get_app_logs` to capture Flutter output
+- ✅ Verify state changes after each action
+- ✅ Use accessibility IDs when available
+- ✅ Use hot reload for rapid iteration
 
-### After Testing
-- ✅ Delete Appium session: `mcp__appium-mcp__delete_session`
-- ✅ Check final runtime errors: `mcp__dart__get_runtime_errors`
-- ✅ Save test execution log with timestamps
-- ✅ Check device logs for errors
+**After Testing:**
+- ✅ Delete Appium session
+- ✅ Check final runtime errors
+- ✅ Save test execution log
 - ✅ Document issues found
-- ✅ Save final widget tree for reference
 
-## Common Pitfalls to Avoid
+## Common Pitfalls
 
-### ❌ Don't Use
-- Screenshots for validation (unreliable without vision LLM)
+**❌ Don't Use:**
+- Screenshots for validation
 - Hard-coded pixel coordinates
 - Visual color/position assertions
 - Unstable XPath expressions
-- Timing sleeps (use state checks instead)
+- Timing sleeps
 
-### ✅ Do Use
+**✅ Do Use:**
 - Text content verification
 - Element attribute checks
-- State-based waiting (not time-based)
-- Accessibility IDs for reliability
+- State-based waiting
+- Accessibility IDs
 - Page source text search
 - Structured logging
 
-## Essential MCP Tools Reference
+**Contrast:**
+```
+✅ Good: Verify button text = "Record"
+❌ Bad: Verify button is red
 
-### Appium MCP Tools
+Why good: Text content is programmatically verifiable across devices.
+```
 
-#### Element Discovery
-- `mcp__appium-mcp__appium_find_element` - Locate element on screen
-  - Required: strategy (id/accessibility/class/xpath), selector
-  - Returns: Element UUID if found, null if not found
+**Recognition:** "Is this validation programmatically checkable?" → If no, redesign the test.
 
-#### Content Retrieval
-- `mcp__appium-mcp__appium_get_text` - Read text content from element
-  - Required: elementUUID
-  - Returns: Text string from element
+## Essential Tools Reference
 
-#### Element Interaction
-- `mcp__appium-mcp__appium_click` - Tap/click element
-  - Required: elementUUID
-  - Returns: Success confirmation
+**Appium MCP:**
+- `appium_find_element` - Locate element
+- `appium_get_text` - Read text content
+- `appium_click` - Tap element
+- `appium_set_value` - Enter text
+- `appium_get_page_source` - Get page source
+- `appium_scroll` - Scroll screen
 
-#### Text Input
-- `mcp__appium-mcp__appium_set_value` - Enter text into input field
-  - Required: elementUUID, text
-  - Returns: Success confirmation
+**Dart MCP:**
+- `get_widget_tree` - Get widget hierarchy
+- `get_runtime_errors` - Retrieve exceptions
+- `get_selected_widget` - Inspect focused widget
+- `hot_reload` - Apply changes without restart
+- `hot_restart` - Restart with changes
+- `get_app_logs` - Retrieve Flutter output
 
-#### Page Analysis
-- `mcp__appium-mcp__appium_get_page_source` - Get XML representation
-  - Returns: Full page source as string
-  - Use for: Text search, element counting, structure analysis
-
-#### Scrolling
-- `mcp__appium-mcp__appium_scroll` - Scroll screen up or down
-  - Required: direction (up/down)
-  - Returns: Success confirmation
-
-#### Long Press
-- `mcp__appium-mcp__appium_long_press` - Press and hold element
-  - Required: elementUUID, duration (milliseconds)
-  - Returns: Success confirmation
-
-### Dart MCP Tools
-
-#### Widget Tree Analysis
-- `mcp__dart__get_widget_tree` - Get complete widget hierarchy
-  - Optional: summaryOnly (default: false)
-  - Returns: Full widget tree structure
-  - Use for: Layout analysis, widget verification, debugging
-
-#### Runtime Error Analysis
-- `mcp__dart__get_runtime_errors` - Retrieve runtime exceptions
-  - Optional: clearRuntimeErrors (default: false)
-  - Returns: List of runtime errors with stack traces
-  - Use for: Crash diagnosis, error monitoring, validation
-
-#### Widget Selection
-- `mcp__dart__get_selected_widget` - Inspect focused widget
-  - Returns: Currently selected widget details
-  - Use for: State verification, debugging focused elements
-
-#### Hot Reload
-- `mcp__dart__hot_reload` - Apply code changes without restart
-  - Optional: clearRuntimeErrors (default: false)
-  - Returns: Success confirmation
-  - Use for: Rapid iteration during test development
-
-#### Hot Restart
-- `mcp__dart__hot_restart` - Restart app state with code changes
-  - Returns: Success confirmation
-  - Use for: State reset with updated code
-
-#### App Logs
-- `mcp__dart__get_app_logs` - Retrieve Flutter app output
-  - Optional: maxLines (default: 500), pid
-  - Returns: Flutter console output
-  - Use for: Debug output capture, error analysis
-
-#### Device Management
-- `mcp__dart__list_devices` - List available devices
-  - Returns: List of connected devices/emulators
-  - Use for: Device selection and verification
-
-## Additional Resources
-**For complete test procedures**, see [detailed-procedures.md](references/detailed-procedures.md)
-
-**For element discovery strategies**, see [element-discovery.md](references/element-discovery.md)
-
-**For state validation techniques**, see [state-validation.md](references/state-validation.md)
-
-**For error recovery patterns**, see [error-recovery.md](references/error-recovery.md)
-
-**For documentation templates**, see [test-reports.md](references/test-reports.md)
+**For detailed procedures:**
+- `references/detailed-procedures.md` - Complete test workflows
+- `references/element-discovery.md` - Discovery patterns
+- `references/state-validation.md` - State validation techniques
+- `references/error-recovery.md` - Error handling patterns

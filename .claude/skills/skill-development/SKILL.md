@@ -3,432 +3,319 @@ name: skill-development
 description: This skill should be used when the user wants to "create a skill", "add a skill to plugin", "write a new skill", "improve skill description", "organize skill content", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins.
 ---
 
-# Skill Development: Architectural Refiner
+# Skill Development Guide
 
-**Role**: Transform intent into portable, self-sufficient skills
-**Mode**: Architectural pattern application (ensure output has specific traits)
-
----
-
-## Architectural Pattern Application
-
-When building a skill, apply this process:
-
-1. **Analyze Intent** - What type of skill and what traits needed?
-2. **Apply Teaching Formula** - Bundle condensed philosophy into output
-3. **Enforce Portability Invariant** - Ensure works in isolation
-4. **Verify Traits** - Check portability, self-containment, progressive disclosure
+**Purpose**: Help you create clear, self-contained skills
 
 ---
 
-## Core Understanding: What Skills Are
+## What Skills Are
 
-**Metaphor**: Skills are "genetic code packages"—they carry their own DNA and can survive being moved to any environment.
+Skills are self-contained packages that extend Claude's capabilities. They provide specialized knowledge, workflows, and tools without depending on external files or documentation.
 
-**Definition**: Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. They transform Claude from a general-purpose agent into a specialized agent equipped with procedural knowledge that no model can fully possess.
+**Key point**: Good skills work on their own. Don't make users hunt through multiple files to understand how to use them.
 
-**Key insight**: Skills bundle their own philosophy. They don't depend on external documentation to function.
+✅ Good: Skill includes clear examples and guidance
+❌ Bad: Skill references other files for important information
 
-✅ Good: Skill includes condensed Delta Standard with examples
-❌ Bad: Skill references .claude/rules/ for philosophy
-Why good: Skills must work in isolation
-
-Recognition: "Would this skill work if copied to a project with no rules?" If no, bundle the philosophy.
+**Question**: Would this skill make sense if someone only read this one file? If not, include more context.
 
 ---
 
-## Skill Traits: What Portable Skills Must Have
+## What Good Skills Have
 
-### Trait 1: Portability (MANDATORY)
+### 1. Self-Containment
 
-**Requirement**: Skill works in isolation without external dependencies
+**Good skills don't reference external files for critical information.**
 
-**Enforcement**:
-- Bundle condensed Seed System philosophy (Delta Standard, Progressive Disclosure, Teaching Formula)
-- Include Success Criteria for self-validation
-- Use "You MUST" language for mandatory references
-- Never reference .claude/rules/ files
+Include everything users need:
+- Clear examples embedded directly
+- Complete explanations
+- What users need to know to succeed
 
-**Example**:
-```
-## Core Philosophy
-
-Think of context like a shared refrigerator: everything you put in takes space others could use.
-
-✅ Good: Keep SKILL.md lean (1,500-2,000 words)
-❌ Bad: Put everything in SKILL.md (8,000+ words)
-Why good: Progressive disclosure manages cognitive load
-
-Recognition: "Is this information critical for skill function?" If yes, include it. If detailed, move to references/.
-```
-
-### Trait 2: Teaching Formula Integration
-
-**Requirement**: Every skill must teach through metaphor, contrast, and recognition
-
-**Enforcement**: Include all three elements:
-1. **1 Metaphor** - For understanding (e.g., "Think of X like a Y")
-2. **2 Contrast Examples** - Good vs Bad with rationale
-3. **3 Recognition Questions** - Binary self-checks
-
-**Template**:
-```
-Metaphor: [Understanding aid]
-
-✅ Good: [Concrete example]
-❌ Bad: [Concrete example]
-Why good: [Reason]
-
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-```
-
-### Trait 3: Self-Containment
-
-**Requirement**: Skill owns all its content
-
-**Enforcement**:
-- Inline all examples directly in SKILL.md
-- Never reference other skills or external files
-- Include all resources (scripts, references, examples)
-- Bundle necessary philosophy
-
-✅ Good: Examples embedded directly in SKILL.md
+✅ Good: Examples shown inline with full context
 ❌ Bad: "See examples/ directory for samples"
-Why good: Self-contained skills work without external references
 
-Recognition: "Does skill reference files outside itself?" If yes, inline the content.
+**Question**: Does this skill reference files outside itself? If yes, include that information directly.
 
-### Trait 4: Progressive Disclosure Structure
+### 2. Clear Structure
 
-**Requirement**: Three-tier loading for cognitive load management
+**Skills should be easy to scan and understand.**
 
-**Enforcement**:
-- **Tier 1**: Metadata (~100 tokens, always loaded)
-- **Tier 2**: SKILL.md body (~400-450 lines, loaded on activation)
-- **Tier 3**: References/ (on-demand, loaded when needed)
+Use:
+- Clear section headers
+- Code examples with explanations
+- Natural flow from basic to advanced
 
-**Recognition**: "Is detailed content moved to Tier 3?" If Tier 2 approaches 450 lines, split to references/.
+### 3. Progressive Disclosure
 
-### Trait 5: Success Criteria Invariant
+**Not everything belongs in the main skill file.**
 
-**Requirement**: Skill includes self-validation logic
+- **Core content**: What most users need most of the time
+- **References/**: Detailed information, edge cases, specific domains
 
-**Template**:
-```
-## Success Criteria
+**Question**: Is this information needed by most users? Keep in main file. Is it for specific cases? Move to references/.
 
-This skill is complete when:
-- [ ] SKILL.md has valid YAML frontmatter with name and description
-- [ ] Description uses third-person with specific trigger phrases
-- [ ] Body uses imperative/infinitive form, no second person
-- [ ] Progressive disclosure: Tier 2 ~400-450 lines, Tier 3 on-demand
-- [ ] Teaching Formula: 1 Metaphor + 2 Contrasts + 3 Recognition Questions
-- [ ] Portability: Works in isolation, bundled philosophy, no external refs
-- [ ] Self-containment: All content inlined, examples complete
+### 4. Working Examples
 
-Self-validation: Verify each criterion without external dependencies. If all checked, skill meets Seed System standards.
-```
+**Users should be able to copy and adapt examples.**
 
-**Recognition**: "Could a user validate this skill using only its content?" If no, add Success Criteria.
+Show:
+- Complete, runnable code
+- What the output looks like
+- Common variations
+
+**Question**: Can users copy this example and use it immediately? If not, make it more complete.
 
 ---
 
-## Anatomical Requirements
+## How to Structure a Skill
 
 ### Required: SKILL.md File
 
-**Structure**:
+Every skill needs this structure:
+
 ```markdown
 ---
 name: skill-name
-description: This skill should be used when [specific triggers]. [What it provides].
+description: Brief description of what this skill does
 ---
 
 # Skill Name
 
-[Content with Teaching Formula integrated]
+[Your content here]
 ```
 
-**Quality requirements**:
-- **Frontmatter**: Valid YAML with `name` and `description`
-- **Description**: Third-person format with specific trigger phrases
-- **Body**: Imperative form, Teaching Formula integrated
+**Key elements**:
+- **Frontmatter**: Valid YAML with name and description
+- **Description**: What the skill does, in plain language
+- **Body**: Your guidance, examples, and explanations
 
-### Optional: Bundled Resources
+### Optional: Supporting Files
 
-**Scripts** (`scripts/`):
-- Executable code for deterministic reliability
-- Validation utilities
-- Automation scripts
+**scripts/** - Executable utilities:
+- Validation tools
+- Helper scripts
+- Automation code
 
-**References** (`references/`):
-- Documentation for on-demand loading
-- Detailed patterns and techniques
-- API references and schemas
+**references/** - Detailed documentation:
+- Domain-specific information
+- API references
+- Edge cases and troubleshooting
 
-**Assets** (`assets/`):
-- Templates, icons, fonts
-- Boilerplate code
-- Files used in output
+**examples/** - Working code samples:
+- Complete implementations
+- Real-world usage
+- Before/after comparisons
 
-**Examples** (`examples/`):
-- Complete, runnable code
-- Working implementations
-- Copy-paste ready samples
-
-**Recognition**: "Does skill have complete, working examples?" If not, add examples/ directory.
+**Question**: What supporting files actually help users? Don't create directories you won't use.
 
 ---
 
-## Pattern Application Framework
+## Writing Tips
 
-### Step 1: Analyze Intent
+### Use Clear Language
 
-**Question**: What type of skill and what traits needed?
+✅ Good: "Include these files in your project"
+❌ Bad: "Leverage these file-based artifacts"
 
-**Analysis**:
-- Simple knowledge skill? → Focus on progressive disclosure
-- Complex workflow skill? → Include scripts and utilities
-- Domain-specific skill? → Bundle domain philosophy
-- Reusable utility skill? → Add validation scripts
+✅ Good: "Here's what happens when you run this"
+❌ Bad: "This will instantiate the following workflow"
 
-**Example**:
-```
-Intent: Build skill for rotating PDFs
-Analysis:
-- Simple deterministic task → Need scripts/rotate_pdf.py
-- Repeated operation → Bundle philosophy on automation
-- Technical domain → Include API reference in references/
-Output traits: Portability + Teaching Formula + Success Criteria
-```
+### Provide Examples
 
-### Step 2: Apply Teaching Formula
-
-**Requirement**: Bundle condensed Seed System philosophy
-
-**Elements to include**:
-1. **Metaphor**: "Skills are genetic code packages..."
-2. **Delta Standard**: Good Component = Expert Knowledge - What Claude Knows
-3. **Progressive Disclosure**: Three-tier loading explained
-4. **2 Contrast Examples**: Good vs Bad skill descriptions
-5. **3 Recognition Questions**: Binary self-checks for quality
-
-**Template integration**:
+Show, don't just tell:
 ```markdown
-## Core Philosophy
+# Creating a Skill
 
-Metaphor: "Think of skills like [metaphor]..."
+1. Create the skill directory:
+   mkdir -p .claude/skills/my-skill
 
-✅ Good: description: "This skill should be used when user asks to 'create X'"
-❌ Bad: description: "Use this skill when you want to create X"
-Why good: Specific trigger phrases enable pattern matching
+2. Add SKILL.md with your content
 
-Recognition: "Does description include specific user queries?" → If no, add concrete phrases
-Recognition: "Is SKILL.md approaching 450 lines?" → If yes, move content to references/
-Recognition: "Could this work in a project with no rules?" → If no, bundle philosophy
+Example:
+---
+name: my-skill
+description: Does something useful
+---
+
+This skill helps you do X.
+
+Here's how:
+1. Do Y
+2. Do Z
+
+Example:
+[working code]
 ```
 
-### Step 3: Enforce Portability Invariant
+### Be Specific
 
-**Requirement**: Ensure skill works in isolation
+❌ Bad: "Use good file names"
+✅ Good: "Use kebab-case: my-skill-name.md"
 
-**Checklist**:
-- [ ] Condensed philosophy bundled (Delta Standard, Progressive Disclosure, Teaching Formula)
-- [ ] Success Criteria included
-- [ ] References mandatory with "You MUST" language
-- [ ] No external .claude/rules/ references
-- [ ] Examples complete and self-contained
-
-**Verification**: "Could this skill survive being moved to a fresh project with no .claude/rules?" If no, fix portability issues.
-
-### Step 4: Verify Traits
-
-**Requirement**: Check all mandatory traits present
-
-**Verification**:
-- Portability Invariant ✓
-- Teaching Formula (1 Metaphor + 2 Contrasts + 3 Recognition) ✓
-- Self-Containment ✓
-- Progressive Disclosure (Tier 1/2/3) ✓
-- Success Criteria Invariant ✓
-
-**Recognition**: "Does skill meet all five traits?" If any missing, add them.
+❌ Bad: "Include helpful content"
+✅ Good: "Include a 2-3 sentence description and one working example"
 
 ---
 
-## Architecture Patterns
+## Common Patterns
 
-### Pattern 1: Progressive Disclosure Management
+### Pattern 1: Basic Skill Structure
 
-**Trait**: Cognitive load managed through tiered loading
-
-**Application**:
-- Keep Tier 2 (SKILL.md) ~400-450 lines
-- Move detailed content to Tier 3 (references/)
-- Use navigation tables to point to references
-
-**Example navigation**:
 ```markdown
-## Navigation
+---
+name: skill-name
+description: What this skill does
+---
 
-| If you are... | You MUST read... |
-|---------------|-----------------|
-| Understanding anatomy | references/anatomy.md |
-| Learning patterns | references/patterns.md |
-| Advanced techniques | references/advanced.md |
+# Skill Name
 
-**Critical**: References contain validation rules and detailed techniques. Skipping references leads to incomplete understanding.
+## What This Does
+
+Brief explanation of purpose and value.
+
+## How to Use
+
+Step-by-step guidance:
+
+1. First step
+2. Second step
+3. Third step
+
+## Examples
+
+### Example 1: Basic Usage
+
+[Complete example with code]
+
+### Example 2: Advanced Usage
+
+[Complete example with code]
+
+## Tips
+
+- Tip 1
+- Tip 2
+- Tip 3
 ```
 
-### Pattern 2: Mandatory References
+### Pattern 2: Tool-Based Skill
 
-**Trait**: References contain critical validation rules
-
-**Application**: Use "You MUST" language for mandatory references
-
-**Example**:
-```
-You MUST read references/frontmatter-reference.md before configuring any command frontmatter.
-
-Invalid frontmatter causes silent failures. The reference contains:
-- Required fields and validation rules
-- Common error patterns and fixes
-- Testing strategies for frontmatter
-```
-
-### Pattern 3: Self-Validation
-
-**Trait**: Success Criteria enable self-validation
-
-**Application**: Include Success Criteria section at end of skill
-
-**Example**:
 ```markdown
-## Success Criteria
+---
+name: tool-skill
+description: Use tools to accomplish X
+---
 
-This skill is complete when:
-- [ ] All traits verified (see above)
-- [ ] Examples are complete and working
-- [ ] References are properly referenced
-- [ ] Scripts are executable
+# Tool Skill
 
-Self-validation: Check each criterion using only skill content. No external dependencies required.
+## Overview
+
+This skill helps you accomplish X using tools.
+
+## When to Use
+
+Use this when:
+- You need to do X
+- Y situation applies
+- You want Z result
+
+## How It Works
+
+[Explain the process]
+
+## Example
+
+[Complete working example]
 ```
 
 ---
 
-## Common Transformations
+## Quality Checklist
 
-### Transform Tutorial → Architectural
+A good skill:
 
-**Before** (tutorial):
-```
-Step 1: Understand examples
-Step 2: Plan contents
-Step 3: Create structure
-...
-```
+- [ ] Has clear name and description
+- [ ] Includes working examples users can copy
+- [ ] Doesn't reference external files for critical info
+- [ ] Uses clear, natural language
+- [ ] Has logical structure with headers
+- [ ] Includes tips or common variations
+- [ ] Balances detail (not too much, not too little)
 
-**After** (architectural):
-```
-Analyze Intent → Apply Teaching Formula → Enforce Portability → Verify Traits
-```
-
-**Why**: Architectural patterns ensure output has required traits, not just follows steps.
-
-### Transform Reference → Bundle
-
-**Before** (referenced):
-```
-"See .claude/rules/principles.md for philosophy"
-```
-
-**After** (bundled):
-```
-## Core Philosophy
-
-Bundle condensed principles directly in skill:
-
-Think of context like a shared refrigerator...
-
-✅ Good: [example]
-❌ Bad: [example]
-Why good: [reason]
-```
-
-**Why**: Skills must work in isolation.
+**Self-check**: If you were new to this skill, would the content be enough to succeed?
 
 ---
 
-## Quality Validation
+## Common Mistakes
 
-### Portability Test
+### Mistake 1: Reference Fragmentation
 
-**Question**: "Could this skill work if moved to a project with zero .claude/rules?"
+❌ Bad: "For examples, see examples/basic.md"
+✅ Good: Include examples directly in SKILL.md
 
-**If NO**:
-- Bundle condensed philosophy
-- Add Success Criteria
-- Remove external references
-- Inline examples
+**Why**: Users shouldn't need to open multiple files to understand your skill.
 
-### Teaching Formula Test
+### Mistake 2: Unclear Purpose
 
-**Checklist**:
-- [ ] 1 Metaphor present
-- [ ] 2 Contrast Examples (good/bad) with rationale
-- [ ] 3 Recognition Questions (binary self-checks)
+❌ Bad: "This skill helps with development"
+✅ Good: "This skill creates automated tests for React components"
 
-**If any missing**: Add them using Teaching Formula Arsenal
+**Why**: Specific beats vague every time.
 
-### Self-Containment Test
+### Mistake 3: No Examples
 
-**Question**: "Does skill reference files outside itself?"
+❌ Bad: "Use the API to get data"
+✅ Good: "Call the API like this: `fetch('/api/data')`"
 
-**If YES**:
-- Inline the content
-- Bundle necessary philosophy
-- Remove external dependencies
+**Why**: Users need to see what success looks like.
 
-### Progressive Disclosure Test
+### Mistake 4: Too Much Detail
 
-**Question**: "Is Tier 2 approaching 450 lines?"
+❌ Bad: 8000-word skill covering every possible scenario
+✅ Good: Core guidance in SKILL.md, details in references/
 
-**If YES**: Move detailed content to Tier 3 (references/)
+**Why**: Progressive disclosure prevents overwhelming users.
 
 ---
 
-## Success Criteria
+## Getting Started
 
-This skill-development guidance is complete when:
+1. **Plan your skill**
+   - What problem does it solve?
+   - Who will use it?
+   - What do they need to know?
 
-- [ ] Architectural pattern clearly defined (Analyze → Apply → Enforce → Verify)
-- [ ] Teaching Formula integrated (1 Metaphor + 2 Contrasts + 3 Recognition)
-- [ ] Portability Invariant explained with enforcement checklist
-- [ ] All five traits defined (Portability, Teaching Formula, Self-Containment, Progressive Disclosure, Success Criteria)
-- [ ] Pattern application framework provided
-- [ ] Quality validation tests included
-- [ ] Examples demonstrate architectural approach
-- [ ] Success Criteria present for self-validation
+2. **Create the structure**
+   - Make the directory
+   - Add SKILL.md
+   - Add supporting files if needed
 
-Self-validation: Verify skill-development meets Seed System standards using only this content. No external dependencies required.
+3. **Write the content**
+   - Start with what/why
+   - Add how with examples
+   - Include tips and variations
 
----
-
-## Reference: The Five Mandatory Traits
-
-Every skill must have:
-
-1. **Portability** - Works in isolation
-2. **Teaching Formula** - 1 Metaphor + 2 Contrasts + 3 Recognition
-3. **Self-Containment** - Owns all content
-4. **Progressive Disclosure** - Three-tier structure
-5. **Success Criteria** - Self-validation logic
-
-**Recognition**: "Does this skill have all five traits?" If any missing, add them.
+4. **Review and refine**
+   - Read it like a new user
+   - Can they succeed with just this file?
+   - Is the language clear?
 
 ---
 
-**Remember**: Skills are genetic code packages. They carry their own DNA and can survive being moved to any environment. Bundle the philosophy. Enforce the invariants. Verify the traits.
+## Remember
+
+Skills are for helping people accomplish things. Keep the focus on:
+- Clarity over cleverness
+- Examples over explanations
+- Self-contained over scattered
+- Specific over vague
+
+Good skills are obvious. When someone reads them, they know exactly what to do.
+
+**Question**: Is your skill clear enough that a stranger could use it successfully?
+
+---
+
+**Final tip**: The best skill is one that helps someone accomplish their goal with less confusion and friction. Focus on that.

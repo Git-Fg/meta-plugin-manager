@@ -86,16 +86,9 @@ This is the **defining characteristic** of the Seed System. Unlike traditional t
 
 Only include information with a knowledge delta—the gap between what Claude knows and what the component needs.
 
-## The Teaching Formula (Mandatory)
+## Portability Principle
 
-Every generated component MUST include:
-1. **1 Metaphor** - For understanding
-2. **2 Contrast Examples** - Good vs Bad with rationale
-3. **3 Recognition Questions** - Binary self-checks
-
-## The Success Criteria Invariant
-
-Every component MUST include self-validation logic that works without external dependencies.
+Components should work without depending on external documentation or files.
 
 ---
 
@@ -181,11 +174,11 @@ For detailed guidance on creating portable components, consult the appropriate m
 | Hooks | hook-development | Event-driven, security patterns, self-validating |
 | MCPs | mcp-development | Server configuration, transport mechanisms, portable |
 
-Each meta-skill demonstrates **architectural pattern application** (not prescriptive tutorials):
+Each meta-skill demonstrates clear guidance for component creation:
 - Component-specific patterns
-- Portability Invariant enforcement
-- Teaching Formula integration
-- Success Criteria templates
+- Best practices for portability
+- Progressive disclosure structure
+- Self-contained examples
 
 **Each meta-skill is the single source of truth for its domain—and for portable component generation.**
 
@@ -198,7 +191,7 @@ The Seed System philosophy is distributed across `.claude/rules/`:
 | File | Layer | Content |
 |------|-------|---------|
 | [`principles.md`](.claude/rules/principles.md) | **Both** | Dual-layer architecture, Portability Invariant, Success Criteria |
-| [`patterns.md`](.claude/rules/patterns.md) | **Both** | Architectural patterns, Teaching Formula Arsenal, Degrees of Freedom |
+| [`patterns.md`](.claude/rules/patterns.md) | **Both** | Implementation patterns, Degrees of Freedom |
 | [`anti-patterns.md`](.claude/rules/anti-patterns.md) | Behavioral | Recognition-based anti-patterns, quality validation |
 | [`voice-and-freedom.md`](.claude/rules/voice-and-freedom.md) | **Both** | Voice guidance, Freedom matrix, Teaching patterns |
 | [`askuserquestion-best-practices.md`](.claude/rules/askuserquestion-best-practices.md) | Behavioral | Recognition over Generation, question strategies |
@@ -229,9 +222,8 @@ All components created by the Seed System must achieve:
 
 ### Portability (Seed System Defining Feature)
 - **Zero external dependencies**: Works in isolation
-- **Bundled philosophy**: Condensed principles included
-- **Success Criteria**: Self-validation without external tools
-- **Intentional redundancy**: Critical knowledge not dependent on source
+- **Self-contained**: Includes all necessary context
+- **Progressive disclosure**: Right content at right tier
 
 ### Autonomy
 - **80-95% autonomy**: 0-5 questions per session
@@ -240,7 +232,7 @@ All components created by the Seed System must achieve:
 
 ### Quality
 - **Imperative form**: No "you/your" in instructions
-- **Teaching Formula**: 1 Metaphor + 2 Contrasts + 3 Recognition Questions
+- **Clear examples**: Concrete examples users can copy
 - **Single source of truth**: No duplication across files
 
 ### Structure
@@ -264,10 +256,9 @@ All components created by the Seed System must achieve:
 ## When Building Components with the Seed System
 
 1. **Load knowledge**: Understand concepts via meta-skills
-2. **Apply factory**: Use meta-skills to generate components
-3. **Verify traits**: Ensure Portability Invariant compliance
-4. **Test isolation**: Verify component works without Seed System context
-5. **Validate autonomy**: Check Success Criteria and self-validation
+2. **Apply guidance**: Use meta-skills to generate components
+3. **Check portability**: Ensure component works in isolation
+4. **Test thoroughly**: Verify component works without external dependencies
 
 ---
 

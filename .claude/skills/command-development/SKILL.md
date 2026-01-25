@@ -3,481 +3,587 @@ name: command-development
 description: This skill should be used when the user asks to "create a slash command", "add a command", "write a custom command", "define command arguments", "use command frontmatter", "organize commands", "create command with file references", "interactive command", "use AskUserQuestion in command", or needs guidance on slash command structure, YAML frontmatter fields, dynamic arguments, bash execution in commands, user interaction patterns, or command development best practices for Claude Code.
 ---
 
-# Command Development: Architectural Refiner
+# Command Development Guide
 
-**Role**: Transform intent into portable, self-sufficient commands
-**Mode**: Architectural pattern application (ensure output has specific traits)
-
----
-
-## Architectural Pattern Application
-
-When building a command, apply this process:
-
-1. **Analyze Intent** - What type of command and what traits needed?
-2. **Apply Teaching Formula** - Bundle condensed philosophy into output
-3. **Enforce Portability Invariant** - Ensure works in isolation
-4. **Verify Traits** - Check self-containment, mandatory references, Success Criteria
+**Purpose**: Help you create clear, reusable commands
 
 ---
 
-## Core Understanding: What Commands Are
+## What Commands Are
 
-**Metaphor**: Commands are "executable instructions"—they tell Claude exactly what to do and carry their own validation logic.
+Commands are Markdown files that Claude executes when invoked. They provide reusable workflows, consistency across team usage, and efficient access to complex prompts.
 
-**Definition**: Commands are Markdown files containing prompts that Claude executes during interactive sessions. They provide reusable workflows, consistency across team usage, and efficient access to complex prompts.
+**Key point**: Commands are instructions FOR Claude, not messages TO users. Write what Claude should do, not what will happen for the user.
 
-**Key insight**: Commands bundle their own philosophy. They don't depend on external documentation to guide execution.
+✅ Good: "Review this code for security vulnerabilities..."
+❌ Bad: "This command will review your code for security issues..."
 
-✅ Good: Command includes mandatory references with "You MUST" language
-❌ Bad: Command references external documentation without enforcement
-Why good: Commands must self-validate without external dependencies
-
-Recognition: "Would this command work if copied to a project with no rules?" If no, bundle the philosophy.
+**Question**: Would this command make sense if someone only read this one file? If not, include more context.
 
 ---
 
-## Command Traits: What Portable Commands Must Have
+## What Good Commands Have
 
-### Trait 1: Portability (MANDATORY)
+### 1. Self-Containment
 
-**Requirement**: Command works in isolation without external dependencies
+**Good commands don't reference external files for critical information.**
 
-**Enforcement**:
-- Bundle condensed Seed System philosophy (Delta Standard, Progressive Disclosure, Teaching Formula)
-- Include Success Criteria for self-validation
-- Use "You MUST" language for mandatory references
-- Never reference .claude/rules/ files
+Include everything users need:
+- Complete examples embedded directly
+- Clear explanations
+- What users need to know to succeed
 
-**Example**:
-```
-## Core Philosophy
-
-Think of commands like executable instructions: they tell Claude exactly what to do.
-
-✅ Good: Use specific trigger phrases in description
-❌ Bad: Vague descriptions without triggers
-Why good: Specific triggers enable pattern matching
-
-Recognition: "Could this command guide execution without external documentation?" If no, add Success Criteria.
-```
-
-### Trait 2: Teaching Formula Integration
-
-**Requirement**: Every command must teach through metaphor, contrast, and recognition
-
-**Enforcement**: Include all three elements:
-1. **1 Metaphor** - For understanding (e.g., "Think of X like a Y")
-2. **2 Contrast Examples** - Good vs Bad with rationale
-3. **3 Recognition Questions** - Binary self-checks
-
-**Template**:
-```
-Metaphor: [Understanding aid]
-
-✅ Good: [Concrete example]
-❌ Bad: [Concrete example]
-Why good: [Reason]
-
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-```
-
-### Trait 3: Self-Containment
-
-**Requirement**: Command owns all its content
-
-**Enforcement**:
-- Include all examples directly in command
-- Never reference other commands or external files
-- Bundle necessary philosophy
-- Provide complete, working examples
-
-✅ Good: Examples embedded directly with full syntax
+✅ Good: Examples shown inline with full context
 ❌ Bad: "See reference files for examples"
-Why good: Self-contained commands work without external references
 
-Recognition: "Does command reference files outside itself?" If yes, inline the content.
+**Question**: Does this command reference files outside itself? If yes, include that information directly.
 
-### Trait 4: Mandatory References Enforcement
+### 2. Clear Purpose
 
-**Requirement**: References must be enforced with "You MUST" language
+**Every command should have one clear job.**
 
-**Enforcement**:
-- Use "You MUST read X before doing Y" pattern
-- Explain why references are critical
-- Provide clear navigation tables
+Be specific:
+- What does it do?
+- When should someone use it?
+- What will happen?
 
-**Example**:
-```
-## Navigation
+✅ Good: "Review code for security issues"
+❌ Bad: "Use this to check code"
 
-| If you are... | You MUST read... |
-|---------------|------------------|
-| Configuring frontmatter | references/frontmatter-reference.md |
-| Adding bash injection | references/executable-examples.md |
-| Creating interactive commands | references/interactive-commands.md |
+### 3. Working Examples
 
-**Critical**: References contain validation rules that prevent silent failures. Skipping references leads to broken commands.
-```
+**Users should be able to copy and adapt examples.**
 
-### Trait 5: Success Criteria Invariant
+Show:
+- Complete command structure
+- What the output looks like
+- Common variations
 
-**Requirement**: Command includes self-validation logic
-
-**Template**:
-```
-## Success Criteria
-
-This command is complete when:
-- [ ] Valid YAML frontmatter with required fields
-- [ ] Description uses third-person with specific trigger phrases
-- [ ] Imperative form, no second person
-- [ ] All mandatory references enforced with "You MUST" language
-- [ ] Teaching Formula: 1 Metaphor + 2 Contrasts + 3 Recognition
-- [ ] Portability: Works in isolation, bundled philosophy, no external refs
-- [ ] Examples complete and working
-
-Self-validation: Verify each criterion without external dependencies. If all checked, command meets Seed System standards.
-```
-
-**Recognition**: "Could a user validate this command using only its content?" If no, add Success Criteria.
+**Question**: Can users copy this command and use it immediately? If not, make it more complete.
 
 ---
 
-## Anatomical Requirements
+## How to Structure a Command
 
-### Required: Command File Structure
+### Basic Command (No Frontmatter)
 
-**Basic command** (no frontmatter):
+Simple commands just need the prompt:
+
 ```markdown
-[Imperative prompt for Claude execution]
+Review this code for security vulnerabilities including:
+- SQL injection
+- XSS attacks
+- Authentication bypass
+- Insecure data handling
 ```
 
-**With YAML frontmatter**:
+### With YAML Frontmatter
+
+Add configuration using YAML frontmatter:
+
 ```markdown
 ---
-description: [Brief description for /help]
-model: [Optional: specify model]
+description: Review code for security issues
+model: sonnet
+---
+
+Review this code for security vulnerabilities including:
+- SQL injection
+- XSS attacks
+- Authentication bypass
+- Insecure data handling
+```
+
+**Key elements**:
+- **description**: Brief description shown in `/help`
+- **model**: Optional model specification
+- **allowed-tools**: Specify which tools command can use
+
+---
+
+## Frontmatter Fields
+
+### description
+
+**Purpose:** Brief description shown in `/help`
+**Type:** String
+**Default:** First line of command prompt
+
+```yaml
+---
+description: Review pull request for code quality
+---
+```
+
+**Best practice:** Clear, actionable description (under 60 characters)
+
+### allowed-tools
+
+**Purpose:** Specify which tools command can use
+**Type:** String or Array
+**Default:** Inherits from conversation
+
+```yaml
+---
+allowed-tools: ["Read", "Write", "Bash"]
 ---
 
 [Command prompt]
 ```
 
-**Quality requirements**:
-- **Markdown format**: Valid .md file
-- **Imperative form**: Direct instructions to Claude
-- **Clear purpose**: Specific workflow definition
+**Best practice:** Only specify if command needs specific tools.
 
-### Optional: Frontmatter Fields
+### model
 
-**description**:
-- Brief description shown in `/help`
-- Under 60 characters
-- Clear and actionable
+**Purpose:** Override conversation default model
+**Type:** String
 
-**model**:
-- Optional model specification
-- Overrides conversation default
+```yaml
+---
+model: sonnet
+---
 
-**allowed-tools**:
-- Specify which tools command can use
-- Required for skill orchestration: `Skill(skill-name)`
+[Command prompt]
+```
 
-### Optional: Dynamic Features
-
-**Arguments** (`$1`, `$2`):
-- Dynamic parameter substitution
-- Use with `argument-hint` for guidance
-
-**Bash injection** (`!command`):
-- Execute commands and inject output
-- Requires `Bash` in `allowed-tools`
-
-**File references** (`@file`):
-- Reference files in project
-- Requires `Read` in `allowed-tools`
-
-**Recognition**: "Does command use dynamic features?" If yes, ensure proper validation and testing.
+**Best practice:** Only use if command needs specific model.
 
 ---
 
-## Pattern Application Framework
+## Dynamic Features
 
-### Step 1: Analyze Intent
+### Arguments ($1, $2)
 
-**Question**: What type of command and what traits needed?
+Pass parameters to commands:
 
-**Analysis**:
-- Simple command? → Focus on imperative prompt clarity
-- Complex workflow? → Include frontmatter and allowed-tools
-- Interactive command? → Add navigation and validation
-- Multi-component? → Include skill/agent orchestration
+```yaml
+---
+argument-hint: "file or directory to review"
+---
 
-**Example**:
-```
-Intent: Build command for code review
-Analysis:
-- Complex workflow → Need frontmatter with allowed-tools
-- Security focus → Bundle validation philosophy
-- Reusable → Include Success Criteria
-Output traits: Portability + Teaching Formula + Success Criteria
+Review this $1 for security vulnerabilities.
 ```
 
-### Step 2: Apply Teaching Formula
+**Usage:**
+- `$1` - First argument
+- `$2` - Second argument
+- `$3` - Third argument
 
-**Requirement**: Bundle condensed Seed System philosophy
+**Best practice:** Document arguments with `argument-hint`
 
-**Elements to include**:
-1. **Metaphor**: "Commands are executable instructions..."
-2. **Delta Standard**: Good Component = Expert Knowledge - What Claude Knows
-3. **Progressive Disclosure**: Navigation tables explained
-4. **2 Contrast Examples**: Good vs Bad command structure
-5. **3 Recognition Questions**: Binary self-checks for quality
+### Bash Injection (!command)
 
-**Template integration**:
+Execute commands and inject output:
+
+```yaml
+---
+allowed-tools: ["Bash"]
+---
+
+Check if tests pass:
+!npm test
+
+Review the test results.
+```
+
+**Usage:**
+- `!command` - Execute command
+- Output becomes part of command prompt
+
+**Best practice:** Test bash injection before using
+
+### File References (@file)
+
+Reference files in project:
+
+```yaml
+---
+allowed-tools: ["Read"]
+---
+
+Review this code:
+@src/index.js
+
+Check for security issues.
+```
+
+**Usage:**
+- `@file` - Reference file
+- File contents become part of command prompt
+
+**Best practice:** Use project-relative or absolute paths
+
+---
+
+## Command Organization
+
+### Project Commands
+
+Location: `.claude/commands/`
+
+Scope: Available in current project
+
 ```markdown
-## Core Philosophy
-
-Metaphor: "Think of commands like [metaphor]..."
-
-✅ Good: description: "Review code for security issues"
-❌ Bad: description: "Use this to check code"
-Why good: Specific purpose enables pattern matching
-
-Recognition: "Does description include specific user actions?" → If no, add concrete phrases
-Recognition: "Are mandatory references enforced?" → If no, use "You MUST" language
-Recognition: "Could this work without external documentation?" → If no, bundle philosophy
+.claude/commands/
+├── review.md           # /review command
+├── test.md             # /test command
+└── deploy.md           # /deploy command
 ```
 
-### Step 3: Enforce Portability Invariant
+### Personal Commands
 
-**Requirement**: Ensure command works in isolation
+Location: `~/.claude/commands/`
 
-**Checklist**:
-- [ ] Condensed philosophy bundled (Delta Standard, Progressive Disclosure, Teaching Formula)
-- [ ] Success Criteria included
-- [ ] Mandatory references enforced with "You MUST" language
-- [ ] No external .claude/rules/ references
-- [ ] Examples complete and self-contained
+Scope: Available in all projects
 
-**Verification**: "Could this command survive being moved to a fresh project with no .claude/rules?" If no, fix portability issues.
+```markdown
+~/.claude/commands/
+├── personal-helper.md
+└── universal-reviewer.md
+```
 
-### Step 4: Verify Traits
+### Plugin Commands
 
-**Requirement**: Check all mandatory traits present
+Location: `plugin-name/commands/`
 
-**Verification**:
-- Portability Invariant ✓
-- Teaching Formula (1 Metaphor + 2 Contrasts + 3 Recognition) ✓
-- Self-Containment ✓
-- Mandatory References Enforcement ✓
-- Success Criteria Invariant ✓
+Scope: Available when plugin installed
 
-**Recognition**: "Does command meet all five traits?" If any missing, add them.
+```markdown
+plugin-name/
+├── commands/
+│   ├── foo.md              # /foo
+│   ├── bar.md              # /bar
+│   └── utils/
+│       └── helper.md       # /utils/helper
+└── plugin.json
+```
 
 ---
 
-## Architecture Patterns
+## Command Types
 
-### Pattern 1: Instructions FOR Claude
+### Simple Commands
 
-**Trait**: Commands are written for agent consumption
+Just provide instructions to Claude:
 
-**Application**: Write as directives TO Claude about what to do
+```markdown
+Review this code for bugs:
 
-**Example**:
+1. Check for syntax errors
+2. Look for logic issues
+3. Verify edge cases
 ```
-✅ Good (instructions for Claude):
-Review this code for security vulnerabilities including:
-- SQL injection
-- XSS attacks
-- Authentication issues
 
-Provide specific line numbers and severity ratings.
+**Best for:** Straightforward tasks, one-time operations
 
-❌ Bad (messages to user):
+### Interactive Commands
+
+Use AskUserQuestion for user input:
+
+```yaml
+---
+allowed-tools: ["AskUserQuestion"]
+---
+
+Ask the user: "What type of code review do you want?"
+- Security focus
+- Performance focus
+- General review
+
+Based on their answer, provide tailored review guidance.
+```
+
+**Best for:** Commands that need user input or customization
+
+### Script Commands
+
+Combine with bash injection:
+
+```yaml
+---
+allowed-tools: ["Bash", "Read"]
+---
+
+Check the project structure:
+!find . -name "*.js" -type f
+
+Review the main files:
+@src/index.js
+@src/app.js
+
+Provide feedback on code quality.
+```
+
+**Best for:** Commands that benefit from automated checks
+
+---
+
+## Best Practices
+
+### Writing Style
+
+**Use imperative voice:**
+
+✅ Good: "Review this code for..."
+✅ Good: "Check the test results..."
+✅ Good: "Provide suggestions for..."
+
+❌ Bad: "This will review your code..."
+❌ Bad: "You should check..."
+
+### Frontmatter
+
+**Keep it simple:**
+
+✅ Good:
+```yaml
+---
+description: Review code for security issues
+---
+
+[Command prompt]
+```
+
+❌ Bad: Overly complex frontmatter with unnecessary fields
+
+### Examples
+
+**Include working examples:**
+
+✅ Good:
+```markdown
+Review this code for security vulnerabilities:
+
+!find . -name "*.js" -type f
+
+Check each file for:
+1. SQL injection risks
+2. XSS vulnerabilities
+3. Authentication issues
+```
+
+❌ Bad: Examples that don't show real usage
+
+### Error Handling
+
+**Anticipate common issues:**
+
+```markdown
+Review this code. If you encounter:
+- Permission errors: Skip those files
+- Large files: Focus on key functions
+- Unknown syntax: Note the issue and continue
+
+Provide a summary of findings.
+```
+
+---
+
+## Common Mistakes
+
+### Mistake 1: Messages to Users
+
+❌ Bad:
+```markdown
 This command will review your code for security issues.
 You'll receive a report with vulnerability details.
 ```
 
-### Pattern 2: Mandatory References Navigation
-
-**Trait**: References contain critical validation rules
-
-**Application**: Use navigation tables with "You MUST" enforcement
-
-**Example**:
-```
-## Navigation
-
-| If you are... | You MUST read... |
-|---------------|------------------|
-| Configuring frontmatter | references/frontmatter-reference.md |
-| Adding bash injection | references/executable-examples.md |
-
-**Critical**: References contain validation rules that prevent silent failures. Skipping references leads to broken commands.
-```
-
-### Pattern 3: Self-Validation
-
-**Trait**: Success Criteria enable self-validation
-
-**Application**: Include Success Criteria section at end of command
-
-**Example**:
+✅ Good:
 ```markdown
-## Success Criteria
+Review this code for security vulnerabilities including:
+- SQL injection
+- XSS attacks
+- Authentication bypass
+- Insecure data handling
 
-This command is complete when:
-- [ ] Valid YAML frontmatter with required fields
-- [ ] Imperative prompt with clear purpose
-- [ ] All mandatory references enforced
-- [ ] Teaching Formula integrated
+Provide specific line numbers and severity ratings.
+```
 
-Self-validation: Check each criterion using only command content. No external dependencies required.
+**Why**: Commands are instructions FOR Claude, not messages TO users.
+
+### Mistake 2: Vague Descriptions
+
+❌ Bad:
+```yaml
+---
+description: Helpful code tool
+---
+```
+
+✅ Good:
+```yaml
+---
+description: Review code for security issues
+---
+```
+
+**Why**: Specific descriptions help users find and use commands.
+
+### Mistake 3: No Examples
+
+❌ Bad:
+```markdown
+Review code.
+```
+
+✅ Good:
+```markdown
+Review this code for security vulnerabilities:
+
+!find . -name "*.js" -type f
+
+Check each file systematically.
+```
+
+**Why**: Users need to see what good looks like.
+
+### Mistake 4: Missing allowed-tools
+
+❌ Bad:
+```yaml
+---
+description: Run tests
+---
+
+!npm test
+```
+
+✅ Good:
+```yaml
+---
+description: Run tests
+allowed-tools: ["Bash"]
+---
+
+!npm test
+```
+
+**Why**: Claude needs permission to use tools.
+
+---
+
+## Advanced Features
+
+### Skill Orchestration
+
+Commands can invoke skills:
+
+```yaml
+---
+allowed-tools: ["Skill(skill-development)"]
+---
+
+Use the skill-development skill to create a new skill for code review automation.
+```
+
+**Best practice**: Use natural language to invoke skills.
+
+### Agent Launch
+
+Commands can launch agents:
+
+```yaml
+---
+allowed-tools: ["Agent(code-reviewer)"]
+---
+
+Launch the code-reviewer agent to conduct a comprehensive security audit.
+```
+
+**Best practice**: Specify what the agent should accomplish.
+
+### Multi-Step Workflows
+
+Combine features:
+
+```yaml
+---
+description: Complete code review
+allowed-tools: ["Read", "Bash", "AskUserQuestion"]
+---
+
+1. Ask user: "What type of review?"
+   - Security
+   - Performance
+   - General
+
+2. Scan codebase:
+   !find . -name "*.js" -type f
+
+3. Review key files:
+   @src/index.js
+   @src/app.js
+
+4. Provide comprehensive feedback.
 ```
 
 ---
 
-## Critical Enforcements
+## Testing Commands
 
-### CRITICAL: Frontmatter Configuration
+### Test Triggering
 
-**MANDATORY**: You MUST read references/frontmatter-reference.md before configuring any command frontmatter.
+1. Write command with specific examples
+2. Use similar phrasing to examples
+3. Check Claude loads the command
+4. Verify command provides expected functionality
 
-Invalid frontmatter causes silent failures. The reference contains:
-- Required fields and validation rules
-- Common error patterns and fixes
-- Testing strategies for frontmatter
+### Test Features
 
-**Enforcement**: Configure frontmatter only after reading the reference completely.
+**Arguments:**
+```bash
+/command-name test-file.js
+```
 
-### CRITICAL: Bash Injection Validation
+**Bash injection:**
+```bash
+!npm test
+```
 
-**MANDATORY**: Commands with bash injection ("!") or file references (`@`) MUST validate executable syntax before committing.
+**File references:**
+```bash
+@src/index.js
+```
 
-Test in simulated environment first. Validation steps:
-1. Create test scenario with bash injection
-2. Verify command syntax is correct
-3. Test in isolated environment
-4. Confirm no syntax errors
-
-Validation prevents silent failures from invalid bash syntax.
+**Best practice**: Test all features before sharing command.
 
 ---
 
-## Common Transformations
+## Quality Checklist
 
-### Transform Tutorial → Architectural
+A good command:
 
-**Before** (tutorial):
-```
-Step 1: Understand command basics
-Step 2: Configure frontmatter
-Step 3: Add features
-...
-```
+- [ ] Has clear description
+- [ ] Uses imperative voice
+- [ ] Includes working examples
+- [ ] Specifies allowed-tools when needed
+- [ ] Has one clear purpose
+- [ ] Doesn't reference external files
+- [ ] Uses natural language
+- [ ] Balances detail (not too much, not too little)
 
-**After** (architectural):
-```
-Analyze Intent → Apply Teaching Formula → Enforce Portability → Verify Traits
-```
-
-**Why**: Architectural patterns ensure output has required traits, not just follows steps.
-
-### Transform Reference → Bundle
-
-**Before** (referenced):
-```
-"See documentation for best practices"
-```
-
-**After** (bundled):
-```
-## Core Philosophy
-
-Bundle condensed principles directly in command:
-
-Think of commands like executable instructions...
-
-✅ Good: [example]
-❌ Bad: [example]
-Why good: [reason]
-```
-
-**Why**: Commands must work in isolation.
+**Self-check**: If you were new to this command, would the content be enough to succeed?
 
 ---
 
-## Quality Validation
+## Remember
 
-### Portability Test
+Commands are for:
+- Reusable workflows
+- Consistency across team
+- Efficiency in complex tasks
 
-**Question**: "Could this command work if moved to a project with zero .claude/rules?"
+Keep the focus on:
+- Clarity over cleverness
+- Examples over explanations
+- Self-contained over scattered
+- Specific over vague
 
-**If NO**:
-- Bundle condensed philosophy
-- Add Success Criteria
-- Remove external references
-- Inline examples
+Good commands are obvious. When someone reads them, they know exactly what to do.
 
-### Teaching Formula Test
-
-**Checklist**:
-- [ ] 1 Metaphor present
-- [ ] 2 Contrast Examples (good/bad) with rationale
-- [ ] 3 Recognition Questions (binary self-checks)
-
-**If any missing**: Add them using Teaching Formula Arsenal
-
-### Self-Containment Test
-
-**Question**: "Does command reference files outside itself?"
-
-**If YES**:
-- Inline the content
-- Bundle necessary philosophy
-- Remove external dependencies
-
-### Mandatory References Test
-
-**Question**: "Are references enforced with 'You MUST' language?"
-
-**If NO**: Add navigation tables with "You MUST" enforcement
+**Question**: Is your command clear enough that a stranger could use it successfully?
 
 ---
 
-## Success Criteria
-
-This command-development guidance is complete when:
-
-- [ ] Architectural pattern clearly defined (Analyze → Apply → Enforce → Verify)
-- [ ] Teaching Formula integrated (1 Metaphor + 2 Contrasts + 3 Recognition)
-- [ ] Portability Invariant explained with enforcement checklist
-- [ ] All five traits defined (Portability, Teaching Formula, Self-Containment, Mandatory References, Success Criteria)
-- [ ] Pattern application framework provided
-- [ ] Quality validation tests included
-- [ ] Examples demonstrate architectural approach
-- [ ] Success Criteria present for self-validation
-
-Self-validation: Verify command-development meets Seed System standards using only this content. No external dependencies required.
-
----
-
-## Reference: The Five Mandatory Traits
-
-Every command must have:
-
-1. **Portability** - Works in isolation
-2. **Teaching Formula** - 1 Metaphor + 2 Contrasts + 3 Recognition
-3. **Self-Containment** - Owns all content
-4. **Mandatory References** - Enforced with "You MUST" language
-5. **Success Criteria** - Self-validation logic
-
-**Recognition**: "Does this command have all five traits?" If any missing, add them.
-
----
-
-**Remember**: Commands are executable instructions. They tell Claude exactly what to do and carry their own validation logic. Bundle the philosophy. Enforce the invariants. Verify the traits.
+**Final tip**: The best command is one that helps someone accomplish their goal with less confusion and friction. Focus on that.

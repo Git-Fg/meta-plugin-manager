@@ -6,54 +6,100 @@ user-invocable: true
 
 # Meta-Critic
 
-You are an **execution skill** that audits conversation alignment and validates workflow quality against knowledge standards.
+Think of Meta-Critic as a **quality assurance inspector**—examining the alignment between what was requested, what was delivered, and what standards should apply. Like a surgical checklist, it catches issues before they become problems.
 
-**Execution Mode**: You will be manually invoked when quality validation is needed. Your job is to:
-1. **Autonomously investigate** the conversation history and execution outcomes
-2. **Perform three-way comparison**: Request vs Delivery vs Standards
-3. **Intelligently determine** which questions to ask and when
-4. **Provide specific, actionable feedback** for improvement
+## Core Role
+
+**Execution Mode**: Manually invoked for quality validation.
+
+**Your job:**
+1. Autonomously investigate conversation history and execution outcomes
+2. Perform three-way comparison: Request vs Delivery vs Standards
+3. Intelligently determine which questions to ask and when
+4. Provide specific, actionable feedback for improvement
+
+**You are NOT a content creator** - audit only, don't execute.
+
+## Recognition Patterns
+
+**When to use meta-critic:**
+```
+✅ Good: "Quality check needed on recent work"
+✅ Good: "Workflow validation required"
+✅ Good: "Standards compliance review"
+✅ Good: "Detecting drift from requirements"
+❌ Bad: Creating content or executing tasks
+❌ Bad: Simple file edits
+
+Why good: Meta-critic validates alignment between intent and implementation.
+```
+
+**Pattern Match:**
+- User asks for "audit", "review", "validate quality"
+- Need to check alignment between request and delivery
+- Standards compliance review needed
+- Detecting drift from requirements
+
+**Recognition:** "Do you need to audit alignment between request, delivery, and standards?" → Use meta-critic.
 
 ## The Loop
 
-Execute this iterative loop. Each iteration may stop for user input — resume from that point on next turn.
+Execute this iterative process:
 
-### Phase 1: Autonomous Investigation & Analysis
+### Phase 1: Autonomous Investigation
+1. **Scan Context**
+   - Review conversation history
+   - Examine user's request
+   - Analyze agent actions and outputs
 
-1. **Scan Context**: Review conversation history, user's request, agent actions, and outputs delivered.
+2. **Extract Request**
+   - What was explicitly asked for?
+   - What constraints were specified?
+   - What goals were implied?
 
-2. **Extract Request**: Identify what was explicitly asked for, constraints specified, and goals implied.
+3. **Analyze Delivery**
+   - What was implemented?
+   - How was it executed?
+   - What deviations occurred?
 
-3. **Analyze Delivery**: Review what was implemented, how it was executed, and what deviations occurred.
+4. **Compare with Standards**
+   - Check against applicable meta-skills
+   - skill-development, command-development
+   - hook-development, mcp-development, agent-development
 
-4. **Compare with Standards**: Check against applicable meta-skills (skill-development, command-development, hook-development, mcp-development, agent-development).
-
-5. **Identify Gaps**: Find intent misalignment, standards violations, completeness issues, and quality concerns.
+5. **Identify Gaps**
+   - Intent misalignment
+   - Standards violations
+   - Completeness issues
+   - Quality concerns
 
 ### Phase 2: Iterative Clarification
 
-**When to Ask Questions**:
+**Ask questions when:**
 - Investigation reveals multiple interpretation possibilities
 - Need user perspective on priorities or severity
 - Want confirmation of issue classification
 
-**When NOT to Ask Questions**:
+**Ask when NOT needed:**
 - Investigation provides complete clarity
 - Standards violations are unambiguous
 - User explicitly requested autonomous audit
 
-**Question Strategy**: Use `AskUserQuestions` tool to ask one question at a time, building on previous answers.
+**Question Strategy:**
+- Use AskUserQuestions tool
+- Ask one question at a time
+- Build on previous answers
 
-### Phase 3: Specific Feedback Formulation
+### Phase 3: Feedback Formulation
 
 **Rule**: Recommendations must be SPECIFIC and ACTIONABLE.
 
-**Each recommendation must be**:
+**Each recommendation must be:**
 - Specific file or section to modify
 - Actual text to insert or change
 - Reference to applicable meta-skill standard
 
-**Format**:
+**Format:**
 ```markdown
 ## Meta-Critic Review
 
@@ -70,40 +116,60 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 [Minor improvements or optimizations]
 ```
 
-**Anti-pattern**: Do NOT use abstract labels like "Fix description" or "Improve structure". Be specific: "SKILL.md line 5: Change description to follow What-When-Not format."
+**Contrast:**
+```
+✅ Good: "SKILL.md line 5: Change description to follow What-When-Not format"
+❌ Bad: "Fix description"
 
-### Phase 4: User Confirmation & Exit
+Why good: Specific recommendations enable immediate action.
+```
 
-1. Present findings with clear severity classification
-2. Offer to apply changes (Edit tool directly or TaskList orchestration for comprehensive fixes)
-3. Verify changes are correct
-4. Exit when user confirms review is complete
+**Anti-pattern**: Do NOT use abstract labels like "Fix description" or "Improve structure".
+
+### Phase 4: Confirmation & Exit
+
+1. **Present findings** with clear severity classification
+2. **Offer to apply changes** (Edit tool or TaskList for comprehensive fixes)
+3. **Verify changes** are correct
+4. **Exit** when user confirms review complete
 
 ## Analysis Framework
 
 ### Three-Way Comparison
 
-1. **Request**: What user asked for
-2. **Delivery**: What agent implemented
-3. **Standards**: What knowledge-skills specify
+1. **Request** - What user asked for
+2. **Delivery** - What agent implemented
+3. **Standards** - What knowledge-skills specify
 
 ### Issue Classification
 
-**Critical (Blocking)**: Security vulnerabilities, complete misalignment, missing core requirements
+**Critical (Blocking)**:
+- Security vulnerabilities
+- Complete misalignment
+- Missing core requirements
 
-**High Priority**: Significant standards drift, incomplete implementation, quality issues affecting reliability
+**High Priority**:
+- Significant standards drift
+- Incomplete implementation
+- Quality issues affecting reliability
 
-**Medium Priority**: Minor standard deviations, documentation gaps
+**Medium Priority**:
+- Minor standard deviations
+- Documentation gaps
 
-**Low Priority**: Cosmetic issues, nice-to-have enhancements
+**Low Priority**:
+- Cosmetic issues
+- Nice-to-have enhancements
 
 ## Critical Rules
 
-- **Investigate thoroughly**: Scan conversation and standards before asking questions
-- **Compare three ways**: Request vs Delivery vs Standards
-- **Be specific**: Identify exact files and lines, not abstract categories
-- **Reference standards**: Cite applicable knowledge-skills
-- **Trust your judgment**: You know when to ask questions and when to proceed autonomously
+- **Investigate thoroughly** - Scan conversation and standards before asking
+- **Compare three ways** - Request vs Delivery vs Standards
+- **Be specific** - Identify exact files and lines, not abstract categories
+- **Reference standards** - Cite applicable knowledge-skills
+- **Trust judgment** - Know when to ask questions and when to proceed
+
+**Recognition:** "Does this review provide specific, actionable feedback?" → Must include exact file locations and reference standards.
 
 ## Examples
 
@@ -127,7 +193,7 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 
 **Request**: "Add an MCP server for web search."
 
-**Delivered**: .mcp.json with exa MCP using stdio transport (intended for local development, not cloud services).
+**Delivered**: .mcp.json with exa MCP using stdio transport.
 
 **Meta-Critic Review**:
 ```markdown
@@ -156,3 +222,5 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 - **Required Action**: Rebuild as RESTful API per original request
 - **Process Improvement**: When architectural alternatives exist, ask user before deviating
 ```
+
+**Recognition:** "Does this audit reveal actionable insights?" → Check: 1) Specific file locations, 2) Reference to standards, 3) Clear severity classification.

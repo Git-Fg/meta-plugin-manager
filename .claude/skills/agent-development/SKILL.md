@@ -3,116 +3,59 @@ name: agent-development
 description: This skill should be used when the user asks to "create an agent", "add an agent", "write a subagent", "agent frontmatter", "when to use description", "agent examples", "agent tools", "agent colors", "autonomous agent", or needs guidance on agent structure, system prompts, triggering conditions, or agent development best practices. Focuses on project agents (.claude/agents/) with guidance for global (~/.claude/agents/) and plugin (plugin/agents/) locations.
 ---
 
-# Agent Development: Architectural Refiner
+# Agent Development Guide
 
-**Role**: Transform intent into portable, autonomous agents
-**Mode**: Architectural pattern application (ensure output has specific traits)
-
----
-
-## Architectural Pattern Application
-
-When building an agent, apply this process:
-
-1. **Analyze Intent** - What type of agent and what traits needed?
-2. **Apply Teaching Formula** - Bundle condensed philosophy into output
-3. **Enforce Portability Invariant** - Ensure works in isolation
-4. **Verify Traits** - Check autonomy, self-containment, triggering, Success Criteria
+**Purpose**: Help you create autonomous agents that handle complex tasks independently
 
 ---
 
-## Core Understanding: What Agents Are
+## What Agents Are
 
-**Metaphor**: Agents are "autonomous specialists"—they have their own isolated context and expertise, operating independently without polluting the conversation.
+Agents are autonomous subprocesses that handle complex, multi-step tasks in an isolated context window. They work independently without depending on conversation history or external documentation.
 
-**Definition**: Agents are autonomous subprocesses that handle complex, multi-step tasks independently in an isolated context window. They transform Claude into specialized agents equipped with procedural knowledge.
+**Key point**: Good agents don't need hand-holding. They include everything needed to operate autonomously.
 
-**Key insight**: Agents bundle their own philosophy and triggering logic. They don't depend on external documentation to operate autonomously.
-
-✅ Good: Agent includes bundled triggering examples with <example> blocks
+✅ Good: Agent includes specific triggering examples with <example> blocks
 ❌ Bad: Agent references external documentation for triggering
 Why good: Agents must self-trigger without external dependencies
 
-Recognition: "Would this agent work if moved to a project with no rules?" If no, bundle the philosophy.
+**Question**: Would this agent work if moved to a project with no rules? If no, include the necessary context directly.
 
 ---
 
-## Agent Traits: What Portable Agents Must Have
+## What Good Agents Have
 
-### Trait 1: Portability (MANDATORY)
+### 1. Clear Triggering
 
-**Requirement**: Agent works in isolation without external dependencies
+**Good agents tell Claude exactly when to use them.**
 
-**Enforcement**:
-- Bundle condensed Seed System philosophy (Delta Standard, Autonomous Context, Teaching Formula)
-- Include Success Criteria for self-validation
-- Provide complete triggering examples with <example> blocks
-- Never reference .claude/rules/ files
+Include specific triggering conditions with concrete examples:
 
-**Example**:
+```yaml
+description: Use this agent when user asks to "analyze code for security". Examples:
+
+<example>
+Context: User wants security review
+user: "Analyze this code for vulnerabilities"
+assistant: "I'll use the security-analyzer agent to conduct a comprehensive review"
+<commentary>
+Agent should trigger when user asks for security analysis
+</commentary>
+</example>
 ```
-## Core Philosophy
 
-Think of agents like autonomous specialists: they operate in isolation with their own context.
-
-✅ Good: Include specific triggering examples with <example> blocks
-❌ Bad: Vague description without concrete triggers
+✅ Good: Specific triggering examples with context, user request, and assistant response
+❌ Bad: Vague descriptions like "use for code help"
 Why good: Specific triggers enable autonomous decision-making
 
-Recognition: "Could this agent trigger autonomously without external documentation?" If no, add triggering examples.
-```
+### 2. Complete System Prompt
 
-### Trait 2: Teaching Formula Integration
+**Good agents include everything needed to operate independently.**
 
-**Requirement**: Every agent must teach through metaphor, contrast, and recognition
+Structure the system prompt with clear sections:
 
-**Enforcement**: Include all three elements:
-1. **1 Metaphor** - For understanding (e.g., "Think of X like a Y")
-2. **2 Contrast Examples** - Good vs Bad with rationale
-3. **3 Recognition Questions** - Binary self-checks
-
-**Template**:
-```
-Metaphor: [Understanding aid]
-
-✅ Good: [Concrete example]
-❌ Bad: [Concrete example]
-Why good: [Reason]
-
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-Recognition: "[Question]?" → [Action]
-```
-
-### Trait 3: Self-Containment
-
-**Requirement**: Agent owns all its content
-
-**Enforcement**:
-- Include all examples directly in description
-- Provide complete system prompt
-- Bundle necessary philosophy
-- Never reference external files
-
-✅ Good: Complete system prompt with responsibilities and process
-❌ Bad: "See external documentation for prompt details"
-Why good: Self-contained agents work without external references
-
-Recognition: "Does agent reference files outside itself?" If yes, inline the content.
-
-### Trait 4: Autonomous Context
-
-**Requirement**: Agent operates in isolated context window
-
-**Enforcement**:
-- Complete system prompt with clear responsibilities
-- Step-by-step analysis process
-- Defined output format
-- No dependency on conversation history
-
-**Example**:
 ```markdown
-You are [agent role]...
+You are [agent role description]...
 
 **Your Core Responsibilities:**
 1. [Responsibility 1]
@@ -126,43 +69,61 @@ You are [agent role]...
 [What to return]
 ```
 
-### Trait 5: Success Criteria Invariant
+✅ Good: Complete prompt with responsibilities, process, and output format
+❌ Bad: "See external documentation for prompt details"
+Why good: Self-contained agents work without external references
 
-**Requirement**: Agent includes self-validation logic
+### 3. No External Dependencies
 
-**Template**:
+**Good agents work in isolation.**
+
+Include all necessary context directly:
+
+- Don't reference .claude/rules/ files
+- Don't link to external documentation
+- Bundle any needed philosophy or principles
+- Include all examples inline
+
+✅ Good: Self-contained with all context included
+❌ Bad: References external files for critical information
+Why good: Agents must work anywhere without depending on project setup
+
+### 4. Isolated Operation
+
+**Good agents don't need conversation history.**
+
+Since agents don't inherit caller context:
+- Include all necessary background in the system prompt
+- Define clear input/output formats
+- Specify what tools are available
+- Don't assume knowledge from previous messages
+
+**Example**:
+```yaml
+tools: ["Read", "Write", "Grep"]
+color: blue
+model: inherit
 ```
-## Success Criteria
 
-This agent is complete when:
-- [ ] Valid YAML frontmatter with name and description
-- [ ] Description includes triggering conditions with <example> blocks
-- [ ] System prompt has clear responsibilities and process
-- [ ] Teaching Formula: 1 Metaphor + 2 Contrasts + 3 Recognition
-- [ ] Portability: Works in isolation, bundled philosophy, no external refs
-- [ ] Autonomy: Operates without conversation history dependency
-
-Self-validation: Verify each criterion without external dependencies. If all checked, agent meets Seed System standards.
-```
-
-**Recognition**: "Could a user validate this agent using only its content?" If no, add Success Criteria.
+**Question**: Does this agent assume knowledge from the conversation? If yes, include that context in the system prompt.
 
 ---
 
-## Anatomical Requirements
+## How to Structure an Agent
 
-### Required: Agent File Structure
+### Basic Agent Structure
 
-**Complete format**:
+Agents use YAML frontmatter followed by a system prompt:
+
 ```markdown
 ---
 name: agent-identifier
-description: Use this agent when [triggering conditions]. Examples:
+description: Use this agent when [specific triggering conditions]. Examples:
 
 <example>
 Context: [Situation description]
 user: "[User request]"
-assistant: "[How assistant should respond and use this agent]"
+assistant: "[How assistant should respond]"
 <commentary>
 [Why this agent should be triggered]
 </commentary>
@@ -180,166 +141,6 @@ You are [agent role description]...
 2. [Responsibility 2]
 
 **Analysis Process:**
-[Step-by-step workflow]
-
-**Output Format:**
-[What to return]
-```
-
-### Required Fields
-
-**name** (required):
-- Agent identifier for namespacing and invocation
-- Format: lowercase, numbers, hyphens only
-- Length: 3-50 characters
-
-**description** (required):
-- Defines when Claude should trigger this agent
-- MUST include triggering conditions
-- MUST include <example> blocks
-- MUST include context, user request, assistant response
-
-### Optional Fields
-
-**model**:
-- Override conversation default
-- Default: inherit
-
-**color**:
-- Visual identifier in interface
-- Default: blue
-
-**tools**:
-- Specify available tools
-- Default: inherits from conversation
-
----
-
-## Pattern Application Framework
-
-### Step 1: Analyze Intent
-
-**Question**: What type of agent and what traits needed?
-
-**Analysis**:
-- High-volume task? → Agent with isolation
-- Noisy exploration? → Agent with dedicated context
-- Specialized expertise? → Agent with domain knowledge
-- Multi-step workflow? → Agent with clear process
-
-**Example**:
-```
-Intent: Build agent for code analysis
-Analysis:
-- Specialized expertise → Need domain knowledge in prompt
-- High-volume output → Require isolated context
-- Complex workflow → Include step-by-step process
-Output traits: Autonomy + Portability + Teaching Formula + Success Criteria
-```
-
-### Step 2: Apply Teaching Formula
-
-**Requirement**: Bundle condensed Seed System philosophy
-
-**Elements to include**:
-1. **Metaphor**: "Agents are autonomous specialists..."
-2. **Delta Standard**: Good Component = Expert Knowledge - What Claude Knows
-3. **Autonomous Context**: Isolated operation explained
-4. **2 Contrast Examples**: Good vs Bad agent structure
-5. **3 Recognition Questions**: Binary self-checks for quality
-
-**Template integration**:
-```markdown
-## Core Philosophy
-
-Metaphor: "Think of agents like [metaphor]..."
-
-✅ Good: description: "Use this agent when user asks to 'analyze code for security'"
-❌ Bad: description: "Use this for code help"
-Why good: Specific triggering enables autonomous decision
-
-Recognition: "Does description include concrete triggering examples?" → If no, add <example> blocks
-Recognition: "Can agent operate without conversation history?" → If no, include complete context
-Recognition: "Could this work without external documentation?" → If no, bundle philosophy
-```
-
-### Step 3: Enforce Portability Invariant
-
-**Requirement**: Ensure agent works in isolation
-
-**Checklist**:
-- [ ] Condensed philosophy bundled (Delta Standard, Autonomous Context, Teaching Formula)
-- [ ] Success Criteria included
-- [ ] Complete triggering examples with <example> blocks
-- [ ] No external .claude/rules/ references
-- [ ] Complete system prompt with process
-
-**Verification**: "Could this agent survive being moved to a fresh project with no .claude/rules?" If no, fix portability issues.
-
-### Step 4: Verify Traits
-
-**Requirement**: Check all mandatory traits present
-
-**Verification**:
-- Portability Invariant ✓
-- Teaching Formula (1 Metaphor + 2 Contrasts + 3 Recognition) ✓
-- Self-Containment ✓
-- Autonomous Context ✓
-- Success Criteria Invariant ✓
-
-**Recognition**: "Does agent meet all five traits?" If any missing, add them.
-
----
-
-## Architecture Patterns
-
-### Pattern 1: The Clutter Test
-
-**Trait**: Agents prevent conversation pollution
-
-**Application**: Use agents when task would clutter conversation
-
-**Decision matrix**:
-| Answer | Approach | Rationale |
-|--------|----------|-----------|
-| **Would task clutter conversation?** | Spawn agent | Isolation prevents pollution |
-| **Would overhead exceed benefit?** | Use native tools | Agent overhead not justified |
-
-**Recognition**: "Would this task clutter the conversation?" Yes → Agent. No → Native tools.
-
-### Pattern 2: Triggering Examples
-
-**Trait**: Description must include concrete triggering
-
-**Application**: Use <example> blocks with context, user, assistant
-
-**Example**:
-```
-<example>
-Context: User wants security review
-user: "Analyze this code for vulnerabilities"
-assistant: "I'll use the security-analyzer agent to conduct a comprehensive review"
-<commentary>
-Agent should trigger when user asks for security analysis
-</commentary>
-</example>
-```
-
-### Pattern 3: Complete System Prompt
-
-**Trait**: Agent has complete context for autonomous operation
-
-**Application**: Include responsibilities, process, output format
-
-**Example**:
-```markdown
-You are [role]...
-
-**Your Core Responsibilities:**
-1. [Responsibility 1]
-2. [Responsibility 2]
-
-**Analysis Process:**
 1. [Step 1]
 2. [Step 2]
 
@@ -347,142 +148,241 @@ You are [role]...
 [What to return]
 ```
 
----
+### Frontmatter Fields
 
-## Anti-Pattern Recognition
+**name** (required):
+- Agent identifier for invocation
+- Format: lowercase, numbers, hyphens
+- Length: 3-50 characters
 
-### Anti-Pattern: Skill Fields in Agents
+**description** (required):
+- Defines when Claude should trigger this agent
+- Include <example> blocks with triggering scenarios
+- Each example needs: Context, user request, assistant response, commentary
 
-**Never use skill-specific fields in agents:**
+**model** (optional):
+- Override conversation default
+- Default: inherit
 
-| Field | Valid For | Agent Usage |
-|-------|-----------|-------------|
-| `context: fork` | Skills only | **Invalid** - causes errors |
-| `user-invocable` | Skills only | **Invalid** - meaningless |
-| `agent:` prefix | Skills only | **Invalid** - not for agents |
-| `disable-model-invocation` | Skills only | **Invalid** - not applicable |
+**color** (optional):
+- Visual identifier
+- Default: blue
 
-**Agent-only fields:** `name`, `description`, `model`, `color`, `tools`
-
-Recognition: "Am I using skill fields in agent?" If yes, remove them.
-
-### Anti-Pattern: Conversation History Dependency
-
-**Agent limitation**: Agents don't inherit caller context
-
-**Solution**: Complete system prompt with all necessary context
-
-Recognition: "Does agent require conversation history?" If yes, include context in prompt.
+**tools** (optional):
+- Specify available tools
+- Default: inherits from conversation
 
 ---
 
-## Common Transformations
+## Common Patterns
 
-### Transform Tutorial → Architectural
+### When to Use Agents
 
-**Before** (tutorial):
-```
-Step 1: Understand when to use agents
-Step 2: Create structure
-Step 3: Add triggering
-...
-```
+Use agents when:
+- Task would clutter the conversation
+- Need isolated context for noisy operations
+- Require specialized expertise consistently
+- Handling multi-step workflows
 
-**After** (architectural):
-```
-Analyze Intent → Apply Teaching Formula → Enforce Portability → Verify Traits
-```
+Don't use agents when:
+- Simple one-time operations
+- Native tools would work fine
+- Overhead exceeds benefit
 
-**Why**: Architectural patterns ensure output has required traits, not just follows steps.
+**Example**:
+```yaml
+# Good use case: Complex code analysis
+name: code-analyzer
+description: "Use when user asks to 'analyze code for security issues'"
 
-### Transform Reference → Bundle
-
-**Before** (referenced):
-```
-"See agent examples for proper structure"
-```
-
-**After** (bundled):
-```
-## Core Philosophy
-
-Bundle condensed principles directly in agent:
-
-Think of agents like autonomous specialists...
-
-✅ Good: [example]
-❌ Bad: [example]
-Why good: [reason]
+# Poor use case: Simple file reading
+# Just use Read tool directly
 ```
 
-**Why**: Agents must work in isolation.
+### Triggering Examples
+
+Make triggering concrete and specific:
+
+✅ Good:
+```yaml
+description: "Use when user asks to 'review pull request for bugs'"
+
+<example>
+Context: Developer submitted PR
+user: "Can you review this PR?"
+assistant: "I'll use the code-reviewer agent to analyze it"
+</example>
+```
+
+❌ Bad:
+```yaml
+description: "Use for code review tasks"
+```
 
 ---
 
-## Quality Validation
+## Common Mistakes
 
-### Portability Test
+### Mistake 1: Vague Triggering
 
-**Question**: "Could this agent work if moved to a project with zero .claude/rules?"
+❌ Bad:
+```yaml
+description: "Use for code help"
+```
 
-**If NO**:
-- Bundle condensed philosophy
-- Add Success Criteria
-- Remove external references
-- Include complete triggering examples
+✅ Good:
+```yaml
+description: "Use when user asks to 'analyze code for security vulnerabilities'"
 
-### Teaching Formula Test
+<example>
+Context: User wants security review
+user: "Check this code for issues"
+assistant: "I'll use the security-analyzer agent"
+</example>
+```
 
-**Checklist**:
-- [ ] 1 Metaphor present
-- [ ] 2 Contrast Examples (good/bad) with rationale
-- [ ] 3 Recognition Questions (binary self-checks)
+**Why**: Specific triggering enables autonomous decision-making.
 
-**If any missing**: Add them using Teaching Formula Arsenal
+### Mistake 2: Incomplete System Prompt
 
-### Autonomy Test
+❌ Bad:
+```markdown
+You are a code analyzer.
+```
 
-**Question**: "Can agent operate without conversation history?"
+✅ Good:
+```markdown
+You are a code security analyzer.
 
-**If NO**: Include complete context in system prompt
+**Your Core Responsibilities:**
+1. Identify security vulnerabilities
+2. Provide specific remediation guidance
 
-### Triggering Test
+**Analysis Process:**
+1. Scan for common security issues
+2. Check input validation
+3. Review authentication logic
 
-**Question**: "Does description include concrete <example> blocks?"
+**Output Format:**
+- List each vulnerability
+- Include severity rating
+- Provide fix recommendations
+```
 
-**If NO**: Add triggering examples with context, user, assistant
+**Why**: Complete prompts enable autonomous operation.
+
+### Mistake 3: Using Skill Fields in Agents
+
+❌ Bad:
+```yaml
+context: fork
+user-invocable: true
+```
+
+✅ Good:
+```yaml
+model: inherit
+color: blue
+tools: ["Read", "Write"]
+```
+
+**Why**: Agents and skills have different field requirements.
+
+### Mistake 4: Assuming Conversation Context
+
+❌ Bad:
+```markdown
+Review the changes we discussed...
+```
+
+✅ Good:
+```markdown
+Review the provided code for security issues...
+
+[Include all necessary context in the prompt]
+```
+
+**Why**: Agents don't inherit conversation history.
 
 ---
 
-## Success Criteria
+## Best Practices
 
-This agent-development guidance is complete when:
+### Writing Style
 
-- [ ] Architectural pattern clearly defined (Analyze → Apply → Enforce → Verify)
-- [ ] Teaching Formula integrated (1 Metaphor + 2 Contrasts + 3 Recognition)
-- [ ] Portability Invariant explained with enforcement checklist
-- [ ] All five traits defined (Portability, Teaching Formula, Self-Containment, Autonomous Context, Success Criteria)
-- [ ] Pattern application framework provided
-- [ ] Anti-patterns clearly identified
-- [ ] Quality validation tests included
-- [ ] Success Criteria present for self-validation
+**Use clear, specific language:**
 
-Self-validation: Verify agent-development meets Seed System standards using only this content. No external dependencies required.
+✅ Good:
+- "Use this agent when user asks to..."
+- "Include specific examples..."
+- "Provide step-by-step process..."
+
+❌ Bad:
+- "This agent helps with..."
+- "You should include..."
+- "Make sure to..."
+
+### Examples
+
+**Include working examples:**
+
+Show complete, real examples that users can copy and adapt:
+
+```yaml
+description: "Use when user asks to 'refactor Python code for performance'"
+
+<example>
+Context: User has slow Python code
+user: "Make this code faster"
+assistant: "I'll use the performance-refactorer agent to analyze and optimize it"
+</example>
+```
+
+### Organization
+
+**Structure for scanning:**
+
+- Clear headers
+- Bullet points for lists
+- Code blocks for examples
+- Short paragraphs
+
+**Question**: Is the structure easy to scan? If not, simplify it.
 
 ---
 
-## Reference: The Five Mandatory Traits
+## Quality Checklist
 
-Every agent must have:
+A good agent:
 
-1. **Portability** - Works in isolation
-2. **Teaching Formula** - 1 Metaphor + 2 Contrasts + 3 Recognition
-3. **Self-Containment** - Owns all content
-4. **Autonomous Context** - Operates without conversation history
-5. **Success Criteria** - Self-validation logic
+- [ ] Has clear description with specific triggering examples
+- [ ] Includes <example> blocks with context, user request, and assistant response
+- [ ] Has complete system prompt with responsibilities and process
+- [ ] Works in isolation without external references
+- [ ] Includes all necessary context (no conversation history dependency)
+- [ ] Uses appropriate fields (name, description, model, color, tools)
 
-**Recognition**: "Does this agent have all five traits?" If any missing, add them.
+**Self-check**: Could this agent work if moved to a fresh project? If not, it needs more context.
 
 ---
 
-**Remember**: Agents are autonomous specialists. They operate in isolated contexts with their own expertise. Bundle the philosophy. Enforce the invariants. Verify the traits.
+## Summary
+
+Agents are autonomous subprocesses that handle complex tasks independently. Good agents:
+
+- **Trigger clearly** - Specific examples with context
+- **Stand alone** - No external dependencies
+- **Work independently** - Complete system prompt with all context
+- **Stay focused** - Clear responsibilities and process
+
+Keep the focus on:
+- Clarity over complexity
+- Examples over explanations
+- Self-contained over scattered
+- Specific over vague
+
+**Question**: Is your agent clear enough that Claude would know exactly when and how to use it?
+
+---
+
+**Final tip**: The best agent is one that handles its task completely without needing hand-holding. Focus on that.
