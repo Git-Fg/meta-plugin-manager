@@ -1,79 +1,45 @@
-# Subagent Decision Guide
+# Subagent Threshold Heuristic
 
-When to use subagents vs native tools.
+The single question to ask: **"Would this clutter the conversation?"**
 
-## Decision Matrix
+## The Clutter Test
 
-| Need | Use Subagent? | Alternative |
-|------|---------------|-------------|
-| Complex codebase analysis | ✅ Yes | - |
-| Simple file read | ❌ No | Read tool |
-| High-volume grep | ✅ Yes | - |
-| Single file operation | ❌ No | Native tools |
-| Isolated context needed | ✅ Yes | - |
-| User-interactive task | ❌ No | Regular workflow |
+| Scenario | Clutters? | Action |
+|----------|-----------|--------|
+| Reading 3 files | No | Native tools |
+| Grepping 500 files | Yes | Subagent |
+| Single bash command | No | Native tools |
+| 20-step deployment | Yes | Subagent |
+| Quick variable lookup | No | Grep tool |
+| Full codebase audit | Yes | Subagent |
 
-## Decision Tree
+## The Three Triggers
 
-```
-START: What do you need?
-│
-├─ Simple file operation?
-│  └─→ Use native tools (Read, Grep, Glob)
-│
-├─ Complex multi-step task?
-│  ├─ Need isolation?
-│  │  └─→ Use subagent (context: fork)
-│  └─ Inline OK?
-│     └─→ Use skill
-│
-├─ High-volume output?
-│  └─→ Use subagent (context: fork)
-│
-├─ Domain expertise?
-│  └─→ Use skill
-│
-└─ User-triggered workflow?
-   └─→ Use command or skill
-```
+Spawn a subagent when ANY of these are true:
 
-## ✅ Use Subagents When
+1. **Output Volume**: Would produce >100 lines of exploration noise
+2. **Context Pollution**: Would derail the current conversation thread
+3. **Isolation Need**: Must not see/affect current conversation state
 
-- Complex multi-step tasks requiring focus
-- Need isolation from main conversation
-- High-volume output (extensive grep, repo traversal)
-- Noisy exploration that clutters conversation
-- Parallel execution needed
-- Long-running tasks
-
-## ❌ Don't Use Subagents For
-
-- Simple file operations → Use Read, Grep, Glob
-- Single-step operations → Use native tools
-- Tasks requiring conversation context
-- User interaction workflows
-- Quick lookups
+If none are true → **use native tools**.
 
 ## Agent Type Selection
 
-| Type | Purpose | Use When |
-|------|---------|----------|
-| **Explore** | Fast codebase navigation | Quick search, read-only analysis |
-| **Plan** | Architecture design | Complex reasoning, design decisions |
-| **Bash** | Command execution | Shell workflows, git operations |
-| **general-purpose** | Full capabilities | No specific specialization needed |
+```
+Need fast read-only search?     → Explore
+Need architecture reasoning?    → Plan
+Need shell execution?           → Bash
+Need everything?                → general-purpose
+```
 
-## Context: Fork Triggers
+## Anti-Pattern: Subagent for Simple Operations
 
-Use `context: fork` when:
-- High-volume output (full codebase traversal)
-- Noisy exploration (multi-file searches)
-- Separate context window needed
-- Clean result handoff required
+```yaml
+# ❌ WASTEFUL: Subagent for single file
+Task(subagent_type: Explore, prompt: "Read config.json")
 
-## Cost Awareness
+# ✅ CORRECT: Native tool
+Read("config.json")
+```
 
-- Subagents consume tokens for new context + execution
-- Use `haiku` for simple tasks
-- Limit parallel spawns
-- Prefer native tools when possible
+The subagent overhead (new context window + initialization) is only justified when the task would otherwise pollute the main conversation.
