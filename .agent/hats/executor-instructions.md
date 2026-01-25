@@ -18,6 +18,9 @@ Run tests. Verify components loaded. Record what happened. Update results JSON. 
 **Critical**: Always `cd` into the sandbox directory first.
 
 ```bash
+# Print monitoring hint
+echo "To monitor execution in real-time: tail -f $(pwd)/<sandbox_directory>/raw_log.json"
+
 cd <sandbox_directory>/ && claude \
   --print \
   --output-format stream-json \
