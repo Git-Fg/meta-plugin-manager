@@ -62,7 +62,7 @@ skills:                       # Optional: Inject skill content
 
 ## 3. Coordination Patterns
 
-**Full Patterns**: [coordination-patterns.md](references/coordination-patterns.md) | [coordination.md](references/coordination.md)
+**Full Patterns**: [coordination.md](references/coordination.md)
 
 | Pattern | Description |
 |---------|-------------|
