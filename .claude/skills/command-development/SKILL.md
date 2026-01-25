@@ -9,40 +9,35 @@ description: This skill should be used when the user asks to "create a slash com
 
 Slash commands are frequently-used prompts defined as Markdown files that Claude executes during interactive sessions. Understanding command structure, frontmatter options, and dynamic features enables creating powerful, reusable workflows.
 
-**Core principle:** Trust AI intelligence. Commands should specify WHAT to achieve and WHY it matters, then let Claude determine HOW based on context.
+Commands should specify WHAT to achieve and WHY it matters, then let Claude determine HOW based on context.
 
 ## Navigation
 
 | If you are... | You MUST read... |
 |---------------|------------------|
-| **Understanding command basics** | `references/executable-examples.md` |
-| **Configuring YAML frontmatter** (all commands) | `references/frontmatter-reference.md` |
-| **Building plugin commands** | `references/plugin-features-reference.md` |
-| **Working with interactive commands** | `references/interactive-commands.md` |
-| **Testing commands** | `references/testing-strategies.md` |
-| **Advanced workflows** | `references/advanced-workflows.md` |
-| **Writing documentation** | `references/documentation-patterns.md` |
-| **Publishing/distribution** | `references/marketplace-considerations.md` |
+| **Understanding command basics** | You MUST read `references/executable-examples.md` |
+| **Configuring YAML frontmatter** (all commands) | You MUST read `references/frontmatter-reference.md` |
+| **Building plugin commands** | You MUST read `references/plugin-features-reference.md` |
+| **Working with interactive commands** | You MUST read `references/interactive-commands.md` |
+| **Testing commands** | You MUST read `references/testing-strategies.md` |
+| **Advanced workflows** | You MUST read `references/advanced-workflows.md` |
+| **Writing documentation** | You MUST read `references/documentation-patterns.md` |
+| **Publishing/distribution** | You MUST read `references/marketplace-considerations.md` |
 
-**Note:** Frontmatter configuration applies to all commands and is fundamental to command structure.
+**Why this matters:** References contain validation rules, error patterns, and best practices that prevent common issues. Skipping references leads to incomplete understanding and lower quality output.
+
+## CRITICAL: Frontmatter Configuration
+
+You MUST read `references/frontmatter-reference.md` before configuring any command frontmatter.
+
+Frontmatter configuration applies to ALL commands and is fundamental to command structure. Invalid frontmatter causes silent failures that are difficult to debug. The reference contains:
+- Required fields and validation rules
+- Common error patterns and fixes
+- Testing strategies for frontmatter
+
+Configure frontmatter only after reading the reference completely.
 
 **⚠️ CRITICAL:** Commands with bash injection ("!") or file references (`@`) MUST validate executable syntax in simulated environment before committing. See `references/testing-strategies.md` Level 0.
-
-## Command Philosophy
-
-### Trust AI Intelligence
-
-Commands should leverage Claude's reasoning capabilities rather than treating it as a script executor. The goal is to tell Claude WHAT to achieve and WHY it matters, then let Claude determine HOW based on context.
-
-**Declarative approach** works best for most commands. State the desired outcome and provide relevant context. Claude will determine the appropriate investigation path, tools to use, and execution order.
-
-**Prescriptive approach** is reserved for situations where:
-- Destructive operations with irreversible consequences (deploy to production, delete data)
-- Single correct sequence required by external systems (specific format requirements)
-- Team consistency is critical (everyone must follow exact same process)
-- Error consequences are severe (data loss, security breaches)
-
-For most development tasks, trust Claude's judgment. Specify outcomes, not procedures.
 
 ## Command Basics
 
@@ -378,8 +373,7 @@ Refactoring commands work well with declarative patterns. Describe what to look 
 
 ### Command Design Principles
 
-1. **Trust AI intelligence:** Define outcomes, not steps. Claude can determine appropriate actions based on context.
-2. **Clear descriptions:** Make commands self-explanatory when listed in help.
+1. **Clear descriptions:** Make commands self-explanatory when listed in help.
 3. **Minimal tool restrictions:** Default to trust. Only restrict tools for destructive operations or specific requirements.
 4. **Document arguments:** Always provide argument-hint to guide users.
 5. **Consistent naming:** Use verb-noun patterns (review-pr, fix-issue) for clarity.
