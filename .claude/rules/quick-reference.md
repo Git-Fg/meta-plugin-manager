@@ -12,7 +12,7 @@ Need to build something?
 ├─ "Create a skill" → Load knowledge-skills + use create-skill factory
 ├─ "Add MCP server" → Load knowledge-mcp + use create-mcp-server factory
 ├─ "Add a hook" → Load knowledge-hooks + use create-hook factory
-├─ "Create subagent" → Load knowledge-subagents + use create-subagent factory
+├─ "Create agent" → Use agent-development
 │
 ├─ "Quality assessment" → Load knowledge-skills → quality-framework.md
 ├─ "Write description" → Load knowledge-skills → description-guidelines.md
@@ -32,7 +32,7 @@ Need to build something?
 - **knowledge-skills**: Agent Skills standard, YAML format, tier structure, quality checklist
 - **knowledge-mcp**: MCP integration patterns, server types, configuration
 - **knowledge-hooks**: Event types, security patterns, prompt-based vs command hooks
-- **knowledge-subagents**: Agent types, frontmatter fields, coordination patterns
+- **agent-development**: Agent types, frontmatter fields, coordination patterns
 
 **For philosophical foundation:**
 - **principles.md**: Core philosophy (Context Window, Trust AI, Delta Standard, Progressive Disclosure)
@@ -73,7 +73,7 @@ For writing style, description quality, and skill structure patterns, see [**pat
 - Skill → knowledge-skills
 - MCP integration → knowledge-mcp
 - Hook → knowledge-hooks
-- Subagent → knowledge-subagents
+- Subagent → agent-development
 
 **"How do I assess quality?"**
 - Load knowledge-skills → quality-framework.md
@@ -84,9 +84,9 @@ For writing style, description quality, and skill structure patterns, see [**pat
 
 This project uses **Knowledge-Factory architecture**:
 
-**Knowledge Skills** (passive reference): knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents
+**Knowledge Skills** (passive reference): knowledge-skills, knowledge-mcp, knowledge-hooks, agent-development
 
-**Factory Skills** (script-based execution): create-skill, create-mcp-server, create-hook, create-subagent
+**Factory Skills** (script-based execution): create-skill, create-mcp-server, create-hook
 
 **Meta-Critic**: Quality validation and alignment checking
 

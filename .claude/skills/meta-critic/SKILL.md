@@ -26,7 +26,7 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 
 3. **Analyze Delivery**: Review what was implemented, how it was executed, and what deviations occurred.
 
-4. **Compare with Standards**: Check against applicable knowledge-skills (knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents).
+4. **Compare with Standards**: Check against applicable knowledge-skills (knowledge-skills, knowledge-mcp, knowledge-hooks, agent-development).
 
 5. **Identify Gaps**: Find intent misalignment, standards violations, completeness issues, and quality concerns.
 

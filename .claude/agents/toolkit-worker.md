@@ -5,7 +5,7 @@ skills:
   - knowledge-skills
   - knowledge-mcp
   - knowledge-hooks
-  - knowledge-subagents
+  - agent-development
   - meta-critic
 tools:
   - Read
@@ -42,11 +42,11 @@ Select approach based on detected intent:
 
 | Intent Pattern | Skills/Approach |
 |----------------|-----------------|
-| `.claude/` structure audit | Use knowledge skills (knowledge-skills, knowledge-mcp, knowledge-hooks, knowledge-subagents) |
+| `.claude/` structure audit | Use knowledge skills (knowledge-skills, knowledge-mcp, knowledge-hooks, agent-development) |
 | Skill creation/analysis | knowledge-skills, create-skill |
 | Hook configuration | knowledge-hooks, create-hook |
 | MCP setup | knowledge-mcp, create-mcp-server |
-| Subagent work | knowledge-subagents, create-subagent |
+| Subagent work | agent-development |
 | Quality validation | meta-critic |
 | Task orchestration | TaskList (built-in) |
 | General analysis | Read + Grep + Glob |

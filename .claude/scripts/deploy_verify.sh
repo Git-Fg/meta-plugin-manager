@@ -131,7 +131,7 @@ CRITICAL_SKILLS=(
     "create-skill"
     "create-mcp-server"
     "create-hook"
-    "create-subagent"
+    "agent-development"
     "knowledge-skills"
     "meta-critic"
 )

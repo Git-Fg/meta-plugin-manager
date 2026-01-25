@@ -168,7 +168,7 @@ tests/<test_name>/
 
 Before creating components, invoke knowledge skills:
 - Testing/creating skills? → `knowledge-skills` (Agent Skills standard + autonomy patterns)
-- Testing/creating subagents? → `knowledge-subagents` (agent patterns)
+- Testing/creating agents? → `agent-development` (agent patterns)
 - Testing/creating hooks? → `knowledge-hooks` (event patterns)
 - Testing/creating MCP? → `knowledge-mcp` (MCP standards)
 
