@@ -14,7 +14,7 @@ specialized knowledge, workflows, and tools. Think of them as "onboarding guides
 domains or tasks—they transform Claude from a general-purpose agent into a specialized agent
 equipped with procedural knowledge that no model can fully possess.
 
-Since v2.1.1, Skills and Slash Commands are unified—both use the same system. This skill focuses on creating simple, effective skills with `name` and `description`. For advanced patterns (forked execution, tool restrictions, subagents), see `references/advanced-execution.md`.
+This skill focuses on creating simple, effective skills with `name` and `description`. For advanced patterns (forked execution, tool restrictions, subagents), see `references/advanced-execution.md`.
 
 
 ### What Skills Provide
@@ -351,9 +351,9 @@ cc --plugin-dir /path/to/plugin
 # Verify skill loads correctly
 ```
 
-## Examples from Plugin-Dev
+## Examples from Official Collection
 
-Study the skills in this plugin as examples of best practices:
+Study the skills in `official_example_skills/` as examples of best practices:
 
 **hook-development skill:**
 - Excellent trigger phrases: "create a hook", "add a PreToolUse hook", etc.

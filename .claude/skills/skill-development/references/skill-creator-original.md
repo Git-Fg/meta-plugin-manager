@@ -1,8 +1,11 @@
 ---
-name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
-license: Complete terms in LICENSE.txt
+name: skill-creator-original
+description: Original methodology for skill creation (Reference Only).
 ---
+
+> [!NOTE]
+> **Historical Reference**: This document captures the original skill-creator methodology. Some scripts mentioned (`init_skill.py`, `package_skill.py`) are not included in this skill version. For current best practices, follow `SKILL.md`.
+
 
 # Skill Creator
 
