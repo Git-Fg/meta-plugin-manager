@@ -139,7 +139,8 @@ ralph tools task close <id>
 | Component loaded, test PASSED | `ralph emit "test.passed" "component: <name>, tools_used: N, errors: 0"` |
 | Component loaded, test FAILED (fixable) | Attempt fix, retry (up to 3x) |
 | Test FAILED after retries | `ralph emit "test.failed" "component: <name>, reason: <summary>"` |
-| All batch specs complete | `ralph emit "test.passed" "batch complete: N/M passed"` |
+| All batch specs complete (TEST/RERUN mode) | `ralph emit "WORKFLOW_COMPLETE" "Batch results updated in tests/results.json"` |
+| All batch specs complete (CREATE/FIX/AUDIT) | `ralph emit "test.passed" "batch complete: N/M passed"` |
 
 ## Batch Execution
 
