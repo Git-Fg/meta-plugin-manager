@@ -10,84 +10,67 @@ Testing commands ensures they work correctly, handle edge cases, and provide goo
 
 ### Level 0: Executable Syntax Validation (MANDATORY)
 
-**CRITICAL: Test all executable syntax BEFORE committing or distributing commands.**
+**CRITICAL: Validate all executable syntax BEFORE committing or distributing commands.**
 
-Commands with bash injection (`!` backtick syntax) or file references (`@` syntax) MUST be tested in a live environment before deployment. These features can fail silently or produce unexpected results if not properly validated.
+Commands with bash injection (`!` backtick syntax) or file references (`@` syntax) MUST be validated in simulated environment before deployment. These features can fail silently or produce unexpected results if not properly validated.
 
 **What to test:**
 - All bash injection commands using `!`\`syntax\``
 - All file references using `@`filename`
 - Edge cases with quoted arguments, empty strings, special characters
 
-**How to test:**
+**How to validate (simulated environment):**
 
 ```bash
-# 1. Test bash injection
-cat > /tmp/test-bash.md << 'EOF'
----
-description: Test bash injection
-allowed-tools: Bash(echo:*)
----
-Test: !`echo "Bash injection works"`
-EOF
+# 1. Test bash command syntax
+BASH_CMD='if [ -d "$1" ]; then find "$1" -name "*.md"; fi'
+bash -c "$BASH_CMD" -- "test-path"
+# Verify command executes without syntax errors
 
-# Invoke in Claude Code
-> /test-bash
-# Verify output shows "Bash injection works"
-
-# 2. Test file reference
-cat > /tmp/test-file-ref.md << 'EOF'
----
-description: Test file reference
----
-File content: @/tmp/test-file.txt
-EOF
-
+# 2. Test file reference logic
 echo "Test content" > /tmp/test-file.txt
+BASH_CMD='if [ -f "$1" ]; then cat "$1"; fi'
+bash -c "$BASH_CMD" -- "/tmp/test-file.txt"
+# Verify file exists and can be read
 
-# Invoke in Claude Code
-> /test-file-ref
-# Verify "Test content" appears in output
+# 3. Test edge cases
+# Empty argument
+BASH_CMD='TARGET=""; if [ -n "$TARGET" ]; then echo "has value"; else echo "empty"; fi'
+bash -c "$BASH_CMD"
+# Verify handles empty correctly
 
-# 3. Test with complex bash commands
-cat > /tmp/test-complex.md << 'EOF'
----
-description: Test complex bash
-allowed-tools: Bash(find:*)
----
-Files: !`find /tmp -name "test-*.txt" | head -5`
-EOF
-
-# Invoke and verify find command output
+# 4. Validate conditional logic
+BASH_CMD='if [ -d "$1" ]; then echo "dir"; elif [ -f "$1" ]; then echo "file"; else echo "none"; fi'
+bash -c "$BASH_CMD" -- "/tmp/nonexistent"
+# Verify fallback logic works
 ```
 
-**Testing matrix for executable syntax:**
+**Validation checklist using bash:**
 
-| Syntax | Test Case | Example | Verify |
-|--------|-----------|---------|--------|
-| `!` | Simple command | `!`date\`` | Date output appears |
-| `!` | Command with args | `!`echo "$1"\`` | Argument substituted |
-| `!` | Conditional logic | `!`if [ -d "$1" ]; then echo "dir"; fi\`` | Conditional works |
-| `@` | Single file | `@$1` | File content loads |
-| `@` | Multiple files | `@$1 @$$2` | Both files load |
-| `@` | Directory scan | `@$ARGUMENTS` | Lists files properly |
+| Syntax | Validation Command | Expected Result |
+|--------|-------------------|-----------------|
+| `!`\`command\`` | Run command in bash | No syntax errors |
+| `!`\`echo "$ARGUMENTS"\`` | Test with various inputs | Substitutes correctly |
+| `!`\`if [ -d "$ARGUMENTS" ]\`` | Test conditional | Handles empty path |
+| `@$ARGUMENTS` | Check file operations | Graceful handling |
+| Multiple conditions | Test all branches | All paths work |
 
-**Common failure modes:**
-- Empty `$ARGUMENTS` causing `cat: : No such file`
-- Quoted arguments not handled properly
-- Bash conditionals with syntax errors
-- File paths with spaces breaking
-- `allowed-tools` missing required permissions
+**Common failure modes to check:**
+- Empty `$ARGUMENTS` causing `cat: : No such file or directory`
+- Quoted arguments not handled properly (use `TARGET="$ARGUMENTS"` pattern)
+- Bash conditionals with syntax errors (test in bash first)
+- File paths with spaces breaking (use proper quoting)
+- Missing error handling for non-existent files/directories
 
 **Required checklist:**
-- [ ] All `!` commands tested with real invocations
-- [ ] All `@` references tested with actual files
-- [ ] Edge cases tested (empty args, special chars, quotes)
-- [ ] Command works without errors in Claude Code
-- [ ] Output matches expected behavior
-- [ ] Debug logs checked for warnings/errors
+- [ ] All `!` commands execute without bash syntax errors
+- [ ] All `@` references use safe file operations
+- [ ] Edge cases validated (empty args, special chars, quotes)
+- [ ] Conditional logic tested for all branches
+- [ ] Error handling works for missing files/directories
+- [ ] Commands tested with bash before committing
 
-**Anti-pattern:** Never commit commands with `!` or `@` syntax without testing. The cost of fixing a broken command after distribution is far higher than the time spent testing upfront.
+**Anti-pattern:** Never commit commands with `!` or `@` syntax without simulated validation. Test bash commands using the Bash tool before deployment.
 
 ### Level 1: Syntax and Structure Validation
 

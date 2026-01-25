@@ -21,7 +21,7 @@ Slash commands are frequently-used prompts defined as Markdown files that Claude
 | **Working with interactive commands** | `references/interactive-commands.md` |
 | **Testing commands** | `references/testing-strategies.md` |
 
-**⚠️ CRITICAL:** Commands with bash injection (`!`) or file references (`@`) MUST test executable syntax before committing. See `references/testing-strategies.md` Level 0.
+**⚠️ CRITICAL:** Commands with bash injection (`!`) or file references (`@`) MUST validate executable syntax in simulated environment before committing. See `references/testing-strategies.md` Level 0.
 
 ## Command Philosophy
 
