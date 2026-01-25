@@ -11,13 +11,13 @@ The goal here isn't to rush to answers—it's to explore what matters, uncover a
 
 ## Starting Point
 
-Target: $1
+Target: $ARGUMENTS
 
-Files loaded:
-!`if [ -d "$1" ]; then find "$1" -name "*.md" -type f | sort; else echo "$1"; fi`
+Files present:
+!`TARGET="$ARGUMENTS"; if [ -n "$TARGET" ] && [ -d "$TARGET" ]; then find "$TARGET" -name "*.md" -type f | sort; elif [ -n "$TARGET" ] && [ -f "$TARGET" ]; then echo "$TARGET"; else echo "No valid target provided"; fi`
 
 Content:
-!`if [ -d "$1" ]; then find "$1" -name "*.md" -type f -exec echo "=== {} ===" \; -exec cat {} \; -exec echo "" \; | head -c 50000; else cat "$1"; fi`
+!`TARGET="$ARGUMENTS"; if [ -d "$TARGET" ]; then find "$TARGET" -name "*.md" -type f -exec echo "=== {} ===" \; -exec cat {} \; -exec echo "" \; | head -c 50000; elif [ -f "$TARGET" ]; then cat "$TARGET"; else echo "# No valid target provided\n\nPlease provide a path to a skill folder or command file.\n\nUsage:\n  /explore .claude/skills/skill-name\n  /explore .claude/commands/command-name.md"; fi`
 
 Before diving into analysis, let's establish what brings us here.
 
