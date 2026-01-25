@@ -65,29 +65,41 @@ Implement JWT-based authentication for the API.
 ---
 
 ## Running Ralph
-
-### Basic Execution
-
-```bash
-# Standard run with verbose output (recommended for monitoring)
-ralph run --max-iterations 20 --verbose 2>&1
-
-# With iteration limit and full output capture
-ralph run --max-iterations 50 --verbose 2>&1 | tee ralph_run.log
-
-# Quick single iteration test
-ralph run --iterations 1 --verbose
-```
-
-### TUI Mode (Interactive)
-
-```bash
-# Terminal UI for real-time monitoring
-ralph run --tui
-
-# TUI with iteration cap
-ralph run --tui --max-iterations 30
-```
+ 
+ ### Production Grade Execution (Best Practice)
+ 
+ Always use `--no-tui` and pipe output to a persistent log file for maximum reliability and debugging capability.
+ 
+ ```bash
+ # 1. Prepare log directory
+ mkdir -p .ralph/logs/
+ LOG_FILE=".ralph/logs/run_$(date +%Y%m%d_%H%M%S).log"
+ 
+ # 2. Run with pipe (no TUI)
+ echo "Monitor specific log: tail -f $LOG_FILE"
+ ralph run --no-tui --verbose 2>&1 | tee "$LOG_FILE"
+ ```
+ 
+ ### Why --no-tui?
+ - **Clean Logging**: Text-based UI control characters don't pollute your log files
+ - **Pipe Compatibility**: Allows standard Unix tools (`grep`, `tee`, `awk`) to work
+ - **Searchable**: You can grep through the history of the run
+ 
+ ### Monitoring
+ 
+ Since the main window is piping to a file, use a second terminal to watch:
+ 
+ ```bash
+ # Watch real-time
+ tail -f .ralph/logs/run_LATEST.log
+ ```
+ 
+ ### Basic Execution (Interactive)
+ 
+ ```bash
+ # Standard TUI run (only for simple, short tasks)
+ ralph run --max-iterations 20
+ ```
 
 ### Continue Previous Session
 
@@ -182,9 +194,6 @@ ralph run --max-iterations 20 --verbose 2>&1
 # Check configuration is valid
 ralph validate
 
-# List available presets
-ralph init --list-presets
-
 # Dry run to see event routing
 ralph run --dry-run --verbose
 ```
@@ -197,7 +206,7 @@ ralph run --dry-run --verbose
 
 ```bash
 # 1. Short test run
-ralph run --iterations 3 --verbose 2>&1
+ralph run --max-iterations 3 --verbose 2>&1
 
 # 2. If looks good, full run with cap
 ralph run --max-iterations 30 --verbose 2>&1
@@ -205,18 +214,6 @@ ralph run --max-iterations 30 --verbose 2>&1
 # 3. If stuck, continue after fixing
 # (edit PROMPT.md or ralph.yml)
 ralph run --continue --verbose 2>&1
-```
-
-### Pattern: Supervised Execution
-
-```bash
-# Run in TUI, pause when needed
-ralph run --tui
-
-# TUI commands:
-# 'p' - pause/resume
-# 'q' - quit gracefully
-# Arrow keys - scroll output
 ```
 
 ---
@@ -228,13 +225,6 @@ For programmatic execution within Claude workflows:
 ```bash
 # Non-interactive with full capture
 ralph run --max-iterations 20 --verbose 2>&1 | tee output.log
-
-# Parse completion status
-if grep -q "LOOP_COMPLETE" output.log; then
-  echo "Ralph completed successfully"
-else
-  echo "Ralph did not complete - check output.log"
-fi
 ```
 
 ---
@@ -244,9 +234,7 @@ fi
 | Command | Purpose |
 |---------|---------|
 | `ralph run --verbose 2>&1` | Standard execution with monitoring |
-| `ralph run --tui` | Interactive terminal UI |
 | `ralph run --continue` | Resume from checkpoint |
-| `ralph run --iterations 1` | Single iteration test |
 | `ralph run --max-iterations N` | Cap total iterations |
 | `ralph validate` | Check configuration |
 | `ralph run --dry-run` | Preview event routing |

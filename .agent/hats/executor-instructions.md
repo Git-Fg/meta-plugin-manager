@@ -16,16 +16,8 @@ Run tests. Verify components loaded. Record what happened. Update results JSON. 
 ## Execution Pattern
 
 **Critical**: Always `cd` into the sandbox directory first.
-**Best Practice**: Use `--no-tui` and tee output to a persistent log for diagnosis.
 
 ```bash
-# Ensure log directory exists
-mkdir -p ../../.ralph/logs/
-LOG_FILE="../../.ralph/logs/exec_$(date +%Y%m%d_%H%M%S).log"
-
-# Print monitoring hint
-echo "To monitor execution in real-time: tail -f $LOG_FILE"
-
 cd <sandbox_directory>/ && claude \
   --print \
   --output-format stream-json \
