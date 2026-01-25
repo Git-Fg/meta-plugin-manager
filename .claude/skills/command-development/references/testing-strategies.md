@@ -21,56 +21,57 @@ Commands with bash injection (`!` backtick syntax) or file references (`@` synta
 
 **How to validate (simulated environment):**
 
+Think of this like running through scenarios in your head, but with bash doing the heavy lifting. You're checking if the logic actually works before trusting it in production.
+
+**Start with the basics:**
+Run the exact bash commands in a terminal to make sure they don't explode. If your command has `if [ -d "$ARGUMENTS" ]`, test that pattern directly. If it uses `find "$ARGUMENTS" -name "*.md"`, try that in a real directory.
+
+**Test what happens with weird inputs:**
+What if someone calls your command with no arguments? What if they pass empty quotes? What if the path doesn't exist? Try these scenarios and see if your command handles them gracefully or spits out ugly error messages.
+
+**Verify the fallbacks work:**
+If your command says "if it's a directory, do this; otherwise do that," make sure both paths actually work. Test with a real directory, a real file, and something that doesn't exist.
+
+**The quick validation pattern:**
 ```bash
-# 1. Test bash command syntax
-BASH_CMD='if [ -d "$1" ]; then find "$1" -name "*.md"; fi'
-bash -c "$BASH_CMD" -- "test-path"
-# Verify command executes without syntax errors
+# Just run your bash logic with test data
+bash -c 'your-bash-command-here' -- "test-argument"
 
-# 2. Test file reference logic
-echo "Test content" > /tmp/test-file.txt
-BASH_CMD='if [ -f "$1" ]; then cat "$1"; fi'
-bash -c "$BASH_CMD" -- "/tmp/test-file.txt"
-# Verify file exists and can be read
-
-# 3. Test edge cases
-# Empty argument
-BASH_CMD='TARGET=""; if [ -n "$TARGET" ]; then echo "has value"; else echo "empty"; fi'
-bash -c "$BASH_CMD"
-# Verify handles empty correctly
-
-# 4. Validate conditional logic
-BASH_CMD='if [ -d "$1" ]; then echo "dir"; elif [ -f "$1" ]; then echo "file"; else echo "none"; fi'
-bash -c "$BASH_CMD" -- "/tmp/nonexistent"
-# Verify fallback logic works
+# If it works, you're good
+# If it errors, fix the logic
 ```
 
-**Validation checklist using bash:**
+**Quick validation patterns:**
 
-| Syntax | Validation Command | Expected Result |
-|--------|-------------------|-----------------|
-| `!`\`command\`` | Run command in bash | No syntax errors |
-| `!`\`echo "$ARGUMENTS"\`` | Test with various inputs | Substitutes correctly |
-| `!`\`if [ -d "$ARGUMENTS" ]\`` | Test conditional | Handles empty path |
-| `@$ARGUMENTS` | Check file operations | Graceful handling |
-| Multiple conditions | Test all branches | All paths work |
+You don't need to overthink this. Just run your bash commands with some test data and make sure they don't crash.
 
-**Common failure modes to check:**
-- Empty `$ARGUMENTS` causing `cat: : No such file or directory`
-- Quoted arguments not handled properly (use `TARGET="$ARGUMENTS"` pattern)
-- Bash conditionals with syntax errors (test in bash first)
-- File paths with spaces breaking (use proper quoting)
-- Missing error handling for non-existent files/directories
+- **Bash commands**: Just run them in a terminal first. If they work there, they'll work in your command.
+- **Conditional logic**: Test each branch. What happens with a directory? A file? Nothing at all?
+- **File references**: Try reading a file that exists and one that doesn't. Both should behave sensibly.
 
-**Required checklist:**
-- [ ] All `!` commands execute without bash syntax errors
-- [ ] All `@` references use safe file operations
-- [ ] Edge cases validated (empty args, special chars, quotes)
-- [ ] Conditional logic tested for all branches
-- [ ] Error handling works for missing files/directories
-- [ ] Commands tested with bash before committing
+**What usually breaks:**
 
-**Anti-pattern:** Never commit commands with `!` or `@` syntax without simulated validation. Test bash commands using the Bash tool before deployment.
+The big one is empty arguments. If `$ARGUMENTS` is empty and you do `cat "$ARGUMENTS"`, bash tries to read a file with no name and fails hard. The fix is simple: check if the variable has content first.
+
+Quoted arguments can be tricky too. If someone passes `"path with spaces"`, make sure your bash command handles it. Most of the time, proper quoting (`"$ARGUMENTS"` not `$ARGUMENTS`) solves this.
+
+Bash conditionals are surprisingly fragile. A missing `fi` or wrong bracket will quietly fail. Test them in bash first.
+
+**What to check before committing:**
+
+Just a few quick validations:
+- Does your bash run without errors when you test it directly?
+- What happens if arguments are empty or weird?
+- Do your file operations handle missing files gracefully?
+- Did you test the actual command logic, not just write it and hope?
+
+If you're unsure, run it in bash with some test data. Your future self will thank you.
+
+**The thing to avoid:**
+
+Don't write a command with `!` or `@` syntax, think "that looks about right," and commit it. Five minutes of validation saves an hour of debugging when someone tries to use it and it explodes.
+
+Bash is pretty forgiving, but it won't save you from logic errors. Run your commands in bash first. It's really that simple.
 
 ### Level 1: Syntax and Structure Validation
 
