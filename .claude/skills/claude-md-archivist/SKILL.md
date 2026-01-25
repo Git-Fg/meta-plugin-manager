@@ -6,20 +6,41 @@ user-invocable: true
 
 # CLAUDE.md Archivist
 
-**Goal**: Proactively capture and archive project discoveries to maintain high-signal, expert-level `CLAUDE.md` as **Project Memory**.
+Think of CLAUDE.md as a **project's institutional memory**—like a senior engineer's notebook that captures hard-won insights, preventing the team from rediscovering the same lessons repeatedly.
 
-## core_directive
+## Core Directive
+
 "Trust your intelligence. You are a senior engineer. You know what generic documentation looks like (bad). You know what specific, high-value insights look like (good). Maintain CLAUDE.md as lasting project knowledge."
 
-**NEVER create temporary content**:
+**NEVER create temporary content:**
 - No update logs, changelogs, or date-stamped sections
 - No "CLAUDE_MD_UPDATE.md" or similar temporary files
 - CLAUDE.md contains ONLY lasting project knowledge
 - Each addition should be as permanent as architecture decisions
 
-## detection_patterns
+## Recognition Patterns
 
-**Detect these triggers in conversation:**
+**When to use claude-md-archivist:**
+```
+✅ Good: User says "Remember this workaround"
+✅ Good: User discovers "That worked!" with a command
+✅ Good: Architectural decision made during work
+✅ Good: Gotcha discovered ("Why did that fail")
+❌ Bad: Creating temporary update files
+❌ Bad: Adding date-stamped change logs
+
+Why good: Project memory should capture permanent insights, not transient updates.
+```
+
+**Pattern Match:**
+- User explicitly asks to remember something
+- Successful command discovery with context
+- Workarounds for known issues
+- Architectural decisions with rationale
+
+**Recognition:** "Is this a lasting insight or temporary update?" → If lasting, archive it.
+
+## Detection Triggers
 
 ### Proactive Discovery Capture
 - **User says "Remember this"** → Extract insight, add to CLAUDE.md
@@ -33,7 +54,7 @@ user-invocable: true
 - Review prior conversation for: working commands, discovered patterns, errors encountered, new rules learned
 - Update CLAUDE.md based on discoveries (no explicit request needed)
 
-## quality_standard
+## Quality Standard
 
 **Aim for A (90-100)**:
 - **Delta (40 pts)**: 100% project-specific. Zero tutorials.
@@ -41,29 +62,45 @@ user-invocable: true
 - **Structure (15 pts)**: Clean headers. Modular if >200 lines.
 - **Context (15 pts)**: Explains "Why" and "When", not just "What".
 
-## conversational_patterns
+## Capture Patterns
 
-**Working Command Capture**:
-- Trigger: User says "That worked!" or celebrates success
-- Action: Append to CLAUDE.md with context (why it works, when needed)
-- Example: `npm run dev -- --host 0.0.0.0` → Required for Docker/WSL2 networking
+### Working Command Capture
+**Trigger**: User says "That worked!" or celebrates success
+**Action**: Append to CLAUDE.md with context (why it works, when needed)
 
-**Gotcha Discovery**:
-- Trigger: User discovers something that "fails without X"
-- Action: Add to appropriate section with pattern
-- Example: Build OOM → Node 18+ needs NODE_OPTIONS="--max-old-memory-size=4096"
+**Example**:
+```
+✅ Good: `npm run dev -- --host 0.0.0.0` → Required for Docker/WSL2 networking
+❌ Bad: `npm run dev` → Just the command without context
 
-**Rule Evolution**:
-- Trigger: User learns new constraint or pattern
-- Action: Update existing section, preserve structure
-- Example: TaskList requires natural language only → Update that section
+Why good: Context explains when and why to use this command.
+```
 
-**Architectural Decision**:
-- Trigger: Major decision made during work
-- Action: Document with rationale (why, alternatives considered)
-- Example: "Chose X over Y because..."
+### Gotcha Discovery
+**Trigger**: User discovers something that "fails without X"
+**Action**: Add to appropriate section with pattern
 
-## safe_execution
+**Example**:
+```
+✅ Good: Build OOM → Node 18+ needs NODE_OPTIONS="--max-old-memory-size=4096"
+❌ Bad: "Node build fails sometimes"
+
+Why good: Specific pattern with exact solution.
+```
+
+### Rule Evolution
+**Trigger**: User learns new constraint or pattern
+**Action**: Update existing section, preserve structure
+
+**Example**: "TaskList requires natural language only" → Update that section
+
+### Architectural Decision
+**Trigger**: Major decision made during work
+**Action**: Document with rationale (why, alternatives considered)
+
+**Example**: "Chose X over Y because..."
+
+## Safe Execution
 
 **Validation Rules**:
 - Validate CLAUDE.md exists before READ operations
@@ -81,9 +118,12 @@ user-invocable: true
 - Preserve YAML frontmatter and existing structure
 - Never delete entire file without explicit user request
 
-## output_format
+## Output Format
+
 ```markdown
 Action: [What you captured]
 Discovery: [What was learned]
 Location: [Which section updated]
 ```
+
+**Recognition:** "Does this capture permanent project knowledge?" → If yes, archive it. If temporary, don't add to CLAUDE.md.

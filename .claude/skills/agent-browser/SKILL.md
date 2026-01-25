@@ -6,29 +6,33 @@ user-invocable: true
 
 # Browser Automation with agent-browser
 
+Think of agent-browser as a **surgical instrument for the web**—precise, reliable, and designed for complex interactions that simple fetch tools cannot handle.
+
 ## Overview
 
-Agent-browser provides browser automation capabilities for web interactions requiring JavaScript rendering, form submission, and visual verification.
+Browser automation for JavaScript-rendered content, form interactions, visual testing, and multi-step workflows.
 
-**Key capabilities:**
-- Navigate and interact with web pages
-- Fill and submit forms
-- Capture screenshots and PDFs
-- Extract data from dynamic content
-- Test web applications end-to-end
-- Record browser sessions as video
+**Core capabilities:**
+- Navigate and interact with dynamic web pages
+- Fill and submit forms with validation
+- Capture screenshots and record sessions
+- Extract data from JavaScript-rendered content
+- Test applications end-to-end
 
-**When to use agent-browser vs fetch tools:**
-- Use agent-browser: JavaScript-rendered content, form interactions, visual testing, multi-step workflows
-- Use fetch (WebFetch/mcp__simplewebfetch): Static content retrieval, API calls, documentation gathering
+**Use agent-browser when:**
+- Content requires JavaScript execution
+- Form submission and validation needed
+- Visual verification required
+- Multi-step workflows with state
+
+**Use fetch tools (WebFetch/mcp__simplewebfetch) when:**
+- Static content retrieval
+- API calls
+- Documentation gathering
 
 **For web search:** searx.fmhy.net avoids captchas compared to Google/DuckDuckGo.
 
-**Help:** Run `agent-browser --help` to view all available commands. 
-
-# Browser Automation with agent-browser
-
-## Quick start
+## Quick Start
 
 ```bash
 agent-browser open <url>        # Navigate to page
@@ -38,193 +42,75 @@ agent-browser fill @e2 "text"   # Fill input by ref
 agent-browser close             # Close browser
 ```
 
-## Core workflow
+## Core Workflow
 
 1. Navigate: `agent-browser open <url>`
 2. Snapshot: `agent-browser snapshot -i` (returns elements with refs like `@e1`, `@e2`)
 3. Interact using refs from the snapshot
 4. Re-snapshot after navigation or significant DOM changes
 
-## Commands
+## Essential Commands
 
-### Navigation
+### Navigation & Discovery
 ```bash
-agent-browser open <url>      # Navigate to URL
-agent-browser back            # Go back
-agent-browser forward         # Go forward
-agent-browser reload          # Reload page
-agent-browser close           # Close browser
+agent-browser open <url>           # Navigate to URL
+agent-browser snapshot -i          # Get interactive elements (recommended)
+agent-browser close                # Close browser
 ```
 
-### Snapshot (page analysis)
+### Core Interactions
 ```bash
-agent-browser snapshot            # Full accessibility tree
-agent-browser snapshot -i         # Interactive elements only (recommended)
-agent-browser snapshot -c         # Compact output
-agent-browser snapshot -d 3       # Limit depth to 3
-agent-browser snapshot -s "#main" # Scope to CSS selector
+agent-browser click @e1            # Click element
+agent-browser fill @e2 "text"      # Fill input
+agent-browser wait @e1             # Wait for element
+agent-browser screenshot path.png  # Capture screenshot
 ```
 
-### Interactions (use @refs from snapshot)
+### State Management
 ```bash
-agent-browser click @e1           # Click
-agent-browser dblclick @e1        # Double-click
-agent-browser focus @e1           # Focus element
-agent-browser fill @e2 "text"     # Clear and type
-agent-browser type @e2 "text"     # Type without clearing
-agent-browser press Enter         # Press key
-agent-browser press Control+a     # Key combination
-agent-browser keydown Shift       # Hold key down
-agent-browser keyup Shift         # Release key
-agent-browser hover @e1           # Hover
-agent-browser check @e1           # Check checkbox
-agent-browser uncheck @e1         # Uncheck checkbox
-agent-browser select @e1 "value"  # Select dropdown
-agent-browser scroll down 500     # Scroll page
-agent-browser scrollintoview @e1  # Scroll element into view
-agent-browser drag @e1 @e2        # Drag and drop
-agent-browser upload @e1 file.pdf # Upload files
+agent-browser state save auth.json     # Save session state
+agent-browser state load auth.json     # Load session state
+agent-browser record start demo.webm   # Record session
+agent-browser record stop              # Stop recording
 ```
 
-### Get information
-```bash
-agent-browser get text @e1        # Get element text
-agent-browser get html @e1        # Get innerHTML
-agent-browser get value @e1       # Get input value
-agent-browser get attr @e1 href   # Get attribute
-agent-browser get title           # Get page title
-agent-browser get url             # Get current URL
-agent-browser get count ".item"   # Count matching elements
-agent-browser get box @e1         # Get bounding box
+## Recognition Patterns
+
+**When to use agent-browser:**
+```
+✅ Good: "Fill out and submit a registration form"
+✅ Good: "Test login flow with screenshots"
+✅ Good: "Scrape data from JavaScript-rendered dashboard"
+❌ Bad: Fetch static HTML content
+❌ Bad: Make simple API calls
+
+Why good: Browser automation handles dynamic content and stateful interactions.
 ```
 
-### Check state
-```bash
-agent-browser is visible @e1      # Check if visible
-agent-browser is enabled @e1      # Check if enabled
-agent-browser is checked @e1      # Check if checked
-```
+**Pattern Match:**
+- User mentions "browser", "web", "form", "login", "click", "screenshot"
+- Tasks requiring JavaScript execution
+- Multi-step workflows with visual verification
 
-### Screenshots & PDF
-```bash
-agent-browser screenshot          # Screenshot to stdout
-agent-browser screenshot path.png # Save to file
-agent-browser screenshot --full   # Full page
-agent-browser pdf output.pdf      # Save as PDF
-```
+**Recognition:** "Does this task require actual browser interaction?" → If yes, use agent-browser.
 
-### Video recording
-```bash
-agent-browser record start ./demo.webm    # Start recording (uses current URL + state)
-agent-browser click @e1                   # Perform actions
-agent-browser record stop                 # Stop and save video
-agent-browser record restart ./take2.webm # Stop current + start new recording
-```
-Recording creates a fresh context but preserves cookies/storage from your session. If no URL is provided, it automatically returns to your current page. For smooth demos, explore first, then start recording.
-
-### Wait
-```bash
-agent-browser wait @e1                     # Wait for element
-agent-browser wait 2000                    # Wait milliseconds
-agent-browser wait --text "Success"        # Wait for text
-agent-browser wait --url "**/dashboard"    # Wait for URL pattern
-agent-browser wait --load networkidle      # Wait for network idle
-agent-browser wait --fn "window.ready"     # Wait for JS condition
-```
-
-### Mouse control
-```bash
-agent-browser mouse move 100 200      # Move mouse
-agent-browser mouse down left         # Press button
-agent-browser mouse up left           # Release button
-agent-browser mouse wheel 100         # Scroll wheel
-```
-
-### Semantic locators (alternative to refs)
-```bash
-agent-browser find role button click --name "Submit"
-agent-browser find text "Sign In" click
-agent-browser find label "Email" fill "user@test.com"
-agent-browser find first ".item" click
-agent-browser find nth 2 "a" text
-```
-
-### Browser settings
-```bash
-agent-browser set viewport 1920 1080      # Set viewport size
-agent-browser set device "iPhone 14"      # Emulate device
-agent-browser set geo 37.7749 -122.4194   # Set geolocation
-agent-browser set offline on              # Toggle offline mode
-agent-browser set headers '{"X-Key":"v"}' # Extra HTTP headers
-agent-browser set credentials user pass   # HTTP basic auth
-agent-browser set media dark              # Emulate color scheme
-```
-
-### Cookies & Storage
-```bash
-agent-browser cookies                     # Get all cookies
-agent-browser cookies set name value      # Set cookie
-agent-browser cookies clear               # Clear cookies
-agent-browser storage local               # Get all localStorage
-agent-browser storage local key           # Get specific key
-agent-browser storage local set k v       # Set value
-agent-browser storage local clear         # Clear all
-```
-
-### Network
-```bash
-agent-browser network route <url>              # Intercept requests
-agent-browser network route <url> --abort      # Block requests
-agent-browser network route <url> --body '{}'  # Mock response
-agent-browser network unroute [url]            # Remove routes
-agent-browser network requests                 # View tracked requests
-agent-browser network requests --filter api    # Filter requests
-```
-
-### Tabs & Windows
-```bash
-agent-browser tab                 # List tabs
-agent-browser tab new [url]       # New tab
-agent-browser tab 2               # Switch to tab
-agent-browser tab close           # Close tab
-agent-browser window new          # New window
-```
-
-### Frames
-```bash
-agent-browser frame "#iframe"     # Switch to iframe
-agent-browser frame main          # Back to main frame
-```
-
-### Dialogs
-```bash
-agent-browser dialog accept [text]  # Accept dialog
-agent-browser dialog dismiss        # Dismiss dialog
-```
-
-### JavaScript
-```bash
-agent-browser eval "document.title"   # Run JavaScript
-```
-
-## Example: Form submission
+## Example: Form Submission
 
 ```bash
 agent-browser open https://example.com/form
 agent-browser snapshot -i
-# Output shows: textbox "Email" [ref=e1], textbox "Password" [ref=e2], button "Submit" [ref=e3]
+# Output shows refs: textbox "Email" [ref=e1], button "Submit" [ref=e2]
 
 agent-browser fill @e1 "user@example.com"
-agent-browser fill @e2 "password123"
-agent-browser click @e3
+agent-browser click @e2
 agent-browser wait --load networkidle
-agent-browser snapshot -i  # Check result
+agent-browser screenshot success.png
 ```
 
-## Example: Authentication with saved state
+## Example: Authentication with Saved State
 
 ```bash
-# Login once
+# Login once and save state
 agent-browser open https://app.example.com/login
 agent-browser snapshot -i
 agent-browser fill @e1 "username"
@@ -233,68 +119,22 @@ agent-browser click @e3
 agent-browser wait --url "**/dashboard"
 agent-browser state save auth.json
 
-# Later sessions: load saved state
+# Later sessions: load and continue
 agent-browser state load auth.json
 agent-browser open https://app.example.com/dashboard
 ```
 
-## Sessions (parallel browsers)
-
-```bash
-agent-browser --session test1 open site-a.com
-agent-browser --session test2 open site-b.com
-agent-browser session list
-```
-
-## JSON output (for parsing)
-
-Add `--json` for machine-readable output:
-```bash
-agent-browser snapshot -i --json
-agent-browser get text @e1 --json
-```
-
-## Debugging
-
-```bash
-agent-browser open example.com --headed         # Show browser window
-agent-browser --cdp 9222 snapshot              # Connect via CDP
-agent-browser console                          # View console messages
-agent-browser console --clear                  # Clear console
-agent-browser errors                           # View page errors
-agent-browser errors --clear                   # Clear errors
-agent-browser highlight @e1                    # Highlight element
-agent-browser record start ./debug.webm        # Record from current page
-agent-browser record stop                      # Save recording
-agent-browser trace start                     # Start recording trace
-agent-browser trace stop trace.zip            # Stop and save trace
-```
-
 ## Additional Resources
 
-### Example Files
+**For detailed command reference:**
+- `examples/basic-usage.md` - Core workflows and patterns
+- `examples/advanced-usage.md` - Authentication, state, sessions
+- `examples/common-patterns.md` - Reusable automation patterns
 
-Working examples in `examples/`:
-- **`basic-usage.md`** - Web search, form filling, screenshots, data extraction
-- **`advanced-usage.md`** - Authentication, state management, sessions
-- **`common-patterns.md`** - Recurring browser automation patterns
+**Quick Reference:**
+- **Happy Path:** open → snapshot -i → interact with @refs → re-snapshot
+- **Debugging:** Add `--headed` to see browser, use `console` for errors
+- **Recording:** Use `record start/stop` for visual debugging
+- **State:** Save/load sessions to avoid re-authentication
 
-### Quick Reference
-
-**Core workflow:**
-1. `agent-browser open <url>` - Navigate
-2. `agent-browser snapshot -i` - Get interactive elements with refs
-3. Interact using refs (`@e1`, `@e2`, etc.)
-4. Re-snapshot after DOM changes
-
-**When to use:**
-- JavaScript-rendered content
-- Form submission and validation
-- Visual verification and screenshots
-- Multi-step browser workflows
-- End-to-end testing
-
-**When NOT to use:**
-- Static content fetching → Use WebFetch/mcp__simplewebfetch
-- API calls → Use Bash with curl
-- Documentation gathering → Use fetch tools
+**Recognition:** "Do you need the full reference?" → See `examples/` directory for comprehensive patterns.
