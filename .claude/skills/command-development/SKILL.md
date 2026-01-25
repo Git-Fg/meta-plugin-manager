@@ -15,13 +15,18 @@ Slash commands are frequently-used prompts defined as Markdown files that Claude
 
 | If you are... | You MUST read... |
 |---------------|------------------|
-| **Creating or modifying commands** | `references/executable-examples.md` |
-| **Configuring frontmatter fields** | `references/frontmatter-reference.md` |
+| **Understanding command basics** | `references/executable-examples.md` |
+| **Configuring YAML frontmatter** (all commands) | `references/frontmatter-reference.md` |
 | **Building plugin commands** | `references/plugin-features-reference.md` |
 | **Working with interactive commands** | `references/interactive-commands.md` |
 | **Testing commands** | `references/testing-strategies.md` |
+| **Advanced workflows** | `references/advanced-workflows.md` |
+| **Writing documentation** | `references/documentation-patterns.md` |
+| **Publishing/distribution** | `references/marketplace-considerations.md` |
 
-**⚠️ CRITICAL:** Commands with bash injection (`!`) or file references (`@`) MUST validate executable syntax in simulated environment before committing. See `references/testing-strategies.md` Level 0.
+**Note:** Frontmatter configuration applies to all commands and is fundamental to command structure.
+
+**⚠️ CRITICAL:** Commands with bash injection ("!") or file references (`@`) MUST validate executable syntax in simulated environment before committing. See `references/testing-strategies.md` Level 0.
 
 ## Command Philosophy
 
