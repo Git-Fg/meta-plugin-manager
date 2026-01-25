@@ -82,13 +82,22 @@ Refer to `PROMPT_example.txt` (in project root) for high-quality templates.
 
 ### 2. Execute
 
-**Best Practice (AI Agents & Headless):**
-Use `--no-tui` for clean output.
+**Best Practice (Robust Logging):**
+Use `tee` to see output in real-time ("in front") while saving a timestamped log.
 
 ```bash
-# Standard execution (reads from PROMPT.md)
-ralph run --no-tui --verbose 2>&1
+# 1. Ensure log directory exists
+mkdir -p .ralph/
+
+# 2. Run with visible output + log file
+ralph run --max-iterations 15 --verbose --no-tui 2>&1 | \
+  tee .ralph/run-$(date +%Y%m%d-%H%M%S).log
 ```
+
+**Why this pattern?**
+- **In Front**: You see the output immediately (no background hiding).
+- **Persistent**: A dated log file is saved for audit/debugging.
+- **Robust**: `--no-tui` and `2>&1` ensure standard, capturable text output.
 
 **Interactive Mode:**
 ```bash
