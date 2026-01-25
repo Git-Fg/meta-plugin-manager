@@ -1,243 +1,81 @@
 ---
 name: knowledge-subagents
-description: "Reference knowledge for subagents: agent types, frontmatter fields, context detection, coordination patterns. Use when understanding agents. No execution logic."
+description: Reference for Agent Types, Contexts, and Coordination. Use to understand subagent architecture before creating them. For execution, use create-subagent.
 user-invocable: false
 ---
 
 # Knowledge: Subagents
 
-Reference knowledge for Claude Code subagents. Pure knowledge without execution logic.
+Reference knowledge for Claude Code subagents. **For execution (creating agents), use `create-subagent`**.
 
-## Quick Reference
-
-**Official Subagents Docs**: https://code.claude.com/docs/en/sub-agents
-**Plugin Architecture**: https://code.claude.com/docs/en/plugins
+## 1. Core Concepts
 
 ### Agent Types
 
-| Type | Tools | Purpose | Use When |
-|------|-------|---------|----------|
-| **general-purpose** | All tools | Default, full capability | Most tasks |
-| **bash** | Bash only | Command execution specialist | Shell workflows |
-| **explore** | All except Task | Fast exploration | Quick navigation |
-| **plan** | All except Task | Architecture design | Complex decisions |
+| Type | Use Case |
+|------|----------|
+| **general-purpose** | Default. Full toolkit access. |
+| **bash** | Shell/Script execution specialist. |
+| **explore** | Fast navigation (ReadOnly). |
+| **plan** | Architecture & complex reasoning (Opus). |
 
-## Context Types
+### Context & Location
 
-| Context | Location | Scope | Use When |
-|---------|----------|-------|----------|
-| **Plugin** | `plugin/agents/` | Where plugin is enabled | Shared capabilities |
-| **Project** | `.claude/agents/` | Current project only | Project-specific workflows |
-| **User** | `~/.claude/agents/` | All projects on machine | Personal automation |
+| Context | Path | Use When |
+|---------|------|----------|
+| **Project** | `.claude/agents/` | Logic specific to THIS project. |
+| **Plugin** | `plugin/agents/` | Logic shared across multiple projects. |
+| **User** | `~/.claude/agents/` | Personal automation. |
 
-## Valid Frontmatter Fields
+## 2. Configuration & Reference
 
-### Required Fields
+**Detailed Guides:**
+
+- **Configuration**: [configuration-guide.md](references/configuration-guide.md) (Full Frontmatter API)
+- **Validation**: [validation-framework.md](references/validation-framework.md) (Quality Scoring >80%)
+- **When to Use**: [when-to-use.md](references/when-to-use.md) (Decision Matrix)
+
+### Critical Rules
+
+1. **Never** use `context: fork` in subagents (Skills only).
+2. **Never** use `user-invocable` (Subagents are tools).
+3. **Always** define explicit `tools` (Allowlist) or `disallowedTools` (Denylist).
+
+### Frontmatter Quick Reference
 
 ```yaml
 ---
-name: agent-name              # Required, unique identifier
-description: Purpose          # Required, when to delegate
----
-```
-
-### Optional Fields
-
-```yaml
-tools:                        # Tool allowlist
+name: agent-name              # Required
+description: Purpose          # Required
+model: sonnet                 # Optional: haiku | sonnet | opus
+tools:                        # Optional: Allowlist
   - Bash
   - Read
-disallowedTools:              # Tool denylist
+disallowedTools:              # Optional: Denylist
   - Write
   - Edit
-model: sonnet                 # Model selection
-permissionMode: default       # Permission handling
-skills:                       # Inject skill content
+permissionMode: default       # Optional
+skills:                       # Optional: Inject skill content
   - skill-name
-hooks:                        # Lifecycle hooks
-  PostToolUse:
-    - matcher: ...
-```
-
-### Invalid Fields (Don't Use)
-
-- ❌ `context: fork` - This is for **skills**, not subagents
-- ❌ `agent: Explore` - This field doesn't exist
-- ❌ `user-invocable` - Subagents aren't user-invocable
-- ❌ `disable-model-invocation` - Not a subagent field
-
-## Model Selection
-
-| Model | Use Case | Cost Factor | When to Specify |
-|-------|----------|-------------|-----------------|
-| **haiku** | Fast, straightforward tasks | 1x (baseline) | Simple analysis |
-| **sonnet** | Default | 3x haiku | Most cases |
-| **opus** | Complex reasoning | 10x haiku | Architecture design |
-
-**Guidance**:
-- Default to sonnet (inherited from parent)
-- Use haiku for: Simple grep, basic file operations
-- Use opus for: Architecture design, complex refactoring
-
-## Tool Restrictions
-
-### Allowlist (tools)
-
-```yaml
----
-name: read-only-agent
-tools:
-  - Read
-  - Grep
-  - Glob
 ---
 ```
 
-### Denylist (disallowedTools)
+## 3. Coordination Patterns
 
-```yaml
----
-name: safe-agent
-disallowedTools:
-  - Write
-  - Edit
-  - Bash
----
+**Full Patterns**: [coordination-patterns.md](references/coordination-patterns.md) | [coordination.md](references/coordination.md)
+
+| Pattern | Description |
+|---------|-------------|
+| **Hub-and-Spoke** | Main agent delegates to specialized workers. |
+| **Sequential** | Chain: Architect → Coder → Reviewer. |
+| **Parallel** | Multiple isolated agents for speed. |
+
+## 4. Context Detection
+
+Automatic detection based on file location. See [context-detection.md](references/context-detection.md).
+
 ```
-
-## Context Detection
-
-Automatic detection logic:
-
-```python
-if exists(".claude-plugin/plugin.json") or exists("plugin/agents/"):
-    return "plugin"
-elif exists(".claude/agents/"):
-    return "project"
-elif exists("~/.claude/agents/"):
-    return "user"
-else:
-    return "undetermined"
+.claude-plugin/plugin.json exists → Plugin context
+.claude/agents/ exists           → Project context
+~/.claude/agents/ exists         → User context
 ```
-
-## Coordination Patterns
-
-### Pattern: Hub Skill → Subagent
-
-Hub skill delegates to subagent with clear expectations:
-
-```yaml
-# Hub Skill
----
-name: workflow-orchestrator
----
-
-Call: toolkit-worker (subagent)
-Input: [What to analyze]
-Wait for: "## Analysis Report" marker
-Extract: Quality score, findings, recommendations
-
-# Continue workflow with results
-```
-
-### Multi-Subagent Workflows
-
-```yaml
-# Hub Skill
----
-name: multi-agent-workflow
----
-
-# Parallel execution possible
-Call: subagent-1 (isolated)
-Call: subagent-2 (isolated)
-
-Wait for both completion markers
-Aggregate results
-Make decision
-```
-
-## Quality Framework
-
-### Scoring System (0-100 points)
-
-| Dimension | Points | Focus |
-|-----------|--------|-------|
-| **1. Configuration Validity** | 20 | Valid YAML, required fields |
-| **2. Frontmatter Correctness** | 15 | Valid fields only |
-| **3. Context Appropriateness** | 15 | Correct directory |
-| **4. Tool Restrictions** | 15 | Appropriate allow/deny |
-| **5. Skills Integration** | 15 | Proper skill injection |
-| **6. Documentation Quality** | 20 | Clear description |
-
-### Quality Thresholds
-
-- **A (90-100)**: Exemplary configuration
-- **B (75-89)**: Good configuration with minor gaps
-- **C (60-74)**: Adequate configuration, needs improvement
-- **D (40-59)**: Poor configuration, significant issues
-- **F (0-39)**: Failing configuration, critical errors
-
-## Reference Files
-
-Load these as needed for comprehensive guidance:
-
-| File | Content | When to Read |
-|------|---------|--------------|
-| [configuration-guide.md](references/configuration-guide.md) | Valid frontmatter fields | Creating agents |
-| [context-detection.md](references/context-detection.md) | Project vs plugin vs user | Choosing location |
-| [coordination-patterns.md](references/coordination-patterns.md) | Multi-agent workflows | Coordinating agents |
-| [coordination.md](references/coordination.md) | Agent coordination patterns | Complex workflows |
-| [validation-framework.md](references/validation-framework.md) | 6-dimensional quality scoring | Validating agents |
-| [when-to-use.md](references/when-to-use.md) | Guidelines for agent usage | Deciding to use agents |
-
-## Common Patterns
-
-### Project-Level Subagent
-
-**Location**: `.claude/agents/<name>.md`
-
-**Use When**: Project-specific workflow automation
-
-```yaml
----
-name: deploy-agent
-description: "Automates deployment workflow for this project"
-model: haiku
-tools:
-  - Bash
-  - Read
-permissionMode: default
----
-```
-
-### Plugin-Level Subagent
-
-**Location**: `<plugin>/agents/<name>.md`
-
-**Use When**: Shared across multiple projects
-
-```yaml
----
-name: code-review-agent
-description: "Reviews code changes for quality"
-model: sonnet
-disallowedTools:
-  - Write
-  - Edit
-hooks:
-  PostToolUse:
-    - matcher: {"tool": "Bash"}
-      hooks:
-        - type: command
-          command: "./scripts/log-review.sh"
----
-```
-
-## Usage Pattern
-
-Load this knowledge skill to understand agent types and configuration patterns, then use the create-subagent factory skill for creating agent files.
-
-## Knowledge Only
-
-This skill contains NO execution logic. For creating agents, use the create-subagent factory skill.
