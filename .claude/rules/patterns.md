@@ -1,6 +1,6 @@
 # Implementation Patterns
 
-**Concrete patterns from official examples. Use these for skill creation.**
+**Generic patterns applicable across all components. Component-specific patterns live in their respective meta-skills.**
 
 ---
 
@@ -12,66 +12,149 @@ Skill content uses strict imperative/infinitive form with NO second person.
 
 **Use this pattern**: Content that requires specific, deterministic execution.
 
-**Examples**:
+**Examples:**
 - Execute before any tool runs
 - Parse the YAML frontmatter using sed
 - Configure the MCP server with authentication
 - Validate file write safety
 
-**Avoid**:
+**Avoid:**
 - You should create a hook
 - You need to validate settings
 - You can use the grep tool
 
 **Recognition**: If writing "you/your", switch to imperative form.
 
----
-
-## Description Pattern
-
-### Third-Person with Exact Triggers
-
-Descriptions use third-person format with specific trigger phrases users would say.
-
-**Pattern**:
-```yaml
-description: This skill should be used when the user asks to "specific phrase 1",
-"specific phrase 2", "specific phrase 3", or needs guidance on X, Y, Z.
-```
-
-**Example from agent-development**:
-```yaml
-description: This skill should be used when the user asks to "create an agent",
-"add an agent", "write a subagent", "agent frontmatter", "when to use description",
-"agent examples", "agent tools", "agent colors", "autonomous agent", or needs
-guidance on agent structure, system prompts, triggering conditions...
-```
-
-**Key elements**:
-- Third-person: "This skill should be used when..."
-- Exact quotes: Phrases users actually say
-- Variety: Multiple ways to phrase the same concept
-- Context-specific: Include relevant technical terms
-
-**Recognition**: If description is vague or generic, add exact trigger phrases.
+**Rationale**: Imperative form reduces token count while maintaining clarity. Second person adds unnecessary words.
 
 ---
 
-## Skill Structure
+## Cross-Reference Patterns
 
-### Tier Threshold: 400-450 Lines
+### Project Portability
 
-Move content to `references/` at 400-450 lines, not 500.
+Skills can reference other skills using project-relative paths.
 
-**Reality from examples**:
-- command-development: 833 lines (should have split earlier)
-- hook-development: 711 lines
-- skill-development: 636 lines
-- agent-development: 414 lines
+**For local projects**: Use paths relative to project root or `${CLAUDE_PROJECT_DIR}`
 
-**Optimal pattern**: Split at 400-450 lines for better progressive disclosure.
+**For plugins/distribution**: Use `${CLAUDE_PLUGIN_ROOT}` for portability
 
-### Directory Structure
+**Dual-mode pattern** (works in both contexts):
+```bash
+BASE_DIR="${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
+```
+
+```markdown
+See [plugin-dev skills](../../../official_example_skills/) for complete examples.
+```
+
+**Recognition**: "Will this work in both local and plugin contexts?"
+
+---
+
+### Progressive Disclosure Structure
+
+Information architecture as cognitive load management. Reveal complexity progressively.
+
+### Three Levels
+
+**Tier 1: Metadata** (~100 tokens, always loaded)
+- Frontmatter: `name`, `description`
+- Purpose: Trigger discovery, convey WHAT/WHEN/NOT
+- Recognition: This is Claude's first impression - make it count
+
+**Tier 2: SKILL.md** (400-450 lines max, loaded on activation)
+- Core implementation with workflows and examples
+- Purpose: Enable task completion
+- Recognition: If approaching 450 lines, move content to Tier 3
+
+**Tier 3: References/** (on-demand, loaded when needed)
+- Deep details, troubleshooting, comprehensive guides
+- Purpose: Specific use cases without cluttering Tier 2
+- Recognition: Create only when SKILL.md + references >500 lines total
+
+### Pattern Recognition
+
+**Pattern 1: High-level guide with references**
+```markdown
+## Quick start
+[Basic usage]
+## Advanced features
+- **Feature X**: See [X.md](X.md) for complete guide
+```
+
+**Pattern 2: Domain-specific organization**
+```
+bigquery-skill/
+├── SKILL.md (overview and navigation)
+└── references/
+    ├── finance.md
+    ├── sales.md
+    └── product.md
+```
+
+**Pattern 3: Conditional details**
+```markdown
+Basic content here.
+**For advanced**: See [ADVANCED.md](ADVANCED.md)
+```
+
+**Recognition**: If SKILL.md is bloated with domain-specific or situational content, split it into references/.
+
+---
+
+### Reference File Anti-Pattern
+
+Reference files (Tier 3, in `references/` directories) should never contain instructions about when to read themselves.
+
+**Anti-pattern**:
+```markdown
+# Executable Command Examples
+
+**Load this file when you need to see actual working command examples.**
+
+This reference contains...
+```
+
+**Why it fails**: The reader has already loaded the file. Telling them "when to read" what they're already reading is redundant and creates circular logic.
+
+**Correct pattern - SKILL.md (Tier 2)**:
+```markdown
+## Navigation
+
+| If you are... | You MUST read... |
+|---------------|------------------|
+| Creating commands | `references/executable-examples.md` |
+| Configuring frontmatter | `references/frontmatter-reference.md` |
+
+## Bash Execution
+
+Commands can inject bash output using exclamation mark followed by command in backticks.
+
+**You MUST read `references/executable-examples.md` before writing commands.**
+```
+
+**Correct pattern - Reference file (Tier 3)**:
+```markdown
+# Executable Command Examples
+
+This reference contains complete, executable command examples using real syntax.
+
+[Content only - no meta-instructions about when to read]
+```
+
+**Recognition**: If a `references/` file starts with "Load this when..." or "Read this for...", remove it.
+
+**Progressive disclosure structure**:
+- **Tier 1 (Metadata)**: Frontmatter - always loaded, triggers discovery
+- **Tier 2 (SKILL.md)**: Core content + navigation directives pointing to references
+- **Tier 3 (references/)**: Deep content only - assumes reader chose to load it
+
+---
+
+## Directory Structure Patterns
+
+### Skill Structure
 
 ```
 skill-name/
@@ -92,101 +175,47 @@ skill-name/
 - `scripts/` directory with executable utilities
 - Domain-specific `references/` organization
 
----
-
-## Script Patterns
-
-### Quick-Exit Pattern
-
-Early exit when configuration not present reduces overhead.
-
-```bash
-# Check if configuration exists
-if [[ ! -f ".claude/my-plugin.local.md" ]]; then
-  exit 0  # Not configured, skip gracefully
-fi
-```
-
-**Use when**: Optional functionality that may not be configured.
-
-### Strict Error Handling
-
-Use `set -euo pipefail` for deterministic operations.
-
-```bash
-#!/bin/bash
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
-```
-
-**Use when**: Script must fail explicitly on errors (hooks, validation).
-
-### Exit Code Conventions
-
-For hooks and validation scripts:
-
-- `0` = approve/success
-- `1` = non-blocking error (continue)
-- `2` = deny/blocking error
-
-```bash
-# Approve operation
-echo '{"continue": true}'
-exit 0
-
-# Deny operation with reason
-echo '{"permissionDecision": "deny"}' >&2
-exit 2
-```
-
-### JSON Input via stdin
-
-Standard hook input format with jq parsing.
-
-```bash
-#!/bin/bash
-set -euo pipefail
-
-# Read JSON input from stdin
-input=$(cat)
-
-# Extract fields with jq
-file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty')
-
-# Validate required fields
-if [ -z "$file_path" ]; then
-  echo '{"continue": true}'
-  exit 0
-fi
-```
-
-**Use when**: Writing PreToolUse, PostToolUse, or other event hooks.
+**Recognition**: Do I have working examples? Should I split to references/?
 
 ---
 
-## Cross-Reference Patterns
+## Content Organization Patterns
 
-### Skill Integration
+### Single Source of Truth
 
-Skills can reference other skills and use `${CLAUDE_PLUGIN_ROOT}` for portability.
+Each concept should be documented in ONE place, with cross-references from other locations.
 
-```markdown
-See [plugin-dev skills](../../../official_example_skills/) for complete examples.
+**Good pattern**:
+- Component-specific patterns live in component's meta-skill
+- Generic patterns live in `.claude/rules/patterns.md`
+- CLAUDE.md references both
 
-Use `${CLAUDE_PLUGIN_ROOT}/scripts/validate.sh` for portable script references.
-```
+**Anti-pattern**: Same description pattern documented in skill-development, command-development, and patterns.md
 
-### Knowledge-Factory Workflow
+**Recognition**: "Is this concept already documented elsewhere?"
 
-1. Load knowledge skills to understand concepts
-2. Use factory skills to execute operations
+---
 
-**Example flow**:
-```
-User: "Create a new skill for X"
-→ Load knowledge-skills (understand structure)
-→ Load skill-development (learn patterns)
-→ Use create-skill factory (execute creation)
-```
+### Degrees of Freedom
+
+Match specificity to task fragility.
+
+**High Freedom (Text-based Instructions)**
+- Use when: Multiple approaches are valid, decisions depend on context
+- Characteristics: "Consider X when Y", trust judgment based on context
+- Example: "When organizing skills, group by domain if that aids discovery"
+
+**Medium Freedom (Pseudocode or Scripts with Parameters)**
+- Use when: A preferred pattern exists, some variation is acceptable
+- Characteristics: Suggested structure with flexibility
+- Example: "Skill structure: SKILL.md (required), references/ (optional)"
+
+**Low Freedom (Specific Scripts, Few Parameters)**
+- Use when: Operations are fragile and error-prone, consistency is critical
+- Characteristics: Exact steps to follow, limited configuration
+- Example: "Validation requires: 1) Check YAML format, 2) Verify required fields"
+
+**Recognition**: If the operation breaks easily or has high failure risk, reduce freedom.
 
 ---
 
@@ -196,18 +225,14 @@ User: "Create a new skill for X"
 - "Am I using 'you/your'?" → Switch to imperative form
 - "Is this instructions or messages?" → Write FOR Claude, not TO user
 
-**Description Quality**:
-- "Are these exact user phrases?" → Add specific trigger quotes
-- "Would this trigger on the right inputs?" → Test with real phrases
+**Content Organization**:
+- "Is this concept documented elsewhere?" → Cross-reference instead
+- "Is this component-specific?" → Move to relevant meta-skill
+- "Is this generic?" → Keep in rules/
 
-**Skill Structure**:
+**Progressive Disclosure**:
 - "Is SKILL.md approaching 450 lines?" → Move content to references/
 - "Do I have working examples?" → Add examples/ directory
-
-**Script Quality**:
-- "Does this fail gracefully?" → Add error handling
-- "Is this portable?" → Use ${CLAUDE_PLUGIN_ROOT}
-
----
+- "Is this telling readers when to read what they're already reading?" → Remove meta-instructions
 
 **Teaching > Prescribing**: Patterns enable intelligent adaptation. Process prescriptions create brittle systems.

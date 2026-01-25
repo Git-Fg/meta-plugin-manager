@@ -11,6 +11,7 @@ Think of anti-patterns as "smell tests" - quick checks that reveal deeper issues
 - "Could the description alone suffice?"
 - "Can this work standalone?"
 - "Is the overhead justified?"
+- "Would Claude know this without being told?"
 
 If the answer suggests a problem, look deeper.
 
@@ -23,250 +24,211 @@ If the answer suggests a problem, look deeper.
 - ✅ Use conversational tone ("you might", "consider")
 - ✅ Provide principles, not prescriptions
 - ✅ Include "Why it matters" explanations
+- ✅ Challenge every piece of information
 
 **DON'T:**
 - ❌ Use "ALWAYS/NEVER/MUST" for non-critical things
 - ❌ Provide exhaustive examples for simple patterns
 - ❌ Explain Claude-obvious concepts
 - ❌ Create skills that just invoke commands
+- ❌ Duplicate content across files
 
 ---
 
-## Architectural Anti-Patterns
+## Generic Anti-Patterns
 
-**❌ Regular skill chains expecting return** - Regular→Regular is one-way handoff
-- skill-a calls skill-b → skill-b becomes final output
-- skill-a NEVER resumes
-- **Evidence**: Test 1.2 - skill-a → skill-b → END (skill-c never called)
+### Command Wrapper Skills
 
-**❌ Context-dependent forks** - Don't fork if you need caller context
-- Forked skills cannot access caller's conversation history
-- Parameters via `args` ARE the proper data transfer method
+**❌ Creating skills that just invoke commands**
 
-**❌ Command wrapper skills** - Skills that just invoke commands
-- Pure commands are anti-pattern for skills
-- Well-crafted description usually suffices
-- Reserve disable-model-invocation for destructive operations (deploy, delete, send)
+Pure commands are anti-pattern for skills. Well-crafted description usually suffices.
 
-**❌ Linear chain brittleness** - Use hub-and-spoke instead
-- Hub Skills delegate to knowledge skills
-- For aggregation, ALL workers MUST use `context: fork`
+**Recognition**: "Could the description alone suffice?"
 
-**❌ Assuming nested forking doesn't work** - Forked skills can call other forked skills
-- Nested forking validated to depth 2+
-- Control returns properly at each level
-- **Evidence**: Test 4.2 - forked-outer → forked-inner → forked-outer
+**Fix**: If the skill just runs a command, delete it. Improve the command description instead.
 
-**❌ Assuming system-level error detection in forked skills** - Forked failures are content
-- When forked skills fail, they complete normally from system perspective
-- Error detection requires parsing output content
-- **Evidence**: Test 8.1 - Errors are content, not system states
-
-**❌ Non-self-sufficient skills** - Must achieve 80-95% autonomy
-- 0 questions = 95-100% autonomy
-- 1-3 questions = 85-95% autonomy
-- 6+ questions = <80% (fail)
-
-**❌ Empty scaffolding** - Remove directories with no content
-- Creates technical debt
-- Clean up immediately after refactoring
-
-## Script Anti-Patterns
-
-**❌ Punting to Claude** - Handle error conditions explicitly
-
-```bash
-# Bad: Just fails and lets Claude figure it out
-return open(path).read()
-
-# Good: Handle errors with fallbacks
-try:
-    with open(path) as f:
-        return f.read()
-except FileNotFoundError:
-    print(f"File {path} not found, creating default")
-    with open(path, 'w') as f:
-        f.write('')
-    return ''
-```
-
-**Recognition**: Script assumes success, no error handling
-
-**Fix**: Add try/except with fallback behavior
+Reserve `disable-model-invocation` for destructive operations (deploy, delete, send).
 
 ---
 
-**❌ Magic numbers** - Undocumented configuration constants
+### Non-Self-Sufficient Skills
 
-```bash
-# Bad: Why 47? Why 5?
-TIMEOUT=47
-RETRIES=5
+**❌ Skills that require constant user hand-holding**
 
-# Good: Document rationale
-# Three retries balance reliability vs speed
-MAX_RETRIES=3
-```
+Skills must achieve 80-95% autonomy (0-5 questions per session).
 
-**Recognition**: Numbers without explanation
+| Questions | Autonomy | Status |
+|----------|----------|--------|
+| 0 | 95-100% | Excellent |
+| 1-3 | 85-95% | Good |
+| 4-5 | 80-85% | Acceptable |
+| 6+ | <80% | Fail |
 
-**Fix**: Add comments explaining WHY values chosen
+**Recognition**: "Can this work standalone?"
 
----
-
-**❌ Brittle paths** - Windows-style backslashes or relative cd
-
-```bash
-# Bad: Unreliable, breaks context
-cd ../scripts
-scripts\validate.sh
-
-# Good: Absolute paths or project-relative
-./.claude/scripts/validate.sh
-```
-
-**Recognition**: Relative paths, backslashes
-
-**Fix**: Use Unix-style forward slashes, project-relative paths
+**Fix**: Add concrete patterns, examples, and decision criteria.
 
 ---
 
-**❌ No validation** - Missing format and error checks
+### Context Fork Misuse
 
-```bash
-# Bad: Fails cryptically
-jq '.result' "$FILE"
+**❌ Using context fork when overhead isn't justified**
 
-# Good: Validate before processing
-if ! jq empty "$FILE" 2>/dev/null; then
-    echo "ERROR: Invalid JSON file: $FILE"
-    exit 1
-fi
-```
+Forked skills cannot access caller's conversation history. Parameters via `args` ARE the proper data transfer method.
 
-**Recognition**: No input validation before processing
+**Recognition**: "Is the overhead justified?"
 
-**Fix**: Validate format before operations
+**Fix**: Use fork only for isolation, parallel processing, or untrusted code. Otherwise use regular skill invocation.
 
 ---
 
-**❌ Over-scripting** - Scripts for simple or variable tasks
+### Zero/Negative Delta
 
-**Recognition**:
-- Simple 1-2 line operations → Use native tools directly
-- Highly variable tasks → Let Claude adapt intelligently
-- One-time operations → Don't script, execute directly
+**❌ Providing information Claude already knows**
 
-**✅ Good script practices**:
-- Complex operations (>3-5 lines) needing determinism
-- Reusable utilities called multiple times
-- Performance-sensitive operations
-- Explicit error handling and validation
+For each piece of content, ask: "Would Claude know this without being told?"
 
-**See also**: Script Implementation Quick Reference in quick-reference.md
+**Positive Delta (keep):**
+- Project-specific architecture decisions
+- Domain expertise not in general training
+- Non-obvious bug workarounds
+- Team-specific conventions
+
+**Zero/Negative Delta (remove):**
+- General programming concepts
+- Standard library documentation
+- Common patterns Claude already knows
+- Generic tutorials
+
+**Fix**: Delete content that Claude would know from training.
+
+---
+
+### Empty Scaffolding
+
+**❌ Creating directories with no content**
+
+Empty directories create technical debt.
+
+**Recognition**: Is this directory empty with no planned content?
+
+**Fix**: Remove directories with no content immediately after refactoring.
+
+---
 
 ## Documentation Anti-Patterns
 
-**❌ Stale URLs** - Always verify with mcp__simplewebfetch__simpleWebFetch before implementation
+### Stale URLs
 
-**❌ Missing URL sections** - Knowledge skills SHOULD include URL fetching with context
+**❌ Including URLs without verification**
 
-**❌ Drift** - Same concept in multiple places
+URLs in documentation should be verified before inclusion.
 
-**❌ Generic tutorials** - Mixed with project-specific rules
+**Fix**: Always verify with web fetch tools before adding URLs.
 
-**❌ Extraneous documentation files in skills** - From skill-creator best practices
-**Do NOT create in skills**:
+---
+
+### Content Drift
+
+**❌ Same concept documented in multiple places**
+
+Creates maintenance burden and inconsistency.
+
+**Recognition**: "Is this concept already documented elsewhere?"
+
+**Fix**: Choose single source of truth for each concept, cross-reference from other locations.
+
+---
+
+### Generic Tutorials Mixed with Project Rules
+
+**❌ Including generic tutorials in project documentation**
+
+Generic tutorials (how to use Git, what is YAML) don't belong in project-specific documentation.
+
+**Fix**: Remove generic content. Keep only project-specific rules and conventions.
+
+---
+
+### Extraneous Documentation Files in Skills
+
+**❌ Creating auxiliary documentation files in skills**
+
+Skills should contain only information needed for an AI agent to do the job.
+
+**Do NOT create in skills:**
 - README.md
 - INSTALLATION_GUIDE.md
 - QUICK_REFERENCE.md
 - CHANGELOG.md
 - TUTORIAL.md
 - GUIDE.md
-- Any auxiliary documentation about the creation process
+- Any "how to use" documentation
 
-**Rationale**: Skills should only contain information needed for an AI agent to do the job. They should not contain auxiliary context about setup, testing procedures, or user-facing documentation. Creating additional documentation files just adds clutter and confusion.
+**Recognition**: "Is this file explaining how to use or set up a skill?"
 
-**Recognition**: If you're creating a file that explains "how to use" or "how to set up" a skill, you're creating the wrong kind of documentation. Skills are for AI agents, not human users.
-
-**❌ Updating CLAUDE.md without checking .claude/rules/** - Documentation synchronization failure
-- CLAUDE.md and .claude/rules/ are a single unit — always review both together
-- When CLAUDE.md changes, .claude/rules/ may need updating
-- When .claude/rules/ change, CLAUDE.md may need updating
-- CLAUDE.md may reference .claude/rules/ that no longer exist
-- **Why it matters**: Prevents drift between documentation layers
-- **Recognition pattern**: "Did I check .claude/rules/ when updating CLAUDE.md?"
-
-## Skill Field Confusion (from actual test findings)
-
-**❌ Using `context: fork` in subagents** - This is for **skills**, not subagents
-
-**❌ Using `agent: Explore` in subagents** - This field **doesn't exist** for subagents
-
-**❌ Using `model:` or `permissionMode:` in subagents** - Keep simple
-
-**❌ Using `user-invocable` in subagents** - Subagents aren't skills
-
-**❌ Using `disable-model-invocation` in subagents** - For skills, not subagents
-
-
-## Hooks Anti-Patterns
-
-**❌ Prescriptive hook patterns** - Trust AI to make intelligent decisions
-**❌ Over-complex configuration hierarchies** - Start with local project settings
-**❌ Interactive command references in skills** - Focus on autonomous capabilities
-**❌ Deprecated legacy format emphasis** - Use modern JSON approach
-
-## Prompt Efficiency Anti-Patterns
-
-**❌ Preferring subagents over skills when both work**
-- Skills consume 1 prompt
-- Subagents consume multiple prompts
-- Critical for limited prompts (150 prompts/5h plans)
+**Fix**: Delete auxiliary documentation. Skills are for AI agents, not human users.
 
 ---
 
-## Troubleshooting Guide
+### Documentation Synchronization Failure
 
-### Skill Not Triggering
+**❌ Updating CLAUDE.md without checking .claude/rules/**
 
-**Recognition**: Description unclear or missing triggers
+CLAUDE.md and .claude/rules/ are a single unit — always review both together.
 
-**Fix**: Rewrite description using What-When-Not framework
-```yaml
-description: "WHAT the skill does. Use when: trigger1, trigger2, trigger3. Not for: anti-triggers."
-```
+**Recognition**: "Did I check .claude/rules/ when updating CLAUDE.md?"
 
-### Constant Questions
+**Fix**: When CLAUDE.md changes, .claude/rules/ may need updating. When .claude/rules/ change, CLAUDE.md may need updating.
 
-**Recognition**: 6+ questions per session (autonomy <80%)
+---
 
-**Fix**: Add concrete patterns, examples, and decision criteria
+## Prompt Efficiency Anti-Patterns
 
-### SKILL.md Too Long
+### Preferring Subagents Over Skills
 
-**Recognition**: File exceeds 450 lines
+**❌ Using subagents when skills would work**
 
-**Fix**: Move detailed content to references/, keep core in SKILL.md (optimal split at 400-450 lines)
+Skills consume 1 prompt. Subagents consume multiple prompts.
 
-**Note**: Official examples show 400-800+ lines, but optimal progressive disclosure splits at 400-450
+| Approach | Prompts consumed |
+|----------|------------------|
+| Skill | 1 |
+| Subagent | Multiple (2-5+) |
 
-### Commands Not Working
+**Critical for**: Limited prompts (150 prompts/5h plans)
 
-**Recognition**: Command fails or produces wrong output
+**Recognition**: "Could a skill handle this?"
 
-**Fix**: Verify command is written FOR Claude (instructions), not TO user (messages)
+**Fix**: Use skills unless you specifically need subagent capabilities (context isolation, independent operation).
+
+---
+
+## Component-Specific Anti-Patterns
+
+For component-specific anti-patterns, see the relevant meta-skill:
+
+| Component | Meta-Skill | Content |
+|-----------|------------|---------|
+| Skills | skill-development | Architectural patterns, field confusion, autonomy issues |
+| Commands | command-development | Script patterns, bash execution issues |
+| Agents | agent-development | Agent-specific field confusion, triggering issues |
+| Hooks | hook-development | Event handling patterns, security issues |
+| MCPs | mcp-development | Server configuration, tool definition issues |
 
 ---
 
 ## Summary
 
-For comprehensive recognition questions covering writing style, descriptions, and structure, see [**patterns.md**](patterns.md).
+**Core recognition questions:**
 
-**Core anti-pattern recognition**:
-- Command wrapper → "Could the description alone suffice?"
-- Non-self-sufficient skills → "Can this work standalone?"
-- Context fork misuse → "Is the overhead justified?"
-- Zero/negative delta → "Would Claude know this without being told?"
+| Pattern | Recognition Question |
+|---------|---------------------|
+| Command wrapper | "Could the description alone suffice?" |
+| Non-self-sufficient | "Can this work standalone?" |
+| Context fork misuse | "Is the overhead justified?" |
+| Zero/negative delta | "Would Claude know this without being told?" |
+| Content drift | "Is this documented elsewhere?" |
+| Wrong component | "Does this belong in a meta-skill instead?" |
 
 **Think of it this way**: These patterns help recognize problems, not prescribe solutions. Use your judgment based on context.

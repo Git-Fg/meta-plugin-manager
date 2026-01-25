@@ -179,10 +179,10 @@ Basic content here.
 
 ---
 
-For recognition questions covering all philosophy principles, see [**quick-reference.md**](quick-reference.md).
-
 **Teaching > Prescribing**: Philosophy enables intelligent adaptation. Process prescriptions create brittle systems.
 
 **Trust > Control**: Claude is smart. Provide principles, not recipes.
 
 **Less > More**: Context is expensive. Every token must earn its place.
+
+For implementation patterns, see [`patterns.md`](patterns.md). For anti-patterns, see [`anti-patterns.md`](anti-patterns.md). For project-specific guidance, see [`CLAUDE.md`](../CLAUDE.md).
