@@ -11,7 +11,13 @@ The goal here isn't to rush to answers—it's to explore what matters, uncover a
 
 ## Starting Point
 
-Target: @$1
+Target: $1
+
+Files loaded:
+!`if [ -d "$1" ]; then find "$1" -name "*.md" -type f | sort; else echo "$1"; fi`
+
+Content:
+!`if [ -d "$1" ]; then find "$1" -name "*.md" -type f -exec echo "=== {} ===" \; -exec cat {} \; -exec echo "" \; | head -c 50000; else cat "$1"; fi`
 
 Before diving into analysis, let's establish what brings us here.
 
