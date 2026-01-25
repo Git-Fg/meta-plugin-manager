@@ -22,6 +22,18 @@ equipped with procedural knowledge that no model can fully possess.
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
 5. Architectural patterns - Knowledge skills (passive reference) vs. factory skills (script-based execution) for clean separation of understanding and action
 
+### What Skills Can Provide
+
+Skills can serve different purposes depending on their design:
+
+| Capability | Purpose | Example |
+|------------|---------|--------|
+| **Pure Reference** | Load for understanding, no execution | Domain knowledge, API schemas |
+| **Deterministic Execution** | Script-based automation | PDF rotation, validation utilities |
+| **Guidance + Utilities** | Mixed approach | Workflow procedures with helper scripts |
+
+Skills often combine multiple capabilities. Choose based on what helps Claude execute tasks effectively.
+
 ### The Delta Standard
 
 > **Good Customization = Expert-only Knowledge − What Claude Already Knows**
@@ -270,6 +282,19 @@ When skills grow complex (>3 steps, high-volume output), consider orchestration 
 - **Context isolation**: Use `context: fork` for noisy operations that would clutter conversation
 
 See orchestration documentation for details. Only apply when complexity warrants it.
+
+**Debugging skill issues:**
+
+When a skill underperforms, isolate the flaw and apply one of these fix types:
+
+| Fix Type | Approach | When to Use |
+|----------|----------|-------------|
+| **Strict** | Add hard constraints | Skill allows unintended behavior |
+| **Context** | Add examples/how-to | Skill is vague or ambiguous |
+| **Structural** | Reorder steps, change workflow | Skill flow is confusing |
+| **Alternative** | Try different approach | Current approach fundamentally flawed |
+
+**Common root causes**: Vague instruction, missing negative constraint, overly complex logic, lack of examples.
 
 **Common improvements:**
 - Strengthen trigger phrases in description
