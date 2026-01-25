@@ -14,6 +14,9 @@ specialized knowledge, workflows, and tools. Think of them as "onboarding guides
 domains or tasks—they transform Claude from a general-purpose agent into a specialized agent
 equipped with procedural knowledge that no model can fully possess.
 
+Since v2.1.1, Skills and Slash Commands are unified—both use the same system. This skill focuses on creating simple, effective skills with `name` and `description`. For advanced patterns (forked execution, tool restrictions, subagents), see `references/advanced-execution.md`.
+
+
 ### What Skills Provide
 
 1. Specialized workflows - Multi-step procedures for specific domains
