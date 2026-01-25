@@ -24,6 +24,7 @@
 event_loop:
   prompt_file: "PROMPT.md"
   completion_promise: "WORKFLOW_COMPLETE"
+  starting_event: "workflow.start"
   max_iterations: 100
   max_runtime_seconds: 7200
   idle_timeout_secs: 600
