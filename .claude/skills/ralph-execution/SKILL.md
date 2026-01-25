@@ -67,32 +67,34 @@ Implement JWT-based authentication for the API.
 ## Running Ralph
  
  ### Production Grade Execution (Best Practice)
- 
- Always use `--no-tui` and pipe output to a persistent log file for maximum reliability and debugging capability.
- 
- ```bash
- # 1. Prepare log directory
- mkdir -p .ralph/logs/
- LOG_FILE=".ralph/logs/run_$(date +%Y%m%d_%H%M%S).log"
- 
- # 2. Run with pipe (no TUI)
- echo "Monitor specific log: tail -f $LOG_FILE"
- ralph run --no-tui --verbose 2>&1 | tee "$LOG_FILE"
- ```
- 
- ### Why --no-tui?
- - **Clean Logging**: Text-based UI control characters don't pollute your log files
- - **Pipe Compatibility**: Allows standard Unix tools (`grep`, `tee`, `awk`) to work
- - **Searchable**: You can grep through the history of the run
- 
- ### Monitoring
- 
- Since the main window is piping to a file, use a second terminal to watch:
- 
- ```bash
- # Watch real-time
- tail -f .ralph/logs/run_LATEST.log
- ```
+
+For AI agents, the most robust pattern is to redirect output entirely to a file. This avoids pipe complexity, ensures clean exit codes, and prevents context window overflow.
+
+```bash
+# 1. Prepare log directory
+mkdir -p .ralph/logs/
+LOG_FILE=".ralph/logs/run_$(date +%Y%m%d_%H%M%S).log"
+
+# 2. Run with redirection (cleanest for agents)
+ralph run --no-tui --verbose > "$LOG_FILE" 2>&1
+```
+
+### Post-Execution Verification
+
+After the command finishes, ALWAYS read the log to verify success (since correct exit code doesn't guarantee logic success).
+
+```bash
+# Check the last 50 lines for success/failure signals
+tail -n 50 "$LOG_FILE"
+
+# Or search for specific errors
+grep -i "error" "$LOG_FILE"
+```
+
+### Why --no-tui + redirection?
+- **Stability**: No TUI control characters in the log.
+- **Simplicity**: No pipes (`|`) mean the exit code is exactly from `ralph`.
+- **Focus**: The agent sees "command done" and then deliberately inspects the log, rather than handling a massive output stream.
  
  ### Basic Execution (Interactive)
  
