@@ -245,9 +245,11 @@ description: "WHAT the skill does. Use when: trigger1, trigger2, trigger3. Not f
 
 ### SKILL.md Too Long
 
-**Recognition**: File exceeds 500 lines
+**Recognition**: File exceeds 450 lines
 
-**Fix**: Move detailed content to references/, keep core in SKILL.md
+**Fix**: Move detailed content to references/, keep core in SKILL.md (optimal split at 400-450 lines)
+
+**Note**: Official examples show 400-800+ lines, but optimal progressive disclosure splits at 400-450
 
 ### Commands Not Working
 
@@ -259,11 +261,12 @@ description: "WHAT the skill does. Use when: trigger1, trigger2, trigger3. Not f
 
 ## Summary
 
-**Recognition questions beat memorized rules:**
+For comprehensive recognition questions covering writing style, descriptions, and structure, see [**patterns.md**](patterns.md).
 
-- "Could the description alone suffice?" → Command wrapper anti-pattern
-- "Can this work standalone?" → Non-self-sufficient skills
-- "Is the overhead justified?" → Context fork misuse
-- "Would Claude know this without being told?" → Zero/negative delta
+**Core anti-pattern recognition**:
+- Command wrapper → "Could the description alone suffice?"
+- Non-self-sufficient skills → "Can this work standalone?"
+- Context fork misuse → "Is the overhead justified?"
+- Zero/negative delta → "Would Claude know this without being told?"
 
 **Think of it this way**: These patterns help recognize problems, not prescribe solutions. Use your judgment based on context.

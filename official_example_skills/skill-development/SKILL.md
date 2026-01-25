@@ -20,31 +20,6 @@ equipped with procedural knowledge that no model can fully possess.
 2. Tool integrations - Instructions for working with specific file formats or APIs
 3. Domain expertise - Company-specific knowledge, schemas, business logic
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
-5. Architectural patterns - Knowledge skills (passive reference) vs. factory skills (script-based execution) for clean separation of understanding and action
-
-### What Skills Can Provide
-
-Skills can serve different purposes depending on their design:
-
-| Capability | Purpose | Example |
-|------------|---------|--------|
-| **Pure Reference** | Load for understanding, no execution | Domain knowledge, API schemas |
-| **Deterministic Execution** | Script-based automation | PDF rotation, validation utilities |
-| **Guidance + Utilities** | Mixed approach | Workflow procedures with helper scripts |
-
-Skills often combine multiple capabilities. Choose based on what helps Claude execute tasks effectively.
-
-### The Delta Standard
-
-> **Good Customization = Expert-only Knowledge − What Claude Already Knows**
-
-Only include information with a "knowledge delta"—the gap between what Claude knows from training and what it needs for this specific project.
-
-**Positive Delta (keep)**: Project-specific architecture, domain expertise, business logic, non-obvious workarounds, team conventions.
-
-**Zero/Negative Delta (remove)**: General programming concepts, standard library docs, common patterns Claude already knows, generic tutorials.
-
-**Recognition**: For each piece of content, ask "Would Claude know this without being told?" If yes, delete it.
 
 ### Anatomy of a Skill
 
@@ -107,18 +82,6 @@ Skills use a three-level loading system to manage context efficiently:
 3. **Bundled resources** - As needed by Claude (Unlimited*)
 
 *Unlimited because scripts can be executed without reading into context window.
-
-### Degrees of Freedom Framework
-
-Match specificity to task fragility. Think of Claude as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
-
-| Freedom Level | When to Use | Approach |
-|---------------|-------------|----------|
-| **High** | Multiple valid approaches, context-dependent decisions | Text-based principles, "consider X when Y" |
-| **Medium** | Preferred pattern exists, some variation acceptable | Pseudocode or scripts with parameters |
-| **Low** | Fragile/error-prone operations, consistency critical | Specific scripts, few parameters, exact steps |
-
-**Recognition**: If the operation breaks easily or has high failure risk, reduce freedom. If multiple approaches are valid, increase freedom.
 
 ## Skill Creation Process
 
@@ -274,27 +237,6 @@ After testing the skill, users may request improvements. Often this happens righ
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
-
-**Advanced iteration (optional):**
-
-When skills grow complex (>3 steps, high-volume output), consider orchestration patterns:
-- **Hub-and-spoke**: Hub skill coordinates, worker skills (`context: fork`) execute in isolation
-- **Context isolation**: Use `context: fork` for noisy operations that would clutter conversation
-
-See orchestration documentation for details. Only apply when complexity warrants it.
-
-**Debugging skill issues:**
-
-When a skill underperforms, isolate the flaw and apply one of these fix types:
-
-| Fix Type | Approach | When to Use |
-|----------|----------|-------------|
-| **Strict** | Add hard constraints | Skill allows unintended behavior |
-| **Context** | Add examples/how-to | Skill is vague or ambiguous |
-| **Structural** | Reorder steps, change workflow | Skill flow is confusing |
-| **Alternative** | Try different approach | Current approach fundamentally flawed |
-
-**Common root causes**: Vague instruction, missing negative constraint, overly complex logic, lack of examples.
 
 **Common improvements:**
 - Strengthen trigger phrases in description
@@ -470,18 +412,6 @@ The user might validate values...
 ```
 
 ## Validation Checklist
-
-### Autonomy Principle
-
-Design skills that complete tasks without asking unnecessary questions.
-
-**Target**: Skills should handle 80-95% of use cases independently, asking questions only for truly ambiguous situations.
-
-**High-autonomy patterns**:
-- Clear input/output contracts (specify what goes in, what comes out)
-- Specific decision criteria (rules governing choices)
-- Concrete examples (what good output looks like)
-- Intelligent defaults (what to do when uncertain)
 
 Before finalizing a skill:
 
@@ -672,22 +602,20 @@ Good for: Complex domains with validation utilities
 
 ## Additional Resources
 
+### Study These Skills
+
+Plugin-dev's skills demonstrate best practices:
+- `../hook-development/` - Progressive disclosure, utilities
+- `../agent-development/` - AI-assisted creation, references
+- `../mcp-integration/` - Comprehensive references
+- `../plugin-settings/` - Real-world examples
+- `../command-development/` - Clear critical concepts
+- `../plugin-structure/` - Good organization
+
 ### Reference Files
 
-For detailed patterns and advanced techniques, consult:
-
-- **`references/anti-patterns.md`** - Complete anti-pattern catalog with recognition questions
-- **`references/autonomy-design.md`** - High-autonomy patterns and testing methodology
-- **`references/description-guidelines.md`** - Description framework and trigger optimization
-- **`references/orchestration-patterns.md`** - Hub-and-spoke, context fork, control flow
-- **`references/progressive-disclosure.md`** - Tier 1/2/3 structure and decision trees
-- **`references/quality-framework.md`** - Quality dimensions and scoring rubrics
-- **`references/skill-creator-original.md`** - Original Claude Code skill-creator methodology
-
-### External Resources
-
-- **Official Docs**: https://code.claude.com/docs/en/skills
-- **Agent Skills Spec**: https://agentskills.io/specification
+For complete skill-creator methodology:
+- **`references/skill-creator-original.md`** - Full original skill-creator content
 
 ## Implementation Workflow
 

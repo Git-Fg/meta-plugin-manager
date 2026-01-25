@@ -15,8 +15,8 @@ Think of it like a shared refrigerator - everything you put in takes space other
 **Application**:
 - Prefer concise examples over verbose explanations
 - Remove Claude-obvious content (what training already covers)
-- Keep descriptions under 100 words (Tier 1 metadata)
-- Keep SKILL.md under 500 lines (Tier 2)
+- Keep descriptions concise with exact trigger phrases (Tier 1 metadata)
+- Keep SKILL.md under 450 lines (Tier 2)
 - Move detailed content to references/ (Tier 3, on-demand)
 
 **Recognition**: If you're explaining something Claude already knows from training, delete it. Every token must earn its place.
@@ -139,10 +139,10 @@ Information architecture as cognitive load management. Reveal complexity progres
 - Purpose: Trigger discovery, convey WHAT/WHEN/NOT
 - Recognition: This is Claude's first impression - make it count
 
-**Tier 2: SKILL.md** (<500 lines, loaded on activation)
+**Tier 2: SKILL.md** (400-450 lines max, loaded on activation)
 - Core implementation with workflows and examples
 - Purpose: Enable task completion
-- Recognition: If approaching 500 lines, move content to Tier 3
+- Recognition: If approaching 450 lines, move content to Tier 3
 
 **Tier 3: References/** (on-demand, loaded when needed)
 - Deep details, troubleshooting, comprehensive guides
@@ -179,35 +179,7 @@ Basic content here.
 
 ---
 
-## Summary: Recognition Questions
-
-Use these questions to apply the philosophy:
-
-**Context Window**:
-- "Does this justify its token cost?"
-- "Is this Claude-obvious?"
-
-**Degrees of Freedom**:
-- "Is this a narrow bridge or open field?"
-- "How much variability exists?"
-
-**Trust AI**:
-- "Would Claude know this without being told?"
-- "Is this expert-only or generic?"
-
-**Local Autonomy**:
-- "Does this apply only to this project?"
-- "What's the most local scope for this configuration?"
-
-**Delta Standard**:
-- "What's the knowledge delta here?"
-- "Is this project-specific or universal?"
-
-**Progressive Disclosure**:
-- "Is this Tier 1, 2, or 3?"
-- "Should this be on-demand instead of always-loaded?"
-
----
+For recognition questions covering all philosophy principles, see [**quick-reference.md**](quick-reference.md).
 
 **Teaching > Prescribing**: Philosophy enables intelligent adaptation. Process prescriptions create brittle systems.
 

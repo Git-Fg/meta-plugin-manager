@@ -4,6 +4,7 @@ description: >
   TypeScript code standards for this team. Use when writing TypeScript,
   reviewing types, or architecting modules. Apply these patterns
   automatically whenever writing TypeScript.
+user-invocable: false
 disable-model-invocation: false
 allowed-tools: Read
 ---

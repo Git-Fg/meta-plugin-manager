@@ -25,6 +25,9 @@ Need to build something?
 
 ## Where to Find Technical Specifications
 
+**For implementation patterns:**
+- [**patterns.md**](patterns.md): Writing style, descriptions, skill structure, script patterns
+
 **For skill/command/hook/subagent creation:**
 - **knowledge-skills**: Agent Skills standard, YAML format, tier structure, quality checklist
 - **knowledge-mcp**: MCP integration patterns, server types, configuration
@@ -45,7 +48,9 @@ Need to build something?
 .claude/
 ├── skills/                      # Skills are PRIMARY building blocks
 │   └── skill-name/
-│       ├── SKILL.md            # <500 lines (Tier 2)
+│       ├── SKILL.md            # 400-450 lines max (Tier 2)
+│       ├── examples/           # Working code examples
+│       ├── scripts/            # Executable utilities
 │       └── references/          # On-demand (Tier 3)
 ├── agents/                      # Context fork isolation
 ├── hooks/                       # Event automation
@@ -62,7 +67,7 @@ Need to build something?
 
 ## Recognition Questions
 
-Use these questions to navigate to the right knowledge:
+For writing style, description quality, and skill structure patterns, see [**patterns.md**](patterns.md).
 
 **"What am I trying to build?"**
 - Skill → knowledge-skills
@@ -72,12 +77,6 @@ Use these questions to navigate to the right knowledge:
 
 **"How do I assess quality?"**
 - Load knowledge-skills → quality-framework.md
-
-**"How do I write a good description?"**
-- Load knowledge-skills → description-guidelines.md
-
-**"What's the philosophical approach?"**
-- Read principles.md
 
 ---
 

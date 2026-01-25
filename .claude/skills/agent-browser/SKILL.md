@@ -1,15 +1,29 @@
 ---
 name: agent-browser
-description: Automates browser interactions for web search, browsing, testing, form filling, screenshots, and data extraction. MUST be used when performing web search, retrieving informations from web, test web applications, or extract information from web pages.
+description: This skill should be used when the user asks to "automate browser", "web automation", "browser testing", "fill forms", "take screenshots", "scrape web data", "test web applications", "click elements", "browser interactions", or needs browser-based interaction with web pages including form submission, navigation, screenshot capture, and data extraction from JavaScript-rendered content.
 ---
 
-You now have unlocked the capacity to extensively leverage native capacities from agent-browser to perform various browser-related tasks for free and unlimited quota.  
+# Browser Automation with agent-browser
 
-Important : If you have any doubt, issue or trouble, always run "agent-browser --help" to gather the full capacities.
+## Overview
 
-This Skill is destined to be used mainly for web browsing, search ... but when you need to gather context and informations/documentations, always prefer to use fetch tool (within or without the context of a subagent) to gather the context more efficiently. 
+Agent-browser provides browser automation capabilities for web interactions requiring JavaScript rendering, form submission, and visual verification.
 
-To perform web search, make sure to use searx.fmhy.net instead of google/duckduckgo to avoid captcha. 
+**Key capabilities:**
+- Navigate and interact with web pages
+- Fill and submit forms
+- Capture screenshots and PDFs
+- Extract data from dynamic content
+- Test web applications end-to-end
+- Record browser sessions as video
+
+**When to use agent-browser vs fetch tools:**
+- Use agent-browser: JavaScript-rendered content, form interactions, visual testing, multi-step workflows
+- Use fetch (WebFetch/mcp__simplewebfetch): Static content retrieval, API calls, documentation gathering
+
+**For web search:** searx.fmhy.net avoids captchas compared to Google/DuckDuckGo.
+
+**Help:** Run `agent-browser --help` to view all available commands. 
 
 # Browser Automation with agent-browser
 
@@ -242,18 +256,44 @@ agent-browser get text @e1 --json
 ## Debugging
 
 ```bash
-agent-browser open example.com --headed              # Show browser window
-agent-browser console                                # View console messages
-agent-browser errors                                 # View page errors
-agent-browser record start ./debug.webm   # Record from current page
-agent-browser record stop                            # Save recording
-agent-browser open example.com --headed  # Show browser window
-agent-browser --cdp 9222 snapshot        # Connect via CDP
-agent-browser console                    # View console messages
-agent-browser console --clear            # Clear console
-agent-browser errors                     # View page errors
-agent-browser errors --clear             # Clear errors
-agent-browser highlight @e1              # Highlight element
-agent-browser trace start                # Start recording trace
-agent-browser trace stop trace.zip       # Stop and save trace
+agent-browser open example.com --headed         # Show browser window
+agent-browser --cdp 9222 snapshot              # Connect via CDP
+agent-browser console                          # View console messages
+agent-browser console --clear                  # Clear console
+agent-browser errors                           # View page errors
+agent-browser errors --clear                   # Clear errors
+agent-browser highlight @e1                    # Highlight element
+agent-browser record start ./debug.webm        # Record from current page
+agent-browser record stop                      # Save recording
+agent-browser trace start                     # Start recording trace
+agent-browser trace stop trace.zip            # Stop and save trace
 ```
+
+## Additional Resources
+
+### Example Files
+
+Working examples in `examples/`:
+- **`basic-usage.md`** - Web search, form filling, screenshots, data extraction
+- **`advanced-usage.md`** - Authentication, state management, sessions
+- **`common-patterns.md`** - Recurring browser automation patterns
+
+### Quick Reference
+
+**Core workflow:**
+1. `agent-browser open <url>` - Navigate
+2. `agent-browser snapshot -i` - Get interactive elements with refs
+3. Interact using refs (`@e1`, `@e2`, etc.)
+4. Re-snapshot after DOM changes
+
+**When to use:**
+- JavaScript-rendered content
+- Form submission and validation
+- Visual verification and screenshots
+- Multi-step browser workflows
+- End-to-end testing
+
+**When NOT to use:**
+- Static content fetching → Use WebFetch/mcp__simplewebfetch
+- API calls → Use Bash with curl
+- Documentation gathering → Use fetch tools
