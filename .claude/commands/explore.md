@@ -5,7 +5,7 @@ argument-hint: [skill-or-command-path]
 
 # Exploratory Analysis
 
-This is a conversational space for thinking through `$1`.
+This is a conversational space for thinking through `$ARGUMENTS`.
 
 The goal here isn't to rush to answers—it's to explore what matters, uncover assumptions, and reach clarity through dialogue.
 
@@ -49,4 +49,4 @@ Stop when:
 
 ## Moving Forward
 
-Begin by understanding what matters most about `$1`, then explore from there. Trust the process—let questions lead where they need to go.
+Begin by understanding what matters most about `$ARGUMENTS`, then explore from there. Trust the process—let questions lead where they need to go.
