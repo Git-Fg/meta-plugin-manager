@@ -1,44 +1,43 @@
 # Test Execution Guide
 
-Guide for executing and managing tests using the runner script.
+Execute and manage tests using the runner script.
 
-## Before Executing Tests
+## Pre-Execution Validation
 
-⚠️ **CRITICAL**: Verify test structure is correct:
+**Recognition**: "Will my test structure be found?"
 
+Verify test structure is correct:
 ```bash
 # Check structure
 tree tests/<your_test>/
 
-# Verify skills exist (if any)
+# Verify skills exist
 ls tests/<your_test>/.claude/skills/*/SKILL.md
 
-# Verify subagents exist (if any)
+# Verify subagents exist
 ls tests/<your_test>/.claude/agents/*.md
 
-# Verify commands exist (if any)
+# Verify commands exist
 ls tests/<your_test>/.claude/commands/*.md
 ```
 
-**If structure is wrong**: See `test-creation.md` for proper structure.
+**If structure is wrong**: Consult `test-creation.md` for proper structure.
 
 ## Test Execution
 
-**Execute** tests using the runner script. Decide:
-- Order of execution (sequential, parallel, targeted)
-- Which tests to run (all, changed, failed, specific phase)
-- When to stop (on failure, after N tests, completion)
+Execute tests using the runner script. Choose:
+- Order (sequential, parallel, targeted)
+- Scope (all, changed, failed, specific phase)
+- Stop conditions (on failure, after N tests, completion)
 
-### Single Test Execution
-
+### Single Test
 ```bash
 python3 scripts/runner.py execute tests/my_test "Execute the test workflow" --max-turns 15
 ```
 
 ### Batch Execution
 
-Use Glob to find tests, then iterate:
-
+Use Glob to find tests:
 ```bash
 # Find existing logs
 Glob: "tests/*/raw_log.json"
@@ -50,42 +49,42 @@ Glob: "tests/*/.claude/skills/*/SKILL.md"
 Glob: "tests/*/.claude/"
 ```
 
-## Prompt Strategy for Test Execution
+## Prompt Strategy
 
 ### Single-Skill Tests
 
-**Prompt template**: `"[Action verb] the [test-name] autonomous workflow"`
+**Template**: `"[Action verb] the [test-name] autonomous workflow"`
 
 **Examples**:
-- `"Execute the file-system-access autonomous workflow"`
-- `"Demonstrate the context-isolation test pattern"`
-- `"Perform the autonomous-skill test and report results"`
+- "Execute the file-system-access autonomous workflow"
+- "Demonstrate the context-isolation test pattern"
+- "Perform the autonomous-skill test and report results"
+
+**Recognition**: "Is this triggering autonomous execution?" → Use imperative voice.
 
 ### Multi-Skill Orchestration Tests
 
-**Warning**: Multi-skill chains require interactive mode OR different design.
+**Warning**: Multi-skill chains need interactive mode OR different design.
 
-**Option A**: Single orchestrator skill with forked workers
-- Create orchestrator skill that calls workers via `context: fork`
-- Use imperative prompts: `"Execute the orchestrator workflow"`
+**Option A**: Orchestrator with forked workers
+- Create orchestrator skill calling workers via `context: fork`
+- Use: `"Execute the orchestrator workflow"`
 
-**Option B**: Separate test executions
+**Option B**: Separate executions
 - Run each skill test independently
 - Aggregate results manually
 
-**Do NOT**: Create skills that just describe calling other skills - they won't execute autonomously.
+**Recognition**: "Am I creating a skill that just describes calling others?" → This won't execute autonomously.
 
 ## Runner Commands
 
 ### Execute Test
-
-Run a fresh test execution:
+Run fresh test execution:
 ```bash
 python3 scripts/runner.py execute <sandbox_path> "<prompt>" --max-turns 15
 ```
 
 ### Analyze Log
-
 Analyze existing test log (offline):
 ```bash
 python3 scripts/runner.py summarize <path_to_raw_log.json>
@@ -112,13 +111,13 @@ Both commands output JSON telemetry:
 }
 ```
 
-## What to Verify
+## Verification Checklist
 
-| Component | Verify Using |
-|-----------|-------------|
-| **Skills** | `tool_counts`, `permission_denials`, completion markers |
-| **Subagents** | Delegation success, `available_agents`, isolation |
-| **Commands** | Trigger behavior, `$ARGUMENTS`, side effects |
-| **Hooks** | Side effects, timing, event matching |
-| **MCP** | `mcp_servers`, MCP tool availability |
-| **Integration** | Multi-component workflows, context transitions |
+| Component | Verify Using | Recognition |
+|-----------|-------------|-------------|
+| **Skills** | `tool_counts`, `permission_denials`, completion markers | "Did skills load and complete successfully?" |
+| **Subagents** | Delegation success, `available_agents`, isolation | "Did delegation work?" |
+| **Commands** | Trigger behavior, `$ARGUMENTS`, side effects | "Did commands execute?" |
+| **Hooks** | Side effects, timing, event matching | "Did hooks fire?" |
+| **MCP** | `mcp_servers`, MCP tool availability | "Are MCP servers connected?" |
+| **Integration** | Multi-component workflows, context transitions | "Do components interact correctly?" |

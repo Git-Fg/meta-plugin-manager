@@ -1,6 +1,6 @@
 ---
-name: ralph-orchestrator-guide
-description: Senior dev guide to Ralph Orchestrator workflow design, preset selection, and orchestration patterns. Must be used when the user asks to "set up a ralph wiggum", "create a ralph loop" or set up ralph in general.
+name: ralph-orchestrator-expert
+description: This skill should be used when the user asks to "set up a ralph wiggum", "create a ralph loop", or needs guidance on Ralph Orchestrator workflow design, preset selection, or orchestration patterns.
 ---
 
 # Ralph Orchestrator Guide
@@ -85,199 +85,25 @@ Anti-patterns to avoid and best practices for each tenet are documented in the r
 
 ---
 
-## Advanced: Adaptive Framework for Unified Analysis
+## Adaptive Framework (Advanced)
 
-The **Adaptive Framework** is a single, powerful workflow that handles multiple analysis types automatically. Unlike presets which are task-specific, the adaptive framework **detects** what type of analysis you need and performs it comprehensively.
+The **Adaptive Framework** provides unified analysis with automatic mode detection and self-healing. Unlike presets which are task-specific, the adaptive framework **detects** what type of analysis you need (Spec Gap Analysis, Global Codebase Audit, or Custom Analysis) and performs it comprehensively.
 
-### What It Does
+**Key capabilities:**
+- Automatic mode detection based on project state
+- Self-healing: finds issues AND fixes them systematically
+- Comprehensive AUDIT_REPORT.md output with verification
 
-**Automatic Mode Detection:**
-1. **Spec Gap Analysis** - If `./specs/` exists, verifies implementation against specifications
-2. **Global Codebase Audit** - If `PROMPT.md` exists, performs dead code/error detection
-3. **Custom Analysis** - Adapts to your specific prompt and context
-
-**Self-Healing Capability:**
-- Finds issues automatically
-- **Fixes issues systematically**
-- Updates documentation
-- Verifies fixes (tests/lint/typecheck)
-- Generates comprehensive report
-
-### Quick Start: Adaptive Framework
-
+**Quick Start:**
 ```bash
-# 1. Create PROMPT.md describing your analysis needs
-cat > PROMPT.md << 'EOF'
-Perform comprehensive analysis of the codebase:
-- Find dead code and unused functions
-- Check for error handling gaps
-- Verify documentation completeness
-- Fix all identified issues
-EOF
-
-# 2. Use the generalized ralph.yml (already in your project root)
-# Check ralph.yml - it should have the adaptive framework configured
-
-# 3. Run the analysis
-ralph emit "audit.start" "Begin comprehensive analysis"
-
-# Ralph will:
-# - Detect analysis type automatically
-# - Analyze the entire codebase
-# - Fix issues found
-# - Generate AUDIT_REPORT.md
+# 1. Create PROMPT.md with your analysis requirements
+# 2. Run: ralph emit "audit.start"
+# Ralph detects analysis type, fixes issues, generates report
 ```
 
-### Framework Structure
+**Use Adaptive Framework when:** comprehensive codebase analysis, spec verification, or automatic fixing is needed. **Use Presets when:** quick, specific tasks (feature, review, debug).
 
-The adaptive framework uses four specialized hats working in coordination:
-
-```yaml
-# From ralph.yml - Adaptive Framework Configuration
-hats:
-  coordinator:     # Orchestrates the entire process
-  analyzer:         # Performs deep analysis
-  remediator:      # Fixes identified issues
-  reporter:         # Documents findings and fixes
-```
-
-**Workflow:**
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Phase 1: Analysis                                         │
-├─────────────────────────────────────────────────────────────┤
-│  Coordinator detects scope → Analyzer deep-dives            │
-└─────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│  Phase 2: Remediation (Self-Healing)                     │
-├─────────────────────────────────────────────────────────────┤
-│  Remediator fixes issues by priority:                      │
-│  • Critical (security, blocking bugs, spec violations)      │
-│  • Major (missing features, architectural issues)          │
-│  • Minor (consistency, polish, documentation)              │
-└─────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│  Phase 3: Reporting                                        │
-├─────────────────────────────────────────────────────────────┤
-│  Reporter generates AUDIT_REPORT.md with findings + fixes  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Adaptive vs Presets: When to Use Each
-
-| Scenario | Use Presets | Use Adaptive |
-|----------|-------------|--------------|
-| **Task Type** | Specific task (feature, review, debug) | Comprehensive analysis + fixing |
-| **Setup Time** | 2 minutes (init preset) | 5 minutes (create PROMPT.md) |
-| **Output** | Task completion | AUDIT_REPORT.md with fixes |
-| **Automation** | Manual fixes | **Automatic fixes** |
-| **Scope** | Focused | Comprehensive |
-| **Best For** | "Build this feature" | "Analyze everything and fix issues" |
-| **Complexity** | Simple | Advanced |
-
-**Example Decision:**
-
-**"I need to implement user authentication"** → Use `feature` preset
-**"My codebase has quality issues, find and fix them all"** → Use Adaptive Framework
-**"I have specs, verify implementation matches"** → Use Adaptive Framework
-**"Debug this specific bug"** → Use `debug` preset
-
-### Creating Effective Specs for Analysis
-
-For spec gap analysis, create specifications following the **SPEC_SETUP_GUIDE.md**:
-
-```yaml
----
-name: event-loop-integration
-category: core
-priority: critical
-acceptance_criteria: 3
----
-
-# Event Loop Integration
-
-## Acceptance Criteria
-
-### AC-1: Event loop starts automatically
-**Priority:** critical
-
-**Given:** Application启动
-**When:** Main function is called
-**Then:** Event loop begins processing events
-
-**Implementation Location:** `src/main.rs:67-89`
-```
-
-**Benefits:**
-- Framework automatically verifies implementation
-- Finds missing features
-- Detects spec violations
-- **Auto-fixes issues found**
-- Updates `gap_analysis` dates
-
-### Output: AUDIT_REPORT.md
-
-The adaptive framework produces a comprehensive report:
-
-```markdown
-# Analysis Results
-
-> Analysis date: 2026-01-24
-> Analysis type: Spec Gap Analysis
-> Items analyzed: 47
-
-## Critical Issues (Blocking/Security)
-- **Spec Violation** — Authentication bypass in src/auth.rs:89
-  - **FIXED**: Added middleware check at line 89
-
-## Major Issues (Functionality/Architecture)
-- **Missing Feature** — Response pagination not implemented
-  - **FIXED**: Implemented cursor-based pagination
-
-## Summary
-- Total issues found: 23
-- Total issues fixed: 23
-- Verification: All fixes passed tests/lint/typecheck
-```
-
-### Integration with TaskList
-
-For complex audits, the framework integrates with TaskList for orchestration:
-
-```yaml
-# The coordinator hat uses TaskList for complex audits
-TaskList tools to:
-- Create tasks for different audit categories
-- Track progress systematically
-- Coordinate parallel analysis where safe
-- Enable persistent state across iterations
-```
-
-### Quality Standards
-
-The adaptive framework enforces:
-- **Exhaustive**: Every file, every spec, every code path
-- **Specific**: File:line references, exact quotes
-- **Objective**: Facts, not opinions
-- **Actionable**: All issues have fixes
-- **Verified**: All fixes pass checks
-
-### When to Choose Adaptive Framework
-
-**Use it when:**
-- ✅ You want comprehensive codebase analysis
-- ✅ You have specs that need verification
-- ✅ You need issues found AND fixed automatically
-- ✅ You want a single workflow for multiple analysis types
-- ✅ You need persistent documentation of findings
-
-**Stick with presets when:**
-- ✅ You have a specific, well-defined task
-- ✅ You want quick setup and execution
-- ✅ You prefer manual control over fixes
-- ✅ You're new to Ralph and want simplicity
+See [references/adaptive-framework.md](references/adaptive-framework.md) for complete guide including framework structure, spec creation, quality standards, and TaskList integration.
 
 ---
 
@@ -287,7 +113,16 @@ The adaptive framework enforces:
 
 Read these reference files when accuracy matters for Ralph orchestration:
 
-#### 1. **references/preset-patterns.md** (Recommended)
+#### 1. **references/adaptive-framework.md** (Comprehensive Analysis)
+- Complete Adaptive Framework guide with automatic mode detection
+- Self-healing capability: finds issues AND fixes them
+- Framework structure, spec creation, quality standards
+- AUDIT_REPORT.md output examples and TaskList integration
+- When to use Adaptive vs Presets
+
+**When**: Comprehensive codebase analysis, spec verification, automatic fixing
+
+#### 2. **references/preset-patterns.md** (Recommended)
 - Multi-agent architecture patterns (Pipeline, Critic-Actor, etc.)
 - Event coordination system - how hats communicate via triggers and publications
 - Understanding hat coordination through events
@@ -296,7 +131,7 @@ Read these reference files when accuracy matters for Ralph orchestration:
 
 **When**: Before Ralph work, or when unsure about patterns
 
-#### 2. **references/quick-start.md** (Recommended)
+#### 3. **references/quick-start.md** (Recommended)
 - 5 most common workflows with step-by-step instructions
 - Copy-pasteable commands and expected outputs
 - Customization patterns and quality gates
@@ -304,7 +139,7 @@ Read these reference files when accuracy matters for Ralph orchestration:
 
 **When**: First time using Ralph, or when needing a refresher on basic workflows
 
-#### 3. **references/workflow-selection.md** (Recommended)
+#### 4. **references/workflow-selection.md** (Recommended)
 - Investigation workflow for unclear tasks
 - How to analyze a codebase and propose workflow options
 - 3 Simple + 2 Standard + 2 Custom workflow categories
@@ -312,7 +147,7 @@ Read these reference files when accuracy matters for Ralph orchestration:
 
 **When**: When user wants to use Ralph but task is unclear
 
-#### 4. **references/prompt-engineering.md** (Recommended)
+#### 5. **references/prompt-engineering.md** (Recommended)
 - Ralph-specific prompt patterns (Fresh Context, Event Emission, etc.)
 - Hat instruction patterns (Builder, Reviewer, Planner hats)
 - Quality gate enforcement techniques
@@ -320,7 +155,7 @@ Read these reference files when accuracy matters for Ralph orchestration:
 
 **When**: To understand how to write effective Ralph prompts
 
-#### 5. **references/troubleshooting.md** (Recommended)
+#### 6. **references/troubleshooting.md** (Recommended)
 - Common issues and diagnostic procedures
 - Event flow debugging techniques
 - Hat coordination problems and solutions
@@ -511,5 +346,3 @@ You can now orchestrate autonomously with Ralph — investigate if needed → ch
 See [references/additional-resources.md](references/additional-resources.md) for complete list of:
 - Core documentation (detailed-content, preset-patterns, quick-start, etc.)
 - Specialized reference materials (workflow-selection, troubleshooting, prompt-engineering)
-
-## RALPH_ORCHESTRATOR_COMPLETE

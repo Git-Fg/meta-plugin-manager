@@ -511,8 +511,8 @@ npm run typecheck
 ```yaml
 # In ralph.yml
 event_loop:
-  completion_promise: "LOOP_COMPLETE"
-  starting_event: "workflow.started"
+  completion_event: "LOOP_COMPLETE"
+  starting_event: "workflow.started"  # Event that begins the loop
 ```
 
 ### Problem: Hat never triggers

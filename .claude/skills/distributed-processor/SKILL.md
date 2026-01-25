@@ -1,6 +1,6 @@
 ---
 name: distributed-processor
-description: "Process data using TaskList and forked skills. Use when: coordinating distributed data processing with isolation. Not for: simple single-process workflows."
+description: This skill should be used when the user asks to "test TaskList with forked skills", "coordinate distributed data processing", "test distributed processing with isolation", or needs guidance on testing TaskList error handling and recovery with forked skills for distributed data processing workflows (not for simple single-process workflows).
 context: fork
 ---
 
@@ -57,5 +57,3 @@ Region C: [records processed, summary]
 
 Total: [combined statistics]
 ```
-
-## PROCESSING_COMPLETE

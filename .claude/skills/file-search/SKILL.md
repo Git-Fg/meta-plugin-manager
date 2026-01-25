@@ -1,6 +1,7 @@
 ---
 name: file-search
-description: Modern file and content search using fd, ripgrep (rg), and fzf. Must be used when performing analysis of a long txt file and/or performing primal exploration from large codebases.
+description: This skill should be used when the user asks to "search large codebase", "analyze long text file", "perform primal exploration", "search with fd/ripgrep/fzf", or needs guidance on modern file search using fd, ripgrep (rg), and fzf for analysis of large files and codebases.
+user-invocable: true
 ---
 # File Search
 

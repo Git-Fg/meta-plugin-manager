@@ -65,7 +65,7 @@ hats:
       2. Refactor for clarity, DRY, and maintainability
       3. Run tests to confirm still passing
       4. If more tests needed: publish refactor.done
-      5. If feature complete: publish cycle.complete → LOOP_COMPLETE
+      5. If feature complete: publish cycle.complete → loop finishes
 ```
 
 ---
@@ -242,7 +242,7 @@ hats:
       Go through each acceptance criterion.
       Run the implementation against examples.
 
-      If all pass: LOOP_COMPLETE
+      If all pass: loop finishes
       If violations: publish spec.violated with details
 ```
 
@@ -270,7 +270,7 @@ hats:
       3. Give CLEAR, SPECIFIC instructions to the driver
       4. Do NOT write code—describe what to write
 
-      If task complete: publish mob.complete → LOOP_COMPLETE
+      If task complete: publish mob.complete → loop finishes
       Otherwise: publish direction.set with instructions
 
   driver:
@@ -369,7 +369,7 @@ hats:
       1. Implement the fix
       2. Verify the bug is resolved
       3. Add a regression test
-      4. Publish fix.applied → LOOP_COMPLETE
+      4. Publish fix.applied → loop finishes
 ```
 
 ---
@@ -443,7 +443,7 @@ hats:
       4. Make the minimal change
       5. Verify nothing broke
 
-      LOOP_COMPLETE when done.
+      loop finishes when done.
 ```
 
 ---
@@ -473,7 +473,7 @@ hats:
       Subsequent runs (improvement.verified):
       - Re-measure after optimization
       - Compare to baseline
-      - If improved: LOOP_COMPLETE
+      - If improved: loop finishes
       - If not improved or regressed: report findings
 
   analyst:
@@ -575,7 +575,7 @@ hats:
       - Write tests from the usage examples
       - Document any implementation constraints
 
-      LOOP_COMPLETE when done.
+      loop finishes when done.
 ```
 
 ---
@@ -640,7 +640,7 @@ hats:
       Run every example in the docs.
       Check every edge case mentioned.
 
-      LOOP_COMPLETE when all docs are accurate.
+      loop finishes when all docs are accurate.
 ```
 
 ---
@@ -710,7 +710,7 @@ hats:
       - Write regression test
       - Document in post-mortem
 
-      LOOP_COMPLETE when fix is deployed.
+      loop finishes when fix is deployed.
 ```
 
 ---
@@ -781,7 +781,7 @@ hats:
       - Verify nothing broke
 
       If issues: publish contract.rollback
-      If successful: LOOP_COMPLETE
+      If successful: loop finishes
 ```
 
 ---
@@ -807,7 +807,7 @@ hats:
   confession_handler:
     triggers: ["confession.clean", "confession.issues_found"]
     publishes: ["build.task", "escalate.human"]
-    # Emits LOOP_COMPLETE only when confidence >= 80 and nothing material is found.
+    # Emits loop finishes only when confidence >= 80 and nothing material is found.
 ```
 
 ---
@@ -847,7 +847,7 @@ hats:
     instructions: |
       <Clear instructions for this role>
 
-      End with: LOOP_COMPLETE when fully done
+      End with: loop finishes when fully done
 ```
 
 **Event naming conventions:**

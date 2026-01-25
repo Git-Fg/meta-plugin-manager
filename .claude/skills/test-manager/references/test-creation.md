@@ -1,69 +1,61 @@
 # Test Creation Guide
 
-Complete guide for creating effective tests for .claude development.
+Create effective tests for .claude development.
 
 ## Quick Start: Create Your First Test
 
-### Step-by-Step Process
-
-**Step 1: Create Test Directory**
+### Directory Setup
 ```bash
 mkdir -p tests/my_first_test/.claude/skills
 mkdir -p tests/my_first_test/.claude/agents
 mkdir -p tests/my_first_test/.claude/commands
 ```
 
-**Step 2: Create Component Files**
+### Component Files
 ```bash
-# Create skill (optional, can have multiple)
 touch tests/my_first_test/.claude/skills/my-test-skill/SKILL.md
-
-# Create subagent (optional, can have multiple)
 touch tests/my_first_test/.claude/agents/my-agent.md
-
-# Create command (optional, can have multiple)
 touch tests/my_first_test/.claude/commands/my-command.md
 ```
 
-**Step 3: Verify Structure**
+### Structure Validation
 ```bash
 tree tests/my_first_test/
-# Should show:
-# tests/my_first_test/
-# └── .claude/
-#     ├── skills/
-#     │   └── my-test-skill/
-#     │       └── SKILL.md
-#     ├── agents/
-#     │   └── my-agent.md
-#     └── commands/
-#         └── my-command.md
 ```
 
-**Step 4: Execute Test**
+Expected output:
+```
+tests/my_first_test/
+└── .claude/
+    ├── skills/my-test-skill/SKILL.md
+    ├── agents/my-agent.md
+    └── commands/my-command.md
+```
+
+### Execute Test
 ```bash
 python3 scripts/runner.py execute tests/my_first_test "Execute my test" --max-turns 15
 ```
 
-**Step 5: Verify Components Loaded**
+### Verify Components Loaded
 Check telemetry for:
 ```json
 {
-  "available_skills": ["my-test-skill"],      // Skills found!
-  "available_agents": ["my-agent"],           // Subagents found!
-  "available_commands": ["my-command"]        // Commands found!
+  "available_skills": ["my-test-skill"],
+  "available_agents": ["my-agent"],
+  "available_commands": ["my-command"]
 }
 ```
 
-**If components are missing**: Check your directory structure
+**Recognition**: "Do my telemetry values match expected components?" → If no, check directory structure.
 
 ## Test Creation Principles
 
 ### Core Principle: Test Real Conditions
 
-**Tests should mirror actual production usage**, not artificial scenarios.
+**Tests mirror actual production usage, not artificial scenarios.**
 
-**Good test** (represents real condition):
+**Good test** (real condition):
 ```yaml
 ---
 name: file-organizer
@@ -77,8 +69,6 @@ Execute autonomously:
 2. Scan for test files (*.test.*, *.spec.*)
 3. Scan for documentation (*.md, *.txt)
 4. Report current organization state
-
-## ORGANIZER_COMPLETE
 ```
 
 **Bad test** (artificial condition):
@@ -90,120 +80,121 @@ description: "Test file counting"
 
 Count the following specific files: file1.txt, file2.txt, file3.txt
 ```
-→ Tests contrived scenarios, not real usage
+
+**Why good**: Tests real-world file organization patterns.
+**Why bad**: Tests contrived scenario, not real usage.
 
 ### Test Design Checklist
 
-Before creating a test, verify:
+**Recognition questions:**
 
-**Representative of Real Conditions**:
-- [ ] Tests actual workflow, not contrived scenario
-- [ ] Uses realistic data/fixtures (not "test1", "test2")
-- [ ] Mirrors production environment structure
-- [ ] Exercises real tool capabilities
-
-**Autonomous Execution**:
-- [ ] Skill can complete without user intervention
-- [ ] Clear completion marker present
-- [ ] No decision points that require user input
-- [ ] Self-contained (no external dependencies)
-
-**Appropriate Constraints**:
-- [ ] Specifies WHAT to achieve, not HOW
-- [ ] Provides context/purpose, not step-by-step
-- [ ] Allows Claude's intelligence to work
-- [ ] Includes examples for style-dependent tasks
+| Category | Recognition Question |
+|----------|---------------------|
+| **Real Conditions** | "Could this happen in production?" |
+| **Realistic Data** | "Am I using 'test1.txt' or real filenames?" |
+| **Autonomous Execution** | "Will this complete without user input?" |
+| **Completion** | "Does this skill output a clear completion marker?" |
+| **Appropriate Constraints** | "Does this specify WHAT or HOW?" |
 
 ### Sandbox Structure
 
 ```
 tests/<test_name>/
 ├── .claude/
-│   ├── skills/              # For skill tests (can have multiple)
-│   │   ├── skill1/
-│   │   │   └── SKILL.md
-│   │   └── skill2/
-│   │       └── SKILL.md
-│   ├── agents/              # For subagent tests (can have multiple)
+│   ├── skills/              # Multiple skills allowed
+│   │   ├── skill1/SKILL.md
+│   │   └── skill2/SKILL.md
+│   ├── agents/              # Multiple agents allowed
 │   │   ├── agent1.md
 │   │   └── agent2.md
-│   ├── commands/            # For command tests (can have multiple)
+│   ├── commands/            # Multiple commands allowed
 │   │   ├── command1.md
 │   │   └── command2.md
-│   ├── settings.json        # For configuration tests
-│   └── .mcp.json           # For MCP tests
-└── test_fixtures/           # Realistic test data (optional)
+│   ├── settings.json
+│   └── .mcp.json
+└── test_fixtures/           # Realistic test data
     ├── src/
     ├── tests/
     └── docs/
 ```
 
-**Notes**:
-- A test can have 0, 1, or multiple of each component type
-- All components in a test folder are available during execution
-- Use multiple components when testing orchestration, nested workflows, or interactions
+**Key points:**
+- Mix and match components as needed
+- All components in test folder are available
+- Use multiple components for orchestration tests
 
-### When to Use Multiple Components
+### Component Strategy
 
-**Single Component** (Simple Test):
-- Testing one skill in isolation
-- Testing basic subagent behavior
-- Testing individual commands
-- Quick validation tests
+**Single component** (isolation):
+- One skill, agent, or command
+- Basic validation
+- Quick tests
 
-**Multiple Components** (Complex Test):
-- Testing orchestrator calling workers
-- Testing nested workflows (skill → subagent → skill)
-- Testing skill-subagent interactions
-- Testing command chains
-- Testing hub-and-spoke patterns
+**Multiple components** (orchestration):
+- Skill calling subagents
+- Command chains
+- Hub-and-spoke patterns
 
-**Example Use Cases**:
-- **TaskList orchestration**: orchestrator skill + worker skills
-- **Multi-skill workflows**: main skill + helper skills
-- **Subagent composition**: analyzer agent + reviewer agent
-- **Command automation**: deploy command + rollback command
+**Use cases:**
+- **TaskList**: orchestrator skill + worker skills
+- **Multi-skill**: main skill + helper skills
+- **Subagent composition**: analyzer + reviewer
+- **Command automation**: deploy + rollback
 
 ### Compliance Verification
 
-Before creating components, invoke knowledge skills:
-- Testing/creating skills? → `knowledge-skills` (Agent Skills standard + autonomy patterns)
-- Testing/creating agents? → `agent-development` (agent patterns)
-- Testing/creating hooks? → `knowledge-hooks` (event patterns)
-- Testing/creating MCP? → `knowledge-mcp` (MCP standards)
+Before creating components, consult:
+- Skills → `skill-development` (autonomy patterns)
+- Agents → `agent-development` (agent patterns)
+- Hooks → `hook-development` (event patterns)
+- MCP → `mcp-development` (MCP standards)
 
-**Always apply autonomous design patterns** from knowledge-skills for reliable non-interactive test execution.
+**Apply autonomous design patterns** for reliable non-interactive execution.
 
-## Common Mistakes to Avoid
+## Common Mistakes
 
 ### Mistake 1: Wrong Directory
-❌ **DON'T**:
+
+❌ **Wrong**:
 ```bash
-# Creating components in production directory
 mkdir -p .claude/skills/my-test-skill
 mkdir -p .claude/agents/my-agent
 ```
 
-✅ **DO**:
+✅ **Correct**:
 ```bash
-# Creating components in test-specific directory
 mkdir -p tests/my_test/.claude/skills/my-test-skill
 mkdir -p tests/my_test/.claude/agents/my-agent
 mkdir -p tests/my_test/.claude/commands/my-command
 ```
 
-### Mistake 2: Forgetting to Validate
-❌ **DON'T**: Run test without checking structure
-✅ **DO**: Verify with `tree` or `ls` before execution
+**Why wrong**: Components in production directory are invisible to test runner.
+**Why correct**: Test runner looks in `<test>/.claude/` only.
 
-### Mistake 3: Missing Completion Marker
-❌ **DON'T**: Create skill without `## SKILL_COMPLETE`
-✅ **DO**: Always include completion marker
+### Mistake 2: Skipping Validation
+
+❌ **Wrong**: Execute test without structure check
+✅ **Correct**: Verify with `tree` or `ls` before execution
+
+**Why**: Fast feedback prevents wasted test runs.
+
+### Mistake 3: Missing Output Structure
+
+❌ **Wrong**: Skill without clear completion marker
+✅ **Correct**: Always include structured output
+
+**Why**: Tests need verifiable end states.
 
 ### Mistake 4: Wrong Prompt Format
-❌ **DON'T**: "Use the my-test-skill skill"
-✅ **DO**: "Execute the my-test-skill autonomous workflow"
 
-### Mistake 5: Not Checking Telemetry
-❌ **DON'T**: Assume test ran correctly
-✅ **DO**: Check `available_skills` and `permission_denials`
+❌ **Wrong**: "Use the my-test-skill skill"
+✅ **Correct**: "Execute the my-test-skill autonomous workflow"
+
+**Why**: Imperative prompts trigger autonomous execution.
+
+### Mistake 5: Ignoring Telemetry
+
+❌ **Wrong**: Assume test success
+✅ **Correct**: Check `available_skills` and `permission_denials`
+
+**Why**: Telemetry reveals component loading and permission issues.

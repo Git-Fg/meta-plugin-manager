@@ -85,7 +85,7 @@ parse $ARGUMENTS to extract parameters
 ```yaml
 # Hub skill
 Call: worker-skill (context: fork)
-Parse output for "## WORKER_COMPLETE" or "## WORKER_FAILED"
+Parse output for completion indicators
 Handle accordingly
 ```
 

@@ -9,44 +9,44 @@ Testing specialist for `.claude/` development. Create, execute, analyze, and man
 
 ## ⚠️ CRITICAL: Test Skill Structure
 
-**BEFORE CREATING ANY TEST SKILLS, READ THIS:**
+**Recognition**: "Can the test runner find my components?"
 
-### ❌ WRONG - Skills placed here:
+### Directory Structure
+
+**Production directory** (skills not found):
 ```
-/path/to/project/.claude/skills/          # Production skills directory
+/path/to/project/.claude/skills/
 ```
 
-### ✅ CORRECT - Skills placed here:
+**Test directory** (skills properly isolated):
 ```
 /path/to/project/tests/<test_name>/
 └── .claude/
-    ├── skills/              # For skill tests (can have multiple)
-    │   ├── skill1/
-    │   │   └── SKILL.md
-    │   └── skill2/
-    │       └── SKILL.md
-    ├── agents/              # For subagent tests (can have multiple)
+    ├── skills/
+    │   ├── skill1/SKILL.md
+    │   └── skill2/SKILL.md
+    ├── agents/
     │   ├── agent1.md
     │   └── agent2.md
-    ├── commands/            # For command tests (can have multiple)
+    ├── commands/
     │   ├── command1.md
     │   └── command2.md
-    ├── settings.json        # For configuration tests
-    └── .mcp.json           # For MCP tests
+    ├── settings.json
+    └── .mcp.json
 ```
 
-### Why This Matters
-- Test runner creates sandbox at `tests/<test_name>/`
-- Runner looks for skills in `<sandbox>/.claude/skills/`
-- Skills in root `.claude/skills/` won't be found
-- **Always verify**: Check `available_skills` in telemetry
+**Key points:**
+- Runner creates sandbox at `tests/<test_name>/`
+- Skills must live in `<sandbox>/.claude/skills/`
+- Root `.claude/skills/` is invisible to test runner
 
-### Quick Validation
-Before executing any test:
+**Quick check**:
 ```bash
 ls tests/<test_name>/.claude/skills/<skill>/
-# Should show: SKILL.md
+# Must show: SKILL.md
 ```
+
+**Validation**: Check `available_skills` in telemetry after execution.
 
 ## Runner Tools
 
@@ -60,7 +60,7 @@ python3 scripts/runner.py execute <sandbox_path> "<prompt>" --max-turns 15
 python3 scripts/runner.py summarize <path_to_raw_log.json>
 ```
 
-### Output Telemetry
+### Telemetry Output
 ```json
 {
   "status": "ANALYZED" | "EXECUTED",
@@ -81,21 +81,19 @@ python3 scripts/runner.py summarize <path_to_raw_log.json>
 
 ## What to Test
 
-| Component | Verify Using |
-|-----------|-------------|
-| **Skills** | `tool_counts`, `permission_denials`, completion markers |
-| **Subagents** | Delegation success, `available_agents`, isolation |
-| **Commands** | Trigger behavior, `$ARGUMENTS`, side effects |
-| **Hooks** | Side effects, timing, event matching |
-| **MCP** | `mcp_servers`, MCP tool availability |
-| **Integration** | Multi-component workflows, context transitions |
+| Component | Verify Using | Recognition |
+|-----------|-------------|-------------|
+| **Skills** | `tool_counts`, `permission_denials`, completion markers | "Did skills load and complete successfully?" |
+| **Subagents** | Delegation success, `available_agents`, isolation | "Did delegation work?" |
+| **Commands** | Trigger behavior, `$ARGUMENTS`, side effects | "Did commands execute?" |
+| **Hooks** | Side effects, timing, event matching | "Did hooks fire?" |
+| **MCP** | `mcp_servers`, MCP tool availability | "Are MCP servers connected?" |
+| **Integration** | Multi-component workflows, context transitions | "Do components interact correctly?" |
 
 ## References
 
-- **[test-creation.md](references/test-creation.md)**: Quick start guide, test creation principles, common mistakes
-- **[test-patterns.md](references/test-patterns.md)**: Autonomous test patterns, degrees of freedom, examples
+- **[test-creation.md](references/test-creation.md)**: Quick start, creation principles, common mistakes
+- **[test-patterns.md](references/test-patterns.md)**: Autonomous patterns, degrees of freedom, examples
 - **[test-execution.md](references/test-execution.md)**: Execution strategies, prompt patterns, batch testing
-
-## Test Manager Complete
 
 ## TEST_MANAGER_COMPLETE

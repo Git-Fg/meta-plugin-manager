@@ -1,12 +1,12 @@
-# Test Design Patterns and Principles
+# Test Design Patterns
 
-Detailed guidance for creating effective autonomous tests for .claude/ development.
+Create effective autonomous tests for .claude/ development.
 
 ## Core Principle: Test Real Conditions
 
-**Tests should mirror actual production usage**, not artificial scenarios.
+**Tests mirror actual production usage, not artificial scenarios.**
 
-**Good test** (represents real condition):
+**Good test** (real condition):
 ```yaml
 ---
 name: file-organizer
@@ -20,8 +20,6 @@ Execute autonomously:
 2. Scan for test files (*.test.*, *.spec.*)
 3. Scan for documentation (*.md, *.txt)
 4. Report current organization state
-
-## ORGANIZER_COMPLETE
 ```
 
 **Bad test** (artificial condition):
@@ -33,29 +31,20 @@ description: "Test file counting"
 
 Count the following specific files: file1.txt, file2.txt, file3.txt
 ```
-→ Tests contrived scenarios, not real usage
 
-## Test Design Checklist
+**Why good**: Tests real-world file organization.
+**Why bad**: Tests contrived scenario, not real usage.
 
-Before creating a test, verify:
+## Test Design Recognition
 
-**Representative of Real Conditions**:
-- [ ] Tests actual workflow, not contrived scenario
-- [ ] Uses realistic data/fixtures (not "test1", "test2")
-- [ ] Mirrors production environment structure
-- [ ] Exercises real tool capabilities
+**Recognition questions:**
 
-**Autonomous Execution**:
-- [ ] Skill can complete without user intervention
-- [ ] Clear completion marker present
-- [ ] No decision points that require user input
-- [ ] Self-contained (no external dependencies)
-
-**Appropriate Constraints**:
-- [ ] Specifies WHAT to achieve, not HOW
-- [ ] Provides context/purpose, not step-by-step
-- [ ] Allows Claude's intelligence to work
-- [ ] Includes examples for style-dependent tasks
+| Category | Recognition Question | Action |
+|----------|---------------------|--------|
+| **Real Conditions** | "Could this happen in production?" | If no, redesign test |
+| **Realistic Data** | "Am I using 'test1.txt' or real filenames?" | Replace artificial data |
+| **Autonomous Execution** | "Will this complete without user input?" | Add completion markers |
+| **Appropriate Constraints** | "Does this specify WHAT or HOW?" | Change HOW → WHAT |
 
 ## Sandbox Structure
 
@@ -75,7 +64,7 @@ tests/<test_name>/
 
 ## Autonomous Test Skill Pattern
 
-### Template for Real-Condition Tests
+### Template
 
 ```yaml
 ---
@@ -88,35 +77,35 @@ context: fork  # For isolation in most tests
 
 You are in a realistic <condition>. Your task is to <outcome>.
 
-**Context**: <real-world scenario description>
+**Context**: <real-world scenario>
 **Resources available**: <tools, skills, agents>
 **Expected output**: <specific format>
 
 Execute autonomously and report findings.
-
-## TEST_COMPLETE
 ```
 
-### Degrees of Freedom in Test Design
+## Degrees of Freedom
 
-**High Freedom** (Preferred for most tests):
-- Provide scenario and let Claude decide approach
-- "Analyze this codebase for security issues"
+**High Freedom** (preferred):
+- Provide scenario, let Claude decide approach
+- Example: "Analyze this codebase for security issues"
 - Claude chooses what to check, how to report
 
-**Medium Freedom** (When specific validation needed):
+**Medium Freedom** (specific validation):
 - Suggest structure with flexibility
-- "Check for OWASP Top 10 vulnerabilities; adapt based on what you find"
-- Claude can add/remove checks based on context
+- Example: "Check for OWASP Top 10 vulnerabilities; adapt based on context"
+- Claude can customize checks
 
-**Low Freedom** (Only for deterministic compliance):
-- Specific checklist when outcome must be consistent
-- "Verify these specific files exist: .env.example, README.md, LICENSE"
-- Use sparingly - only when reproducibility matters
+**Low Freedom** (deterministic compliance):
+- Specific checklist for consistent outcomes
+- Example: "Verify these files exist: .env.example, README.md, LICENSE"
+- Use sparingly
 
-### Real Condition Examples
+**Recognition**: "What breaks if Claude chooses differently?" → More breaks = lower freedom.
 
-**File System Test** (not "test1.txt", "test2.txt"):
+## Real Condition Examples
+
+**File System Test** (realistic):
 ```yaml
 ---
 name: project-file-scanner
@@ -136,13 +125,11 @@ You are analyzing a real project's file organization.
 
 **Report**:
 - Organization pattern used
-- Any misplaced files (sources in wrong locations)
+- Any misplaced files
 - Recommendations for improvement
-
-## TEST_COMPLETE
 ```
 
-**vs** Artificial Test (AVOID):
+**vs Artificial Test** (avoid):
 ```yaml
 ---
 name: file-counter-bad
@@ -155,28 +142,30 @@ Count these files:
 1. test1.txt
 2. test2.txt
 3. test3.txt
-
-## TEST_COMPLETE
 ```
 
-### Prompt Patterns for Autonomous Execution
+**Why avoid**: Tests nothing meaningful about real-world organization.
 
-**Good prompts** (real conditions, autonomous):
-- `"Audit this real project for security vulnerabilities"`
-- `"Organize these actual project files by type"`
-- `"Analyze this codebase's architecture patterns"`
+## Prompt Patterns
 
-**Bad prompts** (artificial, over-prescriptive):
-- `"Test if skill can count to 5"` → Artificial scenario
-- `"Step 1: Do X. Step 2: Do Y. Step 3: Do Z."` → Over-prescriptive
-- `"Verify that exactly these 3 things exist"` → Too rigid
+**Good prompts** (autonomous):
+- "Audit this real project for security vulnerabilities"
+- "Organize these actual project files by type"
+- "Analyze this codebase's architecture patterns"
 
-### When to Be Prescriptive
+**Bad prompts** (artificial):
+- "Test if skill can count to 5" → Artificial scenario
+- "Step 1: Do X. Step 2: Do Y. Step 3: Do Z." → Over-prescriptive
+- "Verify exactly these 3 things exist" → Too rigid
 
-**Use Low Freedom (specific steps) when**:
-- Testing critical compliance requirements
-- Validating exact behavior matters
-- Reproducibility is essential
+**Recognition**: "Would Claude need to think or just recognize?" → Structure for recognition.
+
+## Prescriptive vs Flexible
+
+**Use Low Freedom** (specific steps):
+- Critical compliance requirements
+- Exact behavior validation
+- Reproducibility essential
 
 **Example**:
 ```yaml
@@ -188,46 +177,46 @@ context: fork
 
 ## TEST_START
 
-Verify these files exist (compliance requirement):
+Verify these files exist (compliance):
 - [ ] LICENSE (MIT, Apache, or GPL)
-- [ ] .env.example (environment template)
-- [ ] SECURITY.md (security policy)
-- [ ] CONTRIBUTING.md (contributor guide)
+- [ ] .env.example (template)
+- [ ] SECURITY.md (policy)
+- [ ] CONTRIBUTING.md (guide)
 
 Report missing items with severity.
-
-## TEST_COMPLETE
 ```
 
-**Use High/Medium Freedom when**:
-- Exploratory testing (code analysis, architecture review)
-- Creative tasks (documentation generation, design)
-- Complex decision-making (refactoring strategies)
+**Use High/Medium Freedom**:
+- Exploratory testing
+- Creative tasks
+- Complex decision-making
 
-## Test Anti-Patterns
+## Anti-Pattern Recognition
 
-**Anti-Pattern 1: Artificial Test Data**
+### Anti-Pattern 1: Artificial Data
+
+❌ **Bad**:
 ```yaml
-# BAD
 ---
 name: file-counter
 ---
 Count test1.txt, test2.txt, test3.txt
 ```
-→ Tests contrived scenario, not real usage
 
-**Fix**: Use real project structure
+✅ **Good**:
 ```yaml
-# GOOD
 ---
 name: project-scanner
 ---
 Scan project for file organization patterns
 ```
 
-**Anti-Pattern 2: Over-Prescriptive Steps**
+**Recognition**: "Am I testing real capability or contrived scenario?" → Choose real capability.
+
+### Anti-Pattern 2: Over-Prescriptive Steps
+
+❌ **Bad**:
 ```yaml
-# BAD
 ---
 name: workflow-test
 ---
@@ -235,11 +224,9 @@ Step 1: Read file.txt
 Step 2: Count lines
 Step 3: Report number
 ```
-→ No room for Claude's intelligence
 
-**Fix**: Provide outcome, let Claude decide approach
+✅ **Good**:
 ```yaml
-# GOOD
 ---
 name: code-analyzer
 ---
@@ -247,21 +234,24 @@ Analyze codebase for complexity patterns
 Report: Average complexity, outliers, recommendations
 ```
 
-**Anti-Pattern 3: Testing Trivial Capabilities**
+**Recognition**: "Does this allow Claude's intelligence?" → Remove prescriptive steps.
+
+### Anti-Pattern 3: Trivial Capabilities
+
+❌ **Bad**:
 ```yaml
-# BAD
 ---
 name: hello-test
 ---
 Say "hello, world"
 ```
-→ Tests nothing meaningful
 
-**Fix**: Test real capability in realistic context
+✅ **Good**:
 ```yaml
-# GOOD
 ---
 name: service-health-check
 ---
 Check if services are running and report status
 ```
+
+**Recognition**: "Does this test meaningful capability?" → If no, redesign.

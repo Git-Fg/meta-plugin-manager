@@ -1,14 +1,16 @@
 ---
 name: learn-mdrules
-description: "Diagnose conversation issues and improve project rules. Use when: analyzing previous conversations to identify what went wrong, proposing specific rules for CLAUDE.md or .claude/rules/ to prevent future issues."
+description: This skill should be used when the user asks to "diagnose conversation issues", "improve project rules", "analyze what went wrong", "propose rules for CLAUDE.md", or needs guidance on preventing future issues through better project rules in CLAUDE.md or .claude/rules/.
 user-invocable: true
 ---
 
 # MD Metacritic
 
-You are the **MD Metacritic**, an expert execution skill that autonomously investigates conversations to diagnose issues and improve project rules for preventing future problems.
+This is the **MD Metacritic**, an expert execution skill that autonomously investigates conversations to diagnose issues and improve project rules for preventing future problems.
 
-**Execution Mode**: You will be manually invoked by the user. Your job is to:
+You must NOT use "agents", when the users ask you to read the history it means look back at our actual conversation. 
+
+**Execution Mode**: This skill is manually invoked by the user. Execute:
 1. **Autonomously investigate** the previous conversation and all available context
 2. **Diagnose issues** that could have been prevented with better project rules
 3. **Intelligently determine** which questions to ask and when
@@ -40,7 +42,7 @@ Read these URLs when accuracy matters for diagnosing project rule gaps:
 - Working on familiar codebase structure
 - Recently read and documentation is stable
 
-**Trust your judgment**: You know when validation is needed for accurate diagnosis.
+Apply judgment: Validation is needed for accurate diagnosis when uncertain about current best practices.
 
 ## The Loop
 
@@ -88,13 +90,13 @@ Should be in: CLAUDE.md → Testing section
 
 ### Phase 2: Iterative Clarification
 
-**Goal**: Ask targeted questions to refine your understanding through iterative dialogue.
+**Goal**: Ask targeted questions to refine understanding through iterative dialogue.
 
 **When to Ask Questions**:
 - Investigation reveals ambiguity or multiple possibilities
-- Need user preference on approach, placement, or wording
-- Want to confirm understanding of issues
-- Need clarification on priorities or context
+- User preference needed on approach, placement, or wording
+- Understanding of issues needs confirmation
+- Clarification needed on priorities or context
 
 **Question Strategy**:
 - Use `AskUserQuestions` tool when available to ask one question at a time
@@ -112,7 +114,7 @@ Should be in: CLAUDE.md → Testing section
 **When NOT to Ask Questions**:
 - Investigation provides complete clarity
 - Issue has one obvious solution
-- User explicitly requested autonomous action
+- Autonomous action explicitly requested by user
 
 ### Phase 3: Autonomous Rule Formulation
 
@@ -229,21 +231,21 @@ Dependencies managed automatically
 - **Diagnose first**: Understand root causes before proposing solutions
 - **Reason about patterns**: Each issue reveals insights about missing project knowledge
 - **Focus on preventability**: What rule would have stopped this issue?
-- **Be intelligent**: Use your judgment to determine what questions to ask and when
+- **Apply intelligence**: Use judgment to determine what questions to ask and when
 
 ### Question Strategy
 - **Investigate first**: Build understanding through thorough scanning
-- **Ask what matters**: Determine which questions are relevant based on your investigation
-- **Use AskUserQuestions**: Ask one question at a time when you need clarification
-- **Adapt to context**: Let the situation guide your questioning approach
-- **Trust your judgment**: Ask questions that will genuinely help resolve the issues
-- **Be flexible**: Adjust your strategy based on what you learn from each response
+- **Ask what matters**: Determine which questions are relevant based on investigation
+- **Use AskUserQuestions**: Ask one question at a time when clarification is needed
+- **Adapt to context**: Let the situation guide the questioning approach
+- **Build understanding**: Ask questions that will genuinely help resolve the issues
+- **Remain flexible**: Adjust strategy based on what emerges from each response
 - **Consider orchestration**: For multiple changes, ask about creating a systematic plan
 
 ### Rule Propositions
 - **Show the actual text**: Propositions must display exact words to insert
 - **No abstract categories**: Don't use "Add Documentation" — describe the actual rule
-- **Immediately actionable**: User should see exactly what will be written
+- **Immediately actionable**: Display exactly what will be written
 - **Tailored to issue**: Generic boilerplate is worse than targeted fixes
 - **Offer orchestration**: Include "Apply Full Changes" option using TaskList tools when multiple changes are needed
 - **Plan-based implementation**: For comprehensive updates, propose systematic plan with task orchestration
@@ -252,7 +254,7 @@ Dependencies managed automatically
 - **One issue per iteration**: Surgical fixes, not wholesale rewrites
 - **No hallucination**: Only critique what actually happened or is evident
 - **User-guided refinement**: If user selects "Other" or provides input, incorporate it
-- **Persistent value**: Each rule should prevent recurring issues
+- **Ensure persistent value**: Each rule should prevent recurring issues
 
 ## Examples
 
@@ -376,5 +378,3 @@ Creates targeted propositions for each addressed issue type, showing exactly wha
 - Dependencies exist between updates
 - User wants systematic implementation
 - Complex coordination required
-
-## MD_METACRITIC_COMPLETE

@@ -62,52 +62,47 @@ This document clarifies two independent concepts:
 
 ---
 
-## Degrees of Freedom: Matching Specificity to Context
+## Degrees of Freedom: Default to Highest Freedom
 
-### What Are Degrees of Freedom?
+### The Default: High Freedom
 
-Degrees of freedom determine HOW SPECIFIC our instructions are:
+**Consider starting with HIGH FREEDOM unless a clear constraint exists.**
 
-**High Freedom** - Provide principles, trust judgment
-- "Consider approaches based on context"
-- Multiple valid ways to execute
-- Let Claude determine method
-
-**Medium Freedom** - Provide structure with flexibility
-- "Use this pattern, adapting as needed"
-- Suggested approach with room for variation
-- Balance guidance and autonomy
-
-**Low Freedom** - Prescriptive steps
-- "Execute steps 1-3 precisely"
-- Specific sequence required
-- Minimal variation allowed
-
-### When to Use Each
-
-**High Freedom (Trust AI Intelligence):**
-- When multiple valid approaches exist
-- When context determines best path
-- Creative or analytical tasks
-- Exploration and investigation
-
-**Medium Freedom (Balanced Guidance):**
-- When a preferred pattern exists
-- Standard workflows with variation
-- Complex but manageable tasks
-
-**Low Freedom (Prescriptive):**
-- Destructive operations (delete, deploy)
+Reduce freedom when:
+- Operations are destructive (irreversible)
 - Safety-critical systems
-- Irreversible consequences
 - External system requirements
+- Error consequences are severe
+
+**Default pattern:**
+- Provide principles and context
+- Trust Claude's intelligence
+- Let Claude determine approach
+- Multiple valid ways to execute
+
+**Reduce when justified:**
+- Operations are fragile or error-prone
+- Consistency is critical
+- Irreversible consequences
+- External system sequences required
 
 ### Recognition Questions
 
 **Ask:**
-- "How many valid ways could this be done?" (more = higher freedom)
 - "What breaks if Claude chooses differently?" (more breaks = lower freedom)
 - "Is this fragile or flexible?" (fragile = lower freedom)
+- "Why can't Claude figure this out?" (answer this honestly)
+
+### Why High Freedom Default?
+
+From skill-development:
+```
+Why good: High-level guidance trusts Claude to handle implementation details
+
+Why bad: Prescriptive commands insult intelligence and waste tokens.
+```
+
+Trust Claude's intelligence. Start with principles, not prescriptions.
 
 ---
 
@@ -126,11 +121,26 @@ These combine independently:
 
 ## Examples from the Codebase
 
-### Example 1: Imperative + Medium Freedom (skill-development)
+### Example 1: Overview with Teaching (skill-development)
 
 ```
-Follow these steps in order, skipping only when clearly not applicable.
+Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific domains or tasks—they transform Claude from a general-purpose agent into a specialized agent equipped with procedural knowledge that no model can fully possess.
 
+**Key concepts:**
+- Skills use a three-level progressive disclosure system (metadata, SKILL.md, bundled resources)
+- Use third-person descriptions with specific trigger phrases
+- Keep SKILL.md lean (1,500-2,000 words), move details to references/
+- Include only expert-only knowledge
+```
+
+**Analysis:**
+- Voice: Natural teaching ("Think of them as...", "they transform...")
+- Freedom: High (principles, not prescriptions)
+- Teaching: Metaphors, explaining WHY skills exist
+
+### Example 2: Imperative + Teaching Rationale (skill-development)
+
+```
 ### Step 1: Understand with Concrete Examples
 
 Clearly understand concrete examples of how the skill will be used. This understanding can come from user examples or generated examples validated with feedback.
@@ -144,9 +154,45 @@ Clearly understand concrete examples of how the skill will be used. This underst
 ```
 
 **Analysis:**
-- Voice: Imperative ("Follow", "Understand", "Conclude")
-- Freedom: Medium (structured steps, but room for judgment)
-- Natural: Teaching with examples, explaining WHY
+- Voice: Imperative ("Understand", "Conclude")
+- Freedom: Medium (structured steps with examples)
+- Natural: Teaching through examples, "I can imagine..." creates context
+
+### Example 3: Teaching Benefits and Rationale (skill-development)
+
+```
+**Scripts (`scripts/`)** - Executable code for tasks requiring deterministic reliability:
+- When to include: Code rewritten repeatedly or needing deterministic execution
+- Example: `scripts/rotate_pdf.py` for PDF rotation
+- Benefits: Token efficient, deterministic, executable without loading into context
+
+**References (`references/`)** - Documentation loaded as needed:
+- When to include: Documentation Claude should reference while working
+- Examples: `references/finance.md` for schemas, `references/api_docs.md` for API specs
+- Benefits: Keeps SKILL.md lean, loaded only when needed
+- Best practice: Avoid duplication—information lives in either SKILL.md OR references/, not both
+```
+
+**Analysis:**
+- Voice: Natural teaching (explaining benefits, examples)
+- Freedom: High (principles with rationale)
+- Teaching: Explaining WHY each choice matters, providing examples
+
+### Example 4: Imperative + Natural Teaching (skill-development)
+
+```
+Create the skill directory structure in .claude/skills/skill-name/
+Include SKILL.md and any needed directories (references/, examples/, scripts/)
+
+**Note:** Create only directories actually needed. A minimal skill may need only SKILL.md.
+
+**Remember that the skill is for another Claude instance to use. Focus on procedural knowledge and domain-specific details that would help another Claude instance execute tasks more effectively.**
+```
+
+**Analysis:**
+- Voice: Imperative with natural teaching ("Remember that...")
+- Freedom: High (trust Claude to create structure)
+- Teaching: Explaining the purpose, context, and rationale
 
 ### Example 2: Imperative + Low Freedom (command-development)
 
@@ -164,7 +210,33 @@ Validation checklist:
 - Freedom: Low (exact steps to follow)
 - Natural: Clear, direct instructions with rationale
 
-### Example 3: Natural + High Freedom (brainstorming-together)
+### Example 5: Natural Teaching with "Why" (skill-development)
+
+```
+❌ **Bad:**
+```markdown
+Run these commands:
+mkdir -p .claude/skills/skill-name/{references,examples,scripts}
+touch .claude/skills/skill-name/SKILL.md
+```
+
+**Why bad:** Claude knows how to create files and directories. Prescriptive commands insult intelligence and waste tokens.
+
+✅ **Good:**
+```markdown
+Create the skill directory structure in .claude/skills/skill-name/
+Include SKILL.md and any needed directories (references/, examples/, scripts/)
+```
+
+**Why good:** High-level guidance trusts Claude to handle implementation details
+```
+
+**Analysis:**
+- Voice: Natural teaching (explaining "why bad/good")
+- Freedom: High (guidance not commands)
+- Teaching: Direct explanation of the reasoning, "insults intelligence" = clear value judgment
+
+### Example 6: Natural + High Freedom (brainstorming-together)
 
 ```
 Think of this as a "why" behind skill creation. Understanding principles enables intelligent adaptation; recipes only work for specific situations.
@@ -181,7 +253,23 @@ Think of Claude as exploring a path: a narrow bridge with cliffs needs specific 
 
 ## Common Mistakes
 
-### Mistake 1: Robotic Imperative
+### Mistake 1: Starting with Low Freedom
+
+**❌ Too prescriptive from the start:**
+```
+Execute step 1. Execute step 2. Execute step 3.
+Use mkdir -p command.
+Run touch command.
+```
+
+**✅ Better (default to high freedom):**
+```
+Follow these steps in order. Trust Claude to handle implementation details.
+```
+
+**Why:** Start with highest freedom. Only reduce when justified.
+
+### Mistake 2: Robotic Imperative
 
 **❌ Too robotic:**
 ```
@@ -193,7 +281,7 @@ Execute step 1. Execute step 2. Execute step 3.
 Follow these steps in order. Remember to adapt based on context.
 ```
 
-### Mistake 2: Confusing Voice and Freedom
+### Mistake 3: Confusing Voice and Freedom
 
 **❌ Wrong thinking:**
 "Low freedom means use 'You should...' instead of imperative"
@@ -202,12 +290,12 @@ Follow these steps in order. Remember to adapt based on context.
 Low freedom + imperative = "Execute steps 1-3 precisely"
 Low freedom + natural = "Here's exactly what to do"
 
-### Mistake 3: Over-Constraining
+### Mistake 4: Over-Constraining
 
 **Problem:** Using low freedom when high freedom would work
 **Solution:** Ask "What actually breaks if Claude chooses differently?"
 
-### Mistake 4: Not Teaching
+### Mistake 5: Not Teaching
 
 **❌ Just commands:**
 ```
@@ -233,25 +321,28 @@ References exist to provide essential context that affects task quality. Simply 
 
 ### The Solution: Make References Mandatory
 
-**Use imperative "You MUST" language:**
+**Use High-Trust imperative language:**
 
 ✅ **From command-development:**
 ```
-You MUST read references/frontmatter-reference.md before configuring any command frontmatter.
+Read references/frontmatter-reference.md before configuring command frontmatter.
+Remember that invalid frontmatter causes silent failures.
 ```
 
 ✅ **Pattern recognition:**
-- "You MUST read X before doing Y"
+- "Read X before doing Y"
 - "References contain validation rules..."
 - "Skip references → incomplete understanding"
 
 **Enforcement in navigation tables:**
 
 ```
-| If you are... | You MUST read... |
-|---------------|------------------|
-| Creating commands | You MUST read references/executable-examples.md |
-| Configuring frontmatter | You MUST read references/frontmatter-reference.md |
+| If you are... | Read... |
+|---------------|---------|
+| Creating commands | references/executable-examples.md |
+| Configuring frontmatter | references/frontmatter-reference.md |
+
+Remember that these references contain validation rules preventing common errors.
 ```
 
 **Progressive disclosure with enforcement:**
@@ -259,7 +350,7 @@ You MUST read references/frontmatter-reference.md before configuring any command
 ```
 ## CRITICAL: Frontmatter Validation
 
-You MUST read references/frontmatter-reference.md before configuring command frontmatter.
+Read references/frontmatter-reference.md before configuring command frontmatter.
 
 Invalid frontmatter causes silent failures. The reference contains:
 - Required fields and validation rules
@@ -283,16 +374,23 @@ Invalid frontmatter causes silent failures. The reference contains:
 - Avoid robotic commands
 
 **Freedom:**
-- Match specificity to task fragility
-- Increase when Claude can handle autonomy
-- Decrease only when necessary
+- **DEFAULT: Consider starting with HIGH FREEDOM**
+- Trust Claude's intelligence
+- Reduce freedom when justified (destructive, safety-critical, external requirements)
+- Ask "What breaks if Claude chooses differently?"
 
 **References:**
-- Make them mandatory with "You MUST" language
+- Mark critical references as mandatory
 - Explain WHY skipping is problematic
 - Use progressive disclosure to ensure consumption
 
+**Teaching Pattern:**
+- Explain WHY alongside HOW
+- "Think of this as..." / "Remember that..." / "Benefits:"
+- Use examples and rationale
+- "Why bad/good" explanations
+
 **Both Together:**
 - Voice = HOW we write (imperative but natural)
-- Freedom = HOW SPECIFIC we are (high/medium/low)
+- Freedom = HOW SPECIFIC we are (start high, reduce when needed)
 - Independent choices based on context

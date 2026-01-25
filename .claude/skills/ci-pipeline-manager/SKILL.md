@@ -1,6 +1,6 @@
 ---
 name: ci-pipeline-manager
-description: "Test TaskList error handling and recovery. Use when: CI pipelines with failure recovery workflows. Not for: simple linear pipelines."
+description: This skill should be used when the user asks to "test TaskList error handling", "test CI pipeline recovery", "validate failure recovery workflows", or needs guidance on testing TaskList error handling and recovery behavior with CI pipelines (not for simple linear pipelines).
 context: fork
 ---
 
@@ -61,5 +61,3 @@ Tasks Blocked: 2/4 (build, deploy)
 Error Handling: PASS - Failed task properly blocked dependents
 Cleanup: PASS - Cleanup executed despite failure
 ```
-
-## CI_COMPLETE

@@ -1,6 +1,6 @@
 ---
 name: multi-session-orchestrator
-description: "Test TaskList cross-session persistence. Use when: long-running workflows spanning multiple sessions. Not for: single-session workflows."
+description: This skill should be used when the user asks to "test TaskList cross-session persistence", "long-running workflows spanning multiple sessions", or needs guidance on testing TaskList persistence across multiple Claude Code sessions (not for single-session workflows).
 ---
 
 ## SESSION_START
@@ -72,5 +72,3 @@ SESSION 2 COMPLETE
 Cross-Session Continuation: SUCCESS
 Task State Persistence: VERIFIED
 ```
-
-## SESSION_COMPLETE

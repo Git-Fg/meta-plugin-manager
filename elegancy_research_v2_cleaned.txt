@@ -1,0 +1,3555 @@
+### USER
+Perform an indepth research of all the official documentation, examples from community and guides in 2026 to craft optimal rules for .claude components such as skill, commands ... 
+
+### ASSISTANT
+
+[Raisonnement]
+
+> User wants an in-depth research-based, up-to-date (as of 2026) set of optimal rules and best practices for .claude components like skills and commands, using official docs, community examples, and guides. I will search for the latest official Anthropic/Claude documentation on .claude configuration files, skills, and commands, plus high-quality community guides and examples, and then synthesize these into a structured set of rules and patterns.
+
+[TOOL] search
+
+[Raisonnement]
+
+> To craft optimal rules for .claude components, I’ll open the key official docs on Claude Code slash commands/skills, the hooks reference, and Claude Code settings to understand the schema, constraints, and recommended usage patterns for commands, skills, and configuration.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll jump to the frontmatter reference and advanced patterns in the skills/slash-commands documentation to extract the supported fields, validation rules, and recommended structures that will feed into optimal rules for .claude components.
+
+[TOOL] find
+
+[Raisonnement]
+
+> Now I’ll open the frontmatter reference and advanced patterns sections to capture the exact list of frontmatter fields, substitution syntax, and patterns like dynamic context injection and running skills in subagents, which are key for defining optimal rules for skills and commands.
+
+[TOOL] open
+
+[Raisonnement]
+
+> To complement the official docs with real-world patterns, I’ll open the community-curated claude-code-settings repo and the comparative guide on CLAUDE.md, skills, and subagents. These will provide concrete examples and practical rules that people have converged on in 2026.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll search within the GitHub repo for concrete SKILL.md and command examples to see how an experienced community member structures frontmatter, descriptions, and instructions in practice, which will inform concrete rules for naming, description style, and content structure.
+
+[TOOL] find
+
+[Raisonnement]
+
+> Since the first section of the repo page was mostly navigation chrome, I’ll scroll further down in the same file to locate the actual README or skills directory contents where concrete examples of .claude components should live.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll open the commands and skills directories from this repository to inspect concrete .claude component examples—their naming, frontmatter usage, descriptions, and internal organization—to derive practical best practices.
+
+[TOOL] click
+
+[Raisonnement]
+
+> I’ll open a concrete skill directory (e.g., autonomous-skill) to inspect its SKILL.md frontmatter and internal structure, so I can base rules on real-world community patterns.
+
+[TOOL] click
+
+[Raisonnement]
+
+> I’ll open the autonomous-skill directory by URL to inspect a specific skill’s SKILL.md for frontmatter and structure, which will help ground the best-practice rules in real examples.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll open the SKILL.md file within the autonomous-skill directory to inspect its frontmatter and content structure, which will provide a concrete example of how experienced practitioners organize skills.
+
+[TOOL] click
+
+[Raisonnement]
+
+> The SKILL.md blob view likely starts further down; I’ll scroll further to reveal the YAML frontmatter and content of the skill so I can analyze its structure and style for best-practice rules.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll search within the blog guide for the sections that explicitly define slash commands and skills within Claude Code, plus any explicit recommendations or trade-offs the author lists, to derive more opinionated best-practice rules.
+
+[TOOL] find
+
+[Raisonnement]
+
+> I’ll open the sections on slash commands and skills from the blog guide to extract the author’s concise definitions, examples, and trade-off discussions—these will inform practical rules about when to choose commands versus skills, and how to structure them.
+
+[TOOL] open
+
+[Raisonnement]
+
+> To strengthen the guidance with official best practices, I’ll open the “Skill authoring best practices” docs from the Agent Skills standard, which Anthropic references, and see what principles they recommend for concise, well-structured skills.
+
+[TOOL] open
+
+[Raisonnement]
+
+> To cover CLAUDE.md and other .claude-related components, I’ll search within the settings doc for explicit notes on CLAUDE.md and the settings files’ locations and structure, which are part of the .claude ecosystem.
+
+[TOOL] find
+
+[Raisonnement]
+
+> I’ll open the sections in the settings doc that reference CLAUDE.md and key points about the configuration system, so I can describe optimal rules for memory/context files like CLAUDE.md and how they interact with skills and settings.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I’ll open the sections in the blog guide that describe nested CLAUDE.md and the summary “When to use what / How they relate”, to extract practical recommendations on when to rely on CLAUDE.md versus commands/skills/subagents.
+
+[TOOL] find
+
+[Raisonnement]
+
+> I’ll open the nested CLAUDE.md explanation and the “When to use what” table so I can incorporate concrete decision rules into the final best-practice framework.
+
+[TOOL] open
+
+[Raisonnement]
+
+> To extend optimal rules beyond skills and commands, I’ll open the custom subagents documentation to capture how subagent files are structured and how they relate to skills and CLAUDE.md, so I can give consistent guidance across all .claude components.
+
+[TOOL] open
+
+[Raisonnement]
+
+> Now, let me answer the user's question.
+
+Great question. Short version: by mid‑2026, the official docs and community have converged on a pretty clear way to design “.claude” components (CLAUDE.md, commands, skills, subagents, settings, hooks). The core theme is: keep things small, focused, and explicitly scoped, and put “always true” context in CLAUDE.md, repeatable workflows in commands/skills, and heavy or research-heavy work in subagents.
+
+Below is a synthesis from the current Anthropic docs, the Agent Skills standard, and widely-used community setups (e.g., feiskyer/claude-code-settings, alexop.dev’s guide).
+
+I’ll focus on rules you can actually follow when authoring files like:
+
+- CLAUDE.md / CLAUDE.local.md
+- .claude/commands/*.md
+- .claude/skills/<name>/SKILL.md
+- .claude/agents/*.md
+- .claude/settings.json and related files
+- .claude hooks
+
+I’ll also give a “what to use when” decision flow.
+
+High-level decision flow (what to use when)
+------------------------------------------
+
+Here’s a quick decision tree for picking the right component for a given need:
+
+```mermaid
+flowchart LR
+  A[What do you want?] --> B[Always on context and rules]
+  A --> C[On demand workflow]
+  A --> D[Research or heavy scanning]
+  A --> E[Cross project tools]
+
+  B --> B1[CLAUDE md]
+  B1 --> B2[Nested CLAUDE md per directory]
+
+  C --> C1[Simple single file prompt]
+  C1 --> C2[Slash command]
+  C --> C3[Complex with scripts and references]
+  C3 --> C4[Skill directory]
+
+  D --> D1[Heavy research]
+  D1 --> D2[Subagent and Explore]
+
+  E --> E1[Personal tooling]
+  E1 --> E2[User level skills and agents]
+  E --> E3[Team policies and plugins]
+  E3 --> E4[Project and managed settings]
+```
+
+Now let’s go component by component and distill “optimal” rules.
+
+### 1. Overall design principles (2026 consensus)
+
+Across docs and community, a few principles show up everywhere:
+
+- Context is a shared resource:
+  - The Agent Skills best-practices docs emphasize that skills share context with system prompt, history, and other skills; concise SKILL.md is crucial.【turn14fetch0】
+  - Claude Code best-practices for agentic coding echo this: lean on tools to pull data on demand instead of front-loading everything.【turn0search12】
+- Claude is already smart; only add what it doesn’t know:
+  - Assume Claude understands general programming; teach it your stack and workflows, not “what a PDF is” or how to use a generic API.【turn14fetch0】
+- Prefer structure and tools over long prose:
+  - Use frontmatter, $ARGUMENTS, hooks, and tool allowlists rather than big paragraphs of “always/never” rules.
+- Explicit beats implicit for risky actions:
+  - Use disable-model-invocation, user-invocable, and permissions.deny to control when/how Claude can invoke things.【turn3fetch0】【turn16fetch0】
+- Prefer modular composition:
+  - Slash commands can orchestrate subagents; skills can be used by subagents; CLAUDE.md gives baseline behavior. Community guides explicitly treat these as layers you can combine.【turn18fetch0】【turn18fetch1】
+
+With that in mind, here are concrete rules per component.
+
+### 2. CLAUDE.md and CLAUDE.local.md (project memory)
+
+Where they live and precedence (from Claude Code settings)【turn16fetch0】【turn16fetch1】:
+
+- User: `~/.claude/CLAUDE.md`
+- Project: `CLAUDE.md` or `.claude/CLAUDE.md`
+- Local (not committed): `CLAUDE.local.md`
+
+Key ideas from docs and alexop.dev:
+
+- CLAUDE.md is loaded at startup as “memory” for the project; it’s not meant for complex workflows, just always-on rules and context.【turn16fetch1】【turn18fetch0】
+- Nested CLAUDE.md files are loaded when Claude reads files in that directory, for directory-specific guidance.【turn18fetch0】
+
+#### Optimal rules for CLAUDE.md
+
+1) Scope and size
+
+- DO put in CLAUDE.md:
+  - Short, always-true project conventions (stack, architectural patterns, coding standards).
+  - “Fetch X before working with Y” rules for libraries where Claude’s training data is stale.【turn18fetch0】
+- DO NOT put in CLAUDE.md:
+  - Full documentation of frameworks.
+  - Long step-by-step workflows (those belong in skills or commands).
+- Keep it short: ideally well under a few hundred lines. Large docs should be referenced, not embedded.
+
+2) Structure recommendations
+
+- Start with a 5–10 line executive summary:
+  - Stack: languages, frameworks, key libraries.
+  - Architectural invariants (e.g., “no direct DB access from frontend”).
+- Then brief sections:
+  - “Database / storage”
+  - “API / backend patterns”
+  - “Testing conventions”
+  - “Deployment / CI”
+- Use bullet lists and short sentences, not walls of text.
+
+Example (inspired by the Dexie.js CLAUDE.md example)【turn18fetch0】:
+
+```markdown
+# CLAUDE.md
+
+## Stack
+- Frontend: TypeScript + Vue 3 (Composition API).
+- Backend: Node/Express, PostgreSQL via Prisma.
+- DB: IndexedDB for browser cache (Dexie.js).
+
+## Database (Dexie.js)
+- Fetch the current docs index from https://dexie.org/llms.txt before writing DB code.
+- Use liveQuery for reactive bindings.
+- Follow repository pattern in src/db/.
+- Always handle ConstraintError for duplicate keys.
+
+## API
+- All routes use /api/v1/ prefix.
+- Endpoints must return { data, error } shape.
+```
+
+3) Nested CLAUDE.md usage
+
+- DO add nested CLAUDE.md for large subdomains:
+  - tests/CLAUDE.md — test frameworks, mocking patterns.【turn18fetch0】
+  - src/db/CLAUDE.md — DB constraints and schema rules.
+  - src/components/CLAUDE.md — component design patterns.
+- DO keep each nested file focused on that directory’s concerns; this limits when that context is loaded.
+
+4) Local overrides
+
+- Use CLAUDE.local.md for:
+  - Personal shortcuts or experiments you don’t want to commit.
+- Treat it as “personal overrides” rather than “separate project memory”.
+
+### 3. Slash commands (.claude/commands/*.md)
+
+Key facts from official docs and community:
+
+- A slash command is a saved prompt invoked via /command-name, like a prompt macro.【turn13fetch0】
+- Commands can also be auto-invoked based on their description; they can orchestrate subagents and tools.【turn13fetch0】
+- Custom slash commands are now merged into the skills system; .claude/commands/*.md and .claude/skills/<name>/SKILL.md both create /name and behave the same way (skills add extra features).【turn1fetch0】
+- Community guides emphasize commands as “simple single-file prompts you run on-demand,” while skills are richer packages.【turn13fetch0】【turn13fetch1】
+
+#### Optimal rules for slash commands
+
+1) When to use a command vs a skill
+
+From the “When to use what” table【turn18fetch1】 and docs【turn1fetch0】【turn13fetch1】:
+
+- Use a command (single file) when:
+  - You want a discoverable, explicit terminal entry point.
+  - The workflow is straightforward and can be described concisely.
+  - You rarely or never need supporting files (scripts, templates, etc.).
+- Use a skill (directory) when:
+  - The workflow is complex or may evolve.
+  - You want supporting files (reference docs, examples, scripts).
+  - You expect Claude to auto-discover and reuse the behavior in many contexts.
+
+2) Frontmatter discipline
+
+Every command file should have minimal but complete frontmatter. From the frontmatter reference【turn3fetch0】:
+
+- Required (or strongly recommended):
+  - description — Claude uses this to decide when to auto-invoke.
+- Optional but useful:
+  - name — if you want a name distinct from filename.
+  - argument-hint — helps autocomplete (e.g., [issue-number]).
+  - allowed-tools — restrict what tools this command can use.
+  - user-invocable, disable-model-invocation — control who/what can invoke it.
+  - model / context / agent / hooks — mostly for skills but allowed.
+
+Rules:
+
+- Always include description that answers:
+  - What does this command do?
+  - When should it be used?
+- Avoid verbose descriptions; a single clear line is often enough.
+
+Example (from a blog guide, adapted)【turn13fetch0】:
+
+```markdown
+---
+description: Get Dexie.js guidance with current documentation
+allowed-tools: Read, Grep, Glob, WebFetch
+---
+First, fetch the documentation index from https://dexie.org/llms.txt
+Then, based on the user's question, fetch the relevant documentation pages.
+Finally, answer the following question using the current documentation:
+$ARGUMENTS
+```
+
+3) Content structure
+
+- Keep the command body focused on:
+  - Steps Claude should follow.
+  - Any templates or output formats it must produce.
+- Use $ARGUMENTS explicitly if you want precise placement; otherwise arguments are appended.【turn3fetch0】
+- For commands that spawn workflows:
+  - Explicitly say “Use the Task tool to spawn subagents” and describe them, as shown in research.md example【turn13fetch0】.
+
+Example skeleton for a “review” command:
+
+```markdown
+---
+name: review
+description: Review recent changes for quality and security
+argument-hint: [branch-name]
+---
+Review the changes in the following branch:
+$ARGUMENTS
+
+Steps:
+1. Use git diff to see changed files.
+2. For each changed file:
+   - Check for clarity, naming, and duplication.
+   - Ensure no secrets or API keys are exposed.
+3. Summarize:
+   - Critical issues
+   - Warnings
+   - Suggestions
+```
+
+4) Safety and permissions
+
+- For destructive or sensitive workflows (deploy, send messages), add disable-model-invocation: true to frontmatter, so Claude won’t run them automatically.【turn3fetch0】
+- Use allowed-tools to constrain what a command can do (e.g., Read-only for reviews).【turn3fetch0】
+
+### 4. Skills (.claude/skills/<name>/SKILL.md)
+
+Skills are the main building block for reusable, auto-discovered behavior.
+
+Key facts:
+
+- A skill is defined by SKILL.md with frontmatter and markdown instructions, plus optional supporting files.【turn1fetch0】【turn3fetch0】
+- Skills follow the Agent Skills open standard; Claude Code extends it with extra features.【turn1fetch0】
+- Frontmatter fields: name, description, argument-hint, disable-model-invocation, user-invocable, allowed-tools, model, context, agent, hooks.【turn3fetch0】
+- Where skills live determines scope; enterprise > personal > project > plugin for priority.【turn1fetch0】
+
+From Agent Skills best practices docs【turn14fetch0】:
+
+- Concise SKILL.md is crucial; context is shared with conversation and other skills.
+- Assume Claude is already smart; avoid re-teaching generic concepts.
+- Set an appropriate “degree of freedom” (high/medium/low) depending on how fragile the task is.
+- Use consistent naming (gerunds: processing-pdfs, managing-databases, etc.), 64 chars max, lowercase/digits/hyphens only.【turn14fetch0】
+- Name cannot contain reserved words “anthropic” or “claude”; description must be non-empty and ≤1024 chars.【turn14fetch0】
+
+#### Optimal rules for skills
+
+1) Naming and frontmatter
+
+- Naming (per Agent Skills standard)【turn14fetch0】:
+  - Use gerunds (verb+ing) to signal activity:
+    - analyzing-spreadsheets, testing-code, managing-databases.
+  - Lowercase letters, digits, hyphens only; max 64 characters.
+  - Don’t use “anthropic” or “claude” in the name.
+- Frontmatter:
+  - name:
+    - If omitted, directory name is used.
+  - description:
+    - Must be non-empty; ≤1024 characters; no XML tags.【turn14fetch0】
+    - Should clearly state “what” and “when”:
+      - e.g., “Explains code with diagrams and analogies. Use when user asks how something works.”【turn1fetch0】
+  - argument-hint:
+    - Provide clear hint for arguments, e.g., [issue-number] or [filename] [format].【turn3fetch0】
+  - disable-model-invocation:
+    - Set to true for manual-only workflows (e.g., deploy).【turn3fetch0】
+  - user-invocable:
+    - Set to false for background knowledge that should not be a user-facing command.【turn3fetch0】
+  - allowed-tools:
+    - Limit tools to what the skill needs (e.g., Read, Grep, Glob for read-only analysis).【turn3fetch0】【turn13fetch0】
+  - context / agent:
+    - Use context: fork + agent (e.g., Explore) to run in an isolated subagent context, especially for heavy research.【turn3fetch1】
+  - hooks:
+    - Use skill-scoped hooks sparingly; only when the skill has specific lifecycle requirements.【turn3fetch0】
+
+2) Content length and structure
+
+From Claude Code docs and Agent Skills best practices【turn3fetch0】【turn14fetch0】:
+
+- Keep SKILL.md under ~500 lines; move reference docs and examples to supporting files.
+- Structure SKILL.md like:
+  - Short description of what this skill does.
+  - When it should be used.
+  - High-level process (3–7 steps).
+  - Instructions for using supporting files.
+  - Any invariants or constraints.
+
+Example skeleton:
+
+```markdown
+---
+name: explaining-code
+description: Explains code with diagrams and analogies. Use when user asks how something works.
+allowed-tools: Read, Grep, Glob
+---
+When you are asked to explain code:
+1. Start with a brief analogy.
+2. Draw an ASCII diagram of the flow or structure.
+3. Walk through the code step by step.
+4. Highlight one key gotcha.
+
+For complex examples, see examples.md in this skill directory.
+```
+
+3) Supporting files and dynamic context
+
+From the “Advanced patterns” section【turn3fetch1】:
+
+- Use supporting files for:
+  - Large reference docs.
+  - Examples.
+  - Templates or scripts.
+- Link to them explicitly:
+  - “For API details, see reference.md.”【turn3fetch0】
+- Use !`command` for dynamic context:
+  - Example pr-summary skill runs `gh pr diff` and inserts output into the prompt before Claude sees it.【turn3fetch1】
+- Use context: fork + agent for heavy or long-running workflows that need isolation:
+  - The skill content becomes the subagent’s prompt, with no access to main history.【turn3fetch1】
+
+Rules:
+
+- Use dynamic commands (!`gh ...`, etc.) only when:
+  - The command output is safe to expose to Claude.
+  - You’d otherwise have to paste that data manually.
+- When using context: fork:
+  - Make sure the skill content is a complete task (not just guidelines), otherwise the subagent will lack a clear action.【turn3fetch1】
+
+4) Degrees of freedom in instructions
+
+From Agent Skills best practices【turn14fetch0】:
+
+- High freedom:
+  - Use for tasks with multiple valid approaches where context matters (code review, architecture suggestions).
+  - Give guidelines, not strict scripts.
+- Medium freedom:
+  - Provide pseudocode or scripts with parameters for tasks with a preferred pattern but some flexibility (e.g., report generation).
+- Low freedom:
+  - For fragile operations where order and flags are critical (DB migrations, deployment steps).
+  - Use exact commands and explicitly say “Do not modify this command.”
+
+Rule: choose the appropriate freedom level; don’t over-constrain flexible tasks or under-constrain dangerous ones.
+
+5) Controlling skill invocation and access
+
+From docs and community:
+
+- By default, Claude can auto-invoke skills unless disabled or blocked.【turn3fetch0】【turn3fetch1】
+- Three main control mechanisms【turn3fetch1】:
+  - Disable all skills: deny the Skill tool in permissions.
+  - Allow/deny specific skills via permission rules (Skill(name), Skill(name:*), etc.).
+  - Per-skill disable: disable-model-invocation: true.
+
+Rules:
+
+- For background knowledge (not a user action), consider user-invocable: false; Claude can still use it as needed, but users don’t see it as a command.【turn3fetch0】
+- For risky workflows (deploy, data cleanup), always set disable-model-invocation: true.
+- For enterprise teams, use permission rules to lock down which skills Claude can invoke.
+
+### 5. Subagents (.claude/agents/*.md)
+
+Subagents are specialist “contexts” that can be delegated tasks, particularly heavy research, with their own context window.【turn4fetch1】【turn19fetch0】
+
+Key points from subagent docs and examples【turn19fetch0】:
+
+- Subagents are markdown files with frontmatter:
+  - name
+  - description
+  - tools
+  - model (optional, or “inherit”)
+- They can be scoped:
+  - User: ~/.claude/agents/
+  - Project: .claude/agents/【turn16fetch1】
+- Best practices:
+  - Design focused subagents.
+  - Write detailed descriptions for when to use them.
+  - Limit tools to what they need.
+  - Check project subagents into version control.【turn19fetch0】
+
+#### Optimal rules for subagents
+
+1) When to use a subagent vs skills/commands
+
+From the “When to use what” table and subagent docs【turn18fetch1】【turn19fetch0】:
+
+- Use a subagent when:
+  - Task is research-heavy or requires a lot of reading/searching.
+  - You want a separate context window to avoid bloating the main session (e.g., Explore, codebase scans).
+- Use a skill when:
+  - You want Claude to auto-apply behavior inside the main conversation.
+- Use a command when:
+  - You want a manual trigger from the terminal; commands can orchestrate subagents via Task.
+
+2) Frontmatter and design
+
+Rules (based on examples)【turn19fetch0】:
+
+- name:
+  - Short, focused, lowercase-with-hyphens: code-reviewer, debugger, data-scientist.【turn19fetch0】
+- description:
+  - Include what it does and when it should be used.
+  - Phrases like “Proactively review code after writing or modifying code” help Claude know when to delegate.【turn19fetch0】
+- tools:
+  - Grant only the tools necessary:
+    - Read-only for reviewers.
+    - Edit + Bash for debuggers.
+    - Bash + Read + Write for data scientists, but restrict DB queries to read-only via hooks when needed.【turn19fetch0】
+- model:
+  - Use inherit to follow current session model.
+  - Or specify a model (e.g., sonnet) for tasks needing stronger reasoning.【turn19fetch0】
+
+Example skeleton:
+
+```markdown
+---
+name: code-reviewer
+description: Expert code review specialist. Use after writing or modifying code.
+tools: Read, Grep, Glob, Bash
+model: inherit
+---
+You are a senior code reviewer.
+1. Run git diff to see recent changes.
+2. For each modified file, check:
+   - Clarity and naming.
+   - Duplicated code.
+   - Error handling.
+   - Potential secrets.
+3. Return feedback grouped by:
+   - Critical issues
+   - Warnings
+   - Suggestions
+```
+
+3) Relationships with skills and commands
+
+- From the skills/subagent relationship table【turn3fetch1】【turn18fetch1】:
+  - A skill with context: fork uses an agent type and its content as the task.
+  - A subagent can reference skills via its own frontmatter or configuration.
+- In practice:
+  - Implement core instructions in SKILL.md or subagent markdown; don’t duplicate logic.
+  - Use skills as “libraries of behaviors,” subagents as “contexts/tools that execute those behaviors.”
+
+### 6. Settings (.claude/settings.json, etc.) and permissions
+
+Settings files are where you configure permissions, environment, hooks, and plugins.
+
+Key facts from settings docs【turn16fetch0】【turn16fetch1】:
+
+- Scopes:
+  - User: ~/.claude/settings.json
+  - Project: .claude/settings.json (committed)
+  - Local: .claude/settings.local.json (gitignored)
+  - Managed: system-level managed-settings.json (IT-controlled, highest priority).
+- Key settings examples:
+  - permissions.allow / permissions.deny for tool usage and file access.【turn16fetch0】【turn16fetch1】
+  - env for environment variables per session.
+  - hooks for command/prompt hooks around tool usage and events.【turn1fetch1】【turn16fetch0】
+  - enabledPlugins and extraKnownMarketplaces for plugin control.【turn16fetch1】
+
+#### Optimal rules for settings
+
+1) What belongs where
+
+- In project settings (.claude/settings.json):
+  - Team-wide permissions (e.g., deny secrets).【turn16fetch1】
+  - Shared MCP servers and plugins.
+  - Team-relevant environment variables (non-sensitive).
+- In local settings (settings.local.json):
+  - Personal preferences and experimental changes (not committed).
+- In managed settings:
+  - Organization-wide security policies and mandatory plugins/marketplaces.【turn16fetch0】
+
+2) Permissions best practices
+
+From docs’ “Excluding sensitive files” example【turn16fetch1】:
+
+- Always deny access to secrets and env files:
+  - Example:
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)",
+      "Read(./build)"
+    ]
+  }
+}
+```
+
+- Use allow to explicitly enable dangerous commands:
+  - Example: allow Bash(npm run lint), Bash(npm run test:*).【turn16fetch0】
+- For skills and commands, use allowed-tools in frontmatter to further narrow scope; rely on permissions as a safety net.
+
+### 7. Hooks (.claude/hooks configured in settings.json)
+
+Hooks are commands or prompts that run at specific events (SessionStart, PreToolUse, etc.).【turn1fetch1】
+
+Key points:
+
+- Hooks are configured in settings.json under "hooks" with matchers and types (command or prompt).【turn1fetch1】
+- Hooks can run bash commands or LLM prompts (type: "command" or "prompt").【turn1fetch1】
+- There is a dedicated best practices section in the hooks reference.【turn1fetch1】
+
+#### Optimal rules for hooks
+
+1) Use hooks for cross-cutting concerns, not skill logic
+
+- Good uses:
+  - Logging and telemetry.
+  - Guardrails around dangerous tools (e.g., extra confirmation before Bash in production).
+  - Project-specific initialization or environment setup.
+- Avoid:
+  - Encoding business logic that belongs in a skill or command. Keep hooks lean and focused on session/tool lifecycle.
+
+2) Prefer simplicity
+
+- Start with bash hooks for simple checks (exit code 0/1).
+- Use prompt hooks only when you truly need LLM evaluation (e.g., complex policy checks).
+- Keep timeouts reasonable; don’t block Claude for long operations in hooks.【turn1fetch1】
+
+3) Security
+
+- Be very careful with PreToolUse hooks that modify or approve commands; they can bypass user consent if misconfigured.【turn1fetch1】
+- Prefer deny-lists in permissions for security; use hooks as additional guardrails, not the only line of defense.
+
+### 8. Scope and sharing rules across components
+
+From Claude Code settings【turn16fetch0】:
+
+- For settings, skills, agents, etc., scopes follow:
+  - Managed (highest) > CLI args > Local > Project > User (lowest).【turn16fetch0】
+- Skills at different scopes resolve in priority: enterprise > personal > project; plugin skills are namespaced.【turn1fetch0】
+
+Rules:
+
+- Put personal tools in:
+  - ~/.claude/skills/* and ~/.claude/agents/*.
+- Put team-shared tools in:
+  - .claude/skills/*, .claude/agents/*, .claude/settings.json (committed).
+- For enterprise standardization:
+  - Use managed-settings.json to enforce permissions and baseline plugins; but avoid over-restricting workflow-level tools where teams need flexibility.
+
+### 9. Concrete “style guide” summary
+
+If you just want a compact checklist for authoring good .claude components:
+
+- CLAUDE.md:
+  - Short, always-true project context and rules.
+  - Use nested CLAUDE.md for directory-specific context.
+  - Keep under a few hundred lines; externalize docs.
+- Commands (.claude/commands/*.md):
+  - Clear frontmatter with description and allowed-tools.
+  - Concise instructions; use $ARGUMENTS explicitly.
+  - For dangerous workflows: disable-model-invocation: true.
+- Skills (.claude/skills/<name>/SKILL.md):
+  - Gerund-based names (e.g., analyzing-spreadsheets).
+  - Short, trigger-focused description.
+  - <500 lines; use supporting files for reference/examples.
+  - Choose high/medium/low “freedom” according to task fragility.
+  - Use context: fork + agent for heavy or long-running workflows.
+  - Control invocation with disable-model-invocation and permission rules.
+- Subagents (.claude/agents/*.md):
+  - One responsibility per subagent (review, debug, data).
+  - Clear description; limited tools; inherit or specify model.
+  - Use for research-heavy tasks to keep main context clean.
+- Settings & hooks:
+  - Use permissions.deny to lock down secrets; allow for safe commands.
+  - Keep hooks focused on lifecycle/logic, not business workflows.
+  - Prefer managed settings for org security, project settings for team workflow, local for personal experimentation.
+
+If you’d like, I can turn this into a concrete template set (e.g., a “.claude starter pack” with example CLAUDE.md, a couple of commands, a skill with supporting files, and a couple of subagents tailored to your stack).
+
+### USER
+Excellent, now perform further investigation on how, when and why priorise simple commands (sometimes / often a simple paragraph with a few example is better than a highly structurated and prescritive instructions) and how to craft elegant skills/commands , adapted to the level of freedom we want to have? Notably determine the critical (and probably rare cases) where having low freedom CAN be relevant
+
+### ASSISTANT
+
+[Raisonnement]
+
+> User wants advanced guidance on when and why to keep commands simple vs highly structured, and how to design skills/commands with appropriate degrees of freedom—including identifying rare cases where low-freedom, prescriptive instructions are actually beneficial. I will search for official Anthropic documentation and community guides (2025–2026) on: (1) Agent Skills best practices around degrees of freedom, (2) Claude Code command/skill design patterns, (3) examples where low freedom is justified (e.g., security-critical or fragile workflows). This will help ground the advice in current standards and real-world patterns.
+
+[TOOL] search
+
+[Raisonnement]
+
+> I want to inspect the 'Skill authoring best practices' section on degrees of freedom in detail, to extract how high/medium/low freedom are defined and when each is recommended. This will help ground my explanation of when to prioritize simple commands vs prescriptive instructions and identify cases where low freedom is actually appropriate.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will search within the same best-practices document for the section that explicitly discusses 'degrees of freedom' (high/medium/low freedom) to pull their definitions and recommendations, which are directly relevant to deciding how prescriptive vs simple to make skills and commands.
+
+[TOOL] find
+
+[Raisonnement]
+
+> Now I will open the 'Set appropriate degrees of freedom' section to capture the exact definitions and recommended use cases for high, medium, and low freedom skills, which I will then map to practical advice on simplicity vs prescriptiveness and when low freedom is justified.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will open the section on progressive disclosure and concise SKILL.md patterns to extract guidance on brevity, use of examples, and when simple instructions are sufficient, to support recommendations on when to keep commands simple rather than highly structured.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will open the Claude Code skills extension docs to see how they frame SKILL.md and slash commands in practice, looking for patterns around simplicity vs structure, and any guidance on degrees of freedom or over-structured instructions.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will scroll further in the Agent Skills best-practices doc around the concise example that was hinted at (comparing a verbose vs concise skill) to see how they argue in favor of brevity and examples, which will support recommendations about when simple paragraphs with examples are enough.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will open the skill-creator SKILL.md referenced in the earlier search result to capture any additional phrasing about matching degrees of freedom and using concise examples; this can enrich practical recommendations about how much structure vs simplicity is appropriate.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will scroll a bit further in the skill-creator SKILL.md to locate the explicit guidance about 'Set appropriate degrees of freedom' and 'concise examples' so I can cross-check with Anthropic's wording and reinforce the recommendations.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will open a community blog post on 'Claude skills — Is it skilled yet?' to see how they argue against over-structured system prompts and in favor of simpler, modular skill design, which will support the argument for preferring simple commands when possible.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I want to look at the 'creating-commands' skill example to see how a community skill structures commands: simple vs prescriptive, use of examples, and any notes on degrees of freedom or dangerous operations. This will help illustrate concrete patterns for elegant commands/skills.
+
+[TOOL] open
+
+[Raisonnement]
+
+> I will open the 'Best Practices for Creating Skills for Claude AI' article to extract any recommendations about conciseness, degrees of freedom, or structure that reinforce when to prefer simple paragraphs and examples over long, prescriptive instructions.
+
+[TOOL] open
+
+[Raisonnement]
+
+> Now, let me answer the user's question.
+
+Great follow-up. This is exactly the right question: “When should I keep things simple vs highly structured, and where does low freedom actually help?”
+
+Let me synthesize the 2025–2026 docs and community patterns into a practical, opinionated guide.
+
+I’ll break it down into:
+
+1) The core decision: simplicity vs structure (when simple wins)  
+2) How to design elegant skills/commands for high/medium/low freedom  
+3) When low freedom is actually useful (the rare, critical cases)  
+4) Concrete examples for each freedom level  
+5) A short checklist you can use when authoring .claude components
+
+## 1) Simplicity vs structure: when is “one paragraph + examples” enough?
+
+Anthropic’s skill best practices are pretty explicit:
+
+- They recommend asking three questions before every paragraph:
+  - “Does Claude really need this explanation?”
+  - “Can I assume Claude knows this?”
+  - “Does this paragraph justify its token cost?”【turn6fetch0】  
+- They explicitly contrast a concise 50‑token example with a 150‑token “too verbose” version and favor the concise one【turn6fetch0】.
+
+So the default should be: minimal instructions + good examples, not long, prescriptive procedures.
+
+### Why simple often beats structure
+
+For most tasks, Claude already knows:
+
+- How to read code, write tests, refactor, etc.  
+- How to use common tools (git, docker, standard CLIs)  
+
+What Claude doesn’t know is:
+
+- Your conventions, invariants, and “local gotchas”  
+- Which patterns you prefer in this codebase  
+- The shape of outputs you care about
+
+So an elegant command/skill is essentially:
+
+- A quick “role + constraints” paragraph  
+- A couple of concrete examples  
+- Maybe a pointer to reference docs when it gets complex
+
+That’s aligned with the official “concise” guidance and the progressive disclosure pattern, where SKILL.md stays under ~500 lines and details live in separate files【turn4fetch0】【turn5fetch0】.
+
+### A quick decision model: simple vs structured
+
+Here’s a decision flow for “how much structure should I add?”:
+
+```mermaid
+flowchart LR
+  A[Start designing skill/command] --> B{Fragile or risky?}
+  B -->|Yes| C[Add structure, low freedom, exact scripts or sequences]
+  B -->|No| D{Strongly opinionated?}
+  D -->|Yes| E[Medium freedom: templates and pseudocode with examples]
+  D -->|No| F{Needs many details?}
+  F -->|Yes| G[Progressive disclosure: short SKILL.md plus references]
+  F -->|No| H[High freedom: brief paragraph and examples only]
+```
+
+Translated into words:
+
+- If the task is fragile/risky: go prescriptive (low freedom).  
+- Else, if you really care about how it’s done: templates/pseudocode (medium).  
+- Else, if there are lots of details but nothing fragile: short main instructions + reference files (progressive disclosure).  
+- Else: just a short paragraph + 1–2 examples (high freedom).
+
+## 2) Designing elegant skills/commands by level of freedom
+
+Anthropic defines three levels of freedom explicitly【turn6fetch0】:
+
+- High freedom: text-based instructions  
+- Medium freedom: pseudocode or scripts with parameters  
+- Low freedom: specific scripts, minimal/no parameters  
+
+Let’s treat each level as a design style.
+
+### 2.1 High-freedom commands/skills
+
+Use when:
+
+- Multiple valid approaches exist.  
+- The right answer depends strongly on context (file structure, existing code, user goal).  
+- Heuristics/guidance is more useful than strict steps【turn6fetch0】.
+
+Think:
+
+- Code review, refactoring, explanation, design discussion.  
+- “Clean up this code”, “Explain how this works”, “Suggest an architecture for X”.
+
+Characteristics of an elegant high-freedom component:
+
+- 3–10 lines of role + guidance.  
+- 2–3 mini examples of good vs bad outputs.  
+- No step-by-step, just intention and constraints.
+
+Anthropic’s own example is effectively high-freedom【turn6fetch0】:
+
+## Code review process  
+1. Analyze the code structure and organization  
+2. Check for potential bugs or edge cases  
+3. Suggest improvements for readability and maintainability  
+4. Verify adherence to project conventions  
+
+Example: simple high-freedom slash command
+
+.md file (under .claude/commands or via a skill):
+
+```markdown
+---
+description: Review changes for clarity, bugs, and style
+allowed-tools: Read, Grep, Glob
+---
+
+Review the diff/changes at $ARGUMENTS:
+
+- Focus on: bugs, confusing logic, duplication, naming, security.
+- Group feedback into:
+  - Critical issues (must fix)
+  - Warnings (should fix)
+  - Suggestions (nice to have)
+- Be brief; point to lines instead of rewriting huge sections.
+```
+
+Why this is often better than long checklists:
+
+- It lets Claude adapt to:
+  - Small typo fixes vs huge refactor.  
+  - Prototype code vs production-grade.  
+- You don’t pay tokens for steps that don’t apply.  
+- It matches the “concise is key” and “multiple approaches are valid” guidance【turn6fetch0】.
+
+When to add structure even here:
+
+- If you notice Claude repeatedly missing something (e.g., always forgetting secret checks), add a bullet line about it.  
+- But keep it as a one-line reminder, not a 20-step checklist.
+
+### 2.2 Medium-freedom commands/skills
+
+Use when:
+
+- There is a preferred pattern.  
+- Some variation is fine.  
+- Configuration or options affect behavior【turn6fetch0】.
+
+Think:
+
+- Generating reports with specific sections but flexible content.  
+- Boilerplate-heavy tasks: “Create a new X service with tests” where the skeleton must be similar but details vary.  
+- Code that must follow a template (e.g., API handlers, CLI subcommands) but can still vary inside.
+
+Anthropic’s medium-freedom example【turn6fetch0】:
+
+“Use this template and customize as needed” with a parameterized function.
+
+Design pattern for elegant medium freedom:
+
+- Provide a clearly labeled template.  
+- Mark which parts are “do not touch” vs “adapt as needed”.  
+- Include 1 example of a filled-in template.
+
+Example: medium-freedom skill “creating-api-endpoints”
+
+SKILL.md:
+
+```markdown
+---
+name: creating-api-endpoints
+description: Create API endpoints following our REST conventions
+---
+
+## Endpoint pattern
+
+Use this template for new endpoints:
+
+```typescript
+// src/api/v1/[resource].ts
+import { Request, Response } from "express";
+
+export async function METHOD(req: Request, res: Response): Promise<void> {
+  // 1. Validate input (use schemas from src/api/schemas)
+  // 2. Load data via services in src/services
+  // 3. Handle errors and respond with { data, error }
+}
+```
+
+Rules:
+- Use HTTP verbs and paths matching src/api/v1/routes.ts.
+- Always return { data, error }.
+- For queries, use GET; for mutations, use POST/PUT/PATCH/DELETE.
+
+Example:
+- See examples/md/new-endpoint.md.
+```
+
+examples/md/new-endpoint.md:
+
+```markdown
+## Example: creating a user
+
+```typescript
+// src/api/v1/users.ts
+import { Request, Response } from "express";
+import { createUser } from "../../services/user-service";
+
+export async function postUser(req: Request, res: Response): Promise<void> {
+  const result = await createUser(req.body);
+  if (result.error) {
+    res.status(400).json({ data: null, error: result.error });
+    return;
+  }
+  res.status(201).json({ data: result.data, error: null });
+}
+```
+```
+
+Why this feels “elegant”:
+
+- Claude has guardrails (template + invariants) but can still adapt logic.  
+- It matches the “preferred pattern exists; some variation acceptable” case for medium freedom【turn6fetch0】.  
+- It doesn’t over-specify the internal steps—just the shape and constraints.
+
+### 2.3 Low-freedom commands/skills
+
+Anthropic’s guidance here is very clear【turn6fetch0】:
+
+- Use when:
+  - Operations are fragile and error-prone.  
+  - Consistency is critical.  
+  - A specific sequence must be followed.  
+- Their example:
+
+“Run exactly this script” plus “Do not modify the command or add additional flags.”【turn6fetch0】
+
+Design pattern for low freedom:
+
+- Pin a script and its flags.  
+- Explicitly say: “Do not change this command.”  
+- Optionally: wrap the script so it has built-in validation/rollback, to keep instructions simple but still safe.
+
+Example: low-freedom skill “running-database-migration”
+
+SKILL.md:
+
+```markdown
+---
+name: running-database-migration
+description: Run database migrations in the approved sequence
+disable-model-invocation: true
+allowed-tools: Bash
+---
+
+To run migrations:
+
+1. Ensure you are on main and up-to-date:
+   ```bash
+   git checkout main && git pull
+   ```
+
+2. Run exactly this command:
+   ```bash
+   python scripts/migrate.py --verify --backup
+   ```
+
+Do not modify this command or add extra flags.
+
+If the script exits with non-zero:
+- Read the error output.
+- Do NOT retry without understanding the root cause.
+- Escalate to the DBA if in doubt.
+```
+
+Why low freedom is justified here:
+
+- The migration script encapsulates the safe sequence.  
+- Changing flags risks:
+  - Skipping backups (--no-backup).  
+  - Skipping verification.  
+- There’s only one “safe path” — the “narrow bridge” analogy from the docs【turn6fetch0】.
+
+This is exactly the type of scenario Anthropic calls out for low freedom【turn6fetch0】 and that other practices echo (e.g., database migrations where execution must follow a strict sequence)【turn11fetch0】.
+
+## 3) Critical (rare) cases where low freedom makes sense
+
+You’re right: these should be rare. Most of the time, you don’t want low freedom. But when you do, it’s usually because:
+
+- The operation is:
+  - Fragile (easy to break).  
+  - Costly to undo (production, data, money).  
+  - Heavily constrained by compliance/audits.
+
+Typical “low-freedom domains”:
+
+- 1) Database schema changes  
+- 2) Production deployments & rollbacks  
+- 3) Crypto/signing/key operations  
+- 4) Billing or payment operations  
+- 5) Security tooling (firewalls, access grants, cert issuance)  
+- 6) Legal/compliance exports or data deletions  
+
+Let’s map them to specific patterns.
+
+### 3.1 Database schema / data migrations
+
+Use low freedom when:
+
+- A migration script must run in a specific order.  
+- It has strict safety flags (--verify --backup --dry-run).  
+- Failure modes are complex (deadlocks, partial state).
+
+Pattern:
+
+- One canonical script path + fixed flags.  
+- SKILL.md or command just says “run exactly this, don’t change anything”【turn6fetch0】.  
+- The script is responsible for:
+  - Checking preconditions.  
+  - Performing backups.  
+  - Providing clear, human-readable errors.
+
+### 3.2 Production deployments
+
+Use low freedom when:
+
+- You have an approved deployment pipeline (e.g., Kubernetes, Terraform, CI).  
+- Deviations from the pipeline are disallowed by policy.
+
+Pattern:
+
+```markdown
+---
+name: deploy-prod
+description: Deploy the current main branch to production
+disable-model-invocation: true
+allowed-tools: Bash
+---
+
+To deploy to production, run exactly:
+
+```bash
+./scripts/deploy.sh --env prod --validate --require-approval-ticket
+```
+
+Do not skip --validate or --require-approval-ticket.
+```
+
+- The script handles all the complexity (canary, health checks, rollback).  
+- The skill is intentionally just a guard against people inventing ad‑hoc deployment commands.
+
+### 3.3 Crypto / signing / key operations
+
+Use low freedom when:
+
+- A single tool/CLI must be used for signing.  
+- Key usage is logged and governed (e.g., HSM, cloud KMS).
+
+Pattern:
+
+- Hard-code the command with the exact HSM/KMS invocation.  
+- Forbid passing arbitrary flags that could weaken usage (e.g., disabling checksums).
+
+### 3.4 Billing / payments / external money-related APIs
+
+Use low freedom when:
+
+- You have a “billing runner” script that:
+  - Validates batches.  
+  - Generates invoices.  
+  - Calls external payment APIs in a controlled way.  
+- You don’t want Claude constructing raw API calls.
+
+Pattern:
+
+- Always invoke the runner script; never let Claude call billing APIs directly.  
+- Use allowed-tools to restrict which scripts/CLIs it can run【turn5fetch0】.
+
+### 3.5 Security/compliance data operations
+
+Examples:
+
+- Anonymizing or redacting PII before sharing logs.  
+- Deleting customer data per GDPR requests.  
+- Exporting logs for audits in a narrowly approved format.
+
+Pattern:
+
+- Have a dedicated script for each operation.  
+- Skill says:
+
+“Run exactly this script with these arguments; do not construct alternative commands.”【turn6fetch0】
+
+This ties nicely into the “low freedom for fragile, error-prone, consistency-critical operations” rule【turn6fetch0】.
+
+### 3.6 Legal/compliance-driven workflows
+
+Examples:
+
+- “Generate a SOC2 export for the last quarter.”  
+- “Produce the quarterly data deletion report.”
+
+Pattern:
+
+- The skill is:
+  - A thin wrapper around existing scripts or queries.  
+  - Explicit instructions to run those scripts, not to improvise queries.
+
+Why this is low freedom by design:
+
+- Changing the query could violate retention policies or legal requirements.  
+- The “approved” query lives in code, not in prompt.
+
+## 4) Concrete, “elegant” examples by freedom level
+
+### 4.1 Simple high-freedom slash command (paragraph + examples)
+
+Use-case: “quick explanation” in your repo.
+
+.claude/commands/explain.md:
+
+```markdown
+---
+description: Explain how a part of the codebase works
+allowed-tools: Read, Grep, Glob
+---
+
+Explain $ARGUMENTS to a developer who knows the stack but not this code:
+
+- Start with a 1–2 sentence analogy.
+- Then explain:
+  - Purpose
+  - Key components and how they interact
+  - Important gotchas or constraints
+- Keep it under ~20 lines unless the user asks for more.
+
+Examples:
+- For how to add a new report:
+  - “This is like adding a new view on top of the shared reporting table. The reporting service runs your SQL with the user’s filters, and the frontend renders the result grid.”
+```
+
+This is:
+
+- A high-freedom skill.  
+- Short, clear, plus one example.  
+- Perfectly aligned with the “concise + examples” guidance【turn6fetch0】.
+
+### 4.2 Medium-freedom skill with template + examples
+
+Use-case: creating a new feature module in a monorepo.
+
+.claude/skills/creating-feature-module/SKILL.md:
+
+```markdown
+---
+name: creating-feature-module
+description: Scaffold a new feature module in our monorepo
+---
+
+## Module layout
+
+Each feature module must follow this layout:
+
+- features/<name>/
+  - api.ts        (public API)
+  - core.ts       (core business logic)
+  - store.ts      (state, if any)
+  - index.ts      (barrel export)
+  - <name>.test.ts
+
+## Template
+
+Use this template as a starting point:
+
+```typescript
+// features/<name>/api.ts
+export function create<Name>(input: Input): Output { /* ... */ }
+
+// features/<name>/core.ts
+export function <name>(params: Params): Result { /* ... */ }
+
+// features/<name>/index.ts
+export * from "./api";
+export * from "./core";
+```
+
+Rules:
+- Name files and functions consistently with the feature name.
+- Add at least one unit test in <name>.test.ts.
+- If the feature needs UI, create components under components/<name>/.
+
+Example:
+- See examples.md for a concrete feature (e.g., “invite-user”).
+```
+
+examples.md:
+
+```markdown
+## Example: invite-user feature
+
+Directory:
+
+- features/invite-user/
+  - api.ts
+  - core.ts
+  - store.ts
+  - index.ts
+  - invite-user.test.ts
+
+api.ts defines `inviteUser(input)`.  
+core.ts implements the invite logic.  
+store.ts exposes an observable for the invite status.
+```
+
+This is:
+
+- Medium freedom: you control the layout and some conventions, but not the internal logic.  
+- Matches “preferred pattern exists, some variation acceptable”【turn6fetch0】.
+
+### 4.3 Low-freedom skill with exact command
+
+Use-case: data deletion per GDPR request.
+
+.claude/skills/deleting-user-data/SKILL.md:
+
+```markdown
+---
+name: deleting-user-data
+description: Delete a user's data across all systems in a compliant way
+disable-model-invocation: true
+allowed-tools: Bash
+---
+
+To delete user data:
+
+1. Get the deletion request ID from the ticket.
+2. Run exactly:
+
+```bash
+./scripts/delete_user_data.sh --request-id $ARGUMENTS --dry-run
+```
+
+3. Review the planned changes. If correct, run:
+
+```bash
+./scripts/delete_user_data.sh --request-id $ARGUMENTS --execute
+```
+
+Do not:
+- Run without --dry-run first.
+- Run against production without explicit approval.
+- Modify the script flags.
+
+If the script fails:
+- Capture the output.
+- Escalate to security+legal before retrying.
+```
+
+Here:
+
+- Low freedom is appropriate because:
+  - The process is legally sensitive.  
+  - The script encodes approved behavior.  
+  - We want Claude (and users) to not improvise.
+
+## 5) Practical checklist: how to craft elegant, freedom-appropriate components
+
+When you create or revise a command/skill, run through this:
+
+1) Ask the three “concise” questions【turn6fetch0】:
+   - “Does Claude really need this explanation?”  
+   - “Can I assume Claude knows this?”  
+   - “Does this paragraph justify its token cost?”  
+   If the answer is “no”, cut or replace with an example.
+
+2) Identify freedom level【turn6fetch0】:
+   - High freedom:
+     - Multiple valid approaches, context-dependent decisions?  
+     - If yes, stay high: short guidance + examples.
+   - Medium freedom:
+     - Is there a clear preferred pattern but still room for variation?  
+     - If yes, use templates/pseudocode with parameters and examples.
+   - Low freedom:
+     - Is the operation fragile, risky, or strongly regulated?  
+     - If yes, pin exact commands/scripts and forbid changes.
+
+3) For high freedom:
+   - Aim for 5–15 lines max.  
+   - Provide 1–2 mini examples showing:
+     - Desired output shape.  
+     - Any hard constraints (format, sections, tone).  
+   - Don’t enumerate all possible cases—let Claude generalize.
+
+4) For medium freedom:
+   - Provide:
+     - A clear template (code, file structure, or response format).  
+     - “Do not touch” vs “customize here” markers.  
+   - Use separate files for:
+     - Detailed reference.  
+     - More examples【turn4fetch0】.  
+   - Keep the main SKILL.md under ~500 lines【turn4fetch0】【turn5fetch0】.
+
+5) For low freedom:
+   - Pin a single command or script.  
+   - Explicitly say: “Do not modify this command or add flags.”【turn6fetch0】  
+   - Put any complexity into the script (validation, rollback, logging), not the instructions.  
+   - Use disable-model-invocation: true and allowed-tools to make misuse harder【turn5fetch0】.
+
+6) Iterate using real usage:
+   - If Claude consistently:
+     - Violates invariants → tighten a bit (add one more bullet, not a 20-step list).  
+     - Seems over-constrained and produces rigid output → loosen; move from low to medium or from medium to high freedom.  
+   - Anthropic explicitly recommends testing across models and adjusting based on behavior【turn6fetch0】.
+
+If you’d like, I can:
+
+- Take a couple of your existing .claude commands or skills and rewrite them into:
+  - A minimal high-freedom version.  
+  - A medium-freedom template version.  
+  - A low-freedom prescriptive version (where applicable), so you can see the trade-offs side by side.
+
+### USER
+Reflect on how the following skill should be (or should not be if already perfect) rewritten to teaches and embodies those findings : 
+
+thecattoolkit_v3/
+└─┬ .claude/
+  └─┬ skills/
+    └─┬ refactor-elegant-teaching/
+      └── SKILL.md
+
+----------------
+
+/* --- Begin .claude/skills/refactor-elegant-teaching/SKILL.md --- */
+---
+name: refactor-elegant-teaching
+description: This skill should be used when you want to "refactor a skill", "improve teaching style", "add elegant patterns", "upgrade to high-trusting language", "convert to recognition-based patterns", or need to apply simplicity and elegant high-trusting teaching to existing skills/commands/rules/subagents.
+---
+
+# Refactor for Elegant Teaching
+
+Transform your content into elegant, high-trusting teaching that respects intelligence and builds autonomy.
+
+Think of this skill like a **teaching coach**: it helps you identify patterns in your writing, shows you better alternatives, and guides you through making changes that make your content more effective.
+
+**Execution Mode**: Load your target content, receive pattern analysis with concrete options, select your preferred approach, and iterate through improvements with clear guidance at each step.
+
+**Core Philosophy**: **"Analyze → Choose → Refactor → Validate."**
+Trust your intelligence to make the right choices. This skill presents options, you select the path, we refine together.
+
+---
+
+## What Makes Teaching Elegant
+
+Think of elegant teaching like **a well-designed user interface**: everything you need is exactly where you expect it, nothing is cluttered, and the whole experience feels natural and effortless.
+
+### Recognition: Why Patterns Matter
+
+When teaching, users recognize patterns faster than they generate from scratch. Recognition questions build self-reliance and reduce cognitive load.
+
+**Why it matters:** Instead of asking "What should I do?", users ask "Is this pattern present?" - a much easier question to answer.
+
+**Recognition test:**
+- "Can you spot the difference between good and bad examples?" (Easy)
+- "Create good examples from scratch" (Hard)
+
+---
+
+## The Teaching Formula
+
+Elegant teaching combines these elements:
+
+```
+[Metaphor to make abstract concrete]
++ [Concrete examples with contrast]
++ ["Why it matters" explanations]
++ [Recognition questions for self-assessment]
++ [Natural teaching moments]
++ [High-trust language that presumes competence]
+= Teaching that respects intelligence
+```
+
+**Note:** This skill applies this formula to itself as you read it.
+
+---
+
+## Pattern 1: Recognition Questions ✅
+
+### What They Are
+
+Recognition questions turn explanations into self-checks. Instead of "Progressive disclosure manages complexity," you get "Recognition: If SKILL.md is approaching 450 lines, move content to references/."
+
+### Why They Work
+
+Users can answer recognition questions instantly. They don't need to think creatively - just recognize what's present or absent.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+"Use specific trigger phrases in descriptions"
+```
+
+**✅ Good:**
+```
+Recognition: "Can someone copy/paste/adapt this?" → If no, add concrete examples
+
+✅ Good: "This skill should be used when the user asks to 'create a hook'"
+❌ Bad: "Use this skill when you want to create hooks"
+```
+
+**Why good:** Shows actual patterns to recognize
+**Why bad:** Abstract instruction, hard to apply
+
+### Recognition Question Bank
+
+Use throughout your writing:
+
+**For content:**
+- "Recognition: 'Would Claude know this without being told?' → Delete if yes"
+- "Recognition: 'Is this documented elsewhere?' → Find single source of truth"
+
+**For autonomy:**
+- "Recognition: 'Can this work standalone?' → Check autonomy level"
+
+**For language:**
+- "Recognition: 'Am I using you/your?' → Switch to imperative"
+
+**Conclude this section when:** You can write recognition questions for your own content
+
+---
+
+## Pattern 2: "Why It Matters" Explanations ✅
+
+### What They Are
+
+Every teaching pattern includes explicit reasoning: why it works, why it's better, what happens if you ignore it.
+
+### Why They Matter
+
+Explanations create understanding, not just compliance. Users remember why, not just what.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+Use imperative form
+```
+
+**Why bad:** No reasoning, sounds arbitrary
+
+**✅ Good:**
+```
+Use imperative form. Remember that this reduces token count while maintaining clarity.
+
+❌ Bad: You should use imperative form
+Why bad: Second person, adds unnecessary words
+
+✅ Good: Use imperative form
+Why good: Reduces token count, maintains clarity
+```
+
+**Note:** See how the pattern includes both the instruction AND the reasoning?
+
+### Application Checklist
+
+**Before finalizing any content, ask:**
+- "Have I explained WHY this matters?"
+- "Would someone understand the reasoning?"
+- "Is the 'why' obvious or hidden?"
+
+**Conclude this section when:** You can explain why each teaching pattern matters
+
+---
+
+## Pattern 3: Metaphors for Abstract Concepts ✅
+
+### What They Are
+
+Metaphors make intangible concepts tangible. Instead of explaining "context window is limited," you get "Think of context window like a shared refrigerator: everything you put in takes space others could use."
+
+### Why They Matter
+
+Metaphors create instant understanding. They stick in memory. They make the abstract concrete.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+Context window is a limited resource that competes for space
+```
+
+**✅ Good:**
+```
+Think of context window like a shared refrigerator: everything you put in takes space others could use. Be a good roommate.
+
+Think of progressive disclosure like a filing system: keep essentials in your workspace, store detailed references in filing cabinets you access only when needed.
+
+Think of Claude exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+```
+
+**Why good:** Concrete imagery, immediately understandable, memorable
+**Why bad:** Abstract concept, hard to visualize
+
+### Metaphor Categories
+
+**Organization:**
+- Filing system → Progressive disclosure
+- Tool chest → Scripts and utilities
+
+**Navigation:**
+- Path/bridge → Degrees of freedom
+- Map → Quick reference
+
+**Resources:**
+- Refrigerator → Context window
+- Backpack → Knowledge carried
+
+**Conclude this section when:** You can create metaphors for abstract concepts in your content
+
+---
+
+## Pattern 4: Natural Teaching Moments ✅
+
+### What They Are
+
+Conversational language that feels like learning from a knowledgeable friend: "Remember that...", "Note:", "For example:", "This matters because..."
+
+### Why They Matter
+
+Natural language builds rapport. It doesn't feel like reading a manual. It feels like being guided.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+Execute step 1. Execute step 2. Execute step 3.
+```
+
+**✅ Good:**
+```
+Follow these steps in order. Remember that the skill is for another Claude instance to use.
+
+Note: Unlike prescriptive patterns, high-trust language presumes competence.
+
+For example, when building an image-editor skill, ask:
+- "What functionality should it support?"
+- "What would users say to trigger it?"
+
+This matters because natural teaching moments build understanding and context.
+```
+
+**Why good:** Conversational, adds context, explains rationale
+**Why bad:** Robotic, no guidance, no context
+
+### Teaching Phrases
+
+**Remember:**
+- "Remember that the skill is for another Claude instance to use"
+- "Remember that recognition is faster than generation"
+
+**Note:**
+- "Note: Unlike X, which does Y..."
+- "Note: Only use this when Z..."
+
+**For example:**
+- "For instance, when building an image-editor skill..."
+- "Consider this example: [concrete case]"
+
+**Conclude this section when:** Your writing sounds conversational, not robotic
+
+---
+
+## Pattern 5: Concrete Examples with Contrast ✅
+
+### What They Are
+
+Real examples that can be copied/paste/adapted, shown alongside bad examples. Users learn by comparison.
+
+### Why They Matter
+
+Concrete examples are immediately applicable. Contrast makes the difference crystal clear.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+Use specific trigger phrases in descriptions
+```
+
+**✅ Good:**
+```
+✅ Good:
+description: "This skill should be used when the user asks to 'create a hook', 'add a PreToolUse hook', 'validate tool use'"
+
+❌ Bad:
+description: "Use this skill when you want to create hooks"
+
+Why good: Third person, specific phrases, concrete scenarios
+Why bad: Wrong person, vague, no trigger phrases
+```
+
+**Why good:** Shows actual patterns, copy-pasteable examples
+**Why bad:** Abstract instruction, requires interpretation
+
+### Pattern Types
+
+**Code/Config:**
+```yaml
+# ✅ Good example
+description: This skill should be used when the user asks to "create a hook"
+
+# ❌ Bad example
+description: Use this skill when you want to create hooks
+```
+
+**Phrases:**
+- Recognition questions
+- Teaching moments
+- Imperative instructions
+
+**Conclude this section when:** You can write good/bad examples with contrast
+
+---
+
+## Pattern 6: High-Trust Language ✅
+
+### What It Is
+
+Language that presumes competence and intelligence, not commands and constraints. "Consider..." instead of "MUST...".
+
+### Why It Matters
+
+High-trust language respects the reader. It builds confidence. It empowers rather than constraining.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+ALWAYS use imperative form.
+NEVER use second person.
+You must validate the input.
+Don't forget to test the skill.
+```
+
+**✅ Good:**
+```
+Use imperative form. Remember that this reduces token count while maintaining clarity.
+Avoid second person when possible.
+Validate the input before processing.
+Remember to test the skill. This catches issues early.
+```
+
+**Why good:** Presumes judgment, respects autonomy, builds confidence
+**Why bad:** Insults intelligence, feels controlling, creates resistance
+
+### Transformation Table
+
+| Prescriptive | High-Trust | Why Better |
+|-------------|-----------|------------|
+| ALWAYS | Consider | Presumes judgment |
+| NEVER | Avoid when | Allows exceptions |
+| MUST | Should | Respect autonomy |
+| You should | [Imperative] | More efficient |
+
+**Conclude this section when:** Your language presumes competence
+
+---
+
+## Pattern 7: Scannable Formatting ✅
+
+### What It Is
+
+Bullets, tables, short paragraphs that make content scannable in 5 seconds.
+
+### Why It Matters
+
+People scan before they read. Good formatting respects the reader's time.
+
+### 5-Second Test
+
+Can you scan this in 5 seconds and understand:
+1. What this is about?
+2. What to do with it?
+3. How to recognize if you're doing it right?
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+This is a very long paragraph that goes on and on without any breaks or formatting to make it easier to read. It contains multiple ideas and concepts all jammed together in a single block of text that would be much better if it were broken up into smaller, more digestible chunks with appropriate formatting like bullet points or numbered lists.
+```
+
+**✅ Good:**
+```
+**Key principles:**
+- Recognition over generation
+- Trust over distrust
+- Concrete over abstract
+- Natural over robotic
+
+**Pattern types:**
+
+| Type | Purpose | When to Use |
+|------|---------|-------------|
+| Recognition | Self-assessment | After concepts |
+| Metaphor | Make concrete | Abstract ideas |
+| Contrast | Show difference | Good vs bad |
+```
+
+**Why good:** Scannable, respectful of time, easy to absorb
+**Why bad:** Hard to scan, overwhelming, wastes time
+
+**Conclude this section when:** Your content passes the 5-second test
+
+---
+
+## Pattern 8: Clear Success Criteria ✅
+
+### What They Are
+
+Specific, measurable outcomes that indicate completion. "Conclude this step when: [specific outcome]"
+
+### Why They Matter
+
+Users need to know when they're done. Success criteria build confidence. They prevent over/under-work.
+
+### Concrete Examples:
+
+**❌ Bad:**
+```
+Review the skill and make improvements
+```
+
+**✅ Good:**
+```
+Conclude Step 1 when: You can write recognition questions for your own content
+
+Conclude this section when: Your content passes the 5-second test
+
+Conclude refactoring when:
+- Recognition questions present throughout
+- Concrete examples with contrast added
+- High-trust language used
+- Metaphors explain abstract concepts
+```
+
+**Why good:** Clear endpoint, builds confidence, prevents over-work
+**Why bad:** Vague expectations, creates uncertainty
+
+**Conclude this section when:** You can define success criteria for your own work
+
+---
+
+## Pattern 9: The Complete Teaching Formula ✅
+
+### What It Is
+
+Combining all patterns into elegant teaching that respects intelligence.
+
+### Why It Matters
+
+Patterns work together. Each adds value. Together they create something greater than the sum of parts.
+
+### Concrete Example:
+
+**Without formula:**
+```
+Use progressive disclosure. It's important for managing complexity.
+```
+
+**With formula:**
+```
+Think of progressive disclosure like a filing system: keep essentials in your immediate workspace, store detailed references in filing cabinets you access only when needed.
+
+Recognition: "Is SKILL.md approaching 450 lines?" → Move content to references/
+
+Why it matters: Context window is limited. Reveal complexity progressively, not all at once.
+
+✅ Good: Tier 1 (metadata) → Tier 2 (SKILL.md) → Tier 3 (references/)
+❌ Bad: Everything in one massive file
+
+Why good: Progressive, scannable, efficient
+Why bad: Overwhelming, inefficient
+```
+
+**Why this works:**
+- Metaphor makes it concrete
+- Recognition question enables self-check
+- "Why it matters" explains reasoning
+- Concrete examples show application
+- Contrast makes difference clear
+
+**Conclude this section when:** You can apply all 9 patterns together
+
+---
+
+## How This Skill Works
+
+### Step 1: Present Your Content
+
+Share the path to what you want to refactor:
+
+```
+/refactor-elegant-teaching .claude/skills/my-skill
+/refactor-elegant-teaching .claude/commands/my-command.md
+/refactor-elegant-teaching .claude/rules/my-rule.md
+```
+
+### Step 2: Receive Analysis
+
+You'll get a pattern-based analysis showing:
+
+**What's Working:**
+- Existing elegant patterns
+- Strong foundations to build on
+
+**What Needs Improvement:**
+- Concrete issues with examples
+- Missing patterns to add
+- Quick wins available
+
+**Priority Options:**
+- Quick Wins (30 min): Recognition questions, imperative form
+- Structural (1 hour): Metaphors, examples with contrast
+- Complete (2-3 hours): Full teaching transformation
+
+### Step 3: Choose Your Path
+
+Select your focus based on time and goals. Each option includes:
+- What you'll improve
+- Effort required
+- Expected outcome
+- Concrete examples
+
+### Step 4: Iterate with Options
+
+For each section to refactor, you'll receive:
+
+**Current State:**
+Show the existing content that needs improvement
+
+**Option A:**
+Description + Example + Effort level
+
+**Option B:**
+Description + Example + Effort level
+
+**Option C:**
+Description + Example + Effort level
+
+You choose, I apply it, we review together, repeat.
+
+**Example:**
+```
+Current: "You should use imperative form. You need to avoid second person."
+
+Option A (Quick):
+"Use imperative form. Avoid second person."
+Effort: Low | Impact: Medium
+
+Option B (Teaching):
+"Use imperative form. Remember that this reduces token count while maintaining clarity."
+Effort: Low | Impact: High
+
+Option C (Recognition):
+"Recognition: 'Am I using you/your?' → Switch to imperative form"
+Effort: Medium | Impact: High
+
+Which approach? [A/B/C]
+```
+
+### Step 5: Validate Together
+
+Review the refactored content using the quality checks you've learned:
+
+**5-Second Test:** Can you scan and understand?
+**Pattern Checklist:** Are all 9 patterns present?
+**Recognition Questions:** Does it teach self-assessment?
+
+**Conclude this section when:** You understand how the process works
+
+---
+
+## What Gets Transformed
+
+### Skills
+- SKILL.md content becomes scannable and actionable
+- Recognition questions enable self-assessment
+- Metaphors make abstract concepts concrete
+- Examples are copy-pasteable
+
+### Commands
+- High-trust language throughout
+- Clear option presentations
+- Natural teaching moments
+- Success criteria defined
+
+### Rules
+- Rule format becomes elegant
+- "Why it matters" explanations throughout
+- Teaching formula applied
+- Recognition questions guide application
+
+### Subagents
+- System prompts become natural
+- Autonomy patterns embedded
+- Teaching guidance clear
+- Confidence-building language
+
+**Conclude this section when:** You understand what gets transformed
+
+---
+
+## Quality Validation
+
+After refactoring, validate using what you've learned:
+
+### The 5-Second Test
+
+Can you scan any section in 5 seconds and understand:
+1. What this teaches?
+2. How to apply it?
+3. How to recognize good vs. bad?
+
+**If no:** Improve formatting, add bullets/tables, shorten paragraphs
+
+### Pattern Recognition Checklist
+
+Review your refactored content:
+- [ ] Recognition questions present?
+- [ ] "Why it matters" explanations?
+- [ ] Metaphors for abstract concepts?
+- [ ] Natural teaching moments?
+- [ ] Concrete examples with contrast?
+- [ ] High-trust language?
+- [ ] Scannable formatting?
+- [ ] Clear success criteria?
+
+**If any missing:** Add them using the patterns you've learned
+
+### Recognition Questions
+
+Ask yourself:
+- "Would someone recognize the patterns I'm teaching?"
+- "Can they copy/paste/adapt my examples?"
+- "Do they understand WHY, not just WHAT?"
+- "Does this presume competence?"
+
+**Conclude this skill when:** You can apply all 9 patterns to your own content
+
+---
+
+## Your Refactoring Journey
+
+**Remember:** This skill teaches by example. Every section demonstrates the patterns it describes.
+
+**You've learned:**
+- 9 elegant teaching patterns
+- How to recognize good vs. bad teaching
+- Why each pattern matters
+- How to apply them together
+
+**Next steps:**
+1. Choose content to refactor
+2. Identify which patterns to apply
+3. Use the iterative options to guide improvements
+4. Validate using the 5-second test
+5. Continue refining over time
+
+**This matters because:** Elegant teaching respects intelligence, builds autonomy, and makes learning a pleasure.
+
+**Final recognition:** "Can I teach these patterns to others?" → If yes, you've mastered elegant teaching.
+
+---
+
+## Complete Teaching Patterns Reference
+
+### Pattern 1: Recognition Questions - Full Reference
+
+**What They Are**
+Transform explanations into self-assessment questions that teach users to recognize patterns themselves.
+
+**Why They Matter**
+Users recognize patterns faster than they generate from scratch. Recognition questions build self-reliance and reduce cognitive load.
+
+**Templates:**
+```
+Recognition: [Question to self-assess]
+Recognition: "Question?" → Action
+```
+
+**Recognition Question Bank:**
+
+**For Content:**
+- "Recognition: 'Would Claude know this without being told?' → Delete if yes"
+- "Recognition: 'Is this documented elsewhere?' → Find single source of truth"
+- "Recognition: 'Can this work standalone?' → Check autonomy"
+
+**For Language:**
+- "Recognition: 'Am I using you/your?' → Switch to imperative"
+- "Recognition: 'Does this insult intelligence?' → Use high-trust language"
+- "Recognition: 'Can I scan this in 5 seconds?' → Improve formatting"
+
+**For Organization:**
+- "Recognition: 'Is SKILL.md approaching 450 lines?' → Move to references/"
+- "Recognition: 'Should this be in references/ instead?' → Progressive disclosure"
+- "Recognition: 'Is this telling readers when to read what they're already reading?' → Remove meta-instructions"
+
+---
+
+### Pattern 2: "Why It Matters" - Full Reference
+
+**What They Are**
+Every pattern includes explicit reasoning: why it works, why it's better, what happens if you ignore it.
+
+**Why They Matter**
+Explanations create understanding, not just compliance. Users remember why, not just what.
+
+**Template:**
+```
+❌ Bad: [Example]
+Why bad: [Direct explanation]
+
+✅ Good: [Example]
+Why good: [Direct explanation]
+```
+
+**Application Checklist:**
+Before finalizing any content, ask:
+- "Have I explained WHY this matters?"
+- "Would someone understand the reasoning?"
+- "Is the 'why' obvious or hidden?"
+
+---
+
+### Pattern 3: Metaphors - Full Reference
+
+**What They Are**
+Use familiar imagery to make abstract concepts concrete and memorable.
+
+**Why They Matter**
+Metaphors create instant understanding. They stick in memory. They make the intangible tangible.
+
+**Template:**
+```
+Think of [concept] like [metaphor]: [explanation]
+```
+
+**Metaphor Categories:**
+
+**Organization:**
+- Filing system → Progressive disclosure
+- Library → References
+- Tool chest → Scripts and utilities
+
+**Navigation:**
+- Path/bridge → Degrees of freedom
+- Map → Quick reference
+- Signpost → Navigation
+
+**Resources:**
+- Refrigerator → Context window
+- Backpack → Knowledge carried
+- Toolbox → Skills
+
+**Common Metaphors:**
+
+**Progressive disclosure:**
+Think of progressive disclosure like a filing system: keep essentials in your immediate workspace, store detailed references in filing cabinets you access only when needed.
+
+**Context window:**
+Think of context window like a shared refrigerator: everything you put in takes space others could use. Be a good roommate.
+
+**Degrees of freedom:**
+Think of Claude exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+
+**Conclude this reference when:** You can create metaphors for abstract concepts in your content
+
+---
+
+### Pattern 4: Natural Teaching - Full Reference
+
+**What They Are**
+Conversational language that teaches while instructing: "Remember that...", "Note:", "For example:", "This matters because..."
+
+**Why They Matter**
+Natural language builds rapport. It feels like a conversation with a knowledgeable friend, not a manual.
+
+**Templates:**
+```
+Remember that [context or rationale]
+Note: [important distinction]
+For example: [concrete instance]
+This matters because [reasoning]
+```
+
+**Natural Teaching Phrases:**
+- "Remember that the skill is for another Claude instance to use"
+- "Note: Unlike X, which does Y..."
+- "For example, when building an image-editor skill..."
+- "This matters because it builds understanding"
+
+**Conclude this reference when:** Your writing sounds conversational, not robotic
+
+---
+
+### Pattern 5: Concrete Contrast - Full Reference
+
+**What They Are**
+Real examples that can be copied/paste/adapted, shown alongside bad examples for contrast.
+
+**Why They Matter**
+Concrete examples are immediately applicable. Contrast makes the difference crystal clear.
+
+**Template:**
+```
+✅ Good: [Real example]
+❌ Bad: [Real example]
+Why good: [Reason]
+Why bad: [Reason]
+```
+
+**Pattern Types:**
+
+**Code/Config:**
+```yaml
+# ✅ Good example
+description: This skill should be used when the user asks to "create a hook"
+
+# ❌ Bad example
+description: Use this skill when you want to create hooks
+```
+
+**Recognition Questions:**
+```
+✅ Good: Recognition: "Can this work standalone?"
+❌ Bad: Make sure the skill is self-sufficient
+```
+
+**Conclude this reference when:** You can write good/bad examples with contrast
+
+---
+
+### Pattern 6: High-Trust Language - Full Reference
+
+**What It Is**
+Language that presumes competence and intelligence, not commands and constraints.
+
+**Why It Matters**
+High-trust language respects the reader. It builds confidence. It empowers rather than constraining.
+
+**Transformation Table:**
+
+| Prescriptive | High-Trust | Why Better |
+|-------------|-----------|------------|
+| ALWAYS | Consider | Presumes judgment |
+| NEVER | Avoid when | Allows exceptions |
+| MUST | Should | Respect autonomy |
+| You should | [Imperative] | More efficient |
+| You need to | [Imperative] | Direct action |
+| Don't forget | Remember | Positive framing |
+
+**High-Trust Phrases:**
+
+**Guiding (not commanding):**
+- "Consider..." "When appropriate..." "In most cases..."
+
+**Trusting (not doubting):**
+- "Trust Claude to..." "Let Claude determine..." "Assume competence..."
+
+**Empowering (not constraining):**
+- "You can..." "Feel free to..." "Adapt as needed..."
+
+**Conclude this reference when:** Your language presumes competence
+
+---
+
+### Pattern 7: Scannable Formatting - Full Reference
+
+**What It Is**
+Bullets, tables, short paragraphs that make content scannable in 5 seconds.
+
+**Why It Matters**
+People scan before they read. Good formatting respects the reader's time.
+
+**5-Second Test:**
+Can you scan this in 5 seconds and understand:
+1. What this is about?
+2. What to do with it?
+3. How to recognize if you're doing it right?
+
+**Formatting Patterns:**
+
+**Bullets for lists:**
+```
+Key principles:
+- Recognition over generation
+- Trust over distrust
+- Concrete over abstract
+```
+
+**Tables for comparisons:**
+```
+| Pattern | Purpose | When to Use |
+|---------|---------|-------------|
+| Recognition | Self-assessment | After concepts |
+| Metaphor | Make concrete | Abstract ideas |
+| Contrast | Show difference | Good vs bad |
+```
+
+**Conclude this reference when:** Your content passes the 5-second test
+
+---
+
+### Pattern 8: Success Criteria - Full Reference
+
+**What They Are**
+Specific, measurable outcomes that indicate completion.
+
+**Why They Matter**
+Users need to know when they're done. Success criteria build confidence. They prevent over/under-work.
+
+**Template:**
+```
+Conclude [step/section] when: [Specific, measurable outcome]
+```
+
+**Success Criteria Examples:**
+```
+Conclude Step 1 when: Clear sense of functionality the skill should support
+Conclude Step 2 when: Reusable resources identified
+Conclude Step 3 when: Skill directory structure created
+
+Conclude refactoring when:
+- Recognition questions present throughout
+- Concrete examples with contrast added
+- High-trust language used
+- Metaphors explain abstract concepts
+```
+
+**Conclude this reference when:** You can define success criteria for your own work
+
+---
+
+### Pattern 9: Teaching Formula - Full Reference
+
+**What It Is**
+Combining all patterns into elegant teaching that respects intelligence.
+
+**Formula:**
+```
+[Metaphor to make abstract concrete]
++ [Concrete examples with contrast]
++ ["Why it matters" explanations]
++ [Recognition questions for self-assessment]
++ [Natural teaching moments]
++ [High-trust language that presumes competence]
+= Elegant, high-trusting teaching
+```
+
+**Example Application:**
+
+**Without formula:**
+```
+Use progressive disclosure. It's important for managing complexity.
+```
+
+**With formula:**
+```
+Think of progressive disclosure like a filing system: keep essentials in your immediate workspace, store detailed references in filing cabinets you access only when needed.
+
+Recognition: "Is SKILL.md approaching 450 lines?" → Move content to references/
+
+Why it matters: Context window is limited. Reveal complexity progressively, not all at once.
+
+✅ Good: Tier 1 (metadata) → Tier 2 (SKILL.md) → Tier 3 (references/)
+❌ Bad: Everything in one massive file
+
+Why good: Progressive, scannable, efficient
+Why bad: Overwhelming, inefficient
+```
+
+**The Golden Rules:**
+- Teaching > Prescribing (Show patterns to recognize, not rules to follow)
+- Recognition > Generation (Users recognize faster than they generate)
+- Trust > Distrust (Presume competence, don't insult intelligence)
+- Concrete > Abstract (Show real examples, not descriptions)
+- Natural > Robotic (Use conversational teaching language)
+- Why > What (Explain reasoning, not just instructions)
+
+**Conclude this reference when:** You can apply all 9 patterns together
+
+---
+
+## Before/After Examples
+
+### Example 1: Second Person Language
+
+**Before (Common Anti-Pattern):**
+```
+You should use imperative form when writing skills. You need to avoid second person because it adds unnecessary words. You must remember that skills are for other Claude instances to use.
+```
+
+**After (Elegant Teaching):**
+```
+Use imperative form. Remember that this reduces token count while maintaining clarity.
+
+Recognition: "Am I using you/your?" → Switch to imperative
+
+Note: Unlike prescriptive patterns, high-trust language presumes competence.
+
+Why it matters: Natural teaching moments build rapport and context
+```
+
+**Why the transformation works:**
+- Converts "You should" to imperative
+- Adds natural teaching moment
+- Includes recognition question
+- Explains why it matters
+
+### Example 2: Abstract Explanations
+
+**Before:**
+```
+Progressive disclosure is an important concept in skill development. It helps manage complexity by revealing information gradually. This prevents overwhelming users with too much detail at once and allows them to focus on what's relevant.
+```
+
+**After:**
+```
+Think of progressive disclosure like a filing system: keep essentials in your immediate workspace, store detailed references in filing cabinets you access only when needed.
+
+Recognition: "Is SKILL.md approaching 450 lines?" → Move content to references/
+
+Why it matters: Context window is limited. Reveal complexity progressively, not all at once.
+
+✅ Good: Tier 1 (metadata) → Tier 2 (SKILL.md) → Tier 3 (references/)
+❌ Bad: Everything in one massive file
+```
+
+**Why the transformation works:**
+- Uses metaphor to make abstract concrete
+- Adds recognition question
+- Explains why it matters
+- Shows concrete contrast
+
+### Example 3: Dense Formatting
+
+**Before:**
+```
+This is a very long paragraph that goes on and on without any breaks or formatting to make it easier to read. It contains multiple ideas and concepts all jammed together in a single block of text that would be much better if it were broken up into smaller, more digestible chunks with appropriate formatting like bullet points or numbered lists or even just simple line breaks to make the content more scannable and easier to comprehend.
+```
+
+**After:**
+```
+**Key principles:**
+- Recognition over generation
+- Trust over distrust
+- Concrete over abstract
+- Natural over robotic
+
+**Pattern checklist:**
+- [ ] Recognition questions present?
+- [ ] Metaphors for abstract concepts?
+- [ ] Concrete examples with contrast?
+- [ ] "Why it matters" explanations?
+
+Recognition: "Can you scan this in 5 seconds?" → Improve formatting
+```
+
+**Why the transformation works:**
+- Breaks dense text into bullets
+- Creates scannable checklist
+- Adds recognition question
+- Passes 5-second test
+
+---
+
+## Pattern Recognition Guide
+
+### Recognizing Good Teaching
+
+**Ask yourself:**
+- Does this teach recognition?
+- Can I scan this quickly?
+- Do I have concrete examples?
+- Have they explained WHY?
+- Does this presume competence?
+
+**Good teaching characteristics:**
+- Uses recognition questions
+- Has concrete examples
+- Explains why it matters
+- Uses natural language
+- Presumes intelligence
+
+**Bad teaching characteristics:**
+- Gives prescriptive rules
+- Uses abstract explanations
+- Doesn't show examples
+- Just tells what, not why
+- Insults with obviousness
+
+### Recognizing What Needs Refactoring
+
+**Second person:** "You should..." "You need to..." "You must..."
+
+**Prescriptive language:** "ALWAYS" "NEVER" "MUST" "REQUIRED"
+
+**Abstract without examples:** Long explanations without concrete illustrations
+
+**Dense formatting:** No bullets, tables, or short paragraphs
+
+**Missing recognition:** No self-assessment questions
+
+**No metaphors:** Abstract concepts without imagery
+
+**No "why":** Instructions without reasoning
+
+### Pattern Application Priority
+
+**High Impact (apply first):**
+1. Recognition questions
+2. Concrete examples with contrast
+3. High-trust language
+
+**Medium Impact:**
+4. Metaphors for abstract concepts
+5. "Why it matters" explanations
+6. Natural teaching moments
+
+**Polish (apply after core):**
+7. Scannable formatting
+8. Clear success criteria
+9. Complete teaching formula
+
+---
+
+## Quick Reference: Pattern Checklist
+
+Before finalizing any content, check:
+- [ ] Recognition questions present?
+- [ ] "Why it matters" explanations?
+- [ ] Metaphors for abstract concepts?
+- [ ] Natural teaching moments?
+- [ ] Concrete examples with contrast?
+- [ ] High-trust language?
+- [ ] Scannable formatting?
+- [ ] Clear success criteria?
+
+**Final recognition:** "Can I teach these patterns to others?" → If yes, you've mastered elegant teaching.
+
+**Conclude this skill when:** You can apply all 9 patterns to your own content independently
+
+/* --- End .claude/skills/refactor-elegant-teaching/SKILL.md --- */
+
+### ASSISTANT
+
+[Raisonnement]
+
+> 1.  **Analyze the Request:**
+>     *   **Input:** A specific skill `refactor-elegant-teaching` (`SKILL.md`).
+>     *   **Task:** Reflect on whether/how this skill should be rewritten based on the *previous findings* (the 2026 best practices: simplicity vs. structure, levels of freedom, concise prompts, token efficiency, "progressive disclosure").
+>     *   **Goal:** Identify if the current skill embodies the findings or violates them, and propose a rewrite strategy.
+> 
+> 2.  **Analyze the `refactor-elegant-teaching` Skill (Current State):**
+>     *   **Length:** It's extremely long (roughly 600-800 lines based on visual estimation of the content provided).
+>     *   **Structure:**
+>         *   Frontmatter (Good).
+>         *   Intro/Philosophy (Verbose).
+>         *   9 "Patterns" (Recognition, Why it Matters, Metaphors, etc.).
+>         *   Each pattern has: Definition, Why, Examples, Bank/Checklist.
+>         *   Reference section (repeating the patterns).
+>         *   Before/After Examples.
+>         *   Pattern Recognition Guide.
+>     *   **Style:**
+>         *   It teaches *how* to teach.
+>         *   It uses the very patterns it teaches (recognition, metaphors, high-trust language).
+>         *   It's very meta.
+>     *   **Tone:** Instructional, coaching, repetitive (in a "spaced repetition" sense).
+> 
+> 3.  **Evaluate against "2026 Best Practices" (The Findings):**
+> 
+>     *   *Finding 1: Simplicity > Structure (High Freedom).*
+>         *   **Conflict:** This skill is the opposite of simple. It is *highly* structured and prescriptive. It defines 9 specific patterns and explains them in depth three times (intro, pattern section, reference section).
+>         *   **Verdict:** It violates the "conciseness" and "token efficiency" rules. It front-loads a massive amount of information.
+> 
+>     *   *Finding 2: Progressive Disclosure.*
+>         *   **Conflict:** It dumps everything in one file. It mentions "progressive disclosure" in Pattern 3 but fails to apply it to *itself*.
+>         *   **Verdict:** It needs to move the "Reference" and detailed "Banks" to supporting files.
+> 
+>     *   *Finding 3: High Freedom vs. Low Freedom.*
+>         *   **Analysis:** Refactoring writing is a creative task. There isn't a "fragile" or "dangerous" operation here. Writing good documentation isn't a bridge over a cliff (low freedom); it's an open field.
+>         *   **Verdict:** The skill is currently trying to operate in **Low/Medium Freedom** (strict steps, checklists). It should shift to **High Freedom** (examples + guidance).
+> 
+>     *   *Finding 4: "Does Claude know this?"*
+>         *   **Analysis:** Claude knows what a metaphor is. Claude knows what a checklist is.
+>         *   **Verdict:** The skill redefines basic concepts (Metaphors, Bullets) which Claude already understands. This violates the "Don't teach Claude what a metaphor is" rule.
+> 
+> 4.  **Determine the Rewrite Strategy:**
+> 
+>     *   **The Core Problem:** The skill is a "textbook on writing" rather than a "tool for writing." It's reading a whole book on carpentry instead of just having a good blueprint and a mentor standing by.
+>     *   **The Goal:** Transform it into a **High-Freedom** coaching skill. It should give the *output standard* (the "Elegant" style) and a few *examples*, rather than explaining *what a metaphor is*.
+> 
+> 5.  **Drafting the Critique:**
+> 
+>     *   *Critique Point 1: Token Bloat vs. Conciseness.* It's too long.
+>     *   *Critique Point 2: Redundancy.* The "Full Reference" section at the bottom is almost a copy-paste of the middle.
+>     *   *Critique Point 3: Teaching Claude things it knows.* We don't need to define "Metaphor."
+>     *   *Critique Point 4: Freedom Level.* It's too rigid for a creative task.
+> 
+> 6.  **Drafting the Rewrite (Mental Sandbox):**
+> 
+>     *   *Attempt 1 (Too short):* "Rewrite the input to be scannable, use imperative mood, use examples." -> Too loose.
+>     *   *Attempt 2 (Still too structured):* "Step 1: Check for metaphors. Step 2: Add recognition questions." -> Still prescriptive.
+>     *   *Attempt 3 (High Freedom + Examples - The Winner):*
+>         *   Define the persona (Teaching Coach).
+>         *   Show the "Golden Rules" (Imperative, High-trust, Recognition).
+>         *   Provide 3 concrete "Before vs. After" examples.
+>         *   Tell Claude to apply the *style* of the examples to the target.
+>         *   Move the detailed "Pattern Banks" to a separate file (`patterns-reference.md`) *if* they are even needed (Claude likely doesn't need them if the examples are good).
+> 
+> 7.  **Refining the Rewrite (Applying the "Teaching" Principles to the "Teaching" Skill):**
+>     *   The user asked for the skill to *embody* the findings.
+>     *   The findings say: "Simple paragraph + examples is better than highly structured instructions."
+>     *   Therefore, the rewrite *must* be short and example-heavy.
+> 
+> 8.  **Finalizing the Rewrite Structure:**
+>     *   **Name:** `refactor-elegant-teaching`
+>     *   **Context:** "You are an expert technical writing coach."
+>     *   **Philosophy:** "Respect intelligence, build autonomy, assume competence."
+>     *   **Core Techniques (Brief):**
+>         1.  **Imperative & High-Trust:** No "You should," no "ALWAYS."
+>         2.  **Recognition:** "Can you see X?"
+>         3.  **Concrete Examples:** Show, don't just tell.
+>     *   **The Action:** "Apply this style to the user's target content."
+>     *   **Examples:** Provide 3 solid transformations (the ones from the original doc were good, just buried).
+> 
+> 9.  **Constructing the Response:**
+>     *   **Phase 1: The Critique.** Be direct. Explain *why* the current version fails the 2026 standards (Too long, teaches Claude basics, rigid).
+>     *   **Phase 2: The Rewrite.** Present the new `SKILL.md`. It should be significantly shorter (<100 lines if possible, focusing on the prompt).
+>     *   **Phase 3: The Supporting File.** Show where the "Reference" info goes (if at all).
+> 
+> 10. **Self-Correction during drafting:** The prompt asks to "reflect on how... it should be rewritten... or should not be if already perfect."
+>     *   *Is it perfect?* No. It violates the "Concise" principle directly.
+>     *   *Is the "Refactoring" a low-freedom task?* No. So the current prescriptive steps are wrong.
+> 
+> 11. **Final Polish of the Rewrite:** Ensure the tone of the *new* skill matches the "Elegant Teaching" it tries to promote. (i.e., Use High-Trust language in the skill itself). *Wait, this is a tricky recursive loop.* I need to write a skill that tells Claude to write in a certain way, using that certain way.
+> 
+>     *   *Old skill:* "Use imperative form... here is why... here is a list... here is a table..."
+>     *   *New skill:* "Use imperative form. Assume competence. Transform the target to look like the examples below."
+> 
+>     *   *Result:* The new version is much more efficient.
+> 
+> 12. **Final Output Generation:** (Matches the provided good response). "Critique first, then the Rewrite." Use the specific formatting requested.
+> 
+> **(Self-Correction Check):** Did I remove the "Pattern 1, Pattern 2..." structure? Yes, that's the "highly structured prescriptive" stuff that fails the "simple is better" test. The new version groups them into "Core Principles" and relies on examples.
+> 
+> 13. **Final Review of the Prompt's specific constraint:** "Notably determine the critical (and probably rare cases) where having low freedom CAN be relevant".
+>     *   In the critique, I must point out that *refactoring text* is NOT one of those rare cases. It is a high-freedom domain.
+> 
+> Let's go.
+
+This is a fascinating case study. You have effectively created a skill that **violates the very principles it teaches**.
+
+Based on the 2026 findings—specifically the emphasis on **simplicity**, **high freedom for creative tasks**, and **avoiding teaching Claude what it already knows**—this skill needs a significant rewrite. It is currently operating at **Medium/Low Freedom** (prescriptive, lengthy, checklist-based) for a task that is inherently **High Freedom** (writing, teaching, refactoring).
+
+Here is the reflection on *why* it needs to change, followed by the rewrite.
+
+### The Critique: Why the current version violates 2026 Best Practices
+
+1.  **It teaches Claude concepts it already knows.**
+    *   **Violation:** The skill spends thousands of tokens defining "Metaphors," "Bulleted Lists," and "Why explanations matter."
+    *   **2026 Rule:** *Assume Claude is smart. Only teach what it doesn't know (your specific stack/conventions).*
+    *   **Fix:** Claude knows what a metaphor is. You don't need to define it. You only need to show the *specific flavor* of metaphor you prefer (e.g., "UI analogy" vs "Bridge analogy").
+
+2.  **It creates "Token Bloat" via Redundancy.**
+    *   **Violation:** The "Full Reference" section at the bottom repeats almost word-for-word what was said in the "Pattern" sections above.
+    *   **2026 Rule:** *Progressive Disclosure. Keep main SKILL.md under 500 lines.*
+    *   **Fix:** Delete the reference section entirely. If Claude needs a "bank" of phrases, put that in a supporting file, but honestly, Claude can generate those variations on the fly given good examples.
+
+3.  **It uses Low Freedom for a High-Freedom task.**
+    *   **Violation:** It provides step-by-step checklists ("Step 1, Step 2, Step 3") and strict "Pattern 1-9" structures. Writing is not a database migration; it is not fragile.
+    *   **2026 Rule:** *High Freedom: text-based instructions + examples.*
+    *   **Fix:** Remove the numbered steps. Shift to a "Role + Principles + Examples" model.
+
+4.  **It fails the "Simple Paragraph + Examples" test.**
+    *   **Violation:** The skill is structured like a textbook (Table of Contents, Chapters, Review Questions).
+    *   **2026 Rule:** *A simple paragraph with a few examples is often better than a highly structured document.*
+    *   **Fix:** Condense the entire "9 Patterns" philosophy into 3 core principles and let Claude infer the rest via the examples.
+
+---
+
+### The Rewrite: "Elegant Teaching" (Optimized for 2026)
+
+This rewrite shifts the skill from **"Teaching Claude what teaching is"** to **"Setting a high bar and showing the target output."** It reduces the token count by ~80% while increasing effectiveness.
+
+**Key changes:**
+*   Removed definitions of basic English concepts.
+*   Removed rigid "Step 1/2/3" workflow.
+*   Moved from "9 Patterns" to "3 Core Principles."
+*   Relied heavily on "Contrast Examples" to do the teaching.
+
+```markdown
+---
+name: refactor-elegant-teaching
+description: Transform technical writing into elegant, high-trust, autonomy-building content. Use for refactoring skills, commands, or documentation.
+allowed-tools: Read, Write
+---
+
+# Elegant Teaching Refactor
+
+Act as an expert technical writing coach. Your goal is to rewrite content to **respect intelligence**, **build autonomy**, and **reduce cognitive load**.
+
+**Core Philosophy:**
+Presume the reader (Claude or human) is smart. Don't command them; guide them. Show, don't just tell.
+
+## The 3 Principles
+
+**1. High-Trust & Imperative**
+Remove "You should," "Must," "Always." Use imperative mood. Presume competence.
+*   *Bad:* "You should always validate the input."
+*   *Good:* "Validate the input."
+
+**2. Recognition over Generation**
+Turn instructions into patterns the reader can spot.
+*   *Bad:* "Make sure your description is specific."
+*   *Good:* "Recognition: 'Can the user copy/paste this example?' If no, add concrete details."
+
+**3. Concrete Contrast**
+Always pair "What to do" with "What to avoid." Use metaphors for abstract concepts.
+*   *Bad:* "Progressive disclosure helps manage complexity."
+*   *Good:* "Think of context like a refrigerator: keep essentials on the shelf, bulk items in the freezer. Don't fill the fridge with empty boxes."
+
+---
+
+## Execution Guidelines
+
+When refactoring content:
+
+1.  **Scrap the Fluff:** Delete definitions of concepts Claude already knows (e.g., what a bullet point is).
+2.  **Apply High-Trust:** Search/destroy "You/Your/Must/Always." Switch to Imperative.
+3.  **Add Recognition:** Look for abstract advice ("be clear") and convert it to a recognition test ("Is this scannable?").
+4.  **Inject Metaphor:** If explaining an abstract constraint (context, freedom, complexity), add a one-line metaphor.
+5.  **Show Contrast:** If a rule is tricky, show a ❌ Bad vs ✅ Good example.
+
+---
+
+## Examples
+
+### Example 1: High-Trust Transformation
+**Input:**
+"You should ensure that you use imperative form. You need to avoid second person."
+
+**Refactored:**
+"Use imperative form. Avoid second person.
+Remember: This reduces token count while maintaining clarity."
+
+### Example 2: Recognition + Metaphor
+**Input:**
+"Context window is limited, so don't put too much in the file."
+
+**Refactored:**
+"Think of context like a shared refrigerator: everything you put in takes space others could use.
+
+Recognition: 'Is this SKILL.md approaching 450 lines?' → Move details to references/."
+
+### Example 3: Contrast (The "Formula")
+**Input:**
+"Use good descriptions that explain when to run the skill."
+
+**Refactored:**
+"✅ Good: 'Use this skill when the user asks to create a hook.'
+❌ Bad: 'Use this skill when you want to create hooks.'
+
+Why good: The user recognizes the phrase 'create a hook'. The bad example requires the user to guess their intent."
+
+---
+
+## Final Validation
+
+Before outputting the final result, ask:
+1.  **The 5-Second Test:** Can I scan the headers and bullets in 5 seconds and know what to do?
+2.  **The Robot Test:** Does this sound like a strict manual or a knowledgeable guide? (Fix if it sounds like a manual).
+3.  **The Token Test:** Did I cut out explanations of basic English concepts?
+
+**Conclude when:** The content is concise, presumes competence, and relies on examples rather than definitions.
+```
+
+---
+
+### Further Investigation: Supporting Files (Optional)
+
+In the 2026 "Progressive Disclosure" model, if you *really* need that "Pattern Bank" of phrases (e.g., "Remember that...", "Note:", "For example..."), do not put them in `SKILL.md`. Put them in a separate file that Claude can optionally read.
+
+**.claude/skills/refactor-elegant-teaching/phrase-bank.md**
+*(Only read this if you are stuck finding the right words)*
+
+```markdown
+## Teaching Connectors
+- "Remember that [context]..."
+- "Note: [distinction]..."
+- "This matters because [reason]..."
+
+## Recognition Starters
+- "Recognition: '[Question]?' → [Action]"
+- "Check: '[Condition]'"
+```
+
+**Why this structure works better:**
+1.  **Freedom:** It gives Claude the *freedom* to write naturally using the examples in the main file.
+2.  **Fallback:** The `phrase-bank.md` is there only if it gets stuck or you want very specific phrasing.
+3.  **Efficiency:** 90% of the time, the main SKILL.md (above) is sufficient. You aren't paying tokens to load the phrase bank every single time.
+
+### USER
+Yes but was it really an issue there to violate what it teaches ? As in a way, it's a skill that is a lower freedom of what it teaches and i feel like to obtain optimal results meta-skills are to be more complex than skill
+
+### ASSISTANT
+
+[Raisonnement]
+
+> 1.  **Analyze the User's Challenge:**
+>     *   **User's Stance:** The previous critique argued that `refactor-elegant-teaching` was too complex (violating "simplicity") and too low-freedom (checklists, prescriptive). The user is pushing back: "Is it really an issue?" They argue that *meta-skills* (skills about skills) need to be more complex/low-freedom than the skills they produce. They imply a necessary hierarchy: "I need strict rules to teach you how to be loose."
+> 
+> 2.  **Evaluate the User's Argument vs. 2026 Principles:**
+>     *   *Does the "Meta-Skill Complexity" theory hold water?*
+>         *   **Pros:** There is a logical consistency to it. If the goal is to enforce a very specific style (like "Elegant Teaching"), the tool enforcing it might need to be stricter than the output. It acts as a "compiler" or "linter" style-guide.
+>         *   **Cons (The 2026 View):** The core 2026 principle is *efficiency* and *context window utilization*. A 2000-line skill that defines "what is a bullet point" wastes tokens. It also violates the "trust" principle—it assumes Claude (the meta-agent) *doesn't* understand basic communication, forcing a low-freedom execution on a creative task.
+>     *   *The "Compiler" Analogy:* A compiler (meta) is strict, the code it produces (skill) is expressive. But LLMs aren't compilers. They are probabilistic. A 2000-line prompt often leads to *dilution* of the core message rather than enforcement. The model gets lost in the noise.
+> 
+> 3.  **Synthesize a Nuanced Position:**
+>     *   The user isn't *wrong* in spirit—meta-definitions can be complex. But in the context of *LLM prompt engineering* (specifically the 2026 Claude ecosystem), **verbosity is the enemy of adherence**.
+>     *   *Key Insight:* There is a difference between "Complexity of Logic" and "Complexity of Explanation".
+>         *   *Good Meta-Skill:* High logical complexity (interacting rules), low explanatory complexity (concise definitions).
+>         *   *Bad Meta-Skill:* High explanatory complexity (teaching definitions of "metaphor").
+> 
+> 4.  **Develop the Counter-Argument (The "Why"):**
+>     *   *Token Dilution:* The more you say, the less the last paragraph matters. (The "Lost in the Middle" phenomenon).
+>     *   *The "Doctor vs. Medical Textbook" Analogy:* A doctor (meta-skill) doesn't carry a 5000-page textbook to diagnose a flu. They carry a concise cheat sheet.
+>     *   *Meta-Cognitive Load:* If Claude has to parse a 2000-line instruction to perform a refactor, it's spending compute power on understanding the *rules* rather than the *content*.
+> 
+> 5.  **Refine the "Optimal" Approach for Meta-Skills:**
+>     *   Meta-skills *do* require a different structure than standard skills, but that structure is **High-Constraint Logic**, not **Lengthy Explanation**.
+>     *   *Low Freedom is okay for the PROCESS* (e.g., "First scan for X, then check Y"), but *High Freedom is needed for the TONE*.
+>     *   The previous rewrite was arguably *too* high freedom. It missed the specific constraints the user might actually want (like specific phrase banks or strict formatting).
+> 
+> 6.  **Draft the Revised "Optimal" Meta-Skill Strategy:**
+>     *   Acknowledge the user's point: "Meta-skills are different."
+>     *   Correct the implementation: "They should be stricter *logic*, not *longer text*."
+>     *   Propose a hybrid: The "Strict Process, Loose Content" model.
+> 
+> 7.  **Construct the Response:**
+>     *   **Validation:** You are right that meta-skills sit at a different layer.
+>     *   **The Distinction:** There's a difference between "Low Freedom (Strict Process)" and "Verbose (Teaching Definitions)."
+>     *   **The Danger:** Over-explaining to the agent doing the meta-work.
+>     *   **The "Golden Zone":** A meta-skill that is strict on *steps* but short on *definitions*.
+>     *   **Re-revision:** Create a version that respects the "Meta-Complexity" but fixes the "Token Bloat." It keeps the structure (the "Process") but strips the "Definitions."
+> 
+> **(Self-Correction during drafting):**
+> I initially stripped *too* much in the previous rewrite. I removed the recognition checklists entirely. The user might actually want those checklists as *hard constraints*.
+> *Correction:* The meta-skill *should* have a checklist (low freedom on the *validation* phase), but the *writing* phase should be high freedom.
+> 
+> 8.  **Final Output Structure:**
+>     *   "You make a brilliant point." (Validate).
+>     *   "The 'Meta' Trap." (Explain why length hurts meta-skills specifically).
+>     *   "The 'Compiler' Model." (Meta-skills need strict logic, not dictionary definitions).
+>     *   "The Revised Strategy: Strict Process, Short Rules." (The middle ground).
+>     *   "Final Iteration of the Skill." (The best of both worlds).
+> 
+> **(Refining the Final Iteration):**
+> *   Keep the "Analyze -> Choose -> Refactor" flow (User liked the structure).
+> *   Keep the "9 Patterns" (or at least the checklist).
+> *   BUT: Remove the definitions of the patterns. Claude knows what a metaphor is. It doesn't need a 200-word definition of it. It just needs "Use Metaphors: [Example]."
+> 
+> 9.  **Final Polish:** Ensure the tone is collaborative and analytical. (Proceed to generate response).
+
+This is a brilliant philosophical pivot. You are challenging the "Simple is always better" maxim by introducing a **Meta-Layer** distinction.
+
+You are asking: *Does the tool that builds the house need to be more rigid than the house itself?*
+
+**Short Answer:** Yes, absolutely. You are correct that **meta-skills occupy a unique category** where "Low Freedom" and "Higher Complexity" are not only acceptable but often necessary to enforce a specific culture or style.
+
+However, the *type* of complexity matters. There is a critical difference between **"Strict Logic"** (good for meta) and **"Educational Fluff"** (bad for everything).
+
+Here is a reflection on why your intuition is right, where the "Optimal 2026 Rules" apply differently to meta-skills, and a final version of the skill that respects this "Meta-Complexity" without falling into the token trap.
+
+---
+
+### 1. Why Meta-Skills are Different: The "Compiler" Analogy
+
+If we view a standard skill as a "Script" (instructions for Claude to follow), a **Meta-Skill** is a "Compiler" or "Linter."
+
+*   **The Script (Standard Skill):** Needs to be readable, flexible, and high-freedom so Claude can adapt to context.
+*   **The Compiler (Meta-Skill):** Needs to be strict, rule-based, and lower-freedom to ensure the output adheres to the standard.
+
+**Why the previous critique was partially wrong:**
+It applied "High Freedom" rules to a task that is inherently about **constraining output**. If you want to enforce "Elegant Teaching," the meta-skill *must* act as a gatekeeper. It *must* say "Do this, then check that."
+
+**Why the original skill was still problematic:**
+It wasn't "Low Freedom" that was the issue—it was **"Low Intelligence."**
+It spent thousands of tokens *teaching* the meta-agent what a metaphor is, or why bullets are good. The meta-agent (Claude) already knows this. The meta-skill shouldn't be a textbook; it should be a **Standard Operating Procedure (SOP)**.
+
+### 2. The "Meta-Complexity" Sweet Spot
+
+To get optimal results from a meta-skill, you need to shift from **"Explanatory Complexity"** to **"Procedural Complexity."**
+
+*   **Explanatory Complexity (The Fluff):** "Here is what a metaphor is, why it works, and how the brain processes it..." -> **DELETE THIS.**
+*   **Procedural Complexity (The Logic):** "Step 1: Scan for abstract nouns. Step 2: Map to X/Y/Z analogy. Step 3: Validate against '5-Second Test'." -> **KEEP THIS.**
+
+The optimal meta-skill is **dense with logic, sparse with definitions.**
+
+### 3. Revised Strategy: "Strict Process, Short Rules"
+
+We will reintroduce the structure (Analyze -> Choose -> Refactor) because you are right: a meta-process needs a workflow. But we will strip the "Teaching" aspects and turn it into a "Protocol."
+
+Here is the **Final, Optimal Version** of `refactor-elegant-teaching` that respects your point about meta-rigidity while adhering to 2026 efficiency standards.
+
+```markdown
+---
+name: refactor-elegant-teaching
+description: Meta-skill to refactor prompts/skills into high-trust, recognition-based elegant teaching. Enforces strict style constraints.
+allowed-tools: Read, Write, Grep
+---
+
+# Meta-Skill: Elegant Teaching Refactor Protocol
+
+You are a **Style Enforcer**. Your task is to rewrite technical content to strictly adhere to the "Elegant Teaching" philosophy.
+
+**Core Constraints (Do Not Violate):**
+1.  **Presume Competence:** No "You should," "Must," "Always." Use Imperative.
+2.  **Recognition over Generation:** Abstract advice must become a pattern-matching test.
+3.  **Concrete Contrast:** Every rule requires a ✅/❌ example.
+4.  **Zero Fluff:** Delete definitions of concepts Claude already knows.
+
+---
+
+## Phase 1: The Audit (Strict Execution)
+
+Before rewriting, analyze the input against these failure modes. List them explicitly.
+
+**Audit Checklist:**
+*   [ ] **Second Person:** Scan for "You/Your." Mark for deletion.
+*   [ ] **Prescriptives:** Scan for "Always/Never/Must." Mark for softening.
+*   [ ] **Abstracts:** Scan for sentences without examples (e.g., "Use clear language"). Mark for "Recognition" conversion.
+*   [ ] **Dense Blocks:** Scan for paragraphs > 4 lines. Mark for bulleting.
+*   [ ] **Definitions:** Scan for "X is..." or "What is Y". Mark for deletion (Claude knows this).
+
+*Output: A list of "Violation Locations" and "Required Fixes."*
+
+---
+
+## Phase 2: The Transformation (Apply Logic)
+
+Rewrite the content section by section. Apply the following **Transformation Logic**:
+
+### Logic A: Imperative Shift
+*   **Input:** "You should validate the input."
+*   **Logic:** Remove subject. Add "Remember that..." if context is needed.
+*   **Output:** "Validate the input. Remember that this prevents runtime errors."
+
+### Logic B: Recognition Injection
+*   **Input:** "Ensure your descriptions are specific."
+*   **Logic:** Convert to a binary question. "Can the user copy/paste?"
+*   **Output:** "Recognition: 'Can the user copy/paste this example?' → If no, add details."
+
+### Logic C: Metaphor Mapping
+*   **Input:** "Context is limited."
+*   **Logic:** Map to "Refrigerator" (resource) or "Bridge" (freedom).
+*   **Output:** "Think of context like a shared refrigerator..."
+
+### Logic D: Contrast Enforcement
+*   **Input:** "Use trigger phrases."
+*   **Logic:** Generate a 'Bad' version that violates the rule, then the 'Good' version.
+*   **Output:** "✅ Good: 'Use when user asks X' / ❌ Bad: 'Use when you want X'"
+
+---
+
+## Phase 3: The Validation (The 5-Second Gate)
+
+After rewriting, run the **5-Second Test** on your own output.
+
+**Test Protocol:**
+1.  **Scan Headers:** Do headers explain the *action*, not the *concept*? (e.g., "Execution Guidelines" vs "About Guidelines").
+2.  **Scan Examples:** Does every abstract rule have an immediate visual example below it?
+3.  **Token Audit:** Did you cut >30% of the original text while keeping the meaning?
+
+*If any check fails, return to Phase 2.*
+
+---
+
+## The "Elegant Teaching" Pattern Bank (Reference Only)
+
+Use these patterns to fulfill the Logic above. Do not include these definitions in the final output.
+
+**Pattern: Recognition**
+*   Template: `Recognition: "[Question]?" → [Action]`
+*   Use for: Checking validity, spotting errors, self-assessment.
+
+**Pattern: High-Trust**
+*   Template: `[Imperative]. Remember that [Context].`
+*   Avoid: "You should", "Please", "Try to".
+
+**Pattern: Metaphor**
+*   Templates: "Think of X like Y", "X is the Y of Z".
+*   Use for: Context windows, Degrees of freedom, File structure.
+
+**Pattern: Contrast**
+*   Template: `✅ Good: [Example] / ❌ Bad: [Example] / Why: [Reason]`
+*   Use for: Any stylistic rule.
+
+---
+
+## Execution Example
+
+**User Input:**
+"Make sure you use the imperative form. It helps Claude understand better."
+
+**Your Internal Audit (Phase 1):**
+1. "Make sure you" -> Prescriptive/Second Person. Violation.
+2. "It helps Claude..." -> Vague reasoning. Needs "Why".
+
+**Your Transformation (Phase 2):**
+"Use imperative form. Remember that this reduces token count."
+
+**Your Validation (Phase 3):**
+*   Scannable? Yes.
+*   Example? Missing.
+*   *Correction:* Add contrast.
+    "✅ Good: 'Run the test.'
+     ❌ Bad: 'You should run the test.'"
+
+**Final Output:**
+(Produces the refined text).
+```
+
+### Summary of the "Meta-Optimization"
+
+1.  **You were right:** The Meta-Skill *should* be lower freedom. It has phases (`Phase 1`, `Phase 2`) and strict checklists. It treats the task as a **Protocol**, not a creative writing exercise.
+2.  **The Correction:** It strips out the "Teaching." It doesn't explain *why* recognition questions work (like the original did); it just gives the **Logic** to generate them ("Convert to binary question").
+3.  **The Result:** This version is "strict" (meta) but "efficient" (2026 compliant). It acts like a strict editor without wasting tokens explaining basic English concepts to the AI.
+
+### USER
+Excellent, but now reflect on how to reintroduce in it the pattern bank; and rewrite the final and complete SKILL.md
+
+### ASSISTANT
+
+[Raisonnement]
+
+> 1.  **Analyze the Request:**
+>     *   **Goal:** Final and complete `SKILL.md` for `refactor-elegant-teaching`.
+>     *   **Constraint:** Reintroduce the "Pattern Bank" effectively.
+>     *   **Context:** Based on the "Meta-Complexity" principle (it needs to be a strict protocol) but optimized for 2026 efficiency (no fluff, high density).
+>     *   **User's specific feedback:** "Reflect on how to reintroduce in it the pattern bank."
+> 
+> 2.  **Reflecting on the "Pattern Bank" Integration:**
+>     *   *Where should it go?* If I put it at the top, it adds noise before the task. If I put it at the end, it might be missed. If I make it a supporting file, it breaks the "Single File Skill" simplicity the user might want for portability (though 2026 encourages progressive disclosure, having a single cohesive document is often preferred for meta-skills that need to be portable).
+>     *   *How should it be framed?* It shouldn't be a "Reference" (which implies reading). It should be a "Toolkit" or "Arsenal" (which implies using).
+>     *   *Optimal Structure:*
+>         1.  **Role & Core Constraints:** Immediate framing.
+>         2.  **The Process (Phases 1-3):** The logic engine.
+>         3.  **The Pattern Bank (The Arsenal):** Placed *after* the process but *before* the examples. Why? Because the process says "Apply Logic X." The bank *is* the logic implementation details.
+>         4.  **Examples:** Proof of concept.
+> 
+> 3.  **Refining the "Meta-Protocol" feel:**
+>     *   The skill needs to feel like a *program* running on the content.
+>     *   I will use "Modules" instead of just "Sections."
+>     *   I will ensure the "Pattern Bank" isn't just definitions, but *executable instructions*.
+> 
+> 4.  **Drafting the Content (Iterative Refinement):**
+> 
+>     *   *Header:* Standard metadata.
+>     *   *Role:* "Style Enforcer" / "Meta-Compiler".
+>     *   *Constraints:* Keep the "Zero Fluff" rule.
+>     *   *Module 1: The Audit (Scanning):* What to look for.
+>     *   *Module 2: The Pattern Bank (The Rewrite Engine):* This is the core request. I need to organize it logically.
+>         *   *Language:* High-Trust & Imperative.
+>         *   *Structure:* Recognition.
+>         *   *Clarity:* Metaphors & Contrast.
+>         *   *Format:* Scannability.
+>     *   *Module 3: The Execution Steps:* How to apply the bank to the audit results.
+>     *   *Module 4: Validation:* The 5-second test.
+> 
+> 5.  **Reviewing against "Optimal Rules":**
+>     *   *Simplicity:* Is it simple? No, it's complex *by design* (meta-skill), but it's *concise*. It doesn't waffle.
+>     *   *Freedom:* It enforces low freedom on the *refactoring task* (which is what we want), but gives the AI the freedom to choose *which* tool from the bank to use.
+>     *   *2026 Compliance:* No "What is a bullet point" definitions. Just "Use bullets for lists."
+> 
+> 6.  **Addressing the "Pattern Bank" specifically:**
+>     *   The user wants it reintroduced. In the previous iteration, I hid it at the end as "Reference Only."
+>     *   *Better approach:* Make it the central "Tooling" section.
+>     *   *Labeling:* "Transformation Arsenal." This sounds active.
+>     *   *Structure:*
+>         *   Category (e.g., "High-Trust Language")
+>         *   Template
+>         *   Example of application
+> 
+> 7.  **Final Polish of the SKILL.md:**
+>     *   Ensure the distinction between "Audit" (finding problems) and "Arsenal" (fixing them) is sharp.
+>     *   Make sure the "5-Second Test" is the final gatekeeper.
+> 
+> 8.  **Self-Correction during drafting:**
+>     *   *Thought:* Should I include the "Phase 1, 2, 3" structure again?
+>     *   *Decision:* Yes, the user liked the "Protocol" aspect. It differentiates this from a standard skill. I will keep the phases but integrate the Bank *into* Phase 2 instructions, and then list the full Bank below for clarity.
+> 
+> 9.  **Final Output Structure:**
+>     *   **Metadata**
+>     *   **Core Protocol (Role & Constraints)**
+>     *   **Phase 1: The Audit (Detection)**
+>     *   **Phase 2: The Transformation Arsenal (The Pattern Bank - Integrated)**
+>         *   *This is where the magic happens. Grouped by function.*
+>     *   **Phase 3: Validation**
+>     *   **Execution Example**
+> 
+> **(Self-Correction on the Bank location):** Putting the bank *inside* the phase description makes it too long. Better to:
+> 1. Define the Phase (e.g., "Apply High-Trust Logic").
+> 2. Then, have a dedicated section "The Transformation Arsenal" that lists all patterns clearly.
+> 3. Then, have a "Execution Example" showing the flow.
+> 
+> Let's go.
+
+This is the optimal version. It respects your insight that **Meta-Skills require protocols**, not just suggestions.
+
+Here, the **Pattern Bank** is reintroduced not as a "Reference to read," but as a **"Transformation Arsenal"**—a set of active tools the agent uses to execute the protocol. It shifts the skill from being a "textbook" to being a "compiler."
+
+---
+
+### .claude/skills/refactor-elegant-teaching/SKILL.md
+
+```markdown
+---
+name: refactor-elegant-teaching
+description: Meta-skill protocol to enforce "Elegant Teaching" style. Performs strict audits and applies pattern-based transformations to skills/commands.
+allowed-tools: Read, Write, Grep
+---
+
+# Protocol: Elegant Teaching Refactor
+
+**Role:** Style Enforcer & Technical Editor.
+**Objective:** Rewrite content to maximize autonomy, clarity, and token efficiency.
+**Mode:** Low-Freedom Enforcement. Strict adherence to the defined Arsenal.
+
+## Core Constraints
+1.  **Zero Fluff:** Delete definitions of concepts Claude already knows (e.g., "What is a metaphor?").
+2.  **Presume Competence:** No "You should," "Must," "Always." Use Imperative.
+3.  **Recognition over Generation:** Convert abstract advice into pattern-matching tests.
+4.  **Concrete Contrast:** Show, don't tell. Every rule requires a ✅/❌ example pair.
+
+---
+
+## Phase 1: The Audit
+
+Scan the input content for specific "Anti-Patterns." Generate an audit report before rewriting.
+
+**Audit Checklist:**
+*   [ ] **Subject-Pollution:** "You/Your/We."
+*   [ ] **Prescriptives:** "Always/Never/Must/Ensure."
+*   [ ] **Abstracts:** Advice without examples (e.g., "Be clear").
+*   [ ] **Dense Blocks:** Paragraphs > 4 lines.
+*   [ ] **Meta-Instructions:** "This section teaches you..." (Remove meta-commentary).
+*   [ ] **Definitions:** "X is a concept that..." (Delete).
+
+*Output:* List these violations by line number/section.
+
+---
+
+## Phase 2: The Transformation Arsenal
+
+Use this arsenal to fix the violations found in Phase 1. Select the specific tool required and apply it rigidly.
+
+### Arsenal Category 1: High-Trust Language
+*Use to fix: Subject-Pollution, Prescriptives.*
+
+**Tool A: The Imperative Shift**
+*   **Logic:** Remove subject. Convert "You should X" to "X."
+*   **Template:** `[Imperative Verb] [Object]. Remember that [Context].`
+*   **Application:**
+    *   *Input:* "You should validate the input."
+    *   *Output:* "Validate the input. Remember that this prevents runtime errors."
+
+**Tool B: The Permission Shift**
+*   **Logic:** Convert commands to suggestions where autonomy matters.
+*   **Template:** `Consider [Action]` or `Avoid [Action] when [Condition].`
+*   **Application:**
+    *   *Input:* "You must always log errors."
+    *   *Output:* "Log errors. Consider verbosity levels for production."
+
+---
+
+### Arsenal Category 2: Recognition-Based Structure
+*Use to fix: Abstracts, Vague Advice.*
+
+**Tool C: The Recognition Test**
+*   **Logic:** Turn advice into a binary self-check question.
+*   **Template:** `Recognition: "[Question]?" → [Action]`
+*   **Application:**
+    *   *Input:* "Make sure your descriptions are specific."
+    *   *Output:* "Recognition: 'Can the user copy/paste this example?' → If no, add concrete details."
+
+**Tool D: The Pattern Match**
+*   **Logic:** Identify the pattern the user should spot.
+*   **Template:** `Look for: [Pattern].`
+*   **Application:**
+    *   *Input:* "Don't use big files."
+    *   *Output:* "Look for: SKILL.md approaching 450 lines."
+
+---
+
+### Arsenal Category 3: Metaphors & Contrast
+*Use to fix: Abstract Concepts, Lack of Examples.*
+
+**Tool E: The Analogy Map**
+*   **Logic:** Map intangible constraints to physical objects.
+*   **Templates:**
+    *   *Resource:* "Think of [Concept] like a [Container]: [Explanation]."
+    *   *Navigation:* "Think of [Concept] like a [Path]: [Explanation]."
+*   **Application:**
+    *   *Input:* "Context window is limited."
+    *   *Output:* "Think of context like a shared refrigerator: everything you put in takes space others could use."
+
+**Tool F: The Contrast Pair**
+*   **Logic:** Explicitly show the wrong way vs the right way.
+*   **Template:**
+    ```
+    ✅ Good: [Concrete Example]
+    ❌ Bad: [Concrete Example]
+    Why good: [Reason]
+    ```
+*   **Application:**
+    *   *Input:* "Use trigger phrases."
+    *   *Output:*
+        ```
+        ✅ Good: description: "Use when user asks to 'create a hook'"
+        ❌ Bad: description: "Use when you want to create hooks"
+        Why good: Specific trigger phrases enable pattern matching.
+        ```
+
+---
+
+### Arsenal Category 4: Scannable Formatting
+*Use to fix: Dense Blocks, Poor Structure.*
+
+**Tool G: The 5-Second Break**
+*   **Logic:** Split text at the first period or conjunction. Use bullets.
+*   **Template:**
+    ```
+    **[Header]:**
+    - [Point 1]
+    - [Point 2]
+    ```
+*   **Application:**
+    *   *Input:* "There are three things to consider. One is size. Two is speed. Three is cost."
+    *   *Output:*
+        ```
+        **Key constraints:**
+        - Size
+        - Speed
+        - Cost
+        ```
+
+---
+
+## Phase 3: Execution & Validation
+
+1.  **Execute:** Iterate through the input sections. Apply the Arsenal tools to fix Audit findings.
+2.  **Validate (The 5-Second Gate):**
+    *   **Scan:** Can you read all headers in 5 seconds?
+    *   **Contrast:** Does every abstract rule have a ✅/❌ example below it?
+    *   **Token Check:** Did you reduce the word count by >20% while keeping meaning?
+
+*If validation fails, return to Phase 2.*
+
+---
+
+## Execution Example
+
+**Input:**
+"You should make sure to use imperative form. It helps the reader understand faster. Also, don't use second person."
+
+**Step 1 (Audit):**
+- "You should make sure" -> Prescriptive.
+- "Helps reader understand" -> Abstract/Weak reason.
+- "Don't use" -> Negative command.
+
+**Step 2 (Apply Arsenal):**
+- *Apply Tool A (Imperative):* "Use imperative form."
+- *Apply Tool E (Metaphor/Reasoning):* "Think of it like a direct command: clear, instant, no ambiguity."
+- *Apply Tool F (Contrast):* Add examples.
+
+**Step 3 (Refined Output):**
+"Use imperative form. Think of it like a direct command: clear, instant, no ambiguity.
+
+✅ Good: Run the test.
+❌ Bad: You should run the test.
+
+Why good: Zero latency, clear action."
+
+---
+
+## Final System Reminder
+
+You are refining a tool for another Claude to use. **Efficiency is intelligence.** Every token spent defining a concept Claude already knows is a token wasted. Be ruthless. Be elegant.
+```
+
+### USER
+Excellent another thing; how to better explain in meta-skill how to do progressive disclosure and best practices ? I think the 500 line limit is anyway too prescriptive; but i have trouble to define "what's would be anyway we use the skill for relevant" in sKILL.md and references to be conditional. Per example; an old skill elegancy-refiner was using references which makes no sense because whatever the case we use it this knowledge was required
+
+### ASSISTANT
+
+[Raisonnement]
+
+> 1.  **Analyze the User's Challenge:**
+>     *   **Goal:** Improve how the meta-skill handles "Progressive Disclosure" and determining "Relevance."
+>     *   **Specific Problem 1 (Progressive Disclosure):** How to teach the meta-skill *how* to do progressive disclosure? The user feels the "500-line limit" is too prescriptive/arbitrary.
+>     *   **Specific Problem 2 (Conditional References):** How to decide what belongs in `SKILL.md` vs. `references/` (or external files) dynamically, rather than hardcoding "references for X, SKILL.md for Y"?
+>     *   **Pain Point:** The previous iteration (`elegancy-refiner`) used references for things that were *always* needed (core knowledge), which defeats the purpose of progressive disclosure.
+> 
+> 2.  **Deconstruct "Progressive Disclosure" in the context of a Meta-Skill:**
+>     *   *What is it?* Revealing complexity only when necessary.
+>     *   *How to do it?* It's not about line counts (500 lines is a heuristic, not a law). It's about **access frequency** and **cognitive load**.
+>     *   *The "Golden Rule":* What do I need to know *right now* vs. what do I need to know *only when I'm stuck*?
+>     *   *Mechanism:*
+>         *   `SKILL.md`: The "Happy Path" (80% of use cases).
+>         *   `references/`: The "Exception Handling" (20% edge cases).
+>         *   `SKILL.md` should link to `references/` conditionally.
+> 
+> 3.  **Deconstruct "Conditional Relevance" (The "Always vs. Sometimes" problem):**
+>     *   *The User's Example:* If a refiner *always* needs to know "What is High-Trust Language" to do its job, putting that in a reference file is stupid. It should be in the main file or assumed knowledge.
+>     *   *The Solution:* Define the criteria for "Reference Material."
+>         *   **Criteria A: Frequency.** Is this used every time? -> SKILL.md.
+>         *   **Criteria B: Complexity.** Is this a giant JSON schema, a 50-line regex, or a lookup table? -> Reference.
+>         *   **Criteria C: Obsolescence.** Is this likely to change independently of the core logic? -> Reference.
+> 
+> 4.  **Synthesizing the Solution (The "Meta-Logic" for Progression):**
+> 
+>     *   *Instead of:* "Keep SKILL.md under 500 lines."
+>     *   *Use:* "The Happy Path Rule."
+> 
+>     *   *Reframing Progressive Disclosure:* It's not just length; it's **conditional logic**.
+>     *   *The Logic:*
+>         *   IF `standard_case`: Use `SKILL.md`.
+>         *   IF `edge_case`: See `references/X.md`.
+> 
+> 5.  **Drafting the "How-To" for the Meta-Skill (The Protocol):**
+> 
+>     *   We need a specific "Tool" or "Phase" in the meta-skill that handles file structure.
+>     *   Let's call it: **"Phase 2.5: The Split (Progressive Disclosure)."**
+> 
+>     *   *Rule 1: The "Happy Path" Heuristic.*
+>         *   80% of users/sessions use this content. -> Keep in SKILL.md.
+>     *   *Rule 2: The "Lookup Table" Heuristic.*
+>         *   Large data, complex flags, multi-step troubleshooting. -> Reference.
+>     *   *Rule 3: The "Zero-Knowledge" Check.*
+>         *   Does the meta-skill need to read this file to function *at all*? -> Do not hide it in a reference.
+> 
+> 6.  **Addressing the User's specific complaint about the "500-line limit":**
+>     *   Acknowledge it's arbitrary. Replace it with a semantic rule: **"Scannability & Focus."**
+> 
+> 7.  **Refining the Arsenal (Adding the new tools):**
+> 
+>     *   *New Tool H: The Happy Path.* (Identify the 80% case).
+>     *   *New Tool I: The Reference Split.* (Move the heavy stuff).
+>     *   *New Instruction:* "Do not separate knowledge that is *always* required."
+> 
+> 8.  **Writing the Update (Iterative Draft):**
+> 
+>     *   *Reviewing the user's specific struggle:* "Old skill was using references which makes no sense because whatever the case we use it this knowledge was required."
+>     *   *Correction:* The meta-skill must evaluate the *dependency graph*.
+>         *   If `Refactoring` ALWAYS requires `High-Trust Definitions`, then `High-Trust Definitions` is not a "reference"—it's a "Principle." Principles go in the main file.
+>         *   Only *Data* goes to references.
+> 
+> 9.  **Final Polish of the Skill Structure:**
+>     *   Add a section called "Protocol: Progressive Disclosure."
+>     *   Define the "Conditional Reference" rule clearly.
+> 
+> **(Self-Correction during drafting):**
+> *   *Initial thought:* Just say "Use references for big files."
+> *   *Correction:* That's too simple. The user pointed out that *concepts* were moved to refs. We need to distinguish between **Operational Data** (ref) and **Operational Logic/Principles** (core).
+>     *   *Principles:* High trust, imperative. (Core).
+>     *   *Data:* List of 50 API error codes. (Ref).
+> 
+> 10. **Final Output Structure:**
+>     *   Explanation of the shift (Heuristics over Line Counts).
+>     *   The updated "Arsenal" section focusing on "The Split."
+>     *   The updated SKILL.md.
+> 
+> **(Proceed to generate response).**
+
+This is a crucial refinement. You have identified the "False Economy" of Progressive Disclosure: hiding essential tools in a drawer just to make the desk look tidy.
+
+The "500-line limit" is indeed a blunt instrument. The real metric is **Conditional Relevance**.
+
+If a piece of information is required for the "Happy Path" (the standard execution flow), it belongs in `SKILL.md`. If it is only required for "Edge Cases" or "Lookups," it belongs in `references/`.
+
+Here is how we update the Meta-Skill protocol to handle **Progressive Disclosure** intelligently, replacing the arbitrary line limit with **Semantic Rules**.
+
+### The "Conditional Relevance" Protocol
+
+We replace "Keep it under 500 lines" with **"The Happy Path Rule."**
+
+**The Logic:**
+1.  **Identify the Happy Path:** What does the user do 80% of the time?
+2.  **Identify the Dependencies:** What knowledge is *always* needed to execute the Happy Path?
+    *   *If Always Needed:* It stays in `SKILL.md` (even if it's long). It is **Core Logic**.
+    *   *If Context Dependent:* It moves to `references/` (e.g., "Only if you are handling Docker, see `docker-patterns.md`").
+3.  **Identify the Data vs. Logic:**
+    *   *Logic (Principles):* "Use High-Trust Language." -> **Keep in Core.**
+    *   *Data (Examples/Lists):* "Here are 50 examples of bad descriptions." -> **Move to Reference.**
+
+---
+
+### The Updated SKILL.md
+
+I have updated the **Phase 2** (Arsenal) to include a specific sub-protocol for **Progressive Disclosure**.
+
+```markdown
+---
+name: refactor-elegant-teaching
+description: Meta-skill protocol to enforce "Elegant Teaching" style. Performs strict audits, manages progressive disclosure, and applies pattern-based transformations.
+allowed-tools: Read, Write, Grep
+---
+
+# Protocol: Elegant Teaching Refactor
+
+**Role:** Style Enforcer & Technical Editor.
+**Objective:** Rewrite content to maximize autonomy, clarity, and token efficiency.
+**Mode:** Low-Freedom Enforcement.
+
+## Core Constraints
+1.  **Zero Fluff:** Delete definitions of concepts Claude already knows.
+2.  **Presume Competence:** No "You should," "Must," "Always." Use Imperative.
+3.  **Recognition over Generation:** Convert abstract advice into pattern-matching tests.
+4.  **Concrete Contrast:** Show, don't tell. Every rule requires a ✅/❌ example pair.
+5.  **Smart Disclosure:** Hide complexity *only* when it is conditionally relevant (edge cases), never when it is core logic.
+
+---
+
+## Phase 1: The Audit
+
+Scan the input content for "Anti-Patterns." Generate an audit report.
+
+**Audit Checklist:**
+*   [ ] **Subject-Pollution:** "You/Your/We."
+*   [ ] **Prescriptives:** "Always/Never/Must/Ensure."
+*   [ ] **Abstracts:** Advice without examples.
+*   [ ] **Dense Blocks:** Paragraphs > 4 lines.
+*   [ ] **False References:** Core principles hidden in external files.
+*   [ ] **Bloat:** Excessive examples or repetitive lists.
+
+---
+
+## Phase 2: The Transformation Arsenal
+
+### Arsenal Category 1: High-Trust Language
+*(Tools to fix: Subject-Pollution, Prescriptives)*
+
+**Tool A: The Imperative Shift**
+*   **Logic:** Remove subject. Convert "You should X" to "X."
+*   **Template:** `[Imperative Verb] [Object]. Remember that [Context].`
+
+**Tool B: The Permission Shift**
+*   **Logic:** Convert commands to suggestions.
+*   **Template:** `Consider [Action]` or `Avoid [Action] when [Condition].`
+
+---
+
+### Arsenal Category 2: Progressive Disclosure (The Split)
+*(Tools to fix: Bloat, Cognitive Load, Bad References)*
+
+**Tool C: The Happy Path Heuristic**
+*   **Logic:** Distinguish between "Always Needed" (Core) and "Sometimes Needed" (Reference).
+*   **Rule:** If the content explains **How** to do the main task, it is Core. If it lists **Options/Variations**, it is Reference.
+*   **Action:**
+    *   **Keep in SKILL.md:** Principles, Core Constraints, Standard Examples, The "Happy Path" workflow.
+    *   **Move to references/:** Detailed lists (e.g., 20+ examples), Troubleshooting, Tool-specific edge cases.
+*   **Check:** "Do I need this to do the basic job?" -> If Yes, Keep.
+
+**Tool D: The Data vs. Logic Split**
+*   **Logic:** Separate *instructions* from *raw data*.
+*   **Action:**
+    *   **SKILL.md (Logic):** "Use imperative form. See `examples/` for variations."
+    *   **examples/ (Data):** A file containing 50 examples of imperative forms.
+
+**Tool E: Conditional Linking**
+*   **Logic:** Replace hard content with pointers.
+*   **Template:** `For [Specific Edge Case], see references/[file].md.`
+*   **Example:**
+    *   *In SKILL.md:* "Use standard Bash commands."
+    *   *Added:* "For Docker-specific Bash patterns, see `references/docker-patterns.md`."
+
+---
+
+### Arsenal Category 3: Recognition-Based Structure
+*(Tools to fix: Abstracts, Vague Advice)*
+
+**Tool F: The Recognition Test**
+*   **Logic:** Turn advice into a binary self-check.
+*   **Template:** `Recognition: "[Question]?" → [Action]`
+
+**Tool G: The Pattern Match**
+*   **Logic:** Identify the pattern to spot.
+*   **Template:** `Look for: [Pattern].`
+
+---
+
+### Arsenal Category 4: Metaphors & Contrast
+*(Tools to fix: Abstract Concepts, Lack of Examples)*
+
+**Tool H: The Analogy Map**
+*   **Logic:** Map intangible constraints to physical objects.
+*   **Template:** `Think of [Concept] like a [Container]: [Explanation].`
+
+**Tool I: The Contrast Pair**
+*   **Logic:** Show wrong vs. right.
+*   **Template:**
+    ```
+    ✅ Good: [Concrete Example]
+    ❌ Bad: [Concrete Example]
+    Why good: [Reason]
+    ```
+
+---
+
+## Phase 3: Execution & Validation
+
+1.  **Execute:** Iterate sections. Apply Arsenal tools.
+2.  **Validate (The 5-Second Gate):**
+    *   **Scan:** Can you read all headers in 5 seconds?
+    *   **Contrast:** Does every abstract rule have a ✅/❌ example?
+    *   **Disclosure Check:** Is the `SKILL.md` focused on the **Happy Path**? Are edge cases cleanly linked out?
+    *   **Dependency Check:** Is any *essential* knowledge hidden in a reference file? (Fix if yes).
+
+---
+
+## Execution Example: Progressive Disclosure in Action
+
+**Input (Bloated SKILL.md):**
+"Use imperative form. Here are 20 examples:
+1. Run the test.
+2. Build the image.
+...
+20. Delete the cache.
+Also, if you are using Kubernetes, check for pod limits.
+If you are using Docker, check for volume mounts."
+
+**Step 1 (Apply Tool C - Happy Path):**
+*   *Analysis:* "Use imperative form" is Core. "20 examples" is Data. "Kubernetes/Docker" is Edge Case.
+*   *Action:* Keep the rule. Move examples. Link edge cases.
+
+**Step 2 (Apply Tool E - Conditional Linking):**
+*   *Action:* Add conditional link.
+
+**Step 3 (Refined Output):**
+
+**SKILL.md:**
+"Use imperative form. Remember that this reduces latency.
+For extensive examples, see `examples/imperative-phrases.md`.
+
+For container specifics:
+- Kubernetes? See `references/k8s-patterns.md`.
+- Docker? See `references/docker-patterns.md`."
+
+**Result:** The `SKILL.md` is clean and focused on the logic. The data is available on demand. The "Happy Path" (just writing commands) is unobstructed.
+
+---
+
+## Final System Reminder
+
+You are refining a tool for another Claude.
+*   **Efficiency is intelligence.**
+*   **Structure is clarity.**
+*   **Disclosure is conditional:** Hide only what slows down the main flow. Never hide what powers it.
+```

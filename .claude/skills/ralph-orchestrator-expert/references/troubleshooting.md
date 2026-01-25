@@ -79,12 +79,12 @@ hats:
 1. Verify completion event name:
 ```yaml
 event_loop:
-  completion_promise: "LOOP_COMPLETE"  # Must match event name
+  completion_event: "LOOP_COMPLETE"  # Must match published event name
 
 # Hat must publish this exact event
 hats:
   final_hat:
-    publishes: ["task.complete", "LOOP_COMPLETE"]  # Include completion promise
+    publishes: ["task.complete", "LOOP_COMPLETE"]  # Include completion publication
 ```
 
 2. Check event flow:
@@ -194,7 +194,7 @@ hats:
 ```yaml
 # Must eventually publish this event
 event_loop:
-  completion_promise: "LOOP_COMPLETE"
+  completion_event: "LOOP_COMPLETE"
 ```
 
 2. Add debug output:

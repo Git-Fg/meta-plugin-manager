@@ -430,9 +430,6 @@ claude --dangerously-skip-permissions \
 
 # Count questions
 grep -c '"tool_name": "AskUserQuestion"' test-output.json
-
-# Check completion marker
-grep 'SKILL_NAME_COMPLETE' test-output.json
 ```
 
 ### Autonomy Scoring

@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/allowed/path"],
+      "env": {
+        "LOG_LEVEL": "info"
+      }
+    },
+    "database": {
+      "command": "python",
+      "args": ["-m", "my_mcp_server"],
+      "env": {
+        "PYTHONUNBUFFERED": "1",
+        "DATABASE_URL": "${DATABASE_URL}",
+        "LOG_LEVEL": "debug"
+      }
+    },
+    "custom-server": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/servers/my-server",
+      "args": [
+        "--config", "${CLAUDE_PLUGIN_ROOT}/config.json",
+        "--verbose"
+      ],
+      "env": {
+        "API_KEY": "${API_KEY}",
+        "PLUGIN_DIR": "${CLAUDE_PLUGIN_ROOT}"
+      }
+    }
+  }
+}

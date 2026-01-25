@@ -1,6 +1,7 @@
 ---
 name: manual-e2e-testing
-description: Execute comprehensive E2E testing using Appium MCP and Dart MCP. Use when testing Flutter mobile app workflows, validating element states, and verifying text content programmatically with hot reload and widget tree analysis capabilities.
+description: This skill should be used when the user asks to "test Flutter app", "perform E2E testing", "validate element states", "verify text content programmatically", or needs guidance on Appium MCP and Dart MCP testing workflows with hot reload and widget tree analysis capabilities.
+user-invocable: true
 ---
 
 # Manual E2E Testing with Appium & Dart MCP
@@ -110,28 +111,7 @@ adb shell pm clear com.voicenoteplus.app
    - Example: `//*[contains(@content-desc, "Record")]`
    - Fragile, avoid unless necessary
 
-### Discovery Commands
-
-**Find Record Button:**
-```bash
-mcp__appium-mcp__appium_find_element
-  strategy: accessibility id
-  selector: Record
-```
-
-**Find Settings:**
-```bash
-mcp__appium-mcp__appium_find_element
-  strategy: accessibility id
-  selector: Settings
-```
-
-**Find by ID:**
-```bash
-mcp__appium-mcp__appium_find_element
-  strategy: id
-  selector: com.voicenoteplus.app:id/record_fab
-```
+**For comprehensive element discovery patterns**, see [element-discovery.md](references/element-discovery.md)
 
 ## Content Validation Techniques
 
@@ -181,135 +161,38 @@ mcp__dart__get_runtime_errors
 - Analyze stack traces for crash diagnosis
 - Verify no errors present during UI interactions
 
-### Dart App State Inspection
-```bash
-mcp__dart__get_selected_widget
-```
-- Inspect currently focused/selected widget
-- Verify widget state matches Appium-visible state
-- Debug unexpected UI behavior
+**For detailed state validation workflows**, see [state-validation.md](references/state-validation.md)
 
-## Test Procedures
+## Test Procedures Overview
 
 ### Procedure 1: Basic Interaction Test
-1. **Pre-check: Runtime errors**
-   - Use `mcp__dart__get_runtime_errors` to verify no errors
-   - Expected: Clean slate
-
-2. **Widget tree analysis**
-   - Use `mcp__dart__get_widget_tree` to identify record button
-   - Expected: Button widget present in tree
-
-3. **Find record button**
-   - Strategy: accessibility id, Selector: `Record`
-   - Expected: Element found with UUID
-
-4. **Verify initial state (Appium)**
-   - Get text: Should contain "Record" or "🎤"
-
-5. **Verify initial state (Dart)**
-   - Use `mcp__dart__get_selected_widget` to inspect button
-   - Verify widget state is idle/not recording
-
-6. **Tap record button**
-   - Click element
-
-7. **Wait for state change**
-   - Wait: 2 seconds
-
-8. **Verify state changed (Appium)**
-   - Get text: Should contain "Stop" or "⏹️"
-
-9. **Verify state changed (Dart)**
-   - Use `mcp__dart__get_selected_widget` to inspect updated state
-   - Verify widget state is recording
-
-10. **Record result**
-    - Pass: All steps successful
-    - Fail: Any step fails
+1. Pre-check: Runtime errors with `mcp__dart__get_runtime_errors`
+2. Widget tree analysis with `mcp__dart__get_widget_tree`
+3. Find record button (accessibility id: `Record`)
+4. Verify initial state (Appium + Dart)
+5. Tap record button
+6. Wait for state change (2 seconds)
+7. Verify state changed (Appium + Dart)
 
 ### Procedure 2: Complete Recording Workflow
-1. **Pre-check: Runtime errors**
-   - Use `mcp__dart__get_runtime_errors` to verify no errors
-
-2. **Start recording**
-   - Find record_fab by ID
-   - Click element
-
-3. **Verify recording indicator (Appium)**
-   - Find `com.voicenoteplus.app:id/recording_indicator`
-   - Expected: Element found
-
-4. **Verify recording state (Dart)**
-   - Use `mcp__dart__get_widget_tree` to analyze recording widgets
-   - Verify audio recorder widget is active
-
-5. **Simulate audio capture**
-   - Wait: 5 seconds
-
-6. **Monitor runtime state (Dart)**
-   - Check `mcp__dart__get_runtime_errors` periodically
-   - Expected: No errors during recording
-
-7. **Stop recording**
-   - Find stop button by accessibility id
-   - Click element
-
-8. **Verify transcription (Appium)**
-   - Find transcription text by ID
-   - Get text: Should be non-empty
-
-9. **Verify transcription (Dart)**
-   - Use `mcp__dart__get_widget_tree` to verify text field populated
-   - Check transcription widget state
-
-10. **Verify magic toolbar (Appium)**
-    - Find toolbar by ID
-    - Expected: Element found
-
-11. **Verify magic toolbar (Dart)**
-    - Verify AI action buttons in widget tree
-    - Expected: Summary, To-do, Blueprint buttons present
+1. Start recording (find `record_fab` by ID, click)
+2. Verify recording indicator (Appium + Dart)
+3. Simulate audio capture (wait 5 seconds)
+4. Monitor runtime state with Dart MCP
+5. Stop recording
+6. Verify transcription (Appium + Dart)
+7. Verify magic toolbar (Appium + Dart)
 
 ### Procedure 3: Settings Configuration
-1. **Pre-check: Runtime errors**
-   - Use `mcp__dart__get_runtime_errors` to verify no errors
+1. Navigate to settings (Appium + Dart verification)
+2. Verify API key field (Appium + Dart)
+3. Input API key
+4. Verify input (Appium + Dart)
+5. Save settings
+6. Verify success message
+7. Post-save validation with Dart MCP
 
-2. **Navigate to settings (Appium)**
-   - Find settings by accessibility id
-   - Click element
-
-3. **Navigate to settings (Dart)**
-   - Use `mcp__dart__get_widget_tree` to verify settings screen loaded
-   - Verify navigation widget state
-
-4. **Verify API key field (Appium)**
-   - Find `com.voicenoteplus.app:id/api_key_input`
-   - Expected: Element found
-
-5. **Verify API key field (Dart)**
-   - Use `mcp__dart__get_selected_widget` to inspect input widget
-   - Verify text field is focusable and editable
-
-6. **Input API key (Appium)**
-   - Set value: `test-api-key-12345`
-
-7. **Verify input (Appium)**
-   - Get text: Should match input
-
-8. **Verify input state (Dart)**
-   - Use `mcp__dart__get_selected_widget` to verify value updated
-
-9. **Save settings (Appium)**
-   - Find save button by accessibility id
-   - Click element
-
-10. **Verify success message (Appium)**
-    - Search page source for "Settings saved"
-
-11. **Post-save validation (Dart)**
-    - Use `mcp__dart__get_runtime_errors` to check for save errors
-    - Verify widget state indicates saved
+**For complete detailed procedures**, see [detailed-procedures.md](references/detailed-procedures.md)
 
 ## Error Handling & Recovery
 
@@ -332,6 +215,8 @@ mcp__dart__get_selected_widget
 - **During action**: Monitor state changes
 - **After action**: Verify expected state
 - **If state incorrect**: Retry or report failure
+
+**For comprehensive error recovery patterns**, see [error-recovery.md](references/error-recovery.md)
 
 ## Best Practices
 
@@ -463,8 +348,12 @@ mcp__dart__get_selected_widget
   - Use for: Device selection and verification
 
 ## Additional Resources
-- For complete test procedures, see [references/detailed-procedures.md](references/detailed-procedures.md)
-- For element discovery strategies, see [references/element-discovery.md](references/element-discovery.md)
-- For state validation techniques, see [references/state-validation.md](references/state-validation.md)
-- For error recovery patterns, see [references/error-recovery.md](references/error-recovery.md)
-- For documentation templates, see [references/test-reports.md](references/test-reports.md)
+**For complete test procedures**, see [detailed-procedures.md](references/detailed-procedures.md)
+
+**For element discovery strategies**, see [element-discovery.md](references/element-discovery.md)
+
+**For state validation techniques**, see [state-validation.md](references/state-validation.md)
+
+**For error recovery patterns**, see [error-recovery.md](references/error-recovery.md)
+
+**For documentation templates**, see [test-reports.md](references/test-reports.md)

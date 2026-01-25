@@ -176,7 +176,6 @@ hats:
       Create detailed implementation plan for authentication system.
       Include: database schema, API endpoints, security considerations.
     completion: |
-      ## PLANNING_COMPLETE
       Implementation plan created and approved.
 
   - name: Feature Builder
@@ -188,7 +187,6 @@ hats:
       - Password reset functionality
       - Secure session management
     completion: |
-      ## BUILDING_COMPLETE
       All features implemented with tests.
 
   - name: Code Reviewer
@@ -199,7 +197,6 @@ hats:
       - Test coverage
       - Performance considerations
     completion: |
-      ## REVIEW_COMPLETE
       All issues addressed, code ready for production.
 ```
 

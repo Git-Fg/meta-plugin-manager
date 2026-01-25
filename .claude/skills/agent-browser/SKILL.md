@@ -1,6 +1,7 @@
 ---
 name: agent-browser
 description: This skill should be used when the user asks to "automate browser", "web automation", "browser testing", "fill forms", "take screenshots", "scrape web data", "test web applications", "click elements", "browser interactions", or needs browser-based interaction with web pages including form submission, navigation, screenshot capture, and data extraction from JavaScript-rendered content.
+user-invocable: true
 ---
 
 # Browser Automation with agent-browser

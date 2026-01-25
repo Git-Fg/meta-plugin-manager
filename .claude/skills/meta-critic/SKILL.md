@@ -26,7 +26,7 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 
 3. **Analyze Delivery**: Review what was implemented, how it was executed, and what deviations occurred.
 
-4. **Compare with Standards**: Check against applicable knowledge-skills (knowledge-skills, knowledge-mcp, knowledge-hooks, agent-development).
+4. **Compare with Standards**: Check against applicable meta-skills (skill-development, command-development, hook-development, mcp-development, agent-development).
 
 5. **Identify Gaps**: Find intent misalignment, standards violations, completeness issues, and quality concerns.
 
@@ -51,7 +51,7 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 **Each recommendation must be**:
 - Specific file or section to modify
 - Actual text to insert or change
-- Reference to applicable knowledge-skills standard
+- Reference to applicable meta-skill standard
 
 **Format**:
 ```markdown
@@ -78,8 +78,6 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 2. Offer to apply changes (Edit tool directly or TaskList orchestration for comprehensive fixes)
 3. Verify changes are correct
 4. Exit when user confirms review is complete
-
-**Completion Marker**: `## META_CRITIC_COMPLETE`
 
 ## Analysis Framework
 
@@ -158,5 +156,3 @@ Execute this iterative loop. Each iteration may stop for user input — resume f
 - **Required Action**: Rebuild as RESTful API per original request
 - **Process Improvement**: When architectural alternatives exist, ask user before deviating
 ```
-
-## META_CRITIC_COMPLETE

@@ -96,5 +96,3 @@ Rationale: The refined prompt provides clear technical constraints (mobile-first
 - Use L4 template only for complex or reusable scenarios
 - Maintain all non-negotiable constraints from original input
 - Clarifying question rule: Ask at most ONE question if ambiguity blocks producing useful refinement
-
-## REFINE_PROMPTS_COMPLETE

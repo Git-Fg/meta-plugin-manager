@@ -83,7 +83,6 @@ user-invocable: true
 
 ## output_format
 ```markdown
-## CLAUDE_MD_ARCHIVIST_COMPLETE
 Action: [What you captured]
 Discovery: [What was learned]
 Location: [Which section updated]
