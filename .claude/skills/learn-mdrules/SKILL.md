@@ -1,6 +1,6 @@
 ---
 name: learn-mdrules
-description: "Diagnosing conversation issues and improving project rules. Use when needing to investigates previous conversations historic to identify what went wrong and proposes specific rules for CLAUDE.md or .claude/rules/ to prevent future issues."
+description: "Diagnose conversation issues and improve project rules. Use when: analyzing previous conversations to identify what went wrong, proposing specific rules for CLAUDE.md or .claude/rules/ to prevent future issues."
 user-invocable: true
 ---
 

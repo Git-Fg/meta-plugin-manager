@@ -1,6 +1,6 @@
 ---
 name: brainstorming-together
-description: "Execution skill for structured thinking and analysis. Guides users through decision-making using various methodologies to explore problems, evaluate options, and reach actionable conclusions. Applies intelligent questioning strategies to help users think through complex decisions, analyze problems, or brainstorm solutions."
+description: "Guide structured thinking and decision-making through questioning methodologies. Use when: exploring problems, evaluating options, reaching actionable conclusions, analyzing complex decisions, brainstorming solutions."
 user-invocable: true
 ---
 
