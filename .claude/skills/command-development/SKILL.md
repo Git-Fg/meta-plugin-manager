@@ -475,7 +475,7 @@ Ensure:
 
 **Purpose**: Execute bash commands and include output in command
 
-**Syntax**: `` !`command` `` (backticks)
+**Syntax**: `!`` followed by the command in backticks
 
 **Key characteristic**: This is **preprocessing** - commands run BEFORE Claude reads the prompt. The shell command output replaces the placeholder, so Claude receives actual data, not the command itself.
 
@@ -524,7 +524,7 @@ If $1 is valid environment, deploy to $1.
 Otherwise, explain valid environments.
 ```
 
-**When to use `!`**:
+**When to use bash injection**:
 - Dynamic context gathering (git status, environment vars)
 - Project/repository state
 - Multi-step workflows with bash
@@ -533,13 +533,13 @@ Otherwise, explain valid environments.
 **Best practices**:
 - **Always add** `allowed-tools: Bash` to frontmatter
 - Test bash commands in terminal first
-- Use proper error handling: `` !`command 2>&1 || echo "FAILED"` ``
+- Use proper error handling with stderr redirection and fallback messages
 - Consider using `|| echo "FAILED"` for error detection
 - Keep commands simple and focused
 
 ### Combined Patterns
 
-**Review pattern**:
+**Review pattern** (combines bash injection with file references):
 ```markdown
 ---
 description: Comprehensive code review
@@ -555,7 +555,7 @@ For each file, review @FILE for:
 - Test coverage
 ```
 
-**Workflow pattern**:
+**Workflow pattern** (multiple bash injections):
 ```markdown
 ---
 description: Pre-commit validation
@@ -593,11 +593,10 @@ Generate report following template structure.
 - Use absolute or project-relative paths
 - Requires Read tool permission (implicit for most cases)
 
-**For `!` syntax**:
+**For `!`` bash injection syntax**:
 - Commands execute as preprocessing BEFORE Claude sees the prompt
 - **Must have** `allowed-tools: Bash` in frontmatter
 - Output becomes part of command prompt
-- Use backticks: `` !`command` ``
 - Test commands independently first
 - Handle errors explicitly
 - NOT interactive - use Bash tool during execution for interactive flows
@@ -1146,7 +1145,7 @@ Execute in this order:
 
 **Use case**: Commands that need runtime information
 
-**Uses `!` (bash injection) and `@` (file references)**:
+**Uses bash injection and `@` (file references)**:
 
 ```markdown
 ---
@@ -1344,7 +1343,7 @@ continuous verification checks.
 
 ### Anti-Pattern 5: Bash Injection Without Permissions
 
-**❌ Using `!` syntax without `allowed-tools: Bash`**
+**❌ Using `!`` syntax without `allowed-tools: Bash`**
 
 ```yaml
 ---
@@ -1538,7 +1537,7 @@ $ARGUMENTS can be:
 - `option2` - Description
 ```
 
-**Dynamic Context Command** (with `!` and `@`):
+**Dynamic Context Command** (with `!`` bash injection and `@` file references):
 ```markdown
 ---
 description: Review changed files
@@ -1605,10 +1604,10 @@ argument-hint: [param-name]        # Use for commands with arguments
 model: haiku                       # Use for cost control
 context: fork                      # Use for isolation
 user-invocable: false              # Use to hide from menu
-allowed-tools: ["Bash", "Read"]   # REQUIRED when using `!` or `@` syntax
+allowed-tools: ["Bash", "Read"]   # REQUIRED when using `!`` or `@` syntax
 ```
 
-**Important**: If using `!` (bash injection) syntax, you MUST include `allowed-tools: Bash`.
+**Important**: If using `!`` bash injection syntax, you MUST include `allowed-tools: Bash`.
 
 **Key insight**: Frontmatter is OPTIONAL. Many great commands don't use it.
 
