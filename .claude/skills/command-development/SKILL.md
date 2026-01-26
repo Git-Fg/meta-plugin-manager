@@ -646,6 +646,163 @@ This pattern works when a skill needs to invoke a command under very constrained
 
 ---
 
+## Command Window Lifecycle
+
+**Critical insight**: Commands (like skills) are stateless invocations. The "command window" is the execution lifecycle of a single command call—nothing more.
+
+### What This Means
+
+**Commands have no persistent state**:
+- No hidden JSON tracking active commands
+- No memory between invocations
+- Each command call is independent
+- Permissions frontmatter applies ONLY during that specific execution
+- Commands use the Skill tool under the hood, so the same lifecycle applies
+
+**The command window**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Command Invocation (Permissions ACTIVE via frontmatter)         │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  Processing → AskUserQuestion? → Processing → Return       ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+                    Permissions INACTIVE
+```
+
+### Multi-Turn Interaction: AskUserQuestion vs Natural Conversation
+
+**AskUserQuestion maintains the command window**:
+- When a command uses `AskUserQuestion`, the command remains ACTIVE
+- Permissions (like `allowed-tools`) continue to apply while waiting for user response
+- After user responds, the SAME command invocation continues
+- This is the ONLY way to maintain permissions and context across user responses
+
+**Natural conversation closes the command window**:
+- When a command responds naturally (without `AskUserQuestion`), the command finishes
+- The next turn is a fresh decision point
+- The model may or may not re-invoke the command
+- Permissions from the previous invocation NO LONGER apply
+
+| Interaction Type | Command Window | Next Turn |
+|------------------|----------------|-----------|
+| `AskUserQuestion` | Remains ACTIVE | Same command invocation continues, permissions persist |
+| Natural conversation | Closes after response | New turn, model decides fresh, no permissions |
+
+### Examples
+
+**Example 1: Deployment command using AskUserQuestion (Window stays open)**
+```yaml
+---
+name: deploy
+description: Deploy with safety gates
+allowed-tools: Bash
+---
+
+# Pre-flight checks completed
+All tests passing.
+
+AskUserQuestion: Deploy to which environment?
+1. staging
+2. production
+
+# ← User responds: "1"
+# ← Still SAME command, Bash permission still active
+
+# Command can now execute deployment:
+Deploying to staging...
+Running: !`kubectl apply -f manifests/`
+Deployment successful!
+
+# ← Command completes and returns result
+# ← Permissions no longer apply
+```
+
+**Example 2: Natural conversation (Window closes)**
+```yaml
+---
+name: deploy
+description: Deploy with safety gates
+allowed-tools: Bash
+---
+
+# Pre-flight checks completed
+All tests passing.
+
+Which environment should I deploy to?
+# ← Command finishes here
+
+# User responds: "staging"
+# ← NEW TURN, no active command, Bash permission DON'T apply
+
+# Model decides what to do - may or may not re-invoke the command
+```
+
+### When to Use AskUserQuestion in Commands
+
+**Use `AskUserQuestion` when**:
+- Command needs to maintain permissions across user responses
+- Command needs multi-turn interaction with state (e.g., deployment confirmation)
+- User response should trigger tool usage within same invocation
+- Critical workflows require user confirmation before proceeding
+
+**Don't use `AskUserQuestion` when**:
+- Command provides one-shot output or report
+- Command completes its task in a single response
+- User naturally provides all context upfront
+
+### Recognition Questions
+
+**Ask yourself**:
+- "Does this command need to maintain permissions across user responses?" → Use `AskUserQuestion`
+- "Can this command complete its task in one response?" → Natural response is fine
+- "Will the command use tools AFTER getting user input?" → Use `AskUserQuestion`
+
+### Anti-Pattern: Natural Conversation Commands
+
+**❌ Commands that try to have natural conversations without AskUserQuestion**
+
+Commands that ask questions naturally will close after their first response. Any subsequent permissions or state are lost.
+
+**Recognition**: "Does this command ask questions and expect answers while needing to use tools afterward?"
+
+**Example**:
+❌ Bad:
+```yaml
+# "Tell me which environment to deploy to, then I'll run kubectl apply."
+# ← Command closes here, Bash permission lost
+```
+
+✅ Good:
+```yaml
+AskUserQuestion: "Deploy to which environment?"
+# ← Command stays active, can use Bash after user answers
+```
+
+**Fix**: Use `AskUserQuestion` for any multi-turn interaction where permissions or state must persist.
+
+### Why This Matters for Commands
+
+Commands often need multi-turn interaction:
+- **Deployment commands**: Need confirmation before executing destructive operations
+- **Planning commands**: Need user approval before proceeding with implementation
+- **Workflow commands**: Need user decisions at multiple steps
+
+**Without `AskUserQuestion`**:
+- Command finishes after first response
+- User's confirmation/selection happens in a new turn
+- Command permissions no longer apply
+- Model must re-invoke command or handle differently
+
+**With `AskUserQuestion`**:
+- Command stays active through the interaction
+- Permissions maintained throughout
+- Clean, predictable workflow
+- User confirmations happen within the command's execution context
+
+---
+
 ## Step-by-Step: Creating a Command
 
 ### Step 1: Decide Command vs Skill
@@ -1096,6 +1253,8 @@ Before finalizing a command, verify:
 - [ ] Imperative tone (what Claude should do)
 - [ ] Concise (not verbose, not cryptic)
 - [ ] Specific (not vague, not over-prescriptive)
+- [ ] Uses `AskUserQuestion` for multi-turn interactions (not natural conversation)
+- [ ] Understands command window lifecycle and statelessness
 
 **Integration** (only if applicable):
 - [ ] "Integration with Other Commands" (for workflow commands)
@@ -1250,6 +1409,24 @@ After planning:
 ```
 
 **Exception**: Standalone commands like `/code-review`, `/build-fix`, `/learn` don't need integration sections. They're self-contained.
+
+### Anti-Pattern 8: Natural Conversation Without AskUserQuestion
+
+**❌ Commands that try to have natural conversations without AskUserQuestion**
+
+Commands that ask questions naturally will close after their first response. Any subsequent permissions or state are lost.
+
+**Recognition**: "Does this command ask questions and expect answers while needing to use tools afterward?"
+
+**Example**:
+❌ Bad: "Tell me which environment to deploy to, then I'll run kubectl apply."
+✅ Good: Use `AskUserQuestion` with structured options
+
+**Why bad**: Without `AskUserQuestion`, the command window closes after the first response. The user's answer comes in a new turn where the command is no longer active, so permissions (like `allowed-tools: Bash`) no longer apply. The model must then decide whether to re-invoke the command or handle things differently.
+
+**Fix**: Use `AskUserQuestion` for any multi-turn interaction where permissions or state must persist. See the "Command Window Lifecycle" section for details.
+
+**Why this matters for commands**: Commands often need multi-turn interaction (deployment confirmations, planning approvals, workflow decisions). `AskUserQuestion` ensures the command stays active through these interactions with proper permissions maintained.
 
 ---
 

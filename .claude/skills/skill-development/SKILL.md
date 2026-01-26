@@ -399,6 +399,141 @@ flowchart LR
 
 ---
 
+## Skill Window Lifecycle
+
+**Critical insight**: Skills are stateless invocations. The "skill window" is the execution lifecycle of a single skill call—nothing more.
+
+### What This Means
+
+**Skills have no persistent state**:
+- No hidden JSON tracking active skills
+- No memory between invocations
+- Each skill call is independent
+- Permissions apply ONLY during that specific execution
+
+**The skill window**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Skill Invocation (Permissions ACTIVE via frontmatter)          │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  Processing → AskUserQuestion? → Processing → Return       ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+                    Permissions INACTIVE
+```
+
+### Multi-Turn Interaction: AskUserQuestion vs Natural Conversation
+
+**AskUserQuestion maintains the skill window**:
+- When a skill uses `AskUserQuestion`, the skill remains ACTIVE
+- Permissions continue to apply while waiting for user response
+- After user responds, the SAME skill invocation continues
+- This is the ONLY way to maintain permissions across user responses
+
+**Natural conversation closes the skill window**:
+- When a skill responds naturally (without `AskUserQuestion`), the skill finishes
+- The next turn is a fresh decision point
+- The model may or may not re-invoke the skill
+- Permissions from the previous invocation NO LONGER apply
+
+| Interaction Type | Skill Window | Next Turn |
+|------------------|--------------|-----------|
+| `AskUserQuestion` | Remains ACTIVE | Same skill invocation continues, permissions persist |
+| Natural conversation | Closes after response | New turn, model decides fresh, no permissions |
+
+### Examples
+
+**Example 1: Using AskUserQuestion (Window stays open)**
+```yaml
+---
+name: file-analyzer
+description: Analyze files with permissions
+allowed-tools: Bash, Read, Edit
+---
+
+# Analyze file structure
+
+AskUserQuestion: Which file should I analyze?
+1. package.json
+2. tsconfig.json
+3. src/index.ts
+
+# ← User responds: "1"
+# ← Still SAME skill, Bash/Read/Edit permissions still active
+
+# Skill can now use those tools:
+Reading package.json...
+Analyzing dependencies...
+Proposing fixes...
+
+# ← Skill completes and returns result
+# ← Permissions no longer apply
+```
+
+**Example 2: Natural conversation (Window closes)**
+```yaml
+---
+name: file-analyzer
+description: Analyze files with permissions
+allowed-tools: Bash, Read, Edit
+---
+
+# Analyze file structure
+
+Which file should I analyze? Please tell me.
+# ← Skill finishes here
+
+# User responds: "package.json"
+# ← NEW TURN, no active skill, Bash/Read/Edit permissions DON'T apply
+
+# Model decides what to do - may or may not re-invoke the skill
+```
+
+### When to Use AskUserQuestion
+
+**Use `AskUserQuestion` when**:
+- Skill needs to maintain permissions across user responses
+- Skill needs multi-turn interaction with state
+- User response should guide subsequent tool usage within same invocation
+
+**Don't use `AskUserQuestion` when**:
+- Skill provides one-shot guidance or information
+- Skill completes its task in a single response
+- User can naturally provide follow-up context
+
+### Recognition Questions
+
+**Ask yourself**:
+- "Does this skill need to maintain permissions across user responses?" → Use `AskUserQuestion`
+- "Can this skill complete its task in one response?" → Natural response is fine
+- "Will the skill use tools AFTER getting user input?" → Use `AskUserQuestion`
+
+### Anti-Pattern: Natural Conversation Skills
+
+**❌ Skills that try to have natural conversations without AskUserQuestion**
+
+Skills that ask questions naturally will close after their first response. Any subsequent permissions or state are lost.
+
+**Recognition**: "Does this skill ask questions and expect answers while needing to use tools afterward?"
+
+**Example**:
+❌ Bad:
+```yaml
+# "Tell me which file to analyze, then I'll use Read to show you contents."
+# ← Skill closes here, Read permission lost
+```
+
+✅ Good:
+```yaml
+AskUserQuestion: "Which file should I analyze?"
+# ← Skill stays active, can use Read after user answers
+```
+
+**Fix**: Use `AskUserQuestion` for any multi-turn interaction where permissions or state must persist.
+
+---
+
 ## Writing Tips
 
 ### Use Clear Language
@@ -530,6 +665,8 @@ A good skill:
 - [ ] Has logical structure with headers
 - [ ] Includes tips or common variations
 - [ ] Balances detail (not too much, not too little)
+- [ ] Uses `AskUserQuestion` for multi-turn interactions (not natural conversation)
+- [ ] Understands skill window lifecycle and statelessness
 
 **Self-check**: If you were new to this skill, would the content be enough to succeed?
 
@@ -646,6 +783,22 @@ Empty directories create technical debt.
 **Recognition**: "Can users copy an example and use it immediately?"
 
 **Fix**: Show, don't just tell. Include complete, runnable examples.
+
+### Anti-Pattern 9: Natural Conversation Without AskUserQuestion
+
+**❌ Skills that try to have natural conversations without AskUserQuestion**
+
+Skills that ask questions naturally will close after their first response. Any subsequent permissions or state are lost.
+
+**Recognition**: "Does this skill ask questions and expect answers while needing to use tools afterward?"
+
+**Example**:
+❌ Bad: "Tell me which file to analyze, then I'll use Read to show you contents."
+✅ Good: Use `AskUserQuestion` with structured options
+
+**Why bad**: Without `AskUserQuestion`, the skill window closes after the first response. The user's answer comes in a new turn where the skill is no longer active, so permissions (like `allowed-tools: Read`) no longer apply.
+
+**Fix**: Use `AskUserQuestion` for any multi-turn interaction where permissions or state must persist. See the "Skill Window Lifecycle" section for details.
 
 ---
 
