@@ -9,6 +9,8 @@ Commands are human-invoked orchestrators that bundle skills and tools into coher
 
 **Core principle**: Commands should work standalone without depending on external files or documentation.
 
+**Mandatory reading**: Before using bash injection or file reference syntax, read examples/executable-examples.md for complete working examples.
+
 ---
 
 ## What Makes Good Commands
@@ -481,48 +483,7 @@ Ensure:
 
 **Requires**: `allowed-tools: Bash` in frontmatter
 
-**Examples**:
-
-```markdown
----
-description: Review changed files
-allowed-tools: Bash, Read
----
-
-Files changed: !`git diff --name-only HEAD`
-
-Review each file for:
-- Code quality and style
-- Potential bugs or issues
-- Test coverage
-```
-
-```markdown
----
-description: Run tests with coverage
-allowed-tools: Bash(npm:*)
----
-
-Test results: !`npm test -- --coverage --json`
-
-Analyze coverage report and identify:
-- Files below 80% coverage
-- Uncovered critical paths
-- Test gaps
-```
-
-```markdown
----
-description: Deploy with validation
-argument-hint: [environment]
-allowed-tools: Bash(*)
----
-
-Validate: !`echo "$1" | grep -E "^(dev|staging|prod)$" || echo "INVALID"`
-
-If $1 is valid environment, deploy to $1.
-Otherwise, explain valid environments.
-```
+**Working examples**: See examples/executable-examples.md for complete, runnable examples of bash injection patterns.
 
 **When to use bash injection**:
 - Dynamic context gathering (git status, environment vars)
@@ -540,50 +501,21 @@ Otherwise, explain valid environments.
 ### Combined Patterns
 
 **Review pattern** (combines bash injection with file references):
-```markdown
----
-description: Comprehensive code review
-allowed-tools: Bash, Read
----
-
-Changed files: !`git diff --name-only HEAD`
-
-For each file, review @FILE for:
-- Security issues
-- Code quality
-- Best practices
-- Test coverage
-```
+- Get changed files via bash injection
+- For each file, use @FILE reference to review contents
+- Check for security, quality, best practices, test coverage
 
 **Workflow pattern** (multiple bash injections):
-```markdown
----
-description: Pre-commit validation
-allowed-tools: Bash
----
-
-Checks:
-- Build: !`npm run build`
-- Tests: !`npm test`
-- Lint: !`npm run lint`
-
-If all checks pass, approve commit.
-Otherwise, report failures.
-```
+- Run build, tests, and lint commands via bash injection
+- Check if all pass before approving
+- Report failures if any step fails
 
 **Template pattern**:
-```markdown
----
-description: Generate report from template
-argument-hint: [data-file]
----
+- Reference template file with @syntax
+- Reference data file with @$1 argument
+- Generate output following template structure
 
-Template: @templates/report-format.md
-
-Data: @$1
-
-Generate report following template structure.
-```
+**Working examples**: See examples/executable-examples.md for complete implementations.
 
 ### Important Notes
 
@@ -692,51 +624,23 @@ This pattern works when a skill needs to invoke a command under very constrained
 ### Examples
 
 **Example 1: Deployment command using AskUserQuestion (Window stays open)**
-```yaml
----
-name: deploy
-description: Deploy with safety gates
-allowed-tools: Bash
----
-
-# Pre-flight checks completed
-All tests passing.
-
-AskUserQuestion: Deploy to which environment?
-1. staging
-2. production
-
-# ← User responds: "1"
-# ← Still SAME command, Bash permission still active
-
-# Command can now execute deployment:
-Deploying to staging...
-Running: !`kubectl apply -f manifests/`
-Deployment successful!
-
-# ← Command completes and returns result
-# ← Permissions no longer apply
-```
+- Pre-flight checks completed
+- AskUserQuestion: "Deploy to which environment?"
+- User responds: "1" (staging)
+- Still SAME command, Bash permission still active
+- Command executes deployment using bash injection
+- Deployment completes and returns result
+- Permissions no longer apply
 
 **Example 2: Natural conversation (Window closes)**
-```yaml
----
-name: deploy
-description: Deploy with safety gates
-allowed-tools: Bash
----
+- Pre-flight checks completed
+- Question asked naturally: "Which environment should I deploy to?"
+- Command finishes after response
+- User responds: "staging"
+- NEW TURN, no active command, Bash permission DON'T apply
+- Model decides what to do - may or may not re-invoke the command
 
-# Pre-flight checks completed
-All tests passing.
-
-Which environment should I deploy to?
-# ← Command finishes here
-
-# User responds: "staging"
-# ← NEW TURN, no active command, Bash permission DON'T apply
-
-# Model decides what to do - may or may not re-invoke the command
-```
+**Working examples**: See examples/executable-examples.md for complete code examples showing both patterns.
 
 ### When to Use AskUserQuestion in Commands
 
@@ -1147,46 +1051,17 @@ Execute in this order:
 
 **Uses bash injection and `@` (file references)**:
 
-```markdown
----
-description: Review changed files
-allowed-tools: Bash, Read
----
+Common patterns:
+- Get changed files from git, then review each with @FILE
+- Run specific tests via bash injection based on argument
+- Generate documentation for a source file passed as argument
 
-Changed files: !`git diff --name-only HEAD`
+**Working examples**: See examples/executable-examples.md for complete implementations of:
+- Review pattern (git status + file references)
+- Test pattern (bash injection with arguments)
+- Documentation pattern (file references)
 
-Review each @FILE for:
-- Security issues
-- Code quality
-- Best practices
-```
-
-```markdown
----
-description: Test specific file
-argument-hint: [test-file]
-allowed-tools: Bash(npm:*)
----
-
-Run tests: !`npm test -- $1`
-
-Analyze results and suggest fixes.
-```
-
-```markdown
----
-description: Generate docs for file
-argument-hint: [source-file]
----
-
-Generate documentation for @$1 including:
-- Function/class descriptions
-- Parameter documentation
-- Return values
-- Usage examples
-```
-
-**Example**: Commands using git status, test runners, file analysis
+**Example use cases**: Commands using git status, test runners, file analysis
 
 ### Pattern 6: Deployment Command
 
@@ -1343,27 +1218,15 @@ continuous verification checks.
 
 ### Anti-Pattern 5: Bash Injection Without Permissions
 
-**❌ Using `!`` syntax without `allowed-tools: Bash`**
+**❌ Using bash injection syntax without `allowed-tools: Bash`**
 
-```yaml
----
-description: Run tests
----
-
-Test results: !`npm test`
-```
+Bad example: Command with bash injection but missing allowed-tools frontmatter
 
 **Why bad**: Command will fail because Claude doesn't have permission to run bash.
 
-**✅ Better**: Always include `allowed-tools: Bash`:
-```yaml
----
-description: Run tests
-allowed-tools: Bash
----
+**✅ Better**: Always include `allowed-tools: Bash` in frontmatter when using bash injection syntax.
 
-Test results: !`npm test`
-```
+**Working examples**: See examples/executable-examples.md for complete code showing both bad and good patterns.
 
 ### Anti-Pattern 6: Wrong Freedom Level
 
@@ -1538,19 +1401,11 @@ $ARGUMENTS can be:
 ```
 
 **Dynamic Context Command** (with `!`` bash injection and `@` file references):
-```markdown
----
-description: Review changed files
-allowed-tools: Bash, Read
----
+- Uses bash injection to get changed files from git
+- Uses @FILE reference to review each file
+- Checks for security, code quality, best practices
 
-Changed files: !`git diff --name-only HEAD`
-
-Review each @FILE for:
-- Security issues
-- Code quality
-- Best practices
-```
+**Working example**: See examples/executable-examples.md for complete implementation.
 
 **Full Command** (like `/plan`, `/tdd`):
 ```yaml
