@@ -7,7 +7,8 @@ tools: ["Bash", "Read", "TaskOutput", "Grep"]
 model: inherit
 skills:
   - ralph-execution
-  - ralph-claude-expertise
+  - ralph-cli
+  - ralph-design
   - file-search
 ---
 

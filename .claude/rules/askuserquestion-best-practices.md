@@ -292,4 +292,4 @@ Before asking any question, verify:
 
 **Remember:** Users are recognition engines, not generation engines. Design questions that let them recognize solutions, not generate them.
 
-For strategic reasoning patterns, see `deductive-reasoning` skill.
+For strategic reasoning patterns, see `/reason` command.
