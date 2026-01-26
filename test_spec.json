@@ -1,0 +1,119 @@
+{
+  "test_plan": {
+    "name": "Auth Skill Testing",
+    "version": "1.0",
+    "description": "Test auth-skill for comprehensive authentication patterns, security guidance, and portability",
+    "test_summary": {
+      "total_tests": 6,
+      "completed": 0,
+      "failed": 0,
+      "not_started": 6,
+      "coverage": "0/6 completed (0% complete)",
+      "success_rate": "TBD"
+    },
+    "key_findings": {
+      "objective_1": "Verify skill loads and responds to all triggers",
+      "objective_2": "Verify comprehensive OAuth guidance",
+      "objective_3": "Verify token-based authentication patterns",
+      "objective_4": "Verify security best practices",
+      "objective_5": "Verify troubleshooting guidance",
+      "objective_6": "Verify achieves 80%+ autonomy"
+    },
+    "tests": [
+      {
+        "test_id": "test_triggering",
+        "name": "Trigger Response Test",
+        "status": "NOT_STARTED",
+        "priority": "HIGH",
+        "description": "Verify skill loads and responds to all trigger phrases",
+        "test_prompt": "Load the auth-skill skill and verify it defines all trigger phrases: 'auth patterns', 'setup oauth', 'token authentication', 'auth security', 'fix authentication'",
+        "success_criteria": [
+          "Skill loads without errors",
+          "All 5 trigger phrases are documented",
+          "Each trigger has corresponding guidance",
+          "Frontmatter includes all exports from blueprint"
+        ]
+      },
+      {
+        "test_id": "test_oauth_guidance",
+        "name": "OAuth Guidance Test",
+        "status": "NOT_STARTED",
+        "priority": "HIGH",
+        "description": "Verify provides comprehensive OAuth guidance",
+        "test_prompt": "Load the auth-skill and verify it provides comprehensive OAuth 2.0 and OAuth 1.0a guidance including setup, flows, and best practices",
+        "success_criteria": [
+          "OAuth 2.0 Authorization Code Flow documented",
+          "OAuth 2.0 Client Credentials Flow documented",
+          "OAuth 1.0a flow documented (if applicable)",
+          "Security best practices included",
+          "Code examples provided",
+          "Setup steps clearly outlined"
+        ]
+      },
+      {
+        "test_id": "test_token_auth",
+        "name": "Token Authentication Test",
+        "status": "NOT_STARTED",
+        "priority": "HIGH",
+        "description": "Verify covers token-based authentication patterns",
+        "test_prompt": "Load the auth-skill and verify it covers JWT tokens, API keys, bearer tokens, and other token-based authentication methods",
+        "success_criteria": [
+          "JWT token handling documented",
+          "API key authentication covered",
+          "Bearer token patterns included",
+          "Token storage best practices",
+          "Token refresh mechanisms",
+          "Practical implementation examples"
+        ]
+      },
+      {
+        "test_id": "test_security_practices",
+        "name": "Security Best Practices Test",
+        "status": "NOT_STARTED",
+        "priority": "HIGH",
+        "description": "Verify includes security best practices",
+        "test_prompt": "Load the auth-skill and verify it includes comprehensive security best practices for authentication",
+        "success_criteria": [
+          "CSRF protection mentioned",
+          "HTTPS requirements documented",
+          "Token rotation strategies",
+          "Secure storage guidelines",
+          "PKCE implementation guidance",
+          "Security hardening recommendations"
+        ]
+      },
+      {
+        "test_id": "test_troubleshooting",
+        "name": "Troubleshooting Guidance Test",
+        "status": "NOT_STARTED",
+        "priority": "MEDIUM",
+        "description": "Verify offers troubleshooting guidance",
+        "test_prompt": "Load the auth-skill and verify it provides troubleshooting guidance for common authentication failures",
+        "success_criteria": [
+          "Common auth errors documented",
+          "Debugging strategies provided",
+          "Token expiration handling",
+          "Error response analysis",
+          "Configuration troubleshooting",
+          "Common pitfalls and solutions"
+        ]
+      },
+      {
+        "test_id": "test_autonomy",
+        "name": "Autonomy Test",
+        "status": "NOT_STARTED",
+        "priority": "HIGH",
+        "description": "Verify achieves 80%+ autonomy",
+        "test_prompt": "Load the auth-skill and verify it provides sufficient detail and examples to achieve 80%+ autonomy when helping with authentication tasks",
+        "success_criteria": [
+          "Clear, actionable guidance",
+          "Practical code examples included",
+          "Step-by-step instructions",
+          "Decision criteria provided",
+          "Comprehensive coverage reduces follow-up questions",
+          "Self-contained documentation"
+        ]
+      }
+    ]
+  }
+}

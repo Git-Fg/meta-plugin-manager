@@ -1,31 +1,11 @@
 ---
-description: Explore and analyze a skill/command through guided questioning
+description: "Explore and analyze a skill/command through guided questioning. Use when: user mentions 'explore', 'analyze', 'guided questioning'; need to understand context before proceeding; uncovering assumptions and insights. Not for: quick direct answers, simple tool execution."
 argument-hint: [skill-or-command-path]
 ---
 
 # Exploratory Analysis
 
-Think of exploratory analysis as **walking through a maze with a flashlight**—each question illuminates another section, gradually revealing the complete picture. The goal isn't to rush through, but to explore what matters and uncover assumptions through guided dialogue.
-
-## Recognition Patterns
-
-**When to use explore:**
-```
-✅ Good: "Analyze a skill through guided questioning"
-✅ Good: "Explore a command through dialogue"
-✅ Good: "Understand context before proceeding"
-❌ Bad: Quick, direct answers needed
-❌ Bad: Simple tool execution
-
-Why good: Exploratory analysis uncovers assumptions and context through dialogue.
-```
-
-**Pattern Match:**
-- User mentions "explore", "analyze", "guided questioning"
-- Need to understand context before proceeding
-- Uncovering assumptions and insights
-
-**Recognition:** "Do you need to explore and understand context through dialogue?" → Use explore.
+Explore and analyze a skill/command through guided questioning.
 
 ## Starting Point
 
@@ -71,31 +51,12 @@ Why good: Exploratory analysis uncovers assumptions and context through dialogue
 ## When to Stop Questioning
 
 **Stop when:**
-- A clear direction emerges without prompting
-- The same insight surfaces across multiple questions
-- Confidence is expressed about the path forward
+- Clear direction emerges without prompting
+- Same insight surfaces across multiple questions
+- Confidence expressed about path forward
 - New questions no longer yield new information
 
-**Recognition:** "Do questions still reveal new insights?" → If no, stop and conclude.
-
-## Contrast
-
-```
-✅ Good: Ask one question at a time
-✅ Good: Build on previous responses
-✅ Good: Let dialogue shape direction
-❌ Bad: Rush to answers
-❌ Bad: Ask multiple questions simultaneously
-
-Why good: Guided exploration reveals context gradually.
-
-✅ Good: Understand context before proceeding
-❌ Bad: Dive into analysis without understanding
-
-Why good: Context illuminates what actually matters.
-```
-
-**Recognition:** "Does this exploration uncover meaningful insights?" → Check: 1) Questions reveal context, 2) Dialogue shapes direction, 3) Assumptions questioned.
+**Binary test:** "Do questions still reveal new insights?" → If no, stop and conclude.
 
 ## Moving Forward
 

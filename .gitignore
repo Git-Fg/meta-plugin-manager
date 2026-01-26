@@ -1,5 +1,4 @@
 # Scratchpad/working directories
-.agent/
 .cache/
 
 # Temporary files
@@ -16,3 +15,12 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Ralph sandbox architecture (NEW: fixed sandbox at .agent/sandbox/)
+.agent/sandbox/
+
+# Ralph sandbox architecture (OLD: to be archived)
+tests/sandbox-*/
+tests/phase_*/
+tests/.archived_old_sandboxes/
+.worktrees/

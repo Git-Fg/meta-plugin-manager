@@ -1,0 +1,196 @@
+# PROMPT Examples for Component Development Orchestrator
+#
+# These are example prompts you can use in PROMPT.md or with the CLI.
+# Each demonstrates a different capability of the workflow.
+
+# ============================================================================
+# 1. CREATE NEW SKILL (TDD Flow)
+# ============================================================================
+# Creates a new skill from scratch using Test-Driven Development.
+
+Create a new skill 'jwt-auth' that handles token validation.
+requirements:
+- validate RS256 signatures
+- check expiration
+- extract roles claim
+success criteria:
+- all tests pass
+- clean audit trail
+
+# ============================================================================
+# 2. CREATE NEW COMMAND
+# ============================================================================
+# Creates a CLI command with help text and logic.
+
+Create a command 'deploy-check' that verifies the environment.
+It should:
+1. Check if git is clean
+2. Verify npm install is fresh
+3. Check .env exists
+
+# ============================================================================
+# 3. CREATE NEW HOOK
+# ============================================================================
+# Creates a git hook or event listener.
+
+Create a pre-commit hook that runs 'npm audit' and blocks commit if high vulnerabilities are found.
+
+# ============================================================================
+# 4. FIX EXISTING COMPONENT
+# ============================================================================
+# Diagnoses failure, updates code, verifying fix.
+
+The 'data-parser' skill is failing on empty JSON inputs. Fix it.
+
+# ============================================================================
+# 5. AUDIT & REFACTOR
+# ============================================================================
+# Checks validation rules and refactors code.
+
+Audit the 'legacy-logger' skill. Refactor it to use the new structured logging pattern.
+
+# ============================================================================
+# 6. SKILL + HOOK (Multi-Component)
+# ============================================================================
+# Creates a skill and a hook that uses it.
+
+Create a 'security-scanner' skill that checks for exposed secrets.
+Then create a git-push hook that uses this skill to block pushes containing secrets.
+
+# ============================================================================
+# 7. AGENT + SKILL + HOOK (Full Suite)
+# ============================================================================
+# Creates a specialized agent armed with a specific skill and a hook trigger.
+
+Build a 'Quality Assurance' suite:
+1. A 'ui-tester' skill involving Selenium/Puppeteer
+2. A 'qa-bot' agent that uses this skill
+3. A hook that wakes the agent on every Pull Request
+
+# ============================================================================
+# 8. COMMAND + SKILL + AGENT
+# ============================================================================
+# Creates a user-facing command that delegates rigid logic to a skill and fuzzy logic to an agent.
+
+Create an architecture-review system:
+1. Skill 'static-analysis' to count lines of code and complexity
+2. Agent 'arch-reviewer' to interpret those stats
+3. Command 'review-arch' that orchestrates them both
+
+# ============================================================================
+# 9. BASIC AUDIT (Sandbox Isolation)
+# ============================================================================
+# Audits a skill by moving it to a clean sandbox.
+
+Audit the skill .claude/skills/my-skill/ in a sandboxed environment.
+Verify it works without accessing global project config.
+
+# ============================================================================
+# 10. DEEP AUDIT & FIX
+# ============================================================================
+# Audits, finds issues, fixes them, and verifies.
+
+Audit .claude/skills/data-fetcher/ for hardcoded paths.
+If found, fix them to use relative paths, and verify in a fresh sandbox.
+
+# ============================================================================
+# 11. COMMAND AUDIT WITH INTEGRATION
+# ============================================================================
+# Tests a command that interacts with other parts of the system.
+
+Test the 'deploy' command in a sandbox.
+Mock the network calls and ensure it handles timeouts gracefully.
+
+# ============================================================================
+# 12. ECOSYSTEM AUDIT
+# ============================================================================
+# Checks multiple related components.
+
+Audit the entire 'auth' ecosystem:
+- skills/login
+- skills/logout
+- commands/reset-password
+Ensure they all share the same session format.
+
+# ============================================================================
+# 13. REFACTOR FOR PORTABILITY
+# ============================================================================
+# Specific instructions for migration.
+
+Refactor .claude/skills/local-tool/ to be fully portable.
+Remove all absolute paths.
+Ensure it runs in a CI environment (simulated by sandbox).
+
+# ============================================================================
+# 14. FROM NATURAL LANGUAGE SPEC
+# ============================================================================
+# High-level creative task.
+
+I need a way to summarize large markdown files.
+Create a skill for this. It should handle token limits by chunking.
+Test it on the current project's README.md.
+
+# ============================================================================
+# 15. FIX & VERIFY BROKEN COMPONENT
+# ============================================================================
+# Start with a known issue.
+
+The 'image-resizer' skill crashes on PNG files.
+1. Create a reproduction test case in a sandbox
+2. Fix the crash
+3. Verify with 10 different PNGs
+
+# ============================================================================
+# 16. BATCH CREATION
+# ============================================================================
+# Create multiple stubs at once.
+
+Scaffold a new 'analytics' module:
+- skill: track-event
+- skill: aggregrate-stats
+- command: show-dashboard
+- hook: on-click-logging
+Just create the boilerplate and simple tests for now.
+
+# ============================================================================
+# 17. LEGACY MIGRATION
+# ============================================================================
+# Move code to better structure.
+
+Move the logic from 'scripts/deploy.sh' into a proper 'deploy-app' skill.
+1. Analyze the script
+2. Create standard SKILL.md
+3. Port logic to python/js
+4. Delete original script
+5. Ensure portability invariant is met
+6. Test migration in sandbox
+7. Generate migration report.
+
+# ============================================================================
+# 18. AUDIT ALL SKILLS WITH DEPENDENCY-AWARE SANDBOXING
+# ============================================================================
+# Comprehensive audit of entire skill ecosystem with smart grouping.
+
+Audit all skills from .claude/skills/ in sandboxed environments:
+1. Scan all skills and build a dependency graph (which skills reference others)
+2. Group interdependent skills together for joint testing
+3. Identify standalone skills for isolated testing
+4. For each group:
+   - Copy to a clean sandbox
+   - Run existing tests
+   - Verify no access to parent directories
+   - Check against 'portability' requirements
+5. Generate a 'portability_score' for each skill
+6. Auto-fix minor path issues if found
+
+# ============================================================================
+# 19. RE-RUN ALL TESTS & UPDATE JSON RESULTS
+# ============================================================================
+# Execution-focused prompt for CI/Regression testing.
+
+Review all the tests from tests/ folder:
+1. Discover all test_spec.json files
+2. Re-run all of them in their respective sandboxes
+3. Capture output
+4. Update tests/results.json with new pass/fail status
+5. If any test fails that used to pass, flag it as REGRESSION

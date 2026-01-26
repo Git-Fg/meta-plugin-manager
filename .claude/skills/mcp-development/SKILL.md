@@ -23,6 +23,86 @@ Why good: MCP servers must self-configure without external dependencies
 
 ---
 
+## Philosophy Foundation
+
+MCP servers follow these core principles for secure external system integration.
+
+### Progressive Disclosure for MCPs
+
+MCPs use configuration disclosure (transport + primitives):
+
+**Tier 1: Transport Configuration** (connection setup)
+- **HTTP**: URL, headers, authentication
+- **stdio**: Command, args, environment variables
+- Purpose: Establish connection to external system
+
+**Tier 2: Primitives Definition** (tools/resources/prompts)
+- **Tools**: Actions Claude can execute
+- **Resources**: Data Claude can read
+- **Prompts**: Reusable prompt templates
+- Purpose: Define Claude's capabilities with the external system
+
+**Why configuration-focused?** MCPs are connectors. Configuration is the primary concern.
+
+**Recognition**: "Does this MCP include complete transport and primitive definitions?"
+
+### The Delta Standard for MCPs
+
+> Good MCP = Transport/primitive knowledge − Generic connector concepts
+
+Include in MCPs (Positive Delta):
+- Transport-specific configuration (HTTP vs stdio)
+- Authentication patterns (Bearer tokens, API keys)
+- Tool definitions with schemas
+- Resource URI patterns
+- Error handling for the external system
+
+Exclude from MCPs (Zero/Negative Delta):
+- Generic "MCPs are connectors" explanations
+- Obvious JSON structure
+- General HTTP concepts
+- Common authentication patterns (unless specific to the service)
+
+**Recognition**: "Is this configuration specific to this external system?"
+
+### Voice and Freedom for MCPs
+
+**Voice**: Declarative configuration (not imperative)
+
+MCPs use JSON configuration, not prompts:
+- Define tools with schemas: `{"type": "object", "properties": {...}}`
+- Specify transport parameters
+- Set environment variables
+
+**Freedom**: Low for security-critical configuration
+
+| Freedom Level | When to Use | MCP Examples |
+|---------------|-------------|--------------|
+| **Medium** | Internal tools, dev environments | Local filesystem MCP, development database |
+| **Low** | Production systems, external APIs | Cloud services, production databases, authentication required |
+
+**Recognition**: "What's the security impact if this MCP is misconfigured?"
+
+### Self-Containment for MCPs
+
+**MCPs must work without external documentation.**
+
+Never reference external files:
+- ❌ "See API documentation for endpoint"
+- ❌ "Check service docs for authentication"
+
+Always include directly:
+- ✅ Complete transport configuration
+- ✅ All tool schemas
+- ✅ Authentication requirements
+- ✅ Error handling instructions
+
+**Why**: MCP servers are self-contained connectors. External references create deployment failures.
+
+**Recognition**: "Could someone configure this MCP without reading external documentation?"
+
+---
+
 ## What Good MCP Servers Have
 
 ### 1. Complete Transport Configuration
@@ -367,6 +447,67 @@ Tools are callable functions with validation:
 ```
 
 **Why**: Clear definitions enable proper validation.
+
+---
+
+## MCP Anti-Patterns
+
+Recognition-based patterns to avoid when creating MCP servers.
+
+### Anti-Pattern 1: Incomplete Transport Configuration
+
+**❌ Missing critical connection details**
+
+❌ Bad: HTTP MCP without URL or authentication
+✅ Good: Complete HTTP config: `{"type": "http", "url": "https://api.example.com/mcp", "headers": {"Authorization": "Bearer ${API_TOKEN}"}}`
+
+**Recognition**: "Does this MCP have everything needed to connect?"
+
+**Why**: Incomplete configuration causes connection failures at runtime.
+
+### Anti-Pattern 2: Missing Authentication
+
+**❌ MCPs that access external systems without proper auth**
+
+❌ Bad: Database MCP without credentials
+✅ Good: Database MCP with: `{"env": {"DB_CONNECTION_STRING": "${DB_URL}"}}`
+
+**Recognition**: "Does this MCP properly authenticate with the external system?"
+
+**Why**: Unauthenticated MCPs create security vulnerabilities or connection failures.
+
+### Anti-Pattern 3: Hardcoded Credentials
+
+**❌ API keys or passwords embedded in configuration**
+
+❌ Bad: `"headers": {"Authorization": "Bearer sk-1234567890"}`
+✅ Good: `"headers": {"Authorization": "Bearer ${API_TOKEN}"}` (use environment variables)
+
+**Recognition**: "Are credentials hardcoded or loaded from environment?"
+
+**Why**: Hardcoded credentials commit secrets to version control.
+
+### Anti-Pattern 4: Vague Tool Definitions
+
+**❌ Tools without clear schemas or descriptions**
+
+❌ Bad: `{"name": "query", "description": "Run a query"}`
+✅ Good: `{"name": "query", "description": "Execute SQL query on database", "inputSchema": {"type": "object", "properties": {"sql": {"type": "string"}}}}`
+
+**Recognition**: "Does each tool have a clear schema and description?"
+
+**Why**: Vague definitions prevent Claude from using tools correctly.
+
+### Anti-Pattern 5: External Dependencies
+
+**❌ MCPs that reference external documentation for configuration**
+
+❌ Bad: "See API docs for endpoint" or "Check service documentation"
+✅ Good: Include complete configuration directly in .mcp.json
+
+**Recognition**: "Could someone configure this MCP without external docs?"
+
+**Why**: MCPs must be self-contained. External references create deployment friction.
 
 ---
 

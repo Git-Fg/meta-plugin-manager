@@ -71,9 +71,12 @@ ralph tools memory search "confession" --tags confession
    # Copy to production
    # (component moves from tests/<name>/ to .claude/<type>/<name>/)
 
-   # Move sandbox to archive
+   # Archive test directory (sandbox is fixed at .agent/sandbox/, no need to archive)
    mkdir -p .attic/
    mv tests/<name>/ .attic/
+
+   # Optional: Clean sandbox for next test (can be done by next Coordinator)
+   # rm -rf .agent/sandbox/
 
    # Complete workflow
    ralph emit "WORKFLOW_COMPLETE" "component: <name> released to .claude/"

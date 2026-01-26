@@ -56,7 +56,7 @@ Add these checks to every audit spec:
     {
       "name": "Works in bare project",
       "prompt": "<trigger phrase>",
-      "sandbox": "tests/sandbox-<name>/",
+      "sandbox": ".agent/sandbox/",
       "expect": "Component loads and executes"
     }
   ]
@@ -88,14 +88,14 @@ Include integration tests for grouped components:
 
 ### 5. Create test_spec.json
 
-Write the test spec to the sandbox directory:
+Write the test spec to the tests directory (sandbox is fixed at `.agent/sandbox/`):
 
 ```json
 {
   "mode": "<create|audit|batch>",
   "target": "<path or identifier>",
   "type": "<detected type>",
-  "sandbox": "tests/<name>/",
+  "sandbox": ".agent/sandbox/",
   "tests": [
     {
       "name": "Descriptive name",

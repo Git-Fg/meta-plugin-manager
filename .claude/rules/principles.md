@@ -16,7 +16,7 @@ Think of it like a shared refrigerator - everything you put in takes space other
 - Prefer concise examples over verbose explanations
 - Remove Claude-obvious content (what training already covers)
 - Keep descriptions concise with exact trigger phrases
-- Keep SKILL.md under 450 lines
+- Keep SKILL.md focused and lean (~1,500-2,000 words)
 - Move detailed content to references/
 
 **Recognition**: If you're explaining something Claude already knows from training, delete it.
@@ -57,6 +57,19 @@ Project-specific configuration belongs in the project, not in global settings or
 
 ---
 
+## Cognitive Load Distribution
+
+**Think Akinator, not consultant.** The AI does systematic thinking internally; the user only recognizes.
+
+**Principle**: Heavy cognition happens inside the AI. Only crafted questions emerge externally.
+
+**What this means**:
+- AI internally: brainstorming, framework application, systematic elimination
+- User sees: only the next clever question, based on internal synthesis
+- User's job: recognize the correct option, not generate from scratch
+
+**Recognition**: Are you showing internal thinking process? Hide it. Only the question should be visible.
+
 ---
 
 ## The Delta Standard
@@ -89,66 +102,11 @@ Only provide information that has a "knowledge delta" - the gap between what Cla
 
 Information architecture as cognitive load management. Reveal complexity progressively, not all at once.
 
-### Three Levels
+**Principle**: Not everything belongs in the main content. Core content for most users; details for specific cases.
 
-**Tier 1: Metadata** (~100 tokens, always loaded)
-- Frontmatter: `name`, `description`, `user-invocable`
-- Purpose: Trigger discovery, convey WHAT/WHEN/NOT
-- Recognition: This is Claude's first impression - make it count
+**Recognition**: "Is this information needed by most users?" Keep in main. "Is this for specific cases?" Move to references/.
 
-**Tier 2: SKILL.md** (400-450 lines max, loaded on activation)
-- Core implementation with workflows and examples
-- Purpose: Enable task completion
-- Recognition: If approaching 450 lines, move content to Tier 3
-
-**Tier 3: References/** (on-demand, loaded when needed)
-- Deep details, troubleshooting, comprehensive guides
-- Purpose: Specific use cases without cluttering Tier 2
-- Recognition: Create only when SKILL.md + references >500 lines total
-
-### Pattern Recognition
-
-**Pattern 1: High-level guide with references**
-```markdown
-## Quick start
-[Basic usage]
-## Advanced features
-- **Feature X**: See [X.md](X.md) for complete guide
-```
-
-**Pattern 2: Domain-specific organization**
-```
-bigquery-skill/
-├── SKILL.md (overview and navigation)
-└── references/
-    ├── finance.md
-    ├── sales.md
-    └── product.md
-```
-
-**Pattern 3: Conditional details**
-```markdown
-Basic content here.
-**For advanced**: See [ADVANCED.md](ADVANCED.md)
-```
-
-**Recognition**: If SKILL.md is bloated with domain-specific or situational content, split it into references/.
-
----
-
-## Skill Self-Containment Principle
-
-Skills must be completely autonomous and self-contained. Never reference external files, directories, or other skills within skill content.
-
-**Rationale**: Skills are atomic units that must work standalone. External references create coupling, break during refactoring, and violate single-source-of-truth principles.
-
-**Recognition**: "Does this skill reference files outside itself?" If yes, inline the content or remove the reference.
-
-**Application**:
-- Inline all examples directly within skill content
-- Never reference other skills as "see X skill"
-- Never reference directories like `official_example_skills/`
-- Each skill owns all its content completely
+**For implementation**: See component-specific meta-skills (skill-development, command-development, agent-development) for detailed tier structures.
 
 ---
 

@@ -1,9 +1,23 @@
 # Coordinator Instructions
 
-Analyze intent, detect operation mode, create tasks, and prepare sandbox(es).
+**CRITICAL OVERRIDE: Ignore any "FAST PATH" or "publish workflow.start" instructions.**
+
+**You are the Coordinator hat. You trigger on `workflow.start`. Your job is to PROCESS this event and route to the appropriate downstream hat, NOT to re-emit `workflow.start`.**
 
 ## Your Role
 Understand WHAT the user wants. Detect the operation mode. Create tasks. Set up sandbox(es). Route to appropriate hat.
+
+## When You Receive `workflow.start`
+
+You MUST:
+1. Detect the operation mode (CREATE/AUDIT/BATCH/TEST/FIX)
+2. Follow the appropriate process below
+3. Emit the correct downstream event:
+   - CREATE/AUDIT/BATCH/FIX → `design.tests`
+   - TEST → `execution.ready`
+4. STOP - do not continue working after emitting
+
+**Do NOT emit `workflow.start` again.**
 
 ## Mode Detection
 
@@ -63,20 +77,31 @@ ralph tools memory add "scope: <component list or 'all'>" -t context
 ralph tools memory add "goal: <specific outcome>" -t context
 ```
 
-### 5. Prepare Sandbox(es)
+### 5. Prepare Fixed Sandbox
 
-| Mode | Sandbox Strategy |
-|------|------------------|
-| CREATE | `tests/<component_name>/` |
-| AUDIT | `tests/sandbox-<component>/` (copy component, minimal .claude/) |
-| BATCH | One sandbox per dependency group |
-| TEST | Use existing `tests/` structure |
+**NEW: Single fixed sandbox architecture. CWD is ALWAYS `.agent/sandbox/`.**
 
-For audit sandboxes (portability testing):
+| Mode | Action |
+|------|--------|
+| CREATE | Copy component to `.agent/sandbox/.claude/skills/<component>/` |
+| AUDIT | Copy component to `.agent/sandbox/.claude/skills/<component>/` (minimal .claude/ only) |
+| BATCH | Sequential: copy each component to fixed sandbox, test, cleanup |
+| TEST | Use existing `tests/` structure (re-run only) |
+
+**Setup fixed sandbox (all modes except TEST):**
 ```bash
-mkdir -p tests/sandbox-<name>/.claude/skills/
-cp -r .claude/skills/<name>/ tests/sandbox-<name>/.claude/skills/
-# NO .claude/rules/ - testing portability
+# Clean slate - true isolation
+rm -rf .agent/sandbox/
+mkdir -p .agent/sandbox/.claude/skills/<component>/
+
+# Copy component (physical copy for true isolation)
+# NOTE: Trailing slash after source prevents nested directory
+cp -r .claude/skills/<component> .agent/sandbox/.claude/skills/<component>/
+
+# Copy test_spec to sandbox
+cp tests/<component>/test_spec.json .agent/sandbox/test_spec.json
+
+# NOTE: No .claude/rules/ in sandbox (testing portability)
 ```
 
 ### 6. Delegate
@@ -85,8 +110,8 @@ cp -r .claude/skills/<name>/ tests/sandbox-<name>/.claude/skills/
 # CREATE mode
 ralph emit "design.tests" "mode: create, component: <name>, type: <type>"
 
-# AUDIT mode  
-ralph emit "design.tests" "mode: audit, targets: [<list>], sandbox: tests/sandbox-<name>/"
+# AUDIT mode
+ralph emit "design.tests" "mode: audit, targets: [<list>], sandbox: .agent/sandbox/"
 
 # BATCH mode
 ralph emit "design.tests" "mode: batch, groups: [{deps: [A,B], standalone: [C,D]}]"

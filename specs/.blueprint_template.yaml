@@ -1,0 +1,72 @@
+# Blueprint Template
+#
+# This is the architectural contract for your component ecosystem.
+# Ralph injects this content automatically into all hats.
+#
+# Copy this file to: specs/blueprint.yaml
+# Then customize for your specific system.
+
+system:
+  name: "my-ecosystem"
+  description: "What this system does in one sentence"
+
+components:
+  - name: "example-skill"
+    type: "skill"
+    description: "What this component does"
+    exports:
+      - name: "main_trigger"
+        type: "trigger"
+        phrase: "Example trigger phrase"
+    dependencies:
+      internal: []  # Other components in this system
+      external: []  # External libraries/packages
+    acceptance_criteria:
+      - criterion: "Component loads and responds to trigger"
+        test_ref: "test_triggering"
+      - criterion: "Achieves 80%+ autonomy"
+        test_ref: "test_autonomy"
+
+  - name: "example-mcp"
+    type: "mcp"
+    description: "MCP server for X"
+    exports:
+      - name: "example_tool"
+        type: "tool"
+        input_schema:
+          type: "object"
+          properties:
+            param:
+              type: "string"
+        output_schema:
+          type: "object"
+          properties:
+            result:
+              type: "string"
+    dependencies:
+      internal: []
+      external: ["npm:package-name"]
+    acceptance_criteria:
+      - criterion: "Server starts and tool is available"
+        test_ref: "test_server_connection"
+      - criterion: "Tool handles invalid input gracefully"
+        test_ref: "test_error_handling"
+
+# Security constraints (for MCP/Agent components)
+security:
+  max_runtime_seconds: 300
+  allowed_paths: []  # Empty means no file access
+  resource_limits:
+    max_memory_mb: 512
+    max_concurrent_requests: 10
+
+# Integration flows (for multi-component systems)
+flows:
+  - name: "main_workflow"
+    description: "How components interact"
+    steps:
+      - component: "example-skill"
+        action: "trigger"
+      - component: "example-mcp"
+        action: "call_tool"
+        tool: "example_tool"

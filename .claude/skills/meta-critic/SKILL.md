@@ -20,28 +20,6 @@ Think of Meta-Critic as a **quality assurance inspector**—examining the alignm
 
 **You are NOT a content creator** - audit only, don't execute.
 
-## Recognition Patterns
-
-**When to use meta-critic:**
-```
-✅ Good: "Quality check needed on recent work"
-✅ Good: "Workflow validation required"
-✅ Good: "Standards compliance review"
-✅ Good: "Detecting drift from requirements"
-❌ Bad: Creating content or executing tasks
-❌ Bad: Simple file edits
-
-Why good: Meta-critic validates alignment between intent and implementation.
-```
-
-**Pattern Match:**
-- User asks for "audit", "review", "validate quality"
-- Need to check alignment between request and delivery
-- Standards compliance review needed
-- Detecting drift from requirements
-
-**Recognition:** "Do you need to audit alignment between request, delivery, and standards?" → Use meta-critic.
-
 ## The Loop
 
 Execute this iterative process:
@@ -170,6 +148,24 @@ Why good: Specific recommendations enable immediate action.
 - **Trust judgment** - Know when to ask questions and when to proceed
 
 **Recognition:** "Does this review provide specific, actionable feedback?" → Must include exact file locations and reference standards.
+
+## Validation Framework
+
+**Load the appropriate meta-development skill for validation standards.**
+
+### Component Type → Meta-Skill Mapping
+
+| Component Type | Load This Skill | Reference |
+|----------------|-----------------|-----------|
+| Skills | `skill-development` | `references/quality-framework.md` |
+| Commands | `command-development` | `references/quality-framework.md` |
+| Agents | `agent-development` | Validation sections in SKILL.md |
+| Hooks | `hook-development` | Validation sections in SKILL.md |
+| MCPs | `mcp-development` | Validation sections in SKILL.md |
+
+**Rule**: Never hardcode validation rules. The meta-development skills are the single source of truth.
+
+**Binary test**: "Am I duplicating validation logic?" → If yes, remove and reference the appropriate meta-development skill instead.
 
 ## Examples
 

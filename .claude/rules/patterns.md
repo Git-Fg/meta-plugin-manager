@@ -12,69 +12,39 @@ These patterns help you create clear, self-contained components. Use them as gui
 
 **Keep the main content focused on what's needed most of the time.**
 
-Think of SKILL.md like a kitchen counter (essentials for the current meal) and references/ like a pantry (bulk items and specialized tools).
+**Principle**: Not everything belongs in the main content. Core content for most users; details for specific cases.
 
-**Structure**:
-- **Tier 1: Metadata** (~100 tokens, always loaded)
-  - Frontmatter: `name`, `description`, specific trigger phrases
-  - Purpose: Trigger discovery, convey WHAT/WHEN/NOT
+**Recognition**: "Is this information required for the standard 80% use case?" Keep in main. "Is this for specific scenarios?" Move to references/.
 
-- **Tier 2: SKILL.md Body** (Happy Path - 80% use cases)
-  - Standard execution flow, core workflows, essential examples
-  - Purpose: Enable task completion without external references
-
-- **Tier 3: References/** (Edge Cases - 20% use cases)
-  - Troubleshooting, lookup tables, comprehensive guides
-  - Purpose: On-demand details for specific scenarios
-
-**Question**: Is this information required for the standard 80% use case? Keep in SKILL.md. If only for specific scenarios, move to references/.
+**For implementation**: See component-specific meta-skills for detailed tier structures.
 
 ### Pattern 2: Self-Containment
 
 **Components should work without depending on external files.**
 
-**Application**:
-- Include examples directly
-- Don't reference other components
-- Bundle necessary context
-- Include all resources (scripts, references, examples)
+**Principle**: Include everything needed directly. Don't reference external files or directories.
 
-✅ Good: Complete examples with full context
-❌ Bad: "See external documentation for examples"
+**Recognition**: "Would this component work in a project with zero rules dependencies?"
 
-**Question**: Would this component work if moved to a project with no rules? If not, include the necessary context directly.
+**For implementation**: See component-specific meta-skills for self-containment patterns.
 
 ### Pattern 3: Clear Examples
 
 **Show, don't just tell.**
 
-✅ Good: Include concrete examples that users can copy
-❌ Bad: Abstract advice without examples
+**Principle**: Users recognize patterns faster than they generate them from scratch. Include concrete examples.
 
-**Why**: Users recognize patterns faster than they generate them from scratch.
-
-**Example**:
-```yaml
-# Good
-description: "Use when user asks to 'create a hook'"
-
-# Bad
-description: "Use for hook creation tasks"
-```
+**Recognition**: "Can users copy this example and use it immediately?"
 
 ### Pattern 4: Degrees of Freedom
 
-Match specificity to how fragile the task is.
+**Match specificity to how fragile the task is.**
 
-Think of it like walking: a narrow bridge with cliffs needs specific steps (low freedom), while an open field allows many routes (high freedom).
+**Principle**: Multiple valid approaches → high freedom. Fragile operations → low freedom.
 
-| Freedom Level | When to Use | Approach | Risk |
-|---------------|-------------|----------|------|
-| **High** | Multiple valid approaches | Text-based principles | Trust judgment |
-| **Medium** | Preferred pattern exists | Templates with parameters | Moderate |
-| **Low** | Fragile operations | Specific scripts, exact steps | Zero |
+**Recognition**: "What breaks if Claude chooses differently?" The more that breaks, the lower the freedom.
 
-**Question**: What breaks if Claude chooses differently? The more that breaks, the lower the freedom.
+**For implementation**: See component-specific meta-skills for freedom level guidance.
 
 ---
 
@@ -82,43 +52,23 @@ Think of it like walking: a narrow bridge with cliffs needs specific steps (low 
 
 ### Imperative Form
 
-**Use imperative form for instructions:**
+**Use imperative form for instructions.**
 
-✅ Good:
-- Execute before any tool runs
-- Parse the YAML frontmatter
-- Configure the MCP server
+**Principle**: "Execute the task" not "You should execute the task." Clear and efficient.
 
-❌ Bad:
-- You should create a hook
-- You need to validate settings
-- You can use the grep tool
+**Recognition**: Are you using "you/your"? Switch to imperative form.
 
-**Why**: Imperative form is clear and efficient.
-
-**Question**: Are you using "you/your"? Switch to imperative form.
+**For implementation**: See component-specific meta-skills for writing style examples.
 
 ### Clear Examples
 
-**Show concrete examples:**
+**Show, don't just tell.**
 
-✅ Good:
-```yaml
-description: "Use when user asks to 'create a hook'"
+**Principle**: Include concrete examples that users can copy and use immediately.
 
-<example>
-Context: User wants automation
-user: "Create a validation hook"
-assistant: "I'll create a hook that validates operations"
-</example>
-```
+**Recognition**: "Can users copy this example and use it immediately?"
 
-❌ Bad:
-```yaml
-description: "Use for hook creation tasks"
-```
-
-**Why**: Users need to see what good looks like.
+**For implementation**: See component-specific meta-skills for example patterns.
 
 ---
 
@@ -157,28 +107,19 @@ Tier 3 (reference file):
 
 ---
 
-## Common Patterns
+## Content Organization
 
-### Cross-Reference Patterns
+### Single Source of Truth
 
-**Project Portability:**
+**Each concept should be documented once.**
 
-Skills can reference other skills using project-relative paths.
+- Component-specific patterns → component's meta-skill
+- Generic patterns → `.claude/rules/patterns.md`
+- CLAUDE.md → references both
 
-For local projects: Use paths relative to project root or `${CLAUDE_PROJECT_DIR}`
+**Recognition**: "Is this concept already documented elsewhere?" Cross-reference instead of duplicating.
 
-For plugins/distribution: Use `${CLAUDE_PLUGIN_ROOT}` for portability
-
-**Dual-mode pattern** (works in both contexts):
-```bash
-BASE_DIR="${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
-```
-
-```markdown
-See [plugin-dev skills](../../../official_example_skills/) for complete examples.
-```
-
-**Question**: Will this work in both local and plugin contexts?
+**For implementation**: See component-specific meta-skills for organization patterns.
 
 ---
 

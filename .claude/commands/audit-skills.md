@@ -1,30 +1,10 @@
 ---
-description: Audit all skills in .claude/skills/ against best practices
+description: "Audit all skills in .claude/skills/ against best practices. Use when: user mentions 'audit skills', 'check best practices'; reviewing multiple skills; quality validation required. Not for: auditing single skills, reviewing code files."
 ---
 
 # Skills Audit
 
-Think of skills audit as a **medical checkup for your codebase**—systematically examining each skill for health issues before they become critical problems, ensuring each component follows best practices.
-
-## Recognition Patterns
-
-**When to use audit-skills:**
-```
-✅ Good: "Audit all skills against best practices"
-✅ Good: "Check skill quality"
-✅ Good: "Identify skill improvements"
-❌ Bad: Auditing single skills
-❌ Bad: Reviewing code files
-
-Why good: Skills audit examines multiple skills comprehensively against frameworks.
-```
-
-**Pattern Match:**
-- User mentions "audit skills", "check best practices"
-- Need to review multiple skills
-- Quality validation required
-
-**Recognition:** "Do you need to audit multiple skills comprehensively?" → Use audit-skills.
+Audit all skills in .claude/skills/ against best practices.
 
 ## Approach
 
@@ -50,18 +30,18 @@ Why good: Skills audit examines multiple skills comprehensively against framewor
 
 ## Quality Frameworks
 
-**Use these quality frameworks** (you must invoke the skill-development skill):
+**Use these quality frameworks:**
 
 - `.claude/rules/principles.md` - Delta Standard, Progressive Disclosure, Trust AI
 - `.claude/rules/patterns.md` - Writing style, description patterns
 - `.claude/rules/anti-patterns.md` - Common mistakes
 - `.claude/skills/skill-development/references/quality-framework.md` - Quality dimensions
 
-**Key Dimensions**: structure, writing style, content delta, autonomy, discoverability
+**Key Dimensions:** structure, writing style, content delta, autonomy, discoverability
 
-## Recognition Questions
+## Binary Recognition Questions
 
-**Ask these binary questions:**
+**Use these binary questions:**
 
 - **"Would Claude know this without being told?"** → Delta Standard
   - Yes = Remove (Claude already knows)
@@ -79,46 +59,25 @@ Why good: Skills audit examines multiple skills comprehensively against framewor
   - Yes = Keep
   - No = Remove or move to references/
 
-## Contrast
-
-```
-✅ Good: Skills in isolated test directories
-❌ Bad: Skills in root .claude/skills/
-
-Why good: Test runner needs isolated structure for verification.
-
-✅ Good: Include Success Criteria with self-validation
-❌ Bad: No self-validation logic
-
-Why good: Components must validate themselves without external dependencies.
-
-✅ Good: Bundle condensed philosophy
-❌ Bad: Reference external .claude/rules/
-
-Why good: Portability requires self-contained components.
-```
-
-**Recognition:** "Does this skill follow best practices?" → Check: 1) Delta Standard, 2) Autonomy, 3) Progressive disclosure, 4) Success Criteria.
-
 ## Final Output
 
 **Prioritized improvement recommendations grouped by severity:**
 
-### Critical (Blocking)
+**Critical (Blocking):**
 - Security vulnerabilities
 - Complete misalignment with standards
 - Missing core requirements
 
-### Warning (High Priority)
+**Warning (High Priority):**
 - Significant standards drift
 - Incomplete implementation
 - Quality issues affecting reliability
 
-### Suggestion (Medium Priority)
+**Suggestion (Medium Priority):**
 - Minor standard deviations
 - Documentation gaps
 - Nice-to-have enhancements
 
 **Report findings grouped by severity with specific file:line references.**
 
-**Recognition:** "Does this audit provide actionable recommendations?" → Must include specific file locations and reference frameworks.
+**Binary test:** "Does audit provide actionable recommendations?" → Must include specific file locations and reference frameworks.

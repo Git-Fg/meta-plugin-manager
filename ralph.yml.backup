@@ -1,0 +1,95 @@
+# Component Development Orchestrator
+#
+# Test, create, and validate any .claude component (skills, commands, hooks, agents, MCPs)
+# Uses Ralph's native memory and task systems for persistent learning and work tracking.
+#
+# Pattern: TDD + Confession Loop (memories track patterns, tasks track work items)
+#
+# Usage:
+#   ralph run -p "create a skill for X"
+#   ralph run -p "test the command Y"
+#   ralph run -p "validate all skills in tests/"
+#
+# Task CLI:
+#   ralph tools task add "implement skill X" -p 2
+#   ralph tools task list
+#   ralph tools task ready
+#   ralph tools task close <id>
+#
+# Memory CLI:
+#   ralph tools memory add "pattern: skill triggering works best with..." -t pattern
+#   ralph tools memory search "portability"
+#   ralph tools memory list
+
+event_loop:
+  prompt_file: "PROMPT.md"
+  completion_promise: "WORKFLOW_COMPLETE"
+  starting_event: "workflow.start"
+  max_iterations: 100
+  max_runtime_seconds: 7200
+  idle_timeout_secs: 600
+  checkpoint_interval: 5
+
+cli:
+  backend: "claude"
+  prompt_mode: "arg"
+
+core:
+  specs_dir: "./tests/"
+  guardrails:
+    - "Fresh context each iteration - memories and scratchpad persist"
+    - "Parse raw_log.json for verification - don't trust stdout"
+    - "Backpressure is law - tests must pass before validation"
+
+tasks:
+  enabled: true
+
+memories:
+  enabled: true
+  inject: auto
+  budget: 2500
+  filter:
+    types: []
+    tags: []
+    recent: 0
+
+hats:
+  coordinator:
+    name: "🎯 Coordinator"
+    description: "**CRITICAL: When you receive workflow.start, PROCESS it (do NOT re-emit).** Detect mode: CREATE/AUDIT/BATCH/TEST/FIX. TEST mode ('re-run', 'test all') → emit execution.ready. Other modes → emit design.tests. Build dependency graph, create tasks, prepare sandboxes."
+    triggers: ["workflow.start", "test.failed"]
+    publishes: ["design.tests", "execution.ready", "WORKFLOW_COMPLETE"]
+    default_publishes: "design.tests"
+    instructions_file: ".ralph/hats/coordinator-instructions.md"
+
+  test_designer:
+    name: "📝 Test Designer"
+    description: "Generate test_spec.json for single/batch components. Portability checks for audit mode. Record design decisions as memories."
+    triggers: ["design.tests"]
+    publishes: ["tests.designed", "WORKFLOW_COMPLETE"]
+    default_publishes: "tests.designed"
+    instructions_file: ".ralph/hats/test-designer-instructions.md"
+
+  executor:
+    name: "⚡ Executor"
+    description: "Execute tests, verify component loading, update results.json. Supports batch execution and test re-runs."
+    triggers: ["tests.designed", "execution.ready"]
+    publishes: ["test.passed", "test.failed", "design.tests", "WORKFLOW_COMPLETE"]
+    default_publishes: "WORKFLOW_COMPLETE"
+    instructions_file: ".ralph/hats/executor-instructions.md"
+
+  validator:
+    name: "✅ Validator"
+    description: "Cross-reference raw_log.json against test_spec.json. Produce confession report."
+    triggers: ["test.passed"]
+    publishes: ["confession.clean", "confession.issues_found", "WORKFLOW_COMPLETE"]
+    default_publishes: "confession.clean"
+    instructions_file: ".ralph/hats/validator-instructions.md"
+
+  confession_handler:
+    name: "🔍 Confession Handler"
+    description: "Verify validator's claims. Decide whether to iterate, release, or escalate."
+    triggers: ["confession.clean", "confession.issues_found"]
+    publishes: ["design.tests", "escalate.human", "WORKFLOW_COMPLETE"]
+    default_publishes: "WORKFLOW_COMPLETE"
+    instructions_file: ".ralph/hats/confession-handler-instructions.md"

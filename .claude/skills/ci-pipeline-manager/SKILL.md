@@ -1,18 +1,12 @@
 ---
 name: ci-pipeline-manager
-description: This skill should be used when the user asks to "test TaskList error handling", "test CI pipeline recovery", "validate failure recovery workflows", or needs guidance on testing TaskList error handling and recovery behavior with CI pipelines (not for simple linear pipelines).
+description: "Test TaskList error handling and recovery behavior with CI pipelines. Use when: tasks with dependencies that should block on failure, complex error recovery scenarios, user mentions 'CI pipeline', 'error handling', 'failure recovery', need to validate cleanup and blocking behavior. Not for: simple linear pipeline with no dependencies, testing individual task execution."
 context: fork
 ---
 
 # CI Pipeline Error Recovery Testing
 
-Think of CI pipelines as **safety systems in a car**—when the engine fails (tests fail), the airbags must deploy (cleanup runs), and other systems must shut down (deploy blocks) to prevent damage.
-
-## CI_START
-
-You are managing a CI pipeline with error recovery capabilities.
-
-**Context**: In real CI/CD, tests may fail. The pipeline must handle failures gracefully, cancel dependent tasks, and execute cleanup. This test validates TaskList's error handling behavior.
+Test TaskList error handling and recovery behavior with CI pipelines.
 
 ## Pipeline Architecture
 
@@ -38,26 +32,6 @@ You are managing a CI pipeline with error recovery capabilities.
    - MUST execute even when tests fail
    - Output: Cleanup completion status
 
-## Recognition Patterns
-
-**When to use ci-pipeline-manager:**
-```
-✅ Good: "Test that failed tasks properly block dependents"
-✅ Good: "Validate cleanup runs despite test failures"
-✅ Good: "Ensure deploy doesn't run when build is skipped"
-❌ Bad: Simple linear pipeline with no dependencies
-❌ Bad: Testing individual task execution
-
-Why good: Complex error recovery requires testing blocking logic.
-```
-
-**Pattern Match:**
-- User mentions "CI pipeline", "error handling", "failure recovery"
-- Tasks have dependencies that should block on failure
-- Need to validate cleanup and blocking behavior
-
-**Recognition:** "Does this pipeline have dependent tasks that should block on failure?" → Use ci-pipeline-manager.
-
 ## Execution Workflow
 
 **Execute autonomously:**
@@ -69,10 +43,12 @@ Why good: Complex error recovery requires testing blocking logic.
    - cleanup-on-failure blocked_by: ["run-tests"]
 3. **Simulate test failure** in run-tests task
 4. **Verify behavior:**
-   - build task should NOT execute (blocked by failed run-tests)
-   - deploy task should NOT execute (build never ran)
-   - cleanup-on-failure MUST execute (failure cleanup)
+   - build: blocked by failed run-tests → SKIPPED
+   - deploy: build never ran → SKIPPED
+   - cleanup-on-failure: MUST execute despite failure
 5. **Report task states** and pipeline status
+
+**Recognition test:** Cleanup-on-failure should always execute, even when run-tests fails.
 
 ## Expected Output
 
@@ -87,18 +63,13 @@ Pipeline Status: FAILED (with proper cleanup)
 Tasks Executed: 2/4 (run-tests, cleanup-on-failure)
 Tasks Blocked: 2/4 (build, deploy)
 
-Error Handling: PASS - Failed task properly blocked dependents
-Cleanup: PASS - Cleanup executed despite failure
+Error Handling: PASS
+Cleanup: PASS
 ```
 
-**Contrast:**
-```
-✅ Good: cleanup-on-failure executes despite run-tests failure
-✅ Good: build and deploy are skipped due to dependency failure
-❌ Bad: Dependent tasks run after parent failure
-❌ Bad: Cleanup doesn't execute on failure
+## Validation Criteria
 
-Why good: Proper error handling prevents cascading failures and resource leaks.
-```
+- Failed task blocked dependents
+- Cleanup executed despite failure
 
-**Recognition:** "Does this output show proper error handling?" → Check: 1) Failed task blocked dependents, 2) Cleanup executed despite failure.
+**Binary check:** "Proper error handling?" → Both criteria must pass.

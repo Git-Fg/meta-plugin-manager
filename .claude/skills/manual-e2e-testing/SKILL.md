@@ -1,12 +1,12 @@
 ---
 name: manual-e2e-testing
-description: This skill should be used when the user asks to "test Flutter app", "perform E2E testing", "validate element states", "verify text content programmatically", or needs guidance on Appium MCP and Dart MCP testing workflows with hot reload and widget tree analysis capabilities.
+description: "Appium MCP and Dart MCP testing workflows with hot reload and widget tree analysis. Use when: user mentions 'E2E testing', 'Flutter app', 'validate element states'; need to verify UI changes programmatically; testing mobile app workflows; validating UI state changes through text; verifying element presence programmatically. Not for: visual testing with screenshots, manual app exploration."
 user-invocable: true
 ---
 
 # Manual E2E Testing with Appium & Dart MCP
 
-Think of E2E testing as **detecting lies through text**—instead of relying on visual inspection (which can be deceptive), verify reality through programmatically checkable text content and element states.
+Appium MCP and Dart MCP testing workflows with hot reload and widget tree analysis.
 
 ## Core Philosophy: Text-First Testing
 
@@ -14,29 +14,8 @@ Think of E2E testing as **detecting lies through text**—instead of relying on 
 - Vision LLMs are unreliable for precise UI validation
 - Visual changes break tests unnecessarily
 - Hard to verify logical state changes
-- **Text and properties are more reliable**
-- **Element states are programmatically verifiable**
-
-## Recognition Patterns
-
-**When to use manual-e2e-testing:**
-```
-✅ Good: "Test Flutter app interactions"
-✅ Good: "Validate UI state changes through text"
-✅ Good: "Verify element presence programmatically"
-✅ Good: "Test recording workflows"
-❌ Bad: Visual testing with screenshots
-❌ Bad: Manual app exploration
-
-Why good: Text-based validation provides reliable, programmatic verification.
-```
-
-**Pattern Match:**
-- User mentions "E2E testing", "Flutter app", "validate element states"
-- Need to verify UI changes programmatically
-- Testing mobile app workflows
-
-**Recognition:** "Do you need to programmatically verify UI states?" → Use manual-e2e-testing.
+- Text and properties are more reliable
+- Element states are programmatically verifiable
 
 ## Dual MCP Architecture
 
@@ -100,15 +79,7 @@ adb shell pm clear com.voicenoteplus.app
 4. **XPath** (least stable, last resort)
    - Example: `//*[contains(@content-desc, "Record")]`
 
-**Contrast:**
-```
-✅ Good: Find by resource ID "record_button"
-❌ Bad: Find by XPath "//Button[1]"
-
-Why good: Resource IDs are most stable across app updates.
-```
-
-**Recognition:** "Is the element stable across app updates?" → Use resource ID or accessibility ID.
+**Binary test:** "Is element stable across app updates?" → Use resource ID or accessibility ID.
 
 ## Validation Techniques
 
@@ -176,7 +147,7 @@ mcp__dart__get_runtime_errors
 5. Save settings
 6. Verify success message
 
-**Recognition:** "Does this procedure validate state changes programmatically?" → Use text content and element attributes.
+**Binary test:** "Does this validate state changes programmatically?" → Use text content and element attributes.
 
 ## Error Handling
 
@@ -203,40 +174,40 @@ mcp__dart__get_runtime_errors
 ## Best Practices
 
 **Before Testing:**
-- ✅ Verify emulator running
-- ✅ Clear app data
-- ✅ Connect Dart Tooling Daemon early
-- ✅ Launch Flutter app
-- ✅ Create Appium session
-- ✅ Check runtime errors
-- ✅ Get initial widget tree
+- Verify emulator running
+- Clear app data
+- Connect Dart Tooling Daemon early
+- Launch Flutter app
+- Create Appium session
+- Check runtime errors
+- Get initial widget tree
 
 **During Testing:**
-- ✅ Always verify element presence before interaction
-- ✅ Cross-verify widget state with Dart MCP
-- ✅ Use text content for validation (not visual)
-- ✅ Implement retry logic
-- ✅ Log every step with timestamps
-- ✅ Verify state changes after each action
-- ✅ Use accessibility IDs when available
-- ✅ Use hot reload for rapid iteration
+- Always verify element presence before interaction
+- Cross-verify widget state with Dart MCP
+- Use text content for validation (not visual)
+- Implement retry logic
+- Log every step with timestamps
+- Verify state changes after each action
+- Use accessibility IDs when available
+- Use hot reload for rapid iteration
 
 **After Testing:**
-- ✅ Delete Appium session
-- ✅ Check final runtime errors
-- ✅ Save test execution log
-- ✅ Document issues found
+- Delete Appium session
+- Check final runtime errors
+- Save test execution log
+- Document issues found
 
 ## Common Pitfalls
 
-**❌ Don't Use:**
+**Don't Use:**
 - Screenshots for validation
 - Hard-coded pixel coordinates
 - Visual color/position assertions
 - Unstable XPath expressions
 - Timing sleeps
 
-**✅ Do Use:**
+**Do Use:**
 - Text content verification
 - Element attribute checks
 - State-based waiting
@@ -244,15 +215,7 @@ mcp__dart__get_runtime_errors
 - Page source text search
 - Structured logging
 
-**Contrast:**
-```
-✅ Good: Verify button text = "Record"
-❌ Bad: Verify button is red
-
-Why good: Text content is programmatically verifiable across devices.
-```
-
-**Recognition:** "Is this validation programmatically checkable?" → If no, redesign the test.
+**Binary test:** "Is this validation programmatically checkable?" → If no, redesign the test.
 
 ## Essential Tools Reference
 
@@ -271,9 +234,3 @@ Why good: Text content is programmatically verifiable across devices.
 - `hot_reload` - Apply changes without restart
 - `hot_restart` - Restart with changes
 - `get_app_logs` - Retrieve Flutter output
-
-**For detailed procedures:**
-- `references/detailed-procedures.md` - Complete test workflows
-- `references/element-discovery.md` - Discovery patterns
-- `references/state-validation.md` - State validation techniques
-- `references/error-recovery.md` - Error handling patterns

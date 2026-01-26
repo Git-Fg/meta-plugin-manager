@@ -1,18 +1,12 @@
 ---
 name: distributed-processor
-description: This skill should be used when the user asks to "test TaskList with forked skills", "coordinate distributed data processing", "test distributed processing with isolation", or needs guidance on testing TaskList error handling and recovery with forked skills for distributed data processing workflows (not for simple single-process workflows).
+description: "Coordinate distributed data processing using TaskList with forked skills. Use when: large datasets can be partitioned, independent processing with later aggregation, forked skills needed for isolation, user mentions 'parallel processing', 'distributed data', 'forked skills'. Not for: single dataset requiring sequential processing, no geographic/logical data separation."
 context: fork
 ---
 
 # Distributed Data Processing
 
-Think of distributed processing as **orchestrating a symphony**—multiple musicians (regions) playing independently in perfect isolation, with a conductor (coordinator) bringing it all together at the end.
-
-## PROCESSING_START
-
-You are coordinating distributed data processing across multiple regions.
-
-**Context**: A large dataset needs processing in parallel across different geographic regions. Each region's data is independent and processed in complete isolation. Results must be aggregated into a final report.
+Coordinate distributed data processing using TaskList with forked skills.
 
 ## Processing Architecture
 
@@ -21,41 +15,17 @@ You are coordinating distributed data processing across multiple regions.
 - **Region processors** are forked skills with complete isolation
 - **Results flow back** to coordinator for aggregation
 
-## Recognition Patterns
-
-**When to use distributed-processor:**
-```
-✅ Good: Large dataset needs parallel processing
-✅ Good: Independent regions can process data separately
-✅ Good: Forked skills needed for complete isolation
-✅ Good: Results need aggregation into final report
-❌ Bad: Single dataset requiring sequential processing
-❌ Bad: No geographic or logical data separation
-
-Why good: Independent processing enables parallel execution and fault isolation.
-```
-
-**Pattern Match:**
-- User mentions "parallel processing", "distributed data", "forked skills"
-- Large datasets that can be partitioned
-- Independent processing with later aggregation
-
-**Recognition:** "Can this data be partitioned and processed independently?" → Use distributed-processor.
-
 ## Processing Tasks
 
 **Parallel, independent execution:**
 
 1. **process-region-a** - Process data from Region A
-   - Call region-processor-skill with context: fork, args="region=A"
    - Forked skill processes in isolation
 
 2. **process-region-b** - Process data from Region B
-   - Call region-processor-skill with context: fork, args="region=B"
    - Forked skill processes in isolation
 
 3. **process-region-c** - Process data from Region C
-   - Call region-processor-skill with context: fork, args="region=C"
    - Forked skill processes in isolation
 
 4. **aggregate-results** - Combine all processed outputs
@@ -68,10 +38,11 @@ Why good: Independent processing enables parallel execution and fault isolation.
 
 1. **Create TaskList** with all tasks
 2. **Use Skill tool** with context: fork for each region processor
-   - Pass region identifier via args parameter
 3. **Monitor task completion**
-4. **When all processors complete**, aggregate results
-5. **Return aggregated dataset** to caller
+4. **Aggregate results** when all processors complete
+5. **Return aggregated dataset**
+
+**Recognition test:** Each region processor runs in complete isolation with no shared state.
 
 ## Expected Output
 
@@ -90,15 +61,9 @@ Region C: [records processed, summary]
 Total: [combined statistics]
 ```
 
-**Contrast:**
-```
-✅ Good: All three regions process in parallel
-✅ Good: aggregate-results waits for all to complete
-✅ Good: Each region runs in complete isolation
-❌ Bad: Sequential processing of regions
-❌ Bad: aggregate-results runs before processing completes
+## Validation Criteria
 
-Why good: Parallel execution maximizes speed while isolation ensures fault containment.
-```
+- Parallel execution of regions
+- Results aggregation after completion
 
-**Recognition:** "Does this output show proper distributed processing?" → Check: 1) Parallel execution of regions, 2) Results aggregation after completion.
+**Binary check:** "Proper distributed processing?" → Both criteria must pass.

@@ -4,8 +4,6 @@ Complex patterns combining fd, ripgrep (rg), and fzf for power users and AI agen
 
 ## AI Agent Workflows
 
-For programmatic analysis and automated processing:
-
 ### Structured Output for Parsing
 
 ```bash
@@ -54,14 +52,9 @@ rg "functionName\(" -n
 ### Performance-Optimized Batch Processing
 
 ```bash
-# Multi-threaded processing (MacBook Pro M1 optimized)
 export OMP_NUM_THREADS=8
 find . -type f -name "*.py" | xargs -P 8 rg -l "pattern"
-
-# Use SIMD-optimized ripgrep
 rg --threads auto "pattern" --json
-
-# Filter by modification time (avoid old code)
 find . -type f -newermt "2024-01-01" -name "*.js" | xargs rg "TODO"
 ```
 
@@ -69,12 +62,11 @@ find . -type f -newermt "2024-01-01" -name "*.js" | xargs rg "TODO"
 
 **ugrep** - Modern C++ search with extended features:
 ```bash
-# Install: brew install ugrep (not yet mainstream)
 ug -r "pattern" --json
 ug -t py "pattern"
 ```
 
-**Note:** Still emerging; ripgrep remains the standard for 2025-2026.
+Note: ugrep still emerging; ripgrep remains standard for 2025-2026.
 
 ## Git Integration
 
@@ -96,7 +88,7 @@ git log -p --all -S "function"    # Full diff with changes
 
 ## Shell Functions
 
-**Create reusable functions in `~/.bashrc` or `~/.zshrc`:**
+Add to `~/.bashrc` or `~/.zshrc`:
 
 ```bash
 # Interactive file search with preview
@@ -160,88 +152,60 @@ fd "app.js" | xargs -I {} fd "{}.test.js"
 
 **Tmux integration:**
 ```bash
-# Select session
 tmux list-sessions | fzf | xargs tmux switch-client -t
-
-# Select window
 tmux list-windows | fzf | xargs tmux select-window -t
 ```
 
 **Process management:**
 ```bash
-# Find and kill process
 ps aux | fzf | awk '{print $2}' | xargs kill
 ```
 
-## Performance Optimization (2025 Benchmarks)
+## Performance Optimization
 
-**Verified 2025 Performance Facts:**
+**2025 Performance Facts:**
 
 - **ripgrep:** Uses ARM64 NEON SIMD instructions on Apple Silicon
-- **Multi-threading:** Automatically detects core count (auto or specify with --threads)
+- **Multi-threading:** Automatically detects core count (auto or --threads)
 - **Smart filtering:** Respects .gitignore, skips binary files automatically
 - **Case sensitivity:** Lowercase = case-insensitive (optimization)
 - **Regex compilation:** Literal strings (-F) avoid regex overhead
 
-**Parallel execution (2025 optimized):**
+**Parallel execution:**
 ```bash
-# MacBook Pro M1 - use physical cores (not logical)
 fd -t f | xargs -P 8 -I {} rg "pattern" {}
-
-# Let ripgrep handle threading
 rg --threads auto "pattern"
 ```
 
 **Cache expensive searches:**
 ```bash
-# Cache file list for repeated searches
 fd -t f > /tmp/filelist.txt
 rg "pattern" -f /tmp/filelist.txt
-
-# Smart caching with fd
 export FZF_DEFAULT_COMMAND='fd --type file --hidden'
 ```
 
 **MacBook Pro M1 Specific:**
 ```bash
-# Verify SIMD support (NEON)
 rg --version | grep -i neon
-
-# ARM64 optimized binary (native performance)
 rg --threads auto "pattern"
-
-# Check CPU info
 sysctl -n machdep.cpu.brand_string
 ```
 
-**Benchmark Results (2025):**
+**Benchmark Results:**
 ```bash
-# ripgrep vs grep - 10-100x faster
 time rg "TODO" .
 time grep -r "TODO" .
-
-# ripgrep vs fd for file discovery - 5-20x faster
 time rg -t py "pattern"
 time fd -e py "pattern"
-
-# Case sensitivity impact
-time rg "error" .    # Case-insensitive (faster)
-time rg "Error" .   # Case-sensitive
+time rg "error" .
+time rg "Error" .
 ```
 
 ## Output Formatting
 
-**JSON output for scripting:**
+**JSON output:**
 ```bash
 rg "pattern" --json | jq -r '.data.lines.text'
-```
-
-**Colored output to file:**
-```bash
 rg "pattern" --color=always > results.txt
-```
-
-**Generate HTML report:**
-```bash
 rg "pattern" -C 2 --html > report.html
 ```

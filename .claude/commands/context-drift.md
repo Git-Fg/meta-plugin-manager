@@ -1,32 +1,11 @@
 ---
-description: Centralize all instructions and knowledge in their correct locations
+description: "Centralize all instructions and knowledge in their correct locations. Use when: knowledge scattered across multiple files, same pattern documented multiple places, skills referencing external files, tier 2 vs tier 3 confusion. Not for: well-organized knowledge architecture, single source of truth already maintained."
+context: fork
 ---
 
 # Context Drift
 
-Think of context drift as **organizing a library**—when knowledge is scattered across the wrong shelves, it becomes impossible to find what you need. This command centralizes instructions and knowledge in their correct locations, ensuring each concept has exactly one home.
-
-## Recognition Patterns
-
-**When to use context-drift:**
-```
-✅ Good: "Knowledge scattered across multiple files"
-✅ Good: "Same pattern documented multiple places"
-✅ Good: "Skills referencing external files"
-✅ Good: "Tier 2 vs Tier 3 confusion"
-❌ Bad: Well-organized knowledge architecture
-❌ Bad: Single source of truth already maintained
-
-Why good: Context drift fixes knowledge architecture before it becomes problematic.
-```
-
-**Pattern Match:**
-- User mentions "organize knowledge", "centralize instructions", "fix scattered content"
-- Multiple files document the same pattern
-- Skills reference external files instead of being self-contained
-- CLAUDE.md mentions specific file paths
-
-**Recognition:** "Is knowledge scattered across wrong locations?" → Use context-drift.
+Centralize all instructions and knowledge in their correct locations.
 
 ## Core Distribution
 
@@ -53,7 +32,7 @@ Why good: Context drift fixes knowledge architecture before it becomes problemat
 - Knowledge lives in wrong tier (Tier 2 vs Tier 3)
 - Skills reference external files instead of being self-contained
 
-**Recognition:** "Is this concept documented in multiple places?" → Centralize to single source.
+**Binary test:** "Is concept documented in multiple places?" → Centralize to single source.
 
 ## The Architecture Rules
 
@@ -61,57 +40,50 @@ Why good: Context drift fixes knowledge architecture before it becomes problemat
 
 **Rule**: Each concept has exactly one home.
 
-**Pattern Check:**
-```
-❌ Bad: Pattern documented in skill-dev AND command-dev AND patterns.md
-✅ Good: Pattern in patterns.md, referenced from meta-skills
-```
-
-**Why good**: Single source of truth prevents drift and inconsistency.
-
-**Recognition:** "Can you point to multiple locations for the same concept?" → Fix to single source.
+**Binary test:** "Can you point to multiple locations for same concept?" → Fix to single source.
 
 ### Self-Contained Skills
 
 **Rule**: Skills reference nothing external.
 
-**Pattern Check:**
-```
-❌ Bad: "See .claude/rules/principles.md for context"
-✅ Good: Inline principles directly OR fully rewrite them in-skill
-```
-
-**Why good**: Portability requires self-contained components.
-
-**Recognition:** "Does this skill reference external files?" → Inline or rewrite.
+**Binary test:** "Does skill reference external files?" → Inline or rewrite.
 
 ### Progressive Disclosure
 
 **Rule**: Tier 2 ≠ Tier 3 content.
 
-**Pattern Check:**
-```
-❌ Bad: Same content in Tier 2 AND Tier 3
-✅ Good: Tier 2 = overview, Tier 3 = deep dive (different content)
-```
-
-**Why good**: Avoids duplication while enabling conditional access.
-
-**Recognition:** "Is this the exact same content in both tiers?" → Differentiate or consolidate.
+**Binary test:** "Is this exact same content in both tiers?" → Differentiate or consolidate.
 
 ### Path Independence
 
 **Rule**: Use portable paths, not project-specific.
 
-**Pattern Check:**
-```
-❌ Bad: "Navigate to .claude/skills/skill-name/"
-✅ Good: Use portable paths: ${CLAUDE_PROJECT_DIR}/skills/skill-name/
-```
+**Binary test:** "Do paths assume specific project structure?" → Make them portable.
 
-**Why good**: Portable paths work across different project structures.
+## Dual-Layer Architecture Exception
 
-**Recognition:** "Do paths assume specific project structure?" → Make them portable.
+**Critical:** Philosophy duplication between `.claude/rules/` (Layer A) and meta-skills (Layer B) is INTENTIONAL, not context drift.
+
+**Recognition test:** "Is it knowledge that is globally useful for all skills, projects and global philosophy to contextualize?"
+
+- **If YES** → Belongs in `.claude/rules/` (Layer A: universal philosophy)
+- **If NO** (component-specific, needs portability) → Belongs in the skill itself (Layer B: genetic code)
+
+**Why this distinction:**
+- Layer A guides the agent during current session (not embedded in components)
+- Layer B provides portable "genetic code" for components (must work in isolation)
+- Components must survive being moved to projects with ZERO `.claude/rules/`
+
+**Do NOT flag as drift:**
+- Progressive Disclosure explained in both rules/ and meta-skills
+- Delta Standard documented in both locations
+- Self-containment taught in both layers
+- Portability Invariant present in both
+
+**Flag as drift only when:**
+- Philosophy duplicated within the SAME layer (rules/ or skills/)
+- Specific file paths used in CLAUDE.md
+- Skills reference external files instead of containing knowledge
 
 ## Context Fork Exception
 
@@ -120,34 +92,7 @@ Why good: Context drift fixes knowledge architecture before it becomes problemat
 - Rewrite rules specifically for the skill's context
 - Make the skill self-contained
 
-**Pattern Check:**
-```
-❌ Bad context fork: "This skill requires reading principles.md"
-✅ Good context fork: Inline the 3 key principles with examples
-```
-
-**Why good**: Context fork still requires self-contained knowledge.
-
-**Recognition:** "Does this fork context require external knowledge?" → Inline and rewrite.
-
-## Contrast
-
-```
-✅ Good: Knowledge on frontmatter lives in command-development
-❌ Bad: "See the frontmatter section in CLAUDE.md"
-
-Why good: Single source of truth, no path dependencies.
-
-✅ Good: Tier 2 overview + Tier 3 deep dive
-❌ Bad: Same content in both tiers
-
-Why good: Progressive disclosure without duplication.
-
-✅ Good: Self-contained skills with bundled philosophy
-❌ Bad: Skills referencing external .claude/rules/
-
-Why good: Portability requires complete self-sufficiency.
-```
+**Binary test:** "Does fork context require external knowledge?" → Inline and rewrite.
 
 ## Quality Checklist
 
@@ -158,6 +103,6 @@ Why good: Portability requires complete self-sufficiency.
 - [ ] Tier 2 ≠ Tier 3 content
 - [ ] All cross-references use portable paths
 
-**Recognition:** "Does this architecture follow single source of truth?" → Check all five criteria.
+**Binary test:** "Does architecture follow single source of truth?" → Check all five criteria.
 
-**Key Question**: "Would this component survive being moved to a fresh project?" If no, fix context drift.
+**Key question:** "Would this component survive being moved to a fresh project?" → If no, fix context drift.

@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_ROOT="/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CLAUDE_DIR="${PROJECT_ROOT}/.claude"
 ERROR_COUNT=0
 WARNING_COUNT=0

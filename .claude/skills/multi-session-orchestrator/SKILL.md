@@ -1,37 +1,11 @@
 ---
 name: multi-session-orchestrator
-description: This skill should be used when the user asks to "test TaskList cross-session persistence", "long-running workflows spanning multiple sessions", or needs guidance on testing TaskList persistence across multiple Claude Code sessions (not for single-session workflows).
+description: "Test TaskList persistence across multiple Claude Code sessions. Use when: user mentions 'cross-session', 'long-running workflows', 'persist state'; workflows that span multiple sessions; need to test persistence behavior. Not for: single-session workflows, short tasks that complete in one session."
 ---
 
 # Multi-Session Orchestration
 
-Think of multi-session orchestration as **passing a relay race baton**—when one session ends, another session must pick up exactly where the previous one left off, with all progress and state preserved.
-
-## SESSION_START
-
-You are testing TaskList persistence across multiple sessions.
-
-**Context**: Real-world workflows often span multiple Claude Code sessions. TaskList must persist state so work can continue across sessions. This test validates cross-session persistence.
-
-## Recognition Patterns
-
-**When to use multi-session-orchestrator:**
-```
-✅ Good: "Test TaskList cross-session persistence"
-✅ Good: "Long-running workflows spanning multiple sessions"
-✅ Good: "Validate workflow state persistence"
-❌ Bad: Single-session workflows
-❌ Bad: Short tasks that complete in one session
-
-Why good: Multi-session orchestration ensures workflow continuity across session boundaries.
-```
-
-**Pattern Match:**
-- User mentions "cross-session", "long-running workflows", "persist state"
-- Workflows that span multiple sessions
-- Need to test persistence behavior
-
-**Recognition:** "Does this workflow need to persist across session boundaries?" → Use multi-session-orchestrator.
+Test TaskList persistence across multiple Claude Code sessions.
 
 ## Multi-Session Workflow
 
@@ -101,13 +75,16 @@ Task State Persistence: VERIFIED
 
 **Contrast:**
 ```
-✅ Good: TaskList ID saved and used to resume
-✅ Good: Status preserved across sessions
-✅ Good: Continuation seamless from previous state
-❌ Bad: TaskList recreated in Session 2
-❌ Bad: Previous state lost
-
-Why good: State persistence enables true multi-session workflows.
+Good: TaskList ID saved and used to resume
+Good: Status preserved across sessions
+Good: Continuation seamless from previous state
+Bad: TaskList recreated in Session 2
+Bad: Previous state lost
 ```
 
-**Recognition:** "Does this output demonstrate proper cross-session persistence?" → Check: 1) TaskList ID continuity, 2) Status preservation, 3) Seamless continuation.
+**Validation criteria:**
+- TaskList ID continuity
+- Status preservation
+- Seamless continuation
+
+**Binary check:** "Proper cross-session persistence?" → All three criteria must pass.

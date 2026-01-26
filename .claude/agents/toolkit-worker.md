@@ -2,11 +2,12 @@
 name: toolkit-worker
 description: "General-purpose worker subagent for delegated analysis and research. Use when the main context needs isolation (noisy operations, parallel processing, focused deep-dives). Infers intent from provided parameters and applies relevant skills autonomously."
 skills:
-  - knowledge-skills
-  - knowledge-mcp
-  - knowledge-hooks
+  - command-development
   - agent-development
-  - meta-critic
+  - hook-development
+  - mcp-development
+  - skill-development
+  - refactor-elegant-teaching
 tools:
   - Read
   - Grep
@@ -82,25 +83,3 @@ Return results in markdown:
 2. **Scope appropriately** - Stay within provided target scope
 3. **Fail explicitly** - If unable to proceed, document why in output
 4. **Complete fully** - No partial results; finish the delegated work
-
-### Recognition Patterns
-
-**When to use toolkit-worker:**
-- Main context needs isolation from noisy operations
-- Parallel processing required
-- Focused deep-dives needed
-- Delegated autonomous execution desired
-
-**Recognition:** "Does this task need isolation from the main context?" → If yes, use toolkit-worker.
-
-**Pattern Match:** Look for tasks involving `.claude/` structure work, skill/hook/MCP creation, or quality validation that would benefit from isolated execution.
-
-**Contrast:**
-```
-✅ Good: "Audit .claude/skills structure using toolkit-worker"
-✅ Good: "Create new skill with toolkit-worker in isolated context"
-❌ Bad: Use for simple single-file edits
-❌ Bad: Use when user interaction is required
-
-Why good: Isolation protects main context and enables autonomous execution.
-```

@@ -27,6 +27,8 @@ This skill helps AI agents refactor Claude components to be more elegant and aut
 ❌ **Bad:** Components that require external documentation or step-by-step instructions
 ✅ **Good:** Components that provide guidance and examples for autonomous operation
 
+**Remember:** If this skill is being used, the conditions are already met. Focus on pure guidance, not usage instructions.
+
 **Question:** Would this component work if someone only read this file? If not, include more context.
 
 ---
@@ -71,9 +73,10 @@ Here are 50 examples...
 
 **Enable binary validation through observable patterns.**
 
-✅ **Good:**
+✅ **Good (Internal Validation):**
 ```markdown
-Recognition: "Can scan all headers in 5 seconds?" → If no, restructure
+Check: "Can headers be scanned in 5 seconds?" → If no, restructure
+Check: "Is this explanation necessary?" → If obvious, remove
 ```
 
 ❌ **Bad:**
@@ -81,7 +84,35 @@ Recognition: "Can scan all headers in 5 seconds?" → If no, restructure
 Make content clear and scannable
 ```
 
-**Why:** Binary patterns enable self-diagnostic capability; abstract rules require interpretation.
+**Critical distinction:** "Recognition" patterns in SKILL.md are for **internal validation** (e.g., "Is this section clear?"), NOT for activation conditions.
+
+**Activation logic** (when to use the component) MUST live in the `description` field of frontmatter:
+```yaml
+---
+description: "Component purpose. Use when: [activation conditions]. Not for: [exclusion conditions]."
+---
+```
+
+**Why:** Once a skill is loaded, it's too late to decide "when to load it." Activation logic belongs in discovery metadata (description), not execution body (SKILL.md).
+
+---
+
+### Example 5: Avoid Meta-Instructions
+
+**Before (Meta-Instruction Noise):**
+```markdown
+Use this skill when you want to refactor content for elegance.
+Load this skill when content seems verbose.
+Apply this when you need progressive disclosure.
+```
+
+**After (Pure Guidance):**
+```markdown
+Transform verbose content. Add concrete examples.
+Apply progressive disclosure to reduce cognitive load.
+```
+
+**Why:** If the skill is being used, the conditions are already met. Meta-instructions add noise without value.
 
 ---
 
@@ -276,6 +307,7 @@ A well-refactored component:
 - [ ] No circular dependencies
 - [ ] Pattern recognition enabled through examples
 - [ ] Binary validation for quality checks
+- [ ] No meta-instructions about when to use this
 
 **Self-check:** Would this component work if moved to a project with no external rules? If no, make it self-contained.
 

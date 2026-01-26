@@ -1,12 +1,12 @@
 ---
 name: refine-prompts
-description: "Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology"
+description: "Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology. Use when: user mentions 'refine', 'clarify', 'make better'; vague or unclear instructions; need structured, actionable format. Not for: already precise prompts, simple tool requests."
 user-invocable: true
 ---
 
-# Prompt Refinement Expert
+# Prompt Refinement
 
-Think of prompt refinement as **distilling muddy water**—filtering out the mud (fluff, vagueness) while preserving the pure essence (constraints, context, goals) to create crystal-clear instructions.
+Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology.
 
 ## Core Methodology
 
@@ -15,26 +15,6 @@ Think of prompt refinement as **distilling muddy water**—filtering out the mud
 
 **Default**: Produce prompts as a single plain-text paragraph (no Markdown)
 **Escalate**: Use keypoints (L3) and templates (L4) only when justified
-
-## Recognition Patterns
-
-**When to use refine-prompts:**
-```
-✅ Good: "Make this prompt clearer"
-✅ Good: "Refine these instructions"
-✅ Good: "Convert vague request to actionable"
-❌ Bad: Already precise prompts
-❌ Bad: Simple tool requests
-
-Why good: Prompt refinement transforms unclear requests into structured, actionable instructions.
-```
-
-**Pattern Match:**
-- User mentions "refine", "clarify", "make better"
-- Vague or unclear instructions
-- Need structured, actionable format
-
-**Recognition:** "Do you need to transform vague prompts into precise instructions?" → Use refine-prompts.
 
 ## Non-Negotiables to Preserve
 
@@ -124,16 +104,10 @@ Rationale: The refined prompt provides clear technical constraints (mobile-first
 
 **Contrast:**
 ```
-✅ Good: Output L1→L2→L3→L4→Rationale format
-✅ Good: Remove fluff, keep constraints that change answers
-❌ Bad: Include methodology explanation in output
-❌ Bad: Use L4 when simple prompt
-
-Why good: Structured output ensures clarity while maintaining efficiency.
+Good: Output L1→L2→L3→L4→Rationale format
+Good: Remove fluff, keep constraints that change answers
+Bad: Include methodology explanation in output
+Bad: Use L4 when simple prompt
 ```
 
-**Recognition:** "Does this refinement provide clear, actionable instructions?" → Check: 1) L1 outcome statement, 2) L2 context with constraints, 3) L3 structure, 4) L4 template if needed.
-
-**For additional examples:**
-- `examples/basic-usage.md` - Simple refinement patterns
-- `examples/l1-l4-output-examples.md` - Full L1-L4 format examples
+**Validation check:** Refinement provides clear, actionable instructions if it includes: 1) L1 outcome statement, 2) L2 context with constraints, 3) L3 structure, 4) L4 template if needed.

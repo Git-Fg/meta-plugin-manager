@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_ROOT="/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BACKUP_DIR="${PROJECT_ROOT}/.backups/production/$(date +%Y%m%d_%H%M%S)"
 DEPLOYMENT_LOG="${PROJECT_ROOT}/.logs/deployment_$(date +%Y%m%d_%H%M%S).log"
 CLAUDE_DIR="${PROJECT_ROOT}/.claude"
