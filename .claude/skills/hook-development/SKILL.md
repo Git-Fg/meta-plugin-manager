@@ -390,16 +390,27 @@ Run hooks in background without blocking:
 
 **Good for**: Build analysis, long-running operations, notifications
 
-### Environment Variables
+### Script Path References
 
-Use `${CLAUDE_PLUGIN_ROOT}` to reference plugin scripts:
+**For local project hooks**, use relative paths from project root:
 
 ```json
 {
   "type": "command",
-  "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
+  "command": "node .claude/scripts/hooks/my-hook.js"
 }
 ```
+
+**For plugin hooks** (when developing plugins), use `${CLAUDE_PLUGIN_ROOT}`:
+
+```json
+{
+  "type": "command",
+  "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/my-hook.js\""
+}
+```
+
+**Remember**: This skill focuses on local project hooks. Plugin development has additional considerations.
 
 ### Multiple Hooks
 
@@ -590,6 +601,7 @@ Load previous context on new session:
 /**
  * SessionStart Hook - Load previous context on new session
  *
+ * Save as: .claude/scripts/hooks/session-start.js
  * Cross-platform (Windows, macOS, Linux)
  */
 
@@ -611,6 +623,19 @@ main().catch(err => {
 });
 ```
 
+**Hook configuration**:
+```json
+{
+  "matcher": "*",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node .claude/scripts/hooks/session-start.js"
+    }
+  ]
+}
+```
+
 ### Session End Hook
 
 Persist session state when session ends:
@@ -619,6 +644,8 @@ Persist session state when session ends:
 #!/usr/bin/env node
 /**
  * SessionEnd Hook - Persist session state
+ *
+ * Save as: .claude/scripts/hooks/session-end.js
  */
 
 async function main() {
@@ -633,6 +660,19 @@ main().catch(err => {
   console.error('[SessionEnd] Error:', err.message);
   process.exit(0);
 });
+```
+
+**Hook configuration**:
+```json
+{
+  "matcher": "*",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node .claude/scripts/hooks/session-end.js"
+    }
+  ]
+}
 ```
 
 ## Hook Script Best Practices
