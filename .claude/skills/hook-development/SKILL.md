@@ -235,7 +235,7 @@ Hooks live in `.claude/settings.json` (team-wide) or `.claude/settings.local.jso
 - `"async": true` - Runs without blocking, requires `"timeout"`
 - `"async": false` (default) - Blocks until completion
 
-**timeout** - Maximum execution time in seconds (required for async hooks)
+**timeout** - Maximum execution time in seconds (recommended for all command hooks)
 
 **description** - Optional documentation for the hook's purpose
 
@@ -260,12 +260,12 @@ Hooks live in `.claude/settings.json` (team-wide) or `.claude/settings.local.jso
 **PostToolUse** - React to tool results
 - Use for: Auto-formatting, type checking, logging, notifications
 - Runs after tool completes successfully
-- Response: Pass-through (modify output via stdout)
+- Response: Log to stderr (non-blocking), cannot modify tool output
 
 **PostToolUseFailure** - React to tool failures
 - Use for: Error logging, fallback mechanisms, retry logic
 - Runs when tool fails or errors
-- Response: Pass-through
+- Response: Log to stderr (non-blocking), cannot modify tool output
 
 **PermissionRequest** - Validate permission requests
 - Use for: Additional security checks, permission auditing
