@@ -209,7 +209,9 @@ Hooks live in `.claude/settings.json` (team-wide) or `.claude/settings.local.jso
           {
             "type": "prompt|command",
             "prompt|command": "[validation logic]",
-            "timeout": 30
+            "timeout": 30,
+            "async": false,
+            "description": "Optional description for documentation"
           }
         ]
       }
@@ -218,67 +220,132 @@ Hooks live in `.claude/settings.json` (team-wide) or `.claude/settings.local.jso
 }
 ```
 
+### Hook Configuration Fields
+
+**matcher** - Expression to match events:
+- Simple: `"Write|Edit"` - matches tool names
+- Advanced: `tool == "Bash" && tool_input.command matches "pattern"` - matches tool and input
+- Negation: `tool == "Write" && !(tool_input.file_path matches "allowed.md")` - excludes patterns
+
+**type** - Hook execution type:
+- `"prompt"` - Uses LLM for validation decisions (context-aware, flexible)
+- `"command"` - Executes bash commands (fast, deterministic)
+
+**async** - Run hook in background (optional):
+- `"async": true` - Runs without blocking, requires `"timeout"`
+- `"async": false` (default) - Blocks until completion
+
+**timeout** - Maximum execution time in seconds (required for async hooks)
+
+**description** - Optional documentation for the hook's purpose
+
 ### Hook Types
 
-**Prompt-Based Hooks** (recommended):
+**Prompt-Based Hooks** (recommended for complex validation):
 - Use LLM for validation decisions
 - Context-aware and flexible
 - Return JSON responses
 
-**Command Hooks**:
+**Command Hooks** (recommended for fast checks):
 - Execute bash commands
 - Fast, deterministic checks
-- Good for external tools
+- Good for external tools, file operations
 
-### Common Event Types
+### Event Types Reference
 
-**PreToolUse** - Validate before tools run
-```json
-{
-  "matcher": "Write",
-  "hooks": [
-    {
-      "type": "prompt",
-      "prompt": "Validate file write safety...",
-      "timeout": 30
-    }
-  ]
-}
-```
+**PreToolUse** - Validate before tool execution
+- Use for: File write validation, command safety checks, blocking operations
+- Response: `{ "ok": true }` to allow, `{ "ok": false, "reason": "..." }` to block
+
+**PostToolUse** - React to tool results
+- Use for: Auto-formatting, type checking, logging, notifications
+- Runs after tool completes successfully
+- Response: Pass-through (modify output via stdout)
+
+**PostToolUseFailure** - React to tool failures
+- Use for: Error logging, fallback mechanisms, retry logic
+- Runs when tool fails or errors
+- Response: Pass-through
+
+**PermissionRequest** - Validate permission requests
+- Use for: Additional security checks, permission auditing
+- Runs before tool permission is granted
+- Response: `{ "ok": true }` to allow, `{ "ok": false, "reason": "..." }` to block
 
 **Stop** - Enforce completion standards
-```json
-{
-  "matcher": "*",
-  "hooks": [
-    {
-      "type": "prompt",
-      "prompt": "If code changed, verify tests ran...",
-      "timeout": 30
-    }
-  ]
-}
-```
+- Use for: Pre-exit validation, final checks, ensuring tests ran
+- Runs before session ends
+- Response: `{ "decision": "allow" }` to exit, `{ "decision": "block", "reason": "..." }` to prevent exit
 
-**PermissionRequest** - Validate permissions
-```json
-{
-  "matcher": "Bash",
-  "hooks": [
-    {
-      "type": "prompt",
-      "prompt": "Validate bash command safety...",
-      "timeout": 30
-    }
-  ]
-}
-```
+**SessionStart** - Initialize session context
+- Use for: Load previous context, detect environment, initialize state
+- Runs when new session starts
+- Response: Log to stderr (non-blocking)
+
+**SessionEnd** - Persist session state
+- Use for: Save session history, extract patterns, cleanup
+- Runs when session ends
+- Response: Log to stderr (non-blocking)
+
+**PreCompact** - Before context compaction
+- Use for: Save important context before compaction
+- Response: Log to stderr (non-blocking)
+
+**SubagentStart** - When subagent is created
+- Use for: Initialize subagent context, track subagent spawning
+- Response: Log to stderr (non-blocking)
+
+**SubagentStop** - When subagent completes
+- Use for: Collect subagent results, cleanup
+- Response: Log to stderr (non-blocking)
+
+**UserPromptSubmit** - When user submits prompt
+- Use for: Prompt validation, preprocessing
+- Response: Pass-through or modify
+
+**Setup** - During Claude Code initialization
+- Use for: One-time setup, environment validation
+- Response: Log to stderr (non-blocking)
+
+**Notification** - System notifications
+- Use for: Custom notification handling
+- Response: Pass-through
 
 **Question**: Which event matches your validation need? Choose the most specific event for targeted enforcement.
 
 ---
 
 ## Common Patterns
+
+### Matcher Expression Patterns
+
+**Simple tool matching**:
+```json
+{
+  "matcher": "Write|Edit"
+}
+```
+
+**Advanced matching with tool input**:
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run dev|pnpm dev)\""
+}
+```
+
+**Negation (exclusion patterns)**:
+```json
+{
+  "matcher": "tool == \"Write\" && !(tool_input.file_path matches \"README\\\\.md|CLAUDE\\\\.md\")"
+}
+```
+
+**File extension matching**:
+```json
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\""
+}
+```
 
 ### Prompt-Based Validation
 
@@ -307,6 +374,32 @@ Use command hooks for fast, deterministic checks:
 ```
 
 **Good for**: File checks, external tools, performance-critical validation
+
+### Async Hooks
+
+Run hooks in background without blocking:
+
+```json
+{
+  "type": "command",
+  "command": "node -e \"console.error('Running async analysis...')\"",
+  "async": true,
+  "timeout": 30
+}
+```
+
+**Good for**: Build analysis, long-running operations, notifications
+
+### Environment Variables
+
+Use `${CLAUDE_PLUGIN_ROOT}` to reference plugin scripts:
+
+```json
+{
+  "type": "command",
+  "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
+}
+```
 
 ### Multiple Hooks
 
@@ -350,6 +443,40 @@ Prevent unsafe file operations:
 }
 ```
 
+### Block Random Documentation Files
+
+Prevent creation of unnecessary markdown files:
+
+```json
+{
+  "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(md|txt)$\" && !(tool_input.file_path matches \"README\\\\.md|CLAUDE\\\\.md|AGENTS\\\\.md|CONTRIBUTING\\\\.md\")",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"console.error('[Hook] BLOCKED: Unnecessary documentation file');console.error('[Hook] Use README.md for documentation instead');process.exit(1)\"",
+      "description": "Block creation of random .md files"
+    }
+  ]
+}
+```
+
+### Dev Server Tmux Enforcement
+
+Block dev servers from running outside tmux:
+
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"console.error('[Hook] BLOCKED: Dev server must run in tmux');console.error('[Hook] Use: tmux new-session -d -s dev \\\"npm run dev\\\"');process.exit(1)\"",
+      "description": "Block dev servers outside tmux"
+    }
+  ]
+}
+```
+
 ### Completion Enforcement
 
 Ensure tests run after code changes:
@@ -382,6 +509,198 @@ Validate dangerous operations:
 }
 ```
 
+## Automation Examples
+
+### Auto-Format After Edit
+
+Automatically format JavaScript/TypeScript files after editing:
+
+```json
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"const{execSync}=require('child_process');const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){try{execSync('npx prettier --write \\\"'+p+'\\\"',{stdio:['pipe','pipe','pipe']})}catch(e){}}console.log(d)})\"",
+      "description": "Auto-format JS/TS files with Prettier"
+    }
+  ]
+}
+```
+
+### TypeScript Type Checking
+
+Run TypeScript checks after editing TypeScript files:
+
+```json
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"const{execSync}=require('child_process');const fs=require('fs');const path=require('path');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){let dir=path.dirname(p);while(dir!==path.dirname(dir)&&!fs.existsSync(path.join(dir,'tsconfig.json'))){dir=path.dirname(dir)}if(fs.existsSync(path.join(dir,'tsconfig.json'))){try{execSync('npx tsc --noEmit --pretty false 2>&1',{cwd:dir,encoding:'utf8',stdio:['pipe','pipe','pipe']})}catch(e){console.error(e.stdout||'')}}}console.log(d)})\"",
+      "description": "TypeScript check after editing .ts/.tsx files"
+    }
+  ]
+}
+```
+
+### Console.log Detection
+
+Warn about console.log statements after edits:
+
+```json
+{
+  "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const i=JSON.parse(d);const p=i.tool_input?.file_path;if(p&&fs.existsSync(p)){const c=fs.readFileSync(p,'utf8');if(/console\\.log/.test(c)){console.error('[Hook] WARNING: console.log found in '+p);console.error('[Hook] Remove console.log before committing')}}console.log(d)})\"",
+      "description": "Warn about console.log statements after edits"
+    }
+  ]
+}
+```
+
+### Git Push Reminder
+
+Remind to review changes before pushing:
+
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "node -e \"console.error('[Hook] Review changes before push...');console.error('[Hook] Continuing with push')\"",
+      "description": "Reminder before git push"
+    }
+  ]
+}
+```
+
+## Session Management Examples
+
+### Session Start Hook
+
+Load previous context on new session:
+
+```javascript
+#!/usr/bin/env node
+/**
+ * SessionStart Hook - Load previous context on new session
+ *
+ * Cross-platform (Windows, macOS, Linux)
+ */
+
+const path = require('path');
+
+async function main() {
+  // Check for recent session files
+  const sessionsDir = path.join(process.env.HOME, '.claude', 'sessions');
+
+  // Notify Claude of available context
+  console.error('[SessionStart] Checking for previous sessions...');
+
+  process.exit(0); // Always exit 0 to not block
+}
+
+main().catch(err => {
+  console.error('[SessionStart] Error:', err.message);
+  process.exit(0); // Don't block on errors
+});
+```
+
+### Session End Hook
+
+Persist session state when session ends:
+
+```javascript
+#!/usr/bin/env node
+/**
+ * SessionEnd Hook - Persist session state
+ */
+
+async function main() {
+  console.error('[SessionEnd] Saving session state...');
+
+  // Save session history, extract patterns, etc.
+
+  process.exit(0);
+}
+
+main().catch(err => {
+  console.error('[SessionEnd] Error:', err.message);
+  process.exit(0);
+});
+```
+
+## Hook Script Best Practices
+
+### Always Use process.exit(0)
+
+Hooks should never block Claude execution. Always exit with code 0:
+
+```javascript
+// ❌ Bad - blocks on error
+throw new Error('Failed');
+
+// ✅ Good - logs and exits
+console.error('[Hook] Error:', err.message);
+process.exit(0);
+```
+
+### Cross-Platform Shebang
+
+Use cross-platform shebang for portability:
+
+```javascript
+#!/usr/bin/env node
+// Works on Windows, macOS, and Linux
+```
+
+### Error Handling
+
+Wrap hook logic in try-catch:
+
+```javascript
+async function main() {
+  try {
+    // Hook logic
+  } catch (err) {
+    console.error('[Hook] Error:', err.message);
+    process.exit(0); // Don't block
+  }
+}
+```
+
+### Logging to stderr
+
+Use stderr for logging, stdout for data passthrough:
+
+```javascript
+// Log messages to stderr
+console.error('[Hook] Information message');
+
+// Pass data through stdout
+console.log(JSON.stringify(data));
+```
+
+### Async Hook Pattern
+
+For long-running operations, use async hooks:
+
+```json
+{
+  "type": "command",
+  "command": "node -e \"console.error('[Hook] Running analysis...')\"",
+  "async": true,
+  "timeout": 30
+}
+```
+
+This runs in background without blocking Claude.
+
 ---
 
 ## Common Mistakes
@@ -412,7 +731,7 @@ Validate dangerous operations:
 }
 ```
 
-**Why**: Specific matching enables targeted validation.
+**Why**: Specific matching enables targeted validation. Broad matchers create performance issues and unexpected blocking.
 
 ### Mistake 2: Incomplete Validation Logic
 
@@ -456,26 +775,67 @@ Validate dangerous operations:
 
 **Why**: Structured responses enable proper handling.
 
-### Mistake 4: External Dependencies
+### Mistake 4: Blocking on Errors
+
+❌ Bad:
+```javascript
+// Hook that blocks Claude on error
+throw new Error('Failed');
+process.exit(1);
+```
+
+✅ Good:
+```javascript
+// Hook that logs and allows continuation
+console.error('[Hook] Error:', err.message);
+process.exit(0); // Always exit 0
+```
+
+**Why**: Hooks should never block Claude execution. Always exit with code 0.
+
+### Mistake 5: Missing Timeout for Async Hooks
 
 ❌ Bad:
 ```json
 {
   "type": "command",
-  "command": "bash .claude/scripts/validate.sh"
+  "command": "long-running-task",
+  "async": true
+  // Missing timeout!
 }
 ```
 
 ✅ Good:
 ```json
 {
-  "type": "prompt",
-  "prompt": "Validate operation using these criteria...",
+  "type": "command",
+  "command": "long-running-task",
+  "async": true,
   "timeout": 30
 }
 ```
 
-**Why**: Self-contained hooks work anywhere.
+**Why**: Async hooks require timeout to prevent indefinite hanging.
+
+### Mistake 6: Not Using Advanced Matcher Syntax
+
+❌ Bad:
+```json
+{
+  "matcher": "Bash"
+  // Matches ALL Bash commands
+}
+```
+
+✅ Good:
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\""
+  // Matches only specific command
+}
+```
+
+**Why**: Advanced matchers enable precise targeting without false positives.
 
 ---
 
@@ -483,60 +843,60 @@ Validate dangerous operations:
 
 Recognition-based patterns to avoid when creating hooks.
 
-### Anti-Pattern 1: Vague Event Matching
+### Anti-Pattern 1: Blocking the User
 
-**❌ Generic matchers that catch too many operations**
+**❌ Hooks that block normal workflows with unnecessary friction**
 
-❌ Bad: `"matcher": "*"` (catches all tools)
-✅ Good: `"matcher": "Write|Edit"` (specific tools)
+❌ Bad: Hook that blocks every file write for "approval"
+✅ Good: Hook that blocks only dangerous operations (system paths, credentials)
 
-**Recognition**: "Does this matcher target specific operations or everything?"
+**Recognition**: "Does this hook add value or just create friction?"
 
-**Why**: Broad matchers create performance issues and unexpected blocking.
+**Why**: Excessive blocking trains users to disable hooks entirely.
 
-### Anti-Pattern 2: Incomplete Validation Logic
+### Anti-Pattern 2: Silent Failures
 
-**❌ Hooks that don't specify response format or handle all cases**
+**❌ Hooks that fail silently without feedback**
 
-❌ Bad: "Check if this is safe" (no format specified)
-✅ Good: "Validate file write safety. Respond with JSON: `{\"ok\": true}` to allow, or `{\"ok\": false, \"reason\": \"...\"}` to block."
+❌ Bad: Hook that fails without logging why
+✅ Good: Hook that logs errors to stderr before exiting
 
-**Recognition**: "Does the hook specify exact response format?"
+**Recognition**: "If this hook fails, will the user know why?"
 
-**Why**: Hooks need clear response formats to integrate properly with the event system.
+**Why**: Silent failures make debugging impossible and erode trust.
 
-### Anti-Pattern 3: Missing Response Format
+### Anti-Pattern 3: Heavy Processing in Hooks
 
-**❌ Hooks that don't specify what to return**
+**❌ Hooks that perform heavy computations synchronously**
 
-❌ Bad: "Block dangerous operations"
-✅ Good: "To block: Return `{\"ok\": false, \"reason\": \"explanation\"}`. To allow: Return `{\"ok\": true}`."
+❌ Bad: Hook that runs full test suite on every edit
+✅ Good: Hook that runs quick linter, or uses `"async": true` for heavy tasks
 
-**Recognition**: "Does the hook specify the JSON structure for responses?"
+**Recognition**: "Does this hook complete quickly enough to not frustrate the user?"
 
-**Why**: Incorrect response formats cause silent failures or system errors.
+**Why**: Hooks run synchronously by default and block execution.
 
-### Anti-Pattern 4: External Dependencies
+### Anti-Pattern 4: Brittle Matcher Patterns
 
-**❌ Hooks that reference external scripts or files**
+**❌ Hooks with matchers that break easily**
 
-❌ Bad: `"command": "bash validation-scripts/check.sh"`
-✅ Good: Include validation logic directly in the hook prompt.
+❌ Bad: `"matcher": "tool == \"Bash\" && tool_input.command matches \"npm install\""` (breaks on `npm i`)
+✅ Good: `"matcher": "tool == \"Bash\" && tool_input.command matches \"npm (install|i)\""` (flexible)
 
-**Recognition**: "Could this hook execute without external files?"
+**Recognition**: "Will this matcher work with common variations?"
 
-**Why**: Hooks execute synchronously. External dependencies cause failures.
+**Why**: Brittle patterns fail unexpectedly and miss edge cases.
 
-### Anti-Pattern 5: Security Issues
+### Anti-Pattern 5: Not Logging Decisions
 
-**❌ Hooks that allow unsafe operations without proper validation**
+**❌ Hooks that make decisions without explaining why**
 
-❌ Bad: File write hook that doesn't check file paths
-✅ Good: File write hook that validates: no ~/.claude/ modification, no absolute paths outside project
+❌ Bad: Hook that blocks with no message
+✅ Good: Hook that logs `[Hook] BLOCKED: Reason explanation` to stderr
 
-**Recognition**: "Does this hook properly validate security-sensitive operations?"
+**Recognition**: "Does this hook explain its decisions to the user?"
 
-**Why**: Hooks are security controls. Weak validation enables dangerous operations.
+**Why**: Users need to understand why operations were blocked to adjust their behavior.
 
 ---
 
@@ -544,14 +904,20 @@ Recognition-based patterns to avoid when creating hooks.
 
 A good hook:
 
-- [ ] Uses specific event types (not generic "*")
+- [ ] Uses specific event types and matchers (not generic "*")
 - [ ] Has clear validation logic in the prompt/command
-- [ ] Returns structured JSON responses
-- [ ] Includes timeout values
-- [ ] Works without external dependencies
-- [ ] Has no references to .claude/rules/ files
+- [ ] Returns structured JSON responses with specified format
+- [ ] Includes timeout values (required for async hooks)
+- [ ] Works without external dependencies (self-contained)
+- [ ] Always exits with code 0 (never blocks Claude)
+- [ ] Logs decisions to stderr for user visibility
+- [ ] Uses description field for documentation
+- [ ] Handles errors gracefully with try/catch
+- [ ] Uses cross-platform patterns (#!/usr/bin/env node)
 
 **Self-check**: Could this hook work in a fresh project? If not, it needs more context.
+
+**Security check**: Does this hook properly validate security-sensitive operations?
 
 ---
 
