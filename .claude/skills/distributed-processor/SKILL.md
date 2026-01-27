@@ -1,6 +1,6 @@
 ---
 name: distributed-processor
-description: "Coordinate distributed data processing using TaskList with forked skills. Use when: large datasets can be partitioned, independent processing with later aggregation, forked skills needed for isolation, user mentions 'parallel processing', 'distributed data', 'forked skills'. Not for: single dataset requiring sequential processing, no geographic/logical data separation."
+description: "Coordinate distributed processing. Use when: You need parallel execution, forked skills, or isolated work units. Not for: Sequential tasks or single-threaded workflows."
 context: fork
 ---
 

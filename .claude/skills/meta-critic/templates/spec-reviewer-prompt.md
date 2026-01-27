@@ -52,7 +52,7 @@ Task tool (general-purpose):
     - Did they add "nice to haves" that weren't in spec?
 
     **Portability issues:**
-    - Does component depend on external .claude/rules?
+    - Does component depend on external dependencies?
     - Are there references to files outside the component?
     - Would this work in a fresh project?
 

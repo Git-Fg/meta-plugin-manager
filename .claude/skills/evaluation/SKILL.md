@@ -1,6 +1,6 @@
 ---
 name: evaluation
-description: Multi-dimensional evaluation methods for agent systems. Apply when building quality gates, measuring component quality, or implementing LLM-as-judge patterns.
+description: "Evaluate agent systems. Use when: You need to build quality gates, measure component quality, or implement LLM-as-judge. Not for: Simple unit testing or binary pass/fail checks without nuance."
 ---
 
 # Evaluation Methods for Agent Systems

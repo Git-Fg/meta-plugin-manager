@@ -1,5 +1,6 @@
 ---
 description: "Proactively capture project discoveries to CLAUDE.md during work. Use when: user says 'remember this', 'that worked'; architectural decisions made; working commands discovered; gotchas found. Not for: creating temporary files, date-stamped logs, transient notes."
+disable-model-invocation: true
 allowed-tools: ["Read", "Edit", "Write", "Grep"]
 ---
 

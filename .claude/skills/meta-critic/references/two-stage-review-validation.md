@@ -44,29 +44,35 @@ digraph two_stage_review {
 ## Stage 1: Spec Compliance Review
 
 ### Purpose
+
 Verify the component matches the blueprint exactly (nothing more, nothing less).
 
 ### Key Principle
+
 **"Do not trust the report"** - Builder may be optimistic or incomplete. Always verify independently.
 
 ### What to Check
 
 **Missing requirements:**
+
 - [ ] All blueprint requirements implemented?
 - [ ] All acceptance criteria met?
 - [ ] No skipped features?
 
 **Extra work:**
+
 - [ ] No features beyond blueprint?
 - [ ] No over-engineering?
 - [ ] No "nice to haves" not requested?
 
 **Portability:**
-- [ ] Zero external .claude/rules dependencies?
+
+- [ ] Zero external dependencies (component works standalone)?
 - [ ] All context bundled in component?
 - [ ] Works in fresh project?
 
 **Misunderstandings:**
+
 - [ ] Blueprint interpreted correctly?
 - [ ] Right problem solved?
 - [ ] Implementation approach aligned?
@@ -87,20 +93,24 @@ OR
 ```
 
 ### Review Loop
+
 - Issues found → Builder fixes → Re-review
 - No issues → Stage 2
 
 ## Stage 2: Quality Review
 
 ### Purpose
+
 Verify component is well-built according to Seed System standards.
 
 ### Prerequisites
+
 **Spec compliance MUST pass** before quality review.
 
 ### What to Check
 
 **Seed System Patterns:**
+
 - [ ] Progressive disclosure tiers (Tier 1: metadata, Tier 2: main, Tier 3: references)
 - [ ] Imperative voice for instructions
 - [ ] Clear trigger phrases in descriptions
@@ -108,6 +118,7 @@ Verify component is well-built according to Seed System standards.
 - [ ] Success Criteria for self-validation
 
 **Code Quality:**
+
 - [ ] Clean, maintainable code
 - [ ] Clear naming (describes what, not how)
 - [ ] No dead code or TODOs
@@ -115,12 +126,14 @@ Verify component is well-built according to Seed System standards.
 - [ ] Consistent formatting
 
 **Documentation:**
+
 - [ ] Clear, concise descriptions
 - [ ] Concrete examples users can copy
 - [ ] Proper markdown formatting
 - [ ] No filler or unnecessary text
 
 **Testing:**
+
 - [ ] Tests verify actual behavior
 - [ ] Edge cases covered
 - [ ] Portable tests (no external setup)
@@ -140,6 +153,7 @@ Assessment: Approved / Needs fixes
 ```
 
 ### Review Loop
+
 - Issues found → Builder fixes → Re-review
 - No issues → Validation complete
 
@@ -148,15 +162,18 @@ Assessment: Approved / Needs fixes
 ### Why Fresh Subagents?
 
 **Context isolation:**
+
 - No pollution from previous stage
 - Fresh perspective on component
 - Independent verification
 
 **Cost efficiency:**
+
 - Builder + Spec reviewer + Quality reviewer = 3 subagents
 - But catches issues early (cheaper than debugging later)
 
 **Quality gains:**
+
 - Spec reviewer catches blueprint violations
 - Quality reviewer catches building issues
 - Two independent verifications
@@ -221,17 +238,20 @@ ralph_validated/
 ### Quality Gates
 
 **Stage 1 (Spec Compliance):**
+
 - [ ] All blueprint requirements met
 - [ ] No extra features
 - [ ] Portability confirmed
 
 **Stage 2 (Quality):**
+
 - [ ] Seed System patterns followed
 - [ ] Code quality standards met
 - [ ] Documentation complete
 - [ ] Tests comprehensive
 
 **Final Verification:**
+
 - [ ] Fresh test run (verification-before-completion)
 - [ ] All evidence collected
 - [ ] Confidence score calculated
@@ -241,16 +261,19 @@ ralph_validated/
 ### vs Single Review
 
 **Spec compliance first:**
+
 - Catches blueprint violations early
 - Prevents over/under-building
 - Ensures requirements are met
 
 **Quality review second:**
+
 - Validates building quality
 - Checks Seed System adherence
 - Ensures maintainability
 
 **Both stages:**
+
 - Systematic verification
 - Fresh perspective at each stage
 - Higher confidence in results
@@ -258,16 +281,19 @@ ralph_validated/
 ### vs Manual Review
 
 **Consistency:**
+
 - Same criteria every time
 - Systematic verification
 - No missed checks
 
 **Speed:**
+
 - Parallel-safe (subagents don't interfere)
 - Fresh context per stage
 - Review loops until approved
 
 **Quality:**
+
 - Independent verification
 - Evidence-based reporting
 - Zero tolerance for issues
@@ -305,6 +331,7 @@ Task("Review Quality: my-skill", {
 ## Red Flags
 
 **Never:**
+
 - Skip stages (spec OR quality)
 - Proceed with unfixed issues
 - Start quality review before spec compliance passes
@@ -312,11 +339,13 @@ Task("Review Quality: my-skill", {
 - Skip review loops (issues found = fix = re-review)
 
 **If issues found:**
+
 - Builder (same subagent) fixes them
 - Reviewer reviews again
 - Repeat until approved
 
 **If subagent fails:**
+
 - Dispatch fix subagent with specific instructions
 - Don't try to fix manually (context pollution)
 

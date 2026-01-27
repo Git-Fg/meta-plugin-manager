@@ -1,6 +1,6 @@
 ---
 name: root-cause-analysis
-description: "Drill down to root causes by asking 'why' iteratively. Use when: investigating bugs, analyzing failures, debugging complex problems, preventing recurrence. Trigger phrases: 'root cause', 'why did this happen', 'find the real issue'."
+description: "Drill down to root causes using '5 Whys'. Use when: You need to understand the fundamental issue behind a symptom or prevent recurrence. Not for: Simple bugs with obvious causes, multiple independent causes (use fishbone), or non-recurrable one-offs."
 ---
 
 # Root Cause Analysis
@@ -31,6 +31,27 @@ Use this methodology when:
 ## Step-by-Step Process
 
 ### The 5 Whys Chain
+
+<logic_flow>
+digraph FiveWhys {
+    rankdir=TD;
+    node [shape=box];
+    Problem [label="Symptom" style=filled fillcolor=lightpink];
+    Why1 [label="Why 1?"];
+    Why2 [label="Why 2?"];
+    Why3 [label="Why 3?"];
+    Why4 [label="Why 4?"];
+    Root [label="Root Cause" style=filled fillcolor=lightgreen];
+    Action [label="Action Item" shape=note];
+
+    Problem -> Why1;
+    Why1 -> Why2;
+    Why2 -> Why3;
+    Why3 -> Why4;
+    Why4 -> Root;
+    Root -> Action [style=dashed];
+}
+</logic_flow>
 
 Start with the problem and ask "why" repeatedly:
 

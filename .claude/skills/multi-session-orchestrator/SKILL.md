@@ -1,6 +1,6 @@
 ---
 name: multi-session-orchestrator
-description: "Test TaskList persistence across multiple Claude Code sessions. Use when: user mentions 'cross-session', 'long-running workflows', 'persist state'; workflows that span multiple sessions; need to test persistence behavior. Not for: single-session workflows, short tasks that complete in one session."
+description: "Orchestrate multi-session workflows. Use when: Tasks span multiple sessions or require state persistence. Not for: Single-session tasks or simple scripts."
 ---
 
 # Multi-Session Orchestration

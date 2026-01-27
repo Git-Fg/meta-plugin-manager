@@ -1,5 +1,6 @@
 ---
 description: "List all skills in the project with their names and descriptions. Use when: user mentions 'list skills', 'show all skills', 'what skills are available', needs to see skill inventory."
+disable-model-invocation: true
 ---
 
 # Skills Inventory

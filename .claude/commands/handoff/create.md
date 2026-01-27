@@ -1,7 +1,7 @@
 ---
 name: handoff
 description: Create structured handoff document for pausing work and resuming in fresh context. Preserves task boundaries, work completed, work remaining, and critical context.
-disable-model-invocation: false
+disable-model-invocation: true
 allowed-tools: ["Read", "Write", "Bash", "TaskList"]
 ---
 

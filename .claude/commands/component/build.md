@@ -1,5 +1,6 @@
 ---
 description: Orchestrate the development of components by invoking the appropriate xxx-development skill
+disable-model-invocation: true
 ---
 
 # Component Build Orchestration

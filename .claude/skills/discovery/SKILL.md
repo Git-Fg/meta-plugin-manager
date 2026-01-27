@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: Transform vague ideas into detailed specifications through systematic interviews with knowledge gap detection
+description: "Conduct discovery interviews. Use when: Gathering requirements, clarifying vague ideas, or creating detailed specifications. Not for: Execution or simple partial updates."
 user-invocable: true
 ---
 

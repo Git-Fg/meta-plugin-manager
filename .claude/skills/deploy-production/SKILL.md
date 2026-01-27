@@ -1,6 +1,6 @@
 ---
 name: deploy-production
-description: "Deploy application to production with proper safety checks and verification."
+description: "Deploy to production. Use when: Releasing code to production environments with safety checks. Not for: Staging deploys or local builds (unless specifically requested)."
 disable-model-invocation: true
 user-invocable: true
 context: fork
@@ -30,6 +30,30 @@ Deploy application to production with comprehensive safety checks.
 **DO NOT PROCEED** unless ALL items are verified.
 
 ## Deployment Process
+
+<logic_flow>
+digraph Deployment {
+    rankdir=TD;
+    node [shape=box];
+    Verify [label="1. Verify Checklist"];
+    Build [label="2. Build & Test"];
+    Docker [label="3. Build Docker"];
+    Push [label="4. Push Registry"];
+    Deploy [label="5. Apply K8s"];
+    Check [label="6. Verify Health"];
+    Success [label="Deployment Success" style=filled fillcolor=lightgreen];
+    Rollback [label="Rollback Procedure" style=filled fillcolor=lightpink];
+
+    Verify -> Build;
+    Build -> Docker;
+    Docker -> Push;
+    Push -> Deploy;
+    Deploy -> Check;
+    Check -> Success [label="Health OK"];
+    Check -> Rollback [label="Errors"];
+    Rollback -> Verify [label="Fix & Retry"];
+}
+</logic_flow>
 
 ### 1. Pre-Deployment Verification
 Complete the checklist above and verify all systems are ready.

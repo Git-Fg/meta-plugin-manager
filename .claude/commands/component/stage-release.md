@@ -1,6 +1,6 @@
 ---
 description: "Move a validated Ralph artifact from staging to production"
-disable-model-invocation: false
+disable-model-invocation: true
 ---
 
 # Stage Validated Artifact

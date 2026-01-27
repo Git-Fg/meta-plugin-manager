@@ -1,7 +1,7 @@
 ---
 name: create-prompt
 description: Generate structured prompts using markdown. Separate analysis from execution - first clarify requirements, then generate rigorous specification prompts for delegation to fresh contexts.
-disable-model-invocation: false
+disable-model-invocation: true
 allowed-tools: ["AskUserQuestion", "Read", "Write", "Bash"]
 ---
 

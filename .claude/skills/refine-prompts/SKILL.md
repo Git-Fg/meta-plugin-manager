@@ -1,6 +1,6 @@
 ---
 name: refine-prompts
-description: "Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology. Use when: user mentions 'refine', 'clarify', 'make better'; vague or unclear instructions; need structured, actionable format. Not for: already precise prompts, simple tool requests."
+description: "Refine prompts. Use when: User asks to clarify or improve instructions, or when input is vague. Not for: Already clear prompts or simple questions."
 user-invocable: true
 ---
 

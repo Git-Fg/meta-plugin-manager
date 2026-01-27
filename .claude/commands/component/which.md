@@ -57,30 +57,16 @@ User: /component-architect:which I need a deploy command
 
 ## Routing Logic
 
-### 1. Detect High-Stakes Operations
-- **Keywords**: deploy, commit, audit, release, push to production
-- **Component Type**: Command
-- **Why**: High-stakes operations need human confirmation gates
-
-### 2. Detect Model-First Capabilities
-- **Keywords**: reusable, workflow, process, checklist, reference
-- **Component Type**: Skill
-- **Why**: Model-first capabilities for automatic/recursive use
-
-### 3. Detect Autonomous Operation
-- **Keywords**: independently, background, autonomous, isolated
-- **Component Type**: Agent
-- **Why**: Independent operation with separate context requirements
-
-### 4. Detect Event-Driven Automation
-- **Keywords**: automatically, on [event], trigger, before/after
-- **Component Type**: Hook
-- **Why**: Event-driven automation on specific triggers
-
-### 5. Detect Service Provider
-- **Keywords**: interface, API, database, gateway, expose to
-- **Component Type**: MCP
-- **Why**: Service that provides tools/capabilities to other components
+<decision_tree>
+digraph SelectComponent {
+    Request -> Keywords;
+    Keywords -> Command [label="deploy, commit, audit"];
+    Keywords -> Agent [label="autonomous, loop, monitor"];
+    Keywords -> Hook [label="prevent, on-event"];
+    Keywords -> MCP [label="api, database"];
+    Keywords -> Skill [label="default / reusable logic"];
+}
+</decision_tree>
 
 ## Component Type Mapping
 

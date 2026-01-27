@@ -1,6 +1,6 @@
 ---
 name: file-search
-description: "MUST use when looking for patterns and in completion with native tools to investigate and find any kind of info in the codebase. Modern file search using fd, ripgrep (rg), and fzf for large codebases. Hierarchy: ripgrep (90% content search), fd (8% file discovery), fzf (2% interactive selection)."
+description: "Search for files and content. Use when: Investigating codebase, finding patterns, or locating specific files. Not for: Reading file content (use view_file) or simple directory listing."
 user-invocable: true
 ---
 

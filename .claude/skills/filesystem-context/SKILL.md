@@ -1,6 +1,6 @@
 ---
 name: filesystem-context
-description: Filesystem-based context engineering for unlimited context capacity. Apply when offloading context to files, implementing dynamic context discovery, or reducing context window bloat.
+description: "Manage filesystem context. Use when: Offloading large context to files, persisting state between sessions, or reducing token usage. Not for: Small temporary data or in-memory variables."
 ---
 
 # Filesystem-Based Context Engineering

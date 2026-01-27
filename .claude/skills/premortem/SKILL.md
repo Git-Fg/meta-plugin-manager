@@ -1,6 +1,6 @@
 ---
 name: premortem
-description: Identify failure modes before they occur using structured risk analysis
+description: "Identify failure modes before they occur. Use when: Reviewing plans, designs, or PRs to catch risks early. Not for: Post-incident analysis (use root-cause-analysis) or debugging active issues."
 user-invocable: true
 ---
 

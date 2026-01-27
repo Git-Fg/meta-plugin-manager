@@ -1,6 +1,6 @@
 ---
 name: simplification-principles
-description: "Find the simplest explanation that accounts for all facts. Use when: debugging complex issues, evaluating competing theories, designing solutions, analyzing behavior. Trigger phrases: 'simplest explanation', 'too complex', 'find the simplest way'."
+description: "Apply simplification principles (Occam's Razor). Use when: Debugging complex issues, evaluating competing theories, or simplifying designs. Not for: Ignoring necessary complexity or oversimplifying."
 ---
 
 # Simplification Principles

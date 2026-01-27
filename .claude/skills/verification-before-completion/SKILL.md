@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - enforces evidence-based verification discipline with Iron Law enforcement
+description: "Verify work before claiming completion. Use when: You are about to finish a task, commit code, or claim a fix. Not for: Assumption-based completion or skipping verification evidence."
 ---
 
 # Verification Before Completion

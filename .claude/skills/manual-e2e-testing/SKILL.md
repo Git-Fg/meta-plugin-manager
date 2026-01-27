@@ -1,6 +1,6 @@
 ---
 name: manual-e2e-testing
-description: "Appium MCP and Dart MCP testing workflows with hot reload and widget tree analysis. Use when: user mentions 'E2E testing', 'Flutter app', 'validate element states'; need to verify UI changes programmatically; testing mobile app workflows; validating UI state changes through text; verifying element presence programmatically. Not for: visual testing with screenshots, manual app exploration."
+description: "Run manual E2E tests using MCPs. Use when: You need to verify Flutter/mobile app behavior using Appium and Dart MCPs. Not for: Screenshot-based testing or non-mobile E2E."
 user-invocable: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: api-endpoint-builder
-description: "Build REST API endpoints following security and performance best practices. Use when implementing API routes, designing endpoints, or adding handlers."
+description: "Build REST API endpoints. Use when: Designing or implementing API routes with security best practices. Not for: Client-side fetching or non-API logic."
 context: fork
 agent: Plan
 allowed-tools: Read, Write, Edit, Bash

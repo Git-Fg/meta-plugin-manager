@@ -1,6 +1,6 @@
 ---
 name: ci-pipeline-manager
-description: "Test TaskList error handling and recovery behavior with CI pipelines. Use when: tasks with dependencies that should block on failure, complex error recovery scenarios, user mentions 'CI pipeline', 'error handling', 'failure recovery', need to validate cleanup and blocking behavior. Not for: simple linear pipeline with no dependencies, testing individual task execution."
+description: "Manage CI pipelines. Use when: Testing pipeline error handling, recovery, or complex dependencies. Not for: Simple linear scripts or unit testing individual tasks."
 context: fork
 ---
 
@@ -9,6 +9,23 @@ context: fork
 Test TaskList error handling and recovery behavior with CI pipelines.
 
 ## Pipeline Architecture
+
+<logic_flow>
+digraph Pipeline {
+    rankdir=LR;
+    node [shape=box];
+    Tests [label="1. run-tests"];
+    Build [label="2. build"];
+    Deploy [label="3. deploy"];
+    Cleanup [label="4. cleanup-on-failure" style=filled fillcolor=lightgrey];
+
+    Tests -> Build [label="Pass"];
+    Build -> Deploy [label="Success"];
+    Tests -> Cleanup [label="Fail"];
+    
+    {rank=same; Tests; Cleanup}
+}
+</logic_flow>
 
 **Four-task pipeline with error handling:**
 

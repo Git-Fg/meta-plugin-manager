@@ -1,6 +1,6 @@
 ---
 name: ralph-cli
-description: "Ralph CLI command reference: all commands, options, and syntax. Use when: user asks 'ralph help', 'ralph commands', 'ralph cli reference', or any Ralph CLI usage question. Includes complete command tables, options, and syntax examples. NOT for: workflow design or execution monitoring."
+description: "Consult Ralph CLI reference. Use when: User asks about commands, syntax, or options for Ralph CLI. Not for: Workflow design or execution monitoring."
 ---
 
 # Ralph CLI: Command Reference

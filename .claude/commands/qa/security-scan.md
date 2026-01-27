@@ -2,6 +2,7 @@
 name: security-scan
 description: "Execute predefined security scans and display results. Use when: user mentions 'qa/security-scan', '/scan-security', 'quick security check'; performing routine security audits; getting rapid vulnerability assessment. Integrates with security-auditor agent for comprehensive analysis. Not for: deep security reviews (use agent directly)."
 user-invocable: true
+disable-model-invocation: true
 ---
 
 # Security Scan Command

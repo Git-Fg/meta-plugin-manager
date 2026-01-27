@@ -48,7 +48,7 @@ Task tool (general-purpose):
     Review your work with fresh eyes. Ask yourself:
 
     **Portability:**
-    - Does this work without external .claude/rules dependencies?
+    - Does this work without external dependencies?
     - Is all context bundled in the component?
     - Would this work in a fresh project with zero context?
 

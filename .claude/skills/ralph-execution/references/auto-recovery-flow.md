@@ -36,40 +36,17 @@ tail -f .ralph/latest.log &
 
 ## Recovery Flow Diagram
 
-```mermaid
-flowchart TD
-    START([Ralph Running]) --> STATE_INSPECT{State Inspection}
-    STATE_INSPECT -->|ralph events list| EVENT_FLOW{Event Flow OK?}
-    STATE_INSPECT -->|ralph tools task ready| TASK_QUEUE{Task Queue OK?}
-
-    EVENT_FLOW -->|Yes| INVARIANT_CHECK{Invariants Pass?}
-    EVENT_FLOW -->|No: Deadlock| DIAGNOSE1[Diagnose State]
-    EVENT_FLOW -->|No: Broken Flow| DIAGNOSE1
-
-    TASK_QUEUE -->|Yes| INVARIANT_CHECK
-    TASK_QUEUE -->|No: Stuck| DIAGNOSE1
-
-    INVARIANT_CHECK -->|Yes| CONTINUE([Continue Monitoring])
-    INVARIANT_CHECK -->|No| DIAGNOSE1
-
-    DIAGNOSE1 --> IDENTIFY[Identify Root Cause]
-    IDENTIFY --> INJECT[Inject Fix via Task Add]
-
-    INJECT -->|ralph tools task add<br/>"Fix: diagnosis" -p 1| PROCESS[Ralph Processes Fix]
-
-    PROCESS --> SUCCESS{Fix Applied?}
-    SUCCESS -->|Yes| STATE_INSPECT
-    SUCCESS -->|No| ESCALATE[Escalate to Main Agent]
-
-    CONTINUE --> STATE_INSPECT
-    ESCALATE --> STOP([Manual Intervention Required])
-
-    style STATE_INSPECT fill:#e1f5fe
-    style INJECT fill:#c8e6c9
-    style PROCESS fill:#fff9c4
-    style ESCALATE fill:#ffccbc
-    style CONTINUE fill:#e8f5e9
-```
+<recovery_logic>
+digraph AutoRecovery {
+    Monitor -> DetectIssue;
+    DetectIssue -> CheckFlow [label="No Events"];
+    CheckFlow -> InjectFix [label="Deadlock"];
+    DetectIssue -> CheckInvariant [label="Events OK"];
+    CheckInvariant -> InjectGuidance [label="Logic Error"];
+    InjectFix -> Monitor;
+    InjectGuidance -> Monitor;
+}
+</recovery_logic>
 
 ## State Inspection Phase
 

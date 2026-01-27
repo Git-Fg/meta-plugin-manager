@@ -1,6 +1,6 @@
 ---
 name: inversion-thinking
-description: "Solve problems backwards by thinking about what guarantees failure, then avoid those things. Use when: forward thinking isn't yielding solutions, want to identify risks, consensus difficult. Trigger phrases: 'think backwards', 'approach from opposite', 'avoid failure'."
+description: "Solve problems by thinking backwards. Use when: Forward thinking is stuck, you need to identify risks, or find non-obvious solutions. Not for: Straightforward implementation tasks or simple bug fixes."
 ---
 
 # Inversion Thinking

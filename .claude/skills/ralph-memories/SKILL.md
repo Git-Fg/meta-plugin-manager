@@ -1,6 +1,6 @@
 ---
 name: ralph-memories
-description: "Use when discovering codebase patterns, making architectural decisions, solving recurring problems, or learning project-specific context that should persist across sessions"
+description: "Manage persistent memories. Use when: Storing or retrieving patterns, decisions, and fixes across sessions. Not for: Temporary scratchpad or session-specific state."
 ---
 
 # Ralph Memories

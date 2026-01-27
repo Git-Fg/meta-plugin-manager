@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before attempting fixes - enforces 4-phase root cause investigation with Iron Law discipline
+description: "Enforce systematic debugging discipline. Use when: You encounter bugs, test failures, or unexpected behavior. Not for: Quick patches, partial fixes, or ignoring root causes."
 ---
 
 # Systematic Debugging
@@ -20,6 +20,19 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 ```
 
 If you haven't completed Phase 1, you cannot propose fixes.
+
+<debug_protocol>
+digraph IronLaw {
+    RootCause -> Pattern;
+    Pattern -> Hypothesis;
+    Hypothesis -> TestMinimal;
+    TestMinimal -> Implementation [label="Confirmed"];
+    TestMinimal -> Hypothesis [label="Failed"];
+    Implementation -> Verify;
+    Verify -> RootCause [label="Regression"];
+    Verify -> Done [label="Success"];
+}
+</debug_protocol>
 
 ## When to Use
 

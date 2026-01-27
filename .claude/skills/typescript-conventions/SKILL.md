@@ -1,6 +1,6 @@
 ---
 name: typescript-conventions
-description: "TypeScript conventions for this team. Use when writing TypeScript. Auto-applies team conventions without explicit invocation."
+description: "Apply TypeScript conventions. Use when: Writing or refactoring TypeScript code to ensure type safety and consistency. Not for: JavaScript or other languages."
 user-invocable: false
 ---
 

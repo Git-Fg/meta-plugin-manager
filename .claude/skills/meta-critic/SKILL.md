@@ -1,6 +1,6 @@
 ---
 name: meta-critic
-description: "Audit conversation alignment between requests, actions, and knowledge standards. Use when: quality check needed, workflow validation, standards compliance review, detecting drift. Not for creating content or executing tasks."
+description: "Audit conversation alignment. Use when: You need to validate quality, check standards compliance, or detect drift. Not for: Creating content, executing tasks, or simple status checks."
 user-invocable: true
 ---
 

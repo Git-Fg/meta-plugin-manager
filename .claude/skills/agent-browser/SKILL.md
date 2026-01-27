@@ -1,6 +1,6 @@
 ---
 name: agent-browser
-description: "Browser automation for JavaScript-rendered content, form interactions, visual testing, and multi-step workflows. Use when: content requires JavaScript execution, form submission/validation needed, visual verification required, multi-step workflows with state, user mentions 'browser', 'web', 'form', 'login', 'click', 'screenshot'. Not for: static HTML retrieval, API calls, documentation gathering (use fetch tools)."
+description: "Automate browser interactions. Use when: You need to execute JS, submit forms, or test visual workflows. Not for: Static HTML scraping or simple API calls."
 user-invocable: true
 ---
 

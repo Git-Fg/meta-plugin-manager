@@ -1,6 +1,6 @@
 ---
 name: tdd-workflow
-description: Test-Driven Development workflow with 80% coverage gate. Use when: writing new features, fixing bugs, refactoring code, adding API endpoints, creating components. Enforces RED→GREEN→REFACTOR cycle with comprehensive test coverage.
+description: "Apply Test-Driven Development (TDD). Use when: Writing new features, fixing bugs, or refactoring. Not for: Prototyping, 'test-after' workflows, or skipping the Red-Green-Refactor cycle."
 ---
 
 # Test-Driven Development Workflow
@@ -63,18 +63,20 @@ Implement fresh from tests. Period.
 
 ### RED → GREEN → REFACTOR Cycle
 
-```
-┌─────────────────────────────────────────┐
-│                                         │
-│   ┌─────────┐    ┌─────────┐    ┌─────┐ │
-│   │   RED   │───▶│  GREEN  │───▶│ REFACTOR│
-│   └─────────┘    └─────────┘    └─────┘ │
-│      Write         Make          Clean  │
-│      failing       tests         up     │
-│      test          pass          code   │
-│                                         │
-└─────────────────────────────────────────┘
-```
+<logic_flow>
+<tdd_cycle>
+digraph TDD {
+    WriteTest -> RunTest;
+    RunTest -> WriteCode [label="Fail (Red)"];
+    RunTest -> RewriteTest [label="Pass (Bad Test)"];
+    WriteCode -> RunTest2;
+    RunTest2 -> Refactor [label="Pass (Green)"];
+    RunTest2 -> WriteCode [label="Fail"];
+    Refactor -> RunTest3;
+    RunTest3 -> Done [label="Pass"];
+}
+</tdd_cycle>
+</logic_flow>
 
 **MANDATORY**: Never skip phases. Never write code before tests.
 

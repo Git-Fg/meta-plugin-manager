@@ -1,6 +1,6 @@
 ---
 name: first-principles-thinking
-description: "Break down problems to fundamental truths and rebuild from scratch. Use when: stuck with conventional solutions, need to innovate, problems seem unsolvable, want root understanding. Trigger phrases: 'analyze from first principles', 'break down to fundamentals', 'challenge assumptions'."
+description: "Break down problems to fundamental truths. Use when: Conventional solutions fail, you need innovation, or want to challenge assumptions. Not for: Standard problems with known good solutions or minor optimizations."
 ---
 
 # First Principles Thinking

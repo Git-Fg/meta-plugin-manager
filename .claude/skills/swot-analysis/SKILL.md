@@ -1,6 +1,6 @@
 ---
 name: swot-analysis
-description: "Analyze internal strengths and weaknesses, plus external opportunities and threats. Use when: making strategic decisions, evaluating competitive position, planning initiatives. Trigger phrases: 'analyze options', 'evaluate position', 'strategic decision'."
+description: "Analyze Strengths, Weaknesses, Opportunities, and Threats. Use when: You need to make strategic decisions, evaluate positions, or plan initiatives. Not for: Simple technical choices, debugging, or tactical execution."
 ---
 
 # SWOT Analysis

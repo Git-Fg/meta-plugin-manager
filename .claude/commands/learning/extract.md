@@ -46,6 +46,7 @@ Use functional patterns over classes when appropriate.
 ```
 
 **Properties:**
+
 - **Atomic** — one trigger, one action
 - **Confidence-weighted** — 0.3 = tentative, 0.9 = near certain
 - **Domain-tagged** — code-style, testing, git, debugging, workflow
@@ -53,19 +54,21 @@ Use functional patterns over classes when appropriate.
 
 ### Confidence Scoring
 
-| Score | Meaning | Behavior |
-|-------|---------|----------|
-| 0.3 | Tentative | Suggested but not enforced |
-| 0.5 | Moderate | Applied when relevant |
-| 0.7 | Strong | Auto-approved for application |
-| 0.9 | Near-certain | Core behavior, always apply |
+| Score | Meaning      | Behavior                      |
+| ----- | ------------ | ----------------------------- |
+| 0.3   | Tentative    | Suggested but not enforced    |
+| 0.5   | Moderate     | Applied when relevant         |
+| 0.7   | Strong       | Auto-approved for application |
+| 0.9   | Near-certain | Core behavior, always apply   |
 
 **Confidence increases** when:
+
 - Pattern is repeatedly observed
 - User doesn't correct the suggested behavior
 - Similar instincts from other sources agree
 
 **Confidence decreases** when:
+
 - User explicitly corrects the behavior
 - Pattern isn't observed for extended periods
 - Contradicting evidence appears
@@ -89,22 +92,26 @@ evolved/ (skills/commands/agents)
 ### ✅ DO Extract
 
 **Error Resolution Patterns**:
+
 - What error occurred?
 - What was the root cause?
 - What fixed it?
 - Is this reusable for similar errors?
 
 **Debugging Techniques**:
+
 - Non-obvious debugging steps
 - Tool combinations that worked
 - Diagnostic patterns
 
 **Workarounds**:
+
 - Library quirks
 - API limitations
 - Version-specific fixes
 
 **Project-Specific Patterns**:
+
 - Codebase conventions discovered
 - Architecture decisions made
 - Integration patterns
@@ -120,19 +127,22 @@ evolved/ (skills/commands/agents)
 
 ### v1: Full Skills (Traditional)
 
-```markdown
+````markdown
 # [Descriptive Pattern Name]
 
 **Extracted:** [Date]
 **Context:** [Brief description of when this applies]
 
 ## Problem
+
 [What problem this solves - be specific]
 
 ## Solution
+
 [The pattern/technique/workaround]
 
 ## Example
+
 [Code example if applicable]
 
 ### v2: Atomic Instincts (New)
@@ -149,23 +159,30 @@ source: "session-observation"
 # [Pattern Name]
 
 ## Action
+
 [What to do when this pattern triggers]
 
 ## Evidence
+
 - [Observation 1]
 - [Observation 2]
 - [User correction/confirmation]
 ```
+````
 
 ## Output Location
 
 Patterns are saved to:
+
 ```
-.claude/skills/learned/[pattern-name].md          # v1 skills
-.claude/instincts/personal/[pattern-name].md  # v2 instincts
+.claude/skills/learned/[pattern-name].md                    # v1 skills
+~/.claude/homunculus/instincts/personal/[pattern-name].md  # v2 instincts
 ```
 
-**Local-first approach**: Patterns are saved to the **project's** `.claude/skills/learned/` directory, not to a global location.
+**Storage approach:**
+
+- v1 skills → project-specific (`.claude/skills/learned/`)
+- v2 instincts → user-wide (`~/.claude/homunculus/instincts/personal/`) for cross-session learning
 
 ## Extraction Process
 
@@ -180,7 +197,9 @@ Patterns are saved to:
 
 ### For Atomic Instincts (v2)
 
-1. **Observe session** - Track patterns throughout conversation (via hooks or manual)
+1. **Observe session** - Track patterns throughout conversation:
+   - **Hook-based observations** (automatic, 100% reliable via PostToolUse hook)
+   - Manual observations during extraction
 2. **Extract instincts** - Identify atomic behaviors:
    - User corrections → instinct
    - Error resolutions → instinct
@@ -191,7 +210,9 @@ Patterns are saved to:
    - 0.7: Confirmed pattern, high reliability
    - 0.9: Core behavior, always apply
 4. **Tag domains** - Code-style, testing, git, debugging, workflow
-5. **Save instincts** - Write to `~/.claude/instincts/personal/`
+5. **Save instincts** - Write to `~/.claude/homunculus/instincts/personal/`
+
+**Note:** Hook-based observations are automatically captured to `~/.claude/homunculus/observations.jsonl` and can be processed by the learning-observer agent for pattern detection.
 
 ## Evolution Path
 
@@ -227,38 +248,43 @@ Patterns are saved to:
 
 ## Example Extracted Skill (v1)
 
-```markdown
+````markdown
 # Supabase Connection Timeout Fix
 
 **Extracted:** 2024-01-15
 **Context:** Supabase connections timing out after 30s during development
 
 ## Problem
+
 Supabase database connections were timing out after 30 seconds when the database was under load. Default connection timeout was too short.
 
 ## Solution
+
 Increase connection timeout in Supabase client configuration:
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   {
-    db: { schema: 'public' },
+    db: { schema: "public" },
     global: {
-      timeout: 60000  // 60 seconds instead of default 30s
-    }
-  }
-)
+      timeout: 60000, // 60 seconds instead of default 30s
+    },
+  },
+);
 ```
+````
 
 ## When to Use
+
 - When Supabase connections timeout during development
 - When database queries take longer than 30 seconds
 - When working with large datasets
-```
+
+````
 
 ## Example Instinct (v2)
 
@@ -280,12 +306,14 @@ When Supabase connection times out, increase timeout in client configuration:
 global: {
   timeout: 60000  // 60 seconds instead of default 30s
 }
-```
+````
 
 ## Evidence
+
 - Observed 3 instances of timeout errors in development
 - User confirmed fix resolved issue (2025-01-15)
 - Pattern consistent across Supabase projects
+
 ```
 
 ## Quality Checklist
@@ -313,3 +341,4 @@ This command does not interpret special arguments. Everything after `learning/ex
 - Domain: "code-style", "testing", "git", "debugging", "workflow"
 - Minimum confidence: "0.7" (only high-confidence patterns)
 - Focus area: "focus on debugging techniques"
+```

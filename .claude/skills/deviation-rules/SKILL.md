@@ -1,6 +1,6 @@
 ---
 name: deviation-rules
-description: Automatic handling of discovered work during plan execution with 5 rule categories. Auto-fix bugs, add missing critical, fix blockers, ask about architectural changes, log enhancements. Full transparency via SUMMARY.md.
+description: "Handle unexpected work during execution. Use when: You encounter bugs, missing critical features, blockers, or potential architectural changes while executing a plan. Not for: Initial planning or non-execution contexts."
 disable-model-invocation: false
 allowed-tools: ["Read", "Write", "Edit", "Bash", "AskUserQuestion"]
 ---
@@ -203,12 +203,26 @@ All deviations are documented in `SUMMARY.md`:
 
 When encountering unexpected work:
 
+<router>
+flowchart TD
+    Start([Unexpected Work]) --> Type{Classify Type}
+    Type -- Bug --> Rule1[Rule 1: Auto-Fix]
+    Type -- Missing Critical --> Rule2[Rule 2: Add Critical]
+    Type -- Blocker --> Rule3[Rule 3: Fix Blocker]
+    Type -- Architectural --> Rule4[Rule 4: Ask User]
+    Type -- Enhancement --> Rule5[Rule 5: Log It]
+    
+    Rule1 --> Doc[Document in SUMMARY.md]
+    Rule2 --> Doc
+    Rule3 --> Doc
+    Rule4 --> Wait[Wait for Decision]
+    Rule5 --> Doc
+    
+    Doc --> Continue[Continue Execution]
+    Wait --> Continue
+</router>
+
 1. **Classify the deviation type**
-   - Bug? → Rule 1 (auto-fix)
-   - Missing critical? → Rule 2 (add it)
-   - Blocker? → Rule 3 (fix it)
-   - Architectural? → Rule 4 (ask user)
-   - Enhancement? → Rule 5 (log it)
 
 2. **Apply the appropriate rule**
    - Execute the rule's action
