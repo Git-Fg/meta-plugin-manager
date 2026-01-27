@@ -1,7 +1,15 @@
 ---
 name: create-plans
-description: "Create project plans. Use when: Planning projects, phases, or tasks for agent execution. Not for: Enterprise documentation or non-actionable planning."
+description: "Create project plans when planning projects, phases, or tasks for agent execution. Not for enterprise documentation or non-actionable planning."
 ---
+
+<mission_control>
+<objective>Create hierarchical project plans (brief → roadmap → phase → PLAN.md) for solo agentic development</objective>
+<success_criteria>Generated PLAN.md is self-contained executable prompt with verification criteria and handoff support</success_criteria>
+</mission_control>
+
+<interaction_schema>
+explore → infer → ask_one → write_plan → confirm_execution</interaction_schema>
 
 # Create Plans
 
@@ -159,19 +167,19 @@ Monitor token usage via system warnings.
 
 ### User Gates
 
-Never charge ahead at critical decision points. Use gates:
+**CRITICAL: Questions should funnel to answers, not scatter throughout.**
 
-- **AskUserQuestion**: Structured choices (2-4 options)
-- **Inline questions**: Simple confirmations
-- **Decision gate loop**: "Ready, or ask more questions?"
+Ask questions one at a time, interleaved with exploration/tool use, to narrow down context. Once the funnel reaches a decision, stop asking and proceed.
 
-**Mandatory gates:**
+**Question flow:**
 
-- Before writing PLAN.md (confirm breakdown)
-- After low-confidence research
-- On verification failures
-- After phase completion with issues
-- Before starting next phase with previous issues
+1. **EXPLORE first** - Read all files, analyze codebase, check git history
+2. **INFER** - Try to infer answers from exploration
+3. **If unclear, ASK ONE** - Ask a focused question, use tools to explore response, ask follow-up if needed
+4. **Once clear, STOP** - Don't keep asking once context is sufficient
+5. **CONFIRM** - Single final question about invoking execution
+
+**Never scatter questions** throughout workflow. Ask once, funnel to answer, proceed.
 
 See: `references/user-gates.md`
 
@@ -188,35 +196,90 @@ See: `references/git-integration.md`
 
 ---
 
-## Context Scan
+## EXPLORE Phase
 
-**Run on every invocation** to understand current state:
+**Before asking ANY question, exhaust all exploration.**
+
+**Rule**: If answer exists in any file or can be reasonably inferred from patterns, DON'T ask.
+
+### Exploration Steps
+
+| Step                      | Action                                                      | Goal                                        |
+| ------------------------- | ----------------------------------------------------------- | ------------------------------------------- |
+| 1. Read existing context  | Read BRIEF.md, ROADMAP.md, FINDINGS.md, previous SUMMARY.md | Project vision, phase structure, prior work |
+| 2. Analyze codebase       | Glob source files, read key files, check package.json       | Current implementation, patterns used       |
+| 3. Check git history      | `git log --oneline -5`, `git diff HEAD~1`                   | What was just done, current state           |
+| 4. Apply domain expertise | Use loaded expertise patterns                               | Standard approaches for this domain         |
+| 5. Analyze user request   | Extract implicit context from original request              | Constraints, priorities, tone               |
+
+### Context Scan (Quick Check)
+
+Run on every invocation to understand current state:
 
 ```bash
 # Check git status
 git rev-parse --git-dir 2>/dev/null || echo "NO_GIT_REPO"
 
 # Check for planning structure
-ls -la .planning/ 2>/dev/null
-ls -la .planning/phases/ 2>/dev/null
+ls -la .claude/workspace/planning/ 2>/dev/null
+ls -la .claude/workspace/planning/phases/ 2>/dev/null
 
 # Find any continue-here files
 find . -name ".continue-here.md" -type f 2>/dev/null
 
 # Check for existing artifacts
-[ -f .planning/BRIEF.md ] && echo "BRIEF: exists"
-[ -f .planning/ROADMAP.md ] && echo "ROADMAP: exists"
+[ -f .claude/workspace/planning/BRIEF.md ] && echo "BRIEF: exists"
+[ -f .claude/workspace/planning/ROADMAP.md ] && echo "ROADMAP: exists"
 ```
 
-**If NO_GIT_REPO detected:**
-Inline question: "No git repo found. Initialize one? (Recommended for version control)"
-If yes: `git init`
-
-**Present findings before intake question.**
+**If NO_GIT_REPO detected:** Proceed with exploration first. Only ask about git init AFTER exploration if context is still unclear.
 
 ---
 
-## Domain Expertise
+## INFER Phase
+
+Try to infer answers from exploration before asking:
+
+| Question              | Can Infer If...                      | Won't Ask If...                  |
+| --------------------- | ------------------------------------ | -------------------------------- |
+| What are we building? | BRIEF.md clearly describes project   | BRIEF.md exists and is clear     |
+| Which phase to plan?  | First incomplete phase in ROADMAP    | ROADMAP.md exists, phase obvious |
+| Task breakdown        | Domain expertise + codebase patterns | Standard patterns exist          |
+| Approach choices      | Tech stack in BRIEF + codebase       | Convention established           |
+| Constraints           | Git history + recent work            | Recently completed similar work  |
+
+**Decision Tree**:
+
+```
+All answers inferred? → Proceed to WRITE (0 questions)
+Some answers unclear? → ASK ONE focused question (1 AskUserQuestion, then explore response)
+```
+
+---
+
+## ASK ONE Phase
+
+Only if context is unclear after EXPLORE + INFER, ask ONE focused question.
+
+**Always provide actionable propositions** - numbered options that let the user recognize and select, not type. Include all context needed so user can validate understanding without additional questions.
+
+**After user responds:** Explore/verify their answer, then proceed without asking more questions.
+
+---
+
+## Intake
+
+Based on EXPLORE + INFER results, present context-aware options with numbered selections:
+
+- **Handoff found**: Offer resume, discard, or different action
+- **Planning structure exists**: Offer plan next, execute, handoff, view roadmap, or other
+- **No structure**: Offer start new, create roadmap from brief, jump to phase, or guidance
+
+**After routing to workflow, the workflow handles EXPLORE → INFER → ASK ONE → WRITE → CONFIRM.**
+
+---
+
+## Routing
 
 **Domain expertise lives in `~/.claude/skills/expertise/`**
 
@@ -246,34 +309,11 @@ If user's request contains domain keywords, INFER the domain:
 | "Python automation", "workflow", "API integration", "webhooks", "Celery", "Airflow", "Prefect"                                            | expertise/python-workflow-automation |
 | "UI", "design", "frontend", "interface", "responsive", "visual design", "landing page", "website design", "Tailwind", "CSS", "web design" | expertise/ui-design                  |
 
-If domain inferred, confirm:
-
-```
-Detected: [domain] project → expertise/[skill-name]
-Load this expertise for planning? (Y / see other options / none)
-```
+If domain inferred, ask user to confirm with actionable options.
 
 ### No Inference
 
-If no domain obvious from request, present options:
-
-```
-What type of project is this?
-
-Available domain expertise:
-1. macos-apps - Native macOS with Swift/SwiftUI
-2. iphone-apps - Native iOS with Swift/SwiftUI
-3. unity-games - Unity game development
-4. swift-midi-apps - MIDI/audio apps
-5. with-agent-sdk - Claude Agent SDK apps
-6. ui-design - Stunning UI/UX design & frontend development
-[... any others found in expertise/]
-
-N. None - proceed without domain expertise
-C. Create domain skill first
-
-Select:
-```
+If no domain obvious from request, present available expertise options for selection.
 
 ### Load Domain
 
@@ -339,48 +379,11 @@ Domain expertise is NOT needed for:
 
 ## Intake
 
-Based on scan results, present context-aware options:
+Based on scan results, present context-aware options with numbered selections:
 
-**If handoff found:**
-
-```
-Found handoff: .planning/phases/XX/.continue-here.md
-[Summary of state from handoff]
-
-1. Resume from handoff
-2. Discard handoff, start fresh
-3. Different action
-```
-
-**If planning structure exists:**
-
-```
-Project: [from BRIEF or directory]
-Brief: [exists/missing]
-Roadmap: [X phases defined]
-Current: [phase status]
-
-What would you like to do?
-1. Plan next phase
-2. Execute current phase
-3. Create handoff (stopping for now)
-4. View/update roadmap
-5. Something else
-```
-
-**If no planning structure:**
-
-```
-No planning structure found.
-
-What would you like to do?
-1. Start new project (create brief)
-2. Create roadmap from existing brief
-3. Jump straight to phase planning
-4. Get guidance on approach
-```
-
-**Wait for response before proceeding.**
+- **Handoff found**: Offer resume, discard, or different action
+- **Planning structure exists**: Offer plan next, execute, handoff, view roadmap, or other
+- **No structure**: Offer start new, create roadmap from brief, jump to phase, or guidance
 
 ---
 
@@ -403,6 +406,33 @@ What would you like to do?
 **Critical:** Plan execution should NOT invoke this skill. Use `/run-plan` for context efficiency (skill loads ~20k tokens, /run-plan loads ~5-7k).
 
 **After reading the workflow, follow it exactly.**
+
+---
+
+## Command Integration
+
+**Primary command:** `/plan:create`
+
+This skill provides domain logic for planning workflows. Commands handle routing and context inference, then delegate to this skill for execution.
+
+**Available commands:**
+
+| **Command**     | **Purpose**               | **When to Use**                               |
+| --------------- | ------------------------- | --------------------------------------------- |
+| `/plan:create`  | Create hierarchical plans | Main entry point - context-aware routing      |
+| `/plan:brief`   | Create project vision     | Starting new projects or clarifying direction |
+| `/plan:roadmap` | Define phase structure    | BRIEF.md exists, phases need definition       |
+| `/plan:chunk`   | Plan immediate next tasks | Phase in progress, next steps unclear         |
+| `/plan:execute` | Execute PLAN.md files     | Running implementation phases                 |
+| `/plan:handoff` | Create context handoff    | Pausing work or switching sessions            |
+| `/plan:resume`  | Continue from handoff     | Resuming from previous work                   |
+
+**Command orchestration pattern:**
+
+- Commands provide entry points and context-aware routing
+- This skill contains domain logic and detailed workflows
+- Commands delegate to workflows in this skill for execution
+- Portability invariant: This skill doesn't reference commands
 
 ---
 
@@ -436,12 +466,14 @@ SUMMARY.md        → Outcome (existence = phase complete)
 
 ## Output Structure
 
-All planning artifacts go in `.claude/planning/`:
+All planning artifacts go in `.claude/workspace/planning/`:
 
 ```
-.claude/planning/
+.claude/workspace/planning/
 ├── BRIEF.md                    # Human vision
 ├── ROADMAP.md                  # Phase structure + tracking
+├── MILESTONES.md               # Shipped versions
+├── ISSUES.md                   # Deferred enhancements
 └── phases/
     ├── 01-foundation/
     │   ├── 01-01-PLAN.md       # Plan 1: Database setup
@@ -521,8 +553,10 @@ All in `workflows/`:
 
 Planning skill succeeds when:
 
-- Context scan runs before intake
-- Appropriate workflow selected based on state
+- EXPLORE phase runs (all 5 exploration steps completed)
+- INFER phase attempts answers from exploration
+- ASK ONE pattern: 1 focused question, interleaved with exploration/tool use, funnel to response, then STOP
+- If all answers inferred, 0 questions asked
 - PLAN.md IS the executable prompt (not separate)
 - Hierarchy is maintained (brief → roadmap → phase)
 - Handoffs preserve full context for resumption
@@ -531,3 +565,20 @@ Planning skill succeeds when:
 - All work (planned and discovered) fully documented
 - Domain expertise loaded intelligently (SKILL.md + selective references, not all files)
 - Plan execution uses /run-plan command (not skill invocation)
+- Final question is CONFIRM: "Invoke /run-plan?" (not "What's next?")
+
+---
+
+<critical_constraint>
+MANDATORY: PLAN.md IS the executable prompt—not a document to be transformed
+
+MANDATORY: Respect context limits (auto-handoff at 10%)
+
+MANDATORY: Ask ONE focused question, then proceed without additional questions
+
+MANDATORY: All deviations must be documented in SUMMARY.md
+
+MANDATORY: Domain expertise loaded intelligently (SKILL.md + selective references only)
+
+No exceptions. Plans are prompts—they must be self-contained and context-efficient.
+</critical_constraint>

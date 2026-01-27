@@ -2,15 +2,13 @@
 
 Meta-toolkit for Claude Code focused on .claude/ configuration with dual-role architecture: **health maintenance** + **portable component factory**.
 
-**For philosophical foundation**, see the project rules directory
-
 ---
 
-# Project Overview: The Seed System
+## Core Philosophy
 
 This project is a **meta-meta system**—a toolkit for building toolkits. It serves **two distinct roles**:
 
-## Role 1: Health Maintenance (Current Session)
+### Role 1: Health Maintenance (Current Session)
 
 The Seed System governs its own internal health:
 
@@ -19,7 +17,7 @@ The Seed System governs its own internal health:
 - Enforces quality standards and progressive disclosure
 - Validates component structure and portability
 
-## Role 2: Portable Component Factory (Building Offspring)
+### Role 2: Portable Component Factory (Building Offspring)
 
 The Seed System builds portable, self-sufficient components:
 
@@ -32,17 +30,17 @@ The Seed System builds portable, self-sufficient components:
 
 ---
 
-# Dual-Layer Architecture
+## Dual-Layer Architecture
 
 The Seed System uses a **two-layer architecture** to achieve both roles:
 
-## Layer A: Behavioral Rules (Session-Only)
+### Layer A: Behavioral Rules (Session-Only)
 
 **Purpose**: Guide agent behavior in the current session
 **Scope**: Session-only, not embedded in components
 **Audience**: The agent operating NOW
 
-## Layer B: Construction Standards (For Building Components)
+### Layer B: Construction Standards (For Building Components)
 
 **Purpose**: Meta-rules for creating portable components
 **Scope**: Embedded in generated components as "genetic code"
@@ -52,82 +50,150 @@ The Seed System uses a **two-layer architecture** to achieve both roles:
 
 ---
 
-# Knowledge-Factory Architecture
-
-This project demonstrates the **Knowledge-Factory architecture**:
-
-### Knowledge Layer (Understanding)
-
-- **Knowledge Skills** (passive reference): skill-development, command-development, hook-development, agent-development, mcp-development
-- Provides concepts, patterns, and philosophy
-- Teaches the "why" behind component creation
-
-### Factory Layer (Execution)
-
-- **Factory Skills**: Transform knowledge into portable components
-- Apply architectural patterns to ensure component traits
-- Bundle condensed philosophy into outputs
-
-### Quality Layer (Validation)
-
-- **Meta-Critic**: Quality validation and alignment checking
-- Success Criteria Invariant for self-validation
-- **Ralph Orchestrator**: TDD-based component validation with staged deployment
-
-**Usage pattern**: Load knowledge skills to understand concepts, then use factory skills to generate portable components.
-
----
-
-# Ralph: Staged Validation Workflow
-
-Ralph is the component development orchestrator that implements **Test-Driven Development + Confession Loop** for building portable components.
-
-For detailed workflow documentation, see: [`docs/workflows/ralph-validation.md`](../docs/workflows/ralph-validation.md)
-
----
-
-# Core Seed System Principles
-
-**For complete philosophy**, see the project rules directory. For extended philosophy, see [`docs/philosophy/deep-dives.md`](docs/philosophy/deep-dives.md)
-
 ## The Portability Invariant
 
-**Every component MUST be self-contained and work in a project with ZERO .claude/rules.**
+<critical_constraint>
+MANDATORY: Every component MUST be self-contained and work in a project with ZERO .claude/rules.
+</critical_constraint>
 
 This is the **defining characteristic** of the Seed System. Unlike traditional toolkits that create project-dependent components, the Seed System creates portable "organisms" that survive being moved to any environment.
+
+---
 
 ## The Delta Standard
 
 > **Good Component = Expert-only Knowledge − What Claude Already Knows**
 
-Only include information with a knowledge delta—the gap between what Claude knows and what the component needs.
-
-## Portability Principle
-
-Components should work without depending on external documentation or files.
+See `.claude/rules/principles.md` for complete Delta Standard explanation with positive/negative delta examples.
 
 ---
 
-# Navigation Decision Tree
+## Knowledge-Factory Architecture
 
-## For Health Maintenance (Current Session)
+This project demonstrates the **Knowledge-Factory architecture**:
+
+### Knowledge Layer (Understanding)
+
+- **Unified Knowledge Skill**: `invocable-development` - Commands and skills are the same system with different organization
+- **Other Knowledge Skills**: hook-development, agent-development, mcp-development
+- Provides concepts, patterns, and philosophy
+- Teaches the "why" behind component creation
+
+### Factory Layer (Execution)
+
+- **Toolkit Commands**: Intent-based orchestration with context inference
+  - `/toolkit:command:*` - Command creation, audit, meta-critic
+  - `/toolkit:skill:*` - Skill creation, audit, meta-critic
+- Apply architectural patterns via `invocable-development` skill
+- Bundle condensed philosophy into outputs
+
+### Quality Layer (Validation)
+
+- **Meta-Critic**: Three-way quality validation (Request vs Delivery vs Standards)
+- Success Criteria Invariant for self-validation
+- **Component Orchestrate**: TDD-based component validation with staged deployment
+
+**Usage pattern**: Use toolkit commands for workflow orchestration, which invoke `invocable-development` for domain logic.
+
+---
+
+## Toolkit Commands
+
+The toolkit provides command-based interfaces for creating and validating invocable components (commands and skills).
+
+### Invocable Components
+
+**Commands and Skills are the same system** - same frontmatter, same invocation, same capabilities. The only difference is organizational:
+
+| Component    | Structure                                                      | Naming                                 | Best For                                |
+| ------------ | -------------------------------------------------------------- | -------------------------------------- | --------------------------------------- |
+| **Commands** | Single `.md` file                                              | `commands/build/fix.md` → `/build:fix` | Intent/state definition, folder nesting |
+| **Skills**   | Folder with `SKILL.md` + optional `workflows/` + `references/` | Flat: `skills/tdd-workflow/`           | Domain logic, progressive disclosure    |
+
+### Command Operations
+
+| Command                       | Purpose                       | Autonomy                   |
+| ----------------------------- | ----------------------------- | -------------------------- |
+| `/toolkit:command:create`     | Create one-file commands      | High (0-2 questions)       |
+| `/toolkit:command:audit`      | Audit commands for compliance | High (auto-detects target) |
+| `/toolkit:command:metacritic` | Three-way meta-critic review  | High (analyzes context)    |
+
+### Skill Operations
+
+| Command                     | Purpose                                       | Autonomy                   |
+| --------------------------- | --------------------------------------------- | -------------------------- |
+| `/toolkit:skill:create`     | Create skills with workflows/ and references/ | High (0-2 questions)       |
+| `/toolkit:skill:audit`      | Audit skills for compliance                   | High (auto-detects target) |
+| `/toolkit:skill:metacritic` | Three-way meta-critic review                  | High (analyzes context)    |
+
+### Rooter Operations (Complete Packages)
+
+| Command           | Purpose                                                             | Autonomy             |
+| ----------------- | ------------------------------------------------------------------- | -------------------- |
+| `/toolkit:rooter` | Create complete packages (command + skill + workflows + references) | High (0-3 questions) |
+
+**Rooter Archetype**: A complete capability package with multiple entry points:
+
+- **Command**: Quick intent invocation
+- **Workflows**: Guided step-by-step processes
+- **Skill**: Comprehensive domain knowledge
+- **Examples/Scripts**: Working demonstrations and automation
+
+### Key Features
+
+**Context Inference**: Commands auto-detect targets from conversation
+
+- Auto-detects recently created components
+- No need to specify paths manually
+
+**No Syntax Required**: Trust AI intelligence
+
+- Commands work with natural language descriptions
+- Progressive refinement when necessary
+
+**High Autonomy**: Target 80-95% completion (0-5 questions)
+
+- Auto-detect when possible
+- Ask only when genuinely ambiguous
+
+### Command Orchestration Pattern (Optional)
+
+One component can orchestrate another for workflow automation. Both are auto-invocable - this pattern is about coordination, not capability difference.
+
+- **Orchestrator**: Coordinates workflow, manages interaction flow, handles state transitions
+- **Orchestrated**: Contains detailed knowledge/patterns to execute
+
+**Critical constraint**: Orchestrated component must not reference orchestrator (portability invariant).
+
+See `invocable-development/references/command-orchestration.md` for complete pattern documentation.
+
+---
+
+## Quick Navigation
+
+### For Health Maintenance (Current Session)
 
 ```
 Need to maintain project health?
 │
-├─ Update rules → Check project rules directory for consistency
+├─ Update rules → Check .claude/rules/ for consistency
 ├─ Audit quality → Use meta-critic skill
-├─ Fix autonomy issues → Review AskUserQuestion patterns
+├─ Fix autonomy issues → Review askuserquestion-best-practices.md
 └─ Validate structure → Check progressive disclosure tiers
 ```
 
-## For Component Factory (Building Components)
+### For Component Factory (Building Offspring)
 
 ```
 Need to build a portable component?
 │
-├─ Create a skill → skill-development
-├─ Add command → command-development
+├─ Complete package → /toolkit:rooter
+├─ Create a command → /toolkit:command:create
+├─ Create a skill → /toolkit:skill:create
+├─ Audit a command → /toolkit:command:audit
+├─ Audit a skill → /toolkit:skill:audit
+├─ Meta-critic review (command) → /toolkit:command:metacritic
+├─ Meta-critic review (skill) → /toolkit:skill:metacritic
 ├─ Create agent → agent-development
 ├─ Add hook → hook-development
 ├─ Add MCP server → mcp-development
@@ -136,199 +202,142 @@ Need to build a portable component?
 
 ---
 
-# Seed System vs Traditional Toolkits
+## Invocable Components
 
-| Feature                 | Traditional Toolkit      | Seed System                |
-| ----------------------- | ------------------------ | -------------------------- |
-| **Philosophy Location** | External documentation   | Bundled in component       |
-| **Dependencies**        | Requires toolkit context | Zero external dependencies |
-| **Self-Validation**     | Needs external tools     | Success Criteria included  |
-| **Portability**         | Project-dependent        | Works anywhere             |
-| **Philosophy**          | Referenced               | Intentional redundancy     |
-| **Quality**             | External validation      | Self-validation + external |
+**Commands and Skills are the same system** with identical capabilities. The difference is structural:
 
-**Key Difference**: Traditional toolkits create **project-dependent tools**. Seed System creates **portable organisms**.
+| **Commands** | Single `.md` file | Folder nesting: `commands/analysis/diagnose.md` → `/analysis:diagnose` |
+| **Skills** | Folder with `SKILL.md` + optional `workflows/` and `references/` | Flat: `skills/tdd-workflow/SKILL.md` |
 
----
+**Both are auto-invocable** - AI and users can invoke either based on description and context.
 
-# Project Structure: The Genetic Code
+### Primary Meta-Skill
 
-```
-.claude/
-├── rules/                          # The Agent's "Soul" (Layer A)
-│   ├── principles.md              # Dual-layer architecture
-│   ├── patterns.md                # Architectural patterns
-│   ├── anti-patterns.md           # Recognition-based anti-patterns
-│   ├── voice-and-freedom.md       # Voice + Freedom guidance
-│   └── askuserquestion-best-practices.md # Question strategies
-│
-├── skills/                         # Knowledge-Factory Components
-│   ├── skill-development/          # Skill creation (architectural)
-│   ├── command-development/        # Command creation (architectural)
-│   ├── agent-development/          # Agent creation (architectural)
-│   ├── hook-development/           # Hook creation (architectural)
-│   ├── mcp-development/            # MCP creation (architectural)
-│   └── meta-critic/               # Quality validation
-│
-├── agents/                         # Context fork isolation
-├── hooks/                          # Event automation
-├── commands/                       # Slash commands
-└── settings.json                   # Project configuration
-```
+**`invocable-development`** - Unified skill for creating both commands and skills. Consolidates `skill-development` and `command-development` knowledge.
+
+### Toolkit Commands
+
+| **Category** | **Commands**                                                                        |
+| ------------ | ----------------------------------------------------------------------------------- |
+| **Commands** | `/toolkit:command:create` `/toolkit:command:audit` `/toolkit:command:metacritic`    |
+| **Skills**   | `/toolkit:skill:create` `/toolkit:skill:audit` `/toolkit:skill:metacritic`          |
+| **Rooter**   | `/toolkit:rooter` - Complete packages with command + skill + workflows + references |
+
+### Planning Commands
+
+| **Command**     | **Purpose**                       |
+| --------------- | --------------------------------- |
+| `/plan:create`  | Create hierarchical project plans |
+| `/plan:brief`   | Create project vision             |
+| `/plan:roadmap` | Create phase structure            |
+| `/plan:chunk`   | Plan immediate next tasks         |
+| `/plan:execute` | Execute PLAN.md files             |
+| `/plan:handoff` | Create context handoff            |
+| `/plan:resume`  | Continue from handoff             |
+
+**Planning system**: Hierarchical project planning (brief → roadmap → phase → PLAN.md) with context-aware routing. Domain logic in `create-plans` skill.
 
 ---
 
-# Component-Specific Guidance
+## Core Principles
 
-For detailed guidance on creating portable components, consult the appropriate meta-skill:
+See `.claude/rules/principles.md` for:
 
-| Component | Meta-Skill          | Output Traits                                          |
-| --------- | ------------------- | ------------------------------------------------------ |
-| Skills    | skill-development   | Portable, self-sufficient, progressive disclosure      |
-| Commands  | command-development | Self-contained, mandatory references, Success Criteria |
-| Agents    | agent-development   | Autonomous, isolated context, bundled philosophy       |
-| Hooks     | hook-development    | Event-driven, security patterns, self-validating       |
-| MCPs      | mcp-development     | Server configuration, transport mechanisms, portable   |
-
-Each meta-skill demonstrates clear guidance for component creation:
-
-- Component-specific patterns
-- Best practices for portability
-- Progressive disclosure structure
-- Self-contained examples
-
-**Each meta-skill is the single source of truth for its domain—and for portable component generation.**
+- **Context Window as Public Good** - Token economy principles
+- **Trust AI Intelligence** - What Claude already knows
+- **The Delta Standard** - Expert-only knowledge formula
+- **The 45% XML Tax** - When to use XML vs Markdown
+- **Recency Bias** - Footer constraints priority
 
 ---
 
-# Skills vs Commands: Project Core Practice
+## Component Description Guidelines
 
-_Note: This distinction is a **project-specific architectural best practice** intended to provide structure, not a hard technical constraint._
+### No Direct Skill Mentions in Descriptions
 
-For detailed comparison and decision matrix, see [`docs/concepts/skills-vs-commands.md`](docs/concepts/skills-vs-commands.md)
+**Rule**: Never mention other skills by name in component descriptions.
 
----
+**Why**:
 
-# Philosophy Deep Dives
+- **Discoverability anti-pattern**: Claude can discover skills through the skill system—naming others creates implicit dependencies
+- **Portability violation**: A command that references `skill-development` cannot work in a project without that skill
+- **Self-containment**: Descriptions should explain what the component does, not point to other components
 
-The Seed System philosophy is distributed across the project rules directory. For extended content, see [`docs/philosophy/deep-dives.md`](docs/philosophy/deep-dives.md)
+**How to describe without naming**:
 
-| File                              | Layer      | Content                                                          |
-| --------------------------------- | ---------- | ---------------------------------------------------------------- |
-| principles.md                     | **Both**   | Dual-layer architecture, Portability Invariant, Success Criteria |
-| patterns.md                       | **Both**   | Implementation patterns, Degrees of Freedom                      |
-| anti-patterns.md                  | Behavioral | Recognition-based anti-patterns, quality validation              |
-| voice-and-freedom.md              | **Both**   | Voice guidance, Freedom matrix, Teaching patterns                |
-| hybrid-format.md                  | **Both**   | **Markdown** (Flow) + **XML** (Isolation) standard               |
-| askuserquestion-best-practices.md | Behavioral | Recognition over Generation, question strategies                 |
+| Instead of...                                      | Use...                                             |
+| -------------------------------------------------- | -------------------------------------------------- |
+| "Reusable logic libraries (use skill-development)" | "Logic libraries that Claude invokes contextually" |
+| "Background event handling (use hook-development)" | "Background event handling"                        |
+| "Create agents (use agent-development)"            | "Autonomous agents with independent execution"     |
 
-**Philosophy is universal**—Layer A guides the agent, Layer B is embedded in components.
+**What belongs in descriptions**:
 
----
-
-# Key Meta-Skills Reference
-
-| Meta-Skill              | Purpose                    | Transformation                   |
-| ----------------------- | -------------------------- | -------------------------------- |
-| **skill-development**   | Creating portable skills   | Tutorial → Architectural refiner |
-| **command-development** | Creating portable commands | Tutorial → Architectural refiner |
-| **agent-development**   | Creating portable agents   | Tutorial → Architectural refiner |
-| **hook-development**    | Creating portable hooks    | Tutorial → Architectural refiner |
-| **mcp-development**     | Creating portable MCPs     | Tutorial → Architectural refiner |
-| **meta-critic**         | Quality validation         | Validation framework             |
-| **refine-prompts**      | L1/L2/L3/L4 refinement     | Prompt optimization              |
-
-**Transformation**: All meta-skills converted from prescriptive tutorials to architectural refiners.
+- What the component does (verb + object)
+- When to use it (use cases)
+- What it's NOT for (by behavior, not by referencing other components)
 
 ---
 
-# Quality Standards
+## Writing Style
 
-All components created by the Seed System must achieve:
+See `.claude/rules/voice-and-freedom.md` for:
 
-### Portability (Seed System Defining Feature)
-
-- **Zero external dependencies**: Works in isolation
-- **Self-contained**: Includes all necessary context
-- **Progressive disclosure**: Right content at right tier
-
-### Autonomy
-
-- **80-95% autonomy**: 0-5 questions per session
-- **Clear triggering**: Specific description with exact phrases
-- **Progressive disclosure**: Right content at right tier
-
-### Quality
-
-- **Imperative form**: No "you/your" in instructions
-- **Clear examples**: Concrete examples users can copy
-- **Single source of truth**: No duplication across files
-
-### Structure
-
-- **Tier 1**: Metadata (~100 tokens)
-- **Tier 2**: Component body (~1,500-2,000 words)
-- **Tier 3**: References/ (on-demand)
-
-### Format (The Hybrid Approach)
-
-- **Markdown**: For structure, flow, and linear instructions.
-- **XML**: For isolation (`<context>`), critical rules (`<absolute_constraints>`), and routing (`<router>`).
-- **Rationale**: Maximizes semantic efficiency and prevents context hallucinations.
-
-### Diagram Standards (Table vs Mermaid vs DOT)
-
-| Type        | Best For                             | Strength                                   | Weakness                                      |
-| :---------- | :----------------------------------- | :----------------------------------------- | :-------------------------------------------- |
-| **Table**   | Static data, mappings, comparison    | Easy to read, standard Markdown            | Poor for flows/loops, hard to visualize logic |
-| **Mermaid** | Flows, decisions, semantic routing   | Human-readable, integrates well            | Can get messy for complex state machines      |
-| **DOT**     | Strict state machines, cyclic graphs | Token-efficient, precise, machine-readable | Less "natural," requires layout engine        |
-
-**Guideline**: Use **Tables** for data, **Mermaid** for decision trees/routing, and **DOT** for complex state/logic loops.
+- **Imperative Form** - How to write instructions
+- **Clear Examples** - Show, don't just tell
+- **Voice Strength** - Gentle → Strong → Critical
+- **Degrees of Freedom** - High/Medium/Low specificity
 
 ---
 
-# Development Workflow
+## Voice & Degrees of Freedom
 
-For detailed workflow guides, see [`docs/workflows/development.md`](docs/workflows/development.md)
+See `.claude/rules/voice-and-freedom.md` for complete guide.
 
-## When Contributing to the Seed System
+---
 
-1. **Understand dual-layer architecture**: Layer A (behavioral) vs Layer B (construction)
-2. **Check philosophy**: Consult project rules for guidance
-3. **Apply patterns**: Use project rules for architectural enforcement
-4. **Enforce portability**: Every component must work in isolation
-5. **Test thoroughly**: Use `claude --dangerously-skip-permissions` for testing
+## Progressive Disclosure
 
-## When Building Components with the Seed System
+**Tier 1**: Metadata (~100 tokens)
+**Tier 2**: Component body (~1,500-2,000 words)
+**Tier 3**: References/ (on-demand)
 
-1. **Load knowledge**: Understand concepts via meta-skills
-2. **Apply guidance**: Use meta-skills to generate components
-3. **Check portability**: Ensure component works in isolation
-4. **Test thoroughly**: Verify component works without external dependencies
+Keep SKILL.md focused and lean. Move detailed content to references/.
+
+---
+
+## Format: Unified Hybrid Protocol (UHP)
+
+See `.claude/rules/hybrid-format.md` for complete UHP reference (3-layer architecture, XML/Markdown usage, state management).
+
+---
+
+## Session Commands
+
+- `/reflect` - Review behavior, identify improvement opportunities
+- `/handoff` - Create session handoff document
+- `/whats-next` - Analyze conversation for continuation
+- `/plan` - Enter plan mode for complex tasks
+
+---
 
 ## Plan Mode Workflow (CRITICAL)
 
-**MANDATORY: Always use `ExitPlanMode` before proceeding to implementation.**
+**MANDATORY: Get user approval before proceeding to implementation.**
 
 For any non-trivial task requiring multiple steps or file modifications:
 
-1. **Phase 1 - Understanding**: Explore the codebase and understand requirements
-2. **Phase 2 - Design**: Create detailed implementation plan in `/Users/felix/.claude/plans/[task-name].md`
-3. **Phase 3 - Review**: Review plan with user and get approval
-4. **Phase 4 - Implementation**: Execute approved plan
-5. **Phase 5 - Verification**: Call `ExitPlanMode` to confirm completion
+1. **Phase 1** - Understand requirements
+2. **Phase 2** - Design approach
+3. **Phase 3** - Get user approval
+4. **Phase 4** - Execute plan
+5. **Phase 5** - Verify and complete
 
-**Why this matters**:
+**CRITICAL**: Never skip Phase 3 (Review) or jump directly to implementation.
 
-- Prevents blind implementation without understanding
-- Ensures user approval before irreversible changes
-- Creates audit trail of decisions and rationale
-- Reduces rework and incorrect assumptions
+---
 
-**CRITICAL**: Never skip Phase 3 (Review) or jump directly to implementation without user approval via `ExitPlanMode`.
-
-### Verification Protocol (MANDATORY)
+## Verification Protocol (MANDATORY)
 
 **Before calling `ExitPlanMode`, you MUST verify:**
 
@@ -337,64 +346,22 @@ For any non-trivial task requiring multiple steps or file modifications:
 3. **Quality gates passed** - All automated checks pass
 4. **No false completion claims** - Never claim "complete" without verification
 
-**Verification Requirements:**
-
-| Claim                   | Requires                           | Not Sufficient      |
-| ----------------------- | ---------------------------------- | ------------------- |
-| Implementation complete | All tasks marked done in task list | "Tasks are done"    |
-| Tests pass              | Test command output: 0 failures    | "Tests should pass" |
-| Code quality verified   | Automated quality gate output      | "Code looks good"   |
-| No errors               | Full build output with exit 0      | "Build succeeded"   |
-
-**Rationalization Prevention:**
-
-If you catch yourself thinking:
-
-- "Should be working" → STOP and verify
-- "Looks complete" → STOP and check evidence
-- "Probably fixed" → STOP and run tests
-- "Just this once" → No exceptions allowed
-
 **The Iron Law**: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
-**Red Flag Recognition**: Before calling ExitPlanMode, if you haven't run verification commands in this message, you cannot claim completion.
-
 ---
 
-# Personal Project Rules: Permissions and Security
+<critical_constraint>
+MANDATORY: No cross-references between CLAUDE.md and .claude/rules/
+</critical_constraint>
 
-**Note**: These rules apply specifically to this personal project environment and are not intended as general-purpose security guidelines for professional or team settings.
+<critical_constraint>
+MANDATORY: No completion claims without fresh verification evidence
+</critical_constraint>
 
-For detailed rules, see [`docs/environment/personal-rules.md`](docs/environment/personal-rules.md)
+<critical_constraint>
+MANDATORY: Use ExitPlanMode before implementation
+</critical_constraint>
 
----
-
-# The Seed System Philosophy
-
-### Teaching > Prescribing
-
-Philosophy enables intelligent adaptation. Process prescriptions create brittle systems.
-
-### Trust > Control
-
-Claude is smart. Provide principles, not recipes.
-
-### Less > More
-
-Context is expensive. Every token must earn its place.
-
-### Intentional Redundancy
-
-Philosophy must be duplicated where needed for portability. Components carry their own genetic code.
-
-### Recognition over Generation
-
-Users recognize faster than they generate. Structure interactions for validation, not brainstorming.
-
----
-
-# Intentional Redundancy: Why Duplication Is Correct
-
-**This is the defining feature that makes Seed System components portable.**
-
-For detailed architectural explanation, see [`docs/architecture/intentional-redundancy.md`](docs/architecture/intentional-redundancy.md)
+<critical_constraint>
+MANDATORY: Every component MUST work with zero .claude/rules dependencies
+</critical_constraint>

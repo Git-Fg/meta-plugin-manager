@@ -1,6 +1,6 @@
 ---
 name: whats-next
-description: Analyze the current conversation and create a handoff document for continuing this work in a fresh context
+description: "[DEPRECATED] Analyze the current conversation and create a handoff document for continuing this work in a fresh context. Use `/plan:handoff` instead."
 allowed-tools:
   - Read
   - Write
@@ -9,7 +9,26 @@ allowed-tools:
   - WebFetch
 ---
 
-Create a comprehensive, detailed handoff document that captures all context from the current conversation. This allows continuing the work in a fresh context with complete precision.
+> **DEPRECATED**: This command has been replaced by `/plan:handoff` as part of the unified `/plan/` command structure.
+>
+> **Migration guide:**
+>
+> - `/whats-next` → `/plan:handoff` (create context handoff)
+> - Handoffs now use `.continue-here.md` in phase directories
+> - Use `/plan:resume` to load handoffs
+>
+> This command remains for backward compatibility but will be removed in a future version.
+
+---
+
+<mission_control>
+<objective>Create comprehensive handoff document enabling seamless continuation in fresh context</objective>
+<success_criteria>Handoff document captures all context with precision for zero-information-loss handoff</success_criteria>
+</mission_control>
+
+<interaction_schema>
+original_task → work_completed → work_remaining → attempted_approaches → critical_context → current_state → output
+</interaction_schema>
 
 ## Instructions
 
@@ -52,7 +71,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
    - Any temporary changes, workarounds, or open questions
    - Current position in the workflow or process
 
-Write to `.claude/planning/handoffs/whats-next.md` using the format below.
+Write to `.claude/workspace/handoffs/whats-next.md` using the format below.
 
 ## Output Format
 
@@ -109,3 +128,13 @@ Write to `.claude/planning/handoffs/whats-next.md` using the format below.
 - Temporary changes or workarounds in place
 - Current position in workflow or process
 - Any open questions or pending decisions]
+
+---
+
+<critical_constraint>
+MANDATORY: Comprehensive detail over brevity - zero information loss
+MANDATORY: Include file:line references for all changes made
+MANDATORY: Capture attempted approaches including failures
+MANDATORY: Preserve critical context for fresh Claude instance
+No exceptions. Handoff must enable seamless continuation with zero information loss.
+</critical_constraint>
