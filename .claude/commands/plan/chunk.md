@@ -1,6 +1,18 @@
 ---
-description: "Plan immediate next tasks (2-3 atomic tasks) for continued execution. Use when phase is in progress and next steps unclear."
+description: "[DEPRECATED] Plan immediate next tasks. Use `/plan:create` instead - auto-detects and presents next tasks chunk."
 argument-hint: [optional: context about current work]
+---
+
+> **DEPRECATED**: This functionality has been merged into `/plan:create` for fully autonomous planning.
+>
+> **Migration guide:**
+>
+> - `/plan:chunk` → `/plan:create` (auto-detects incomplete phase and presents next 1-3 tasks)
+> - `/plan:create` now handles chunk identification autonomously when phase is in progress
+> - Just call `/plan:create` - it will show your next tasks immediately
+>
+> This command remains for backward compatibility but will be removed in a future version.
+
 ---
 
 # Chunk Planning

@@ -1,207 +1,356 @@
 ---
-description: "Create project plans with intelligent auto-inference. Detects context and creates brief/roadmap/phases as needed."
+description: "Create project plans with intelligent auto-inference. Single command for brief/roadmap/phases/chunks - detects context and acts autonomously."
 argument-hint: [project description or "auto" for context detection]
 ---
 
 # Plan Creation
 
 <mission_control>
-<objective>Create project plans with intelligent context inference - brief, roadmap, or phases as needed</objective>
-<success_criteria>Appropriate planning artifacts created based on detected context with minimal user input</success_criteria>
+<objective>Fully autonomous planning - detects state, creates brief/roadmap/phases/chunks as needed with minimal user input</objective>
+<success_criteria>Appropriate planning action taken with 0 questions (context clear) or 1 question (ambiguous)</success_criteria>
 </mission_control>
 
 ## Purpose
 
-Single entry point for all planning operations. Auto-detects what's needed and creates:
+Single fully autonomous command for all planning operations. Auto-detects and executes:
 
-- **BRIEF.md** - Project vision (no structure exists)
-- **ROADMAP.md** - Phase structure (brief exists, no roadmap)
-- **Phase plans** - Implementation prompts (roadmap exists)
+- **No structure** → Create brief + roadmap
+- **Brief only** → Create roadmap
+- **Roadmap only** → Create first phase plan
+- **Incomplete phase** → Identify next 1-3 tasks (chunk)
+- **Handoff exists** → Resume from where you left off
 
 ## Context Scan
 
 ```bash
-# Check planning structure
-[ -f .claude/workspace/planning/BRIEF.md ] && echo "BRIEF: exists"
-[ -f .claude/workspace/planning/ROADMAP.md ] && echo "ROADMAP: exists"
-find .claude/workspace/planning/phases -name "PLAN.md" 2>/dev/null | wc -l
-find .claude/workspace/planning/phases -name "SUMMARY.md" 2>/dev/null | wc -l
-find .claude/workspace/planning/phases -name ".continue-here.md" 2>/dev/null
+# Full planning state detection
+STATE=""
+
+# Check for planning directory
+[ -d .claude/workspace/planning ] && STATE+="planning_exists "
+
+# Check for artifacts
+[ -f .claude/workspace/planning/BRIEF.md ] && STATE+="brief "
+[ -f .claude/workspace/planning/ROADMAP.md ] && STATE+="roadmap "
+
+# Check for phase plans and completion
+PLAN_COUNT=$(find .claude/workspace/planning/phases -name "*-PLAN.md" 2>/dev/null | wc -l)
+SUMMARY_COUNT=$(find .claude/workspace/planning/phases -name "*-SUMMARY.md" 2>/dev/null | wc -l)
+[ "$PLAN_COUNT" -gt 0 ] && STATE+="plans:${PLAN_COUNT} "
+[ "$SUMMARY_COUNT" -gt 0 ] && STATE+="summaries:${SUMMARY_COUNT} "
+
+# Check for handoffs
+HANDOFF=$(find .claude/workspace/planning/phases -name ".continue-here.md" 2>/dev/null)
+[ -n "$HANDOFF" ] && STATE+="handoff "
+
+echo "Detected: $STATE"
 ```
 
-## Auto-Inference Logic
+## Fully Autonomous Logic
 
-### No Structure → Create Brief + Roadmap
+### State 1: No Planning Structure
 
-**When**: No `.claude/workspace/planning/` directory
+**Detected**: `planning_exists` missing
+
+**Action**: Create brief + roadmap autonomously
+
+**EXPLORE** (silent, no questions):
+
+- Analyze user's $ARGUMENTS for project name, description, constraints
+- Check git history for similar projects
+- Identify tech stack from request
+
+**INFER** from context:
+| What to Infer | Sources |
+|--------------|---------|
+| Project name | $ARGUMENTS, git history, folder name |
+| Description | $ARGUMENTS functionality description |
+| Problem | $ARGUMENTS pain points or context |
+| Constraints | $ARGUMENTS tech stack mentions |
+
+**AUTONOMOUS CREATE**:
+
+```bash
+# Create structure
+mkdir -p .claude/workspace/planning/phases
+
+# Create brief (inferred from $ARGUMENTS)
+cat > .claude/workspace/planning/BRIEF.md <<BRIEF_EOF
+# Project: [INFERRED_NAME]
+
+## Description
+[INFERRED_ONE_LINER]
+
+## Problem
+[INFERRED_PROBLEM]
+
+## Success Criteria
+- [Criterion 1 - inferred from goals]
+- [Criterion 2 - inferred from goals]
+
+## Constraints
+[INFERRED_CONSTRAINTS if any]
+
+## Out of Scope
+[What's clearly NOT in scope]
+BRIEF_EOF
+
+# Create roadmap (3-6 phases from domain patterns)
+cat > .claude/workspace/planning/ROADMAP.md <<ROADMAP_EOF
+# Project Roadmap
+
+## Phases
+
+### Phase 01: foundation
+[Status: not_started]
+Core infrastructure setup
+
+### Phase 02: [inferred from project type]
+[Status: not_started]
+[Description]
+
+... (3-6 phases total)
+ROADMAP_EOF
+
+# Create phase directories
+for phase in 01-*; do mkdir -p ".claude/workspace/planning/phases/$phase"; done
+
+# Commit initialization
+git add .claude/workspace/planning/
+git commit -m "docs: initialize [INFERRED_NAME] ([N] phases)"
+```
+
+**CONFIRM** (single question):
+
+```
+✓ Created brief + roadmap for [INFERRED_NAME]
+✓ [N] phases defined
+✓ Committed initialization
+
+Next: Plan Phase 1 tasks? (yes/no/customize)
+```
+
+### State 2: Brief Only (No Roadmap)
+
+**Detected**: `brief` present, `roadmap` missing
+
+**Action**: Create roadmap autonomously from brief
 
 **EXPLORE**:
 
-- Analyze user's original request for project name, description, constraints
-- Check for similar projects in git history
-- Identify tech stack hints in request
+- Read BRIEF.md for scope and goals
+- Check codebase for what exists
+- Git history for recent work
 
-**INFER**:
-| Question | Can Infer If... |
-|----------|----------------|
-| Project name | Request mentions name |
-| What building | Request describes functionality |
-| Why needed | Request mentions problem/solution |
-| Constraints | Request mentions tech stack |
+**INFER** phases:
 
-**ASK ONE** (if needed):
+- Project type → domain pattern (web app, CLI tool, library)
+- Brief scope → number of phases (3-6)
+- Domain → phase ordering (foundation → auth → features → polish)
 
-- Provide numbered options for project type/scope
-- Otherwise proceed with inferred values
+**AUTONOMOUS CREATE**:
 
-**Create Brief** (use template from `create-plans/templates/brief.md`):
+- Generate ROADMAP.md with inferred phases
+- Create phase directories
+- Commit with descriptive message
 
-```bash
-mkdir -p .claude/workspace/planning
-cat > .claude/workspace/planning/BRIEF.md <<'EOF'
-# Project: [Name]
+**CONFIRM**:
 
-## Description
+```
+✓ Created roadmap with [N] phases
+✓ Phase directories created
 
-[One-line description]
-
-## Problem
-
-[Why this exists]
-
-## Success Criteria
-
-- [Criterion 1]
-- [Criterion 2]
-
-## Constraints
-
-- [Any technical or time constraints]
-
-## Out of Scope
-
-[What we're NOT building]
-EOF
+Next: Plan Phase 1? (yes/review)
 ```
 
-**Create Roadmap** (use template from `create-plans/templates/roadmap.md`):
+### State 3: Roadmap Only (No Phase Plans)
 
-Based on brief, define 3-6 phases:
+**Detected**: `roadmap` present, `plans:0`
 
-- `01-foundation` - Database schema, API structure
-- `02-authentication` - User accounts, login flow
-- `03-core-features` - Main functionality
-- `04-polish` - Testing, documentation
+**Action**: Create first phase plan autonomously
 
-```bash
-mkdir -p .claude/workspace/planning/phases/{01-{phase1},02-{phase2},...}
+**EXPLORE**:
+
+- Read ROADMAP.md for Phase 1 scope
+- Check codebase for existing foundation
+- Domain expertise loading (if skill exists)
+
+**INFER** tasks for Phase 1:
+
+- Phase scope → 2-3 atomic tasks
+- Dependencies → task ordering
+- Tech stack → specific implementation steps
+
+**AUTONOMOUS CREATE** via `create-plans` skill:
+
 ```
-
-**Commit initialization**:
-
-```bash
-git add .claude/workspace/planning/
-git commit -m "docs: initialize [project-name] ([N] phases)"
+Skill: plan-phase workflow
+Input: Phase 1 scope from ROADMAP
+Output: 2-3 atomic tasks in PLAN.md
 ```
 
 **CONFIRM**:
 
 ```
-Project initialized:
-- Brief: .claude/workspace/planning/BRIEF.md
-- Roadmap: .claude/workspace/planning/ROADMAP.md
-- [N] phases defined
+✓ Phase 1 planned: [N] tasks
+→ Task 1: [name]
+→ Task 2: [name]
+→ Task 3: [name]
 
-Ready to plan Phase 1? (yes / review / later)
+Execute Phase 1? (yes/review/customize)
 ```
 
-### Brief Exists, No Roadmap → Create Roadmap
+### State 4: Incomplete Phase (Plans > Summaries)
 
-**When**: BRIEF.md exists but no ROADMAP.md
+**Detected**: `plans:N` where `N > summaries`
+
+**Action**: Identify next tasks chunk (fully autonomous)
+
+**EXPLORE** phase state:
+
+```bash
+# Find current incomplete phase
+INCOMPLETE_PHASE=$(find .claude/workspace/planning/phases -name "*-PLAN.md" -exec sh -c '
+  plan="$1"
+  summary="${plan%-PLAN.md}-SUMMARY.md"
+  [ ! -f "$summary" ] && echo "$plan"
+' _ {} \; | head -1 | xargs dirname)
+
+# Read the plan
+CURRENT_PLAN="$INCOMPLETE_PHASE/$(basename $INCOMPLETE_PHASE)-PLAN.md"
+cat "$CURRENT_PLAN"
+```
+
+**ANALYZE** plan content:
+
+- Extract task list with completion status
+- Identify next 1-3 incomplete tasks
+- Verify dependencies are met
+
+**PRESENT** chunk autonomously:
+
+```
+Current: [Phase Name]
+Progress: [X]/[Y] tasks complete
+
+Next chunk (ready to work):
+1. Task [N]: [Name] - [Action description]
+2. Task [N+1]: [Name] - [Action description]
+
+Working on these now? (yes/see full plan/different)
+```
+
+**If yes** → Delegate to `execution-orchestrator` skill
+**If see full** → Show all remaining tasks
+**If different** → Ask what to focus on
+
+### State 5: Handoff Exists
+
+**Detected**: `handoff` present
+
+**Action**: Resume from handoff
 
 **EXPLORE**:
 
-- Read BRIEF.md for project vision
-- Check existing codebase for what's built
-- Git history for recent work
+- Read `.continue-here.md` for context
+- Parse YAML frontmatter
+- Calculate time ago
 
-**INFER** phases from brief + domain patterns:
-
-- Foundation → Core Feature → Enhancement → Polish
-- 3-6 phases, 1-3 days each
-
-**Create Roadmap** with phase directories and commit.
-
-### Roadmap Exists → Plan Next Phase
-
-**When**: ROADMAP.md exists with incomplete phases
-
-**Find next incomplete phase**:
-
-```bash
-grep -A 2 "not_started\|in_progress" .claude/workspace/planning/ROADMAP.md
-```
-
-**Route to** `create-plans` skill's `plan-phase` workflow:
-
-- Skill loads domain expertise if needed
-- Creates 2-3 atomic tasks for phase
-- Delegates to `execution-orchestrator` for execution
-
-### Handoff Found → Resume
-
-**When**: `.continue-here.md` found in phase directory
-
-Present summary and ask to resume.
-
-## Usage Patterns
-
-**New project (no structure)**:
+**PRESENT** summary:
 
 ```
-/plan:create Build a task manager app
-→ Creates brief + roadmap + commits
-→ Asks to plan Phase 1
+Resuming: [Phase] - Task [N]/[Total]
+Last updated: [time ago]
+
+Completed:
+- [Task 1]
+- [Task 2]
+
+Current: [Task N]
+- Progress: [what's done]
+- Remaining: [what's left]
+
+Ready to continue? (yes/see full/refresh)
 ```
 
-**Existing project (roadmap exists)**:
+**If yes** → Load context, delete handoff, continue
+**If see full** → Show complete handoff
+**If refresh** → Re-assess from plan
+
+## Autonomous Decision Matrix
+
+```
+DETECTED STATE              | ACTION                            | QUESTIONS
+----------------------------|-----------------------------------|---------------------------
+No structure                | Create brief + roadmap             | 1 (confirm & next)
+Brief only                   | Create roadmap                     | 1 (confirm & next)
+Roadmap only                 | Create first phase plan            | 1 (confirm & execute)
+Incomplete phase             | Present next 1-3 tasks (chunk)     | 1 (execute/see more)
+Handoff exists               | Resume from handoff                | 1 (confirm/see full)
+```
+
+**Maximum 1 question** after autonomous detection and action.
+
+## Usage Examples
+
+**Start new project**:
+
+```
+/plan:create Build a CLI tool for task management
+→ [Analyzes request]
+→ [Creates brief + roadmap]
+→ [Infers 4 phases: foundation, core-features, polish, docs]
+→ [Commits initialization]
+✓ Created brief + roadmap
+Next: Plan Phase 1? (yes)
+```
+
+**Continue existing**:
 
 ```
 /plan:create
-→ Detects roadmap, finds next phase
-→ Plans 2-3 tasks for next phase
+→ [Scans structure]
+→ [Finds Phase 1 in progress: 2/5 tasks complete]
+Current: 01-foundation
+Progress: 2/5 tasks complete
+
+Next chunk:
+1. Task 3: Setup database schema - Create models and migrations
+2. Task 4: Create API client - Build request/response handling
+
+Working on these? (yes)
 ```
 
-**Continue from handoff**:
+**Quick "what's next"**:
 
 ```
 /plan:create
-→ Finds .continue-here.md
-→ Presents context, asks to resume
+→ [Immediately shows next tasks]
+→ No setup, no questions about state
 ```
 
 ## Success Criteria
 
-- [ ] EXPLORE → INFER → ASK ONE pattern followed
-- [ ] 0 questions if context clear (max 1 if ambiguous)
-- [ ] Correct artifacts created based on state
-- [ ] Brief: Under 50 lines, has name/description/problem/success
-- [ ] Roadmap: 3-6 phases, XX-kebab-case naming
-- [ ] Phase: 2-3 atomic tasks, delegated to skill
-- [ ] Initialization committed (brief + roadmap)
+- [ ] 0 questions when context fully inferable
+- [ ] 1 question max (confirmation/selection)
+- [ ] No asking about state (detected autonomously)
+- [ ] Brief under 50 lines
+- [ ] Roadmap 3-6 phases
+- [ ] Chunks 1-3 tasks only
+- [ ] Handoff deleted after resume
 
 <critical_constraint>
-MANDATORY: Auto-detect planning state before asking anything
+MANDATORY: Detect all state autonomously before any user interaction
 
-MANDATORY: Use EXPLORE → INFER → ASK ONE (max 1 question)
+MANDATORY: Maximum 1 question after autonomous action
 
-MANDATORY: Create brief under 50 lines (human-focused)
+MANDATORY: Chunk size 1-3 tasks maximum
 
-MANDATORY: Roadmap: 3-6 phases maximum
+MANDATORY: Brief under 50 lines (human-focused)
 
-MANDATORY: Delegate phase planning to create-plans skill
+MANDATORY: Roadmap 3-6 phases maximum
 
-MANDATORY: Commit brief + roadmap as initialization
+MANDATORY: Delete handoff after resume (not permanent storage)
 
-No exceptions. Single command handles all planning states.
+No exceptions. Fully autonomous single-command planning.
 </critical_constraint>

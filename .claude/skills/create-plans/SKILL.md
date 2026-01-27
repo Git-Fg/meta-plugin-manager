@@ -417,20 +417,20 @@ This skill provides domain logic for planning workflows. Commands handle routing
 
 **Available commands:**
 
-| **Command**         | \*\*Purpose                               | **When to Use**                                           |
-| ------------------- | ----------------------------------------- | --------------------------------------------------------- |
-| `/plan:create`      | Create plans with auto-inference          | Main entry point - detects context, creates what's needed |
-| `/plan:execute`     | Execute single PLAN.md file               | Running specific implementation phase                     |
-| `/plan:execute-all` | Execute all incomplete plans sequentially | Running complete project from current state               |
-| `/plan:chunk`       | Plan immediate next tasks (2-3 tasks)     | Phase in progress, next steps unclear                     |
-| `/plan:handoff`     | Create context handoff                    | Pausing work or switching sessions                        |
-| `/plan:resume`      | Continue from handoff                     | Resuming from previous work                               |
+| **Command**         | \*\*Purpose                               | **When to Use**                                                    |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| `/plan:create`      | Fully autonomous planning                 | Single command for all planning - detects state, acts autonomously |
+| `/plan:execute`     | Execute single PLAN.md file               | Running specific implementation phase                              |
+| `/plan:execute-all` | Execute all incomplete plans sequentially | Running complete project from current state                        |
+| `/plan:handoff`     | Create context handoff                    | Pausing work or switching sessions                                 |
+| `/plan:resume`      | Continue from handoff                     | Resuming from previous work                                        |
 
-**Simplified workflow:**
+**Fully autonomous workflow:**
 
-- `/plan:create` handles everything: brief → roadmap → phases
+- `/plan:create` handles everything: brief → roadmap → phases → chunks
 - Auto-detects planning state and creates appropriate artifacts
-- No need to call `/plan:brief` or `/plan:roadmap` directly (deprecated)
+- Maximum 1 question after autonomous detection and action
+- No need to call `/plan:brief`, `/plan:roadmap`, or `/plan:chunk` directly (deprecated)
 
 **Command orchestration pattern:**
 

@@ -225,18 +225,17 @@ Need to build a portable component?
 
 ### Planning Commands
 
-| **Command**         | **Purpose**                                       |
-| ------------------- | ------------------------------------------------- |
-| `/plan:create`      | Create plans (auto-infers brief/roadmap/phases)   |
-| `/plan:execute`     | Execute single PLAN.md file                       |
-| `/plan:execute-all` | Execute all incomplete PLAN.md files sequentially |
-| `/plan:chunk`       | Plan immediate next tasks (2-3 tasks)             |
-| `/plan:handoff`     | Create context handoff                            |
-| `/plan:resume`      | Continue from handoff                             |
+| **Command**         | \*\*Purpose                                             |
+| ------------------- | ------------------------------------------------------- |
+| `/plan:create`      | Fully autonomous planning (brief/roadmap/phases/chunks) |
+| `/plan:execute`     | Execute single PLAN.md file                             |
+| `/plan:execute-all` | Execute all incomplete PLAN.md files sequentially       |
+| `/plan:handoff`     | Create context handoff                                  |
+| `/plan:resume`      | Continue from handoff                                   |
 
-**Planning system**: Hierarchical project planning with intelligent auto-inference. Single command (`/plan:create`) detects context and creates brief → roadmap → phases as needed. Domain logic in `create-plans` skill.
+**Planning system**: Single command (`/plan:create`) handles everything - auto-detects state and creates brief → roadmap → phases → chunks as needed. Domain logic in `create-plans` skill.
 
-**Deprecated**: `/plan:brief`, `/plan:roadmap` - merged into `/plan:create` for auto-inference.
+**Deprecated**: `/plan:brief`, `/plan:roadmap`, `/plan:chunk` - merged into `/plan:create` for fully autonomous planning.
 
 ---
 
