@@ -1,6 +1,18 @@
 ---
-description: "Create ROADMAP.md with phase structure and milestone groupings. Use when BRIEF.md exists and phases need definition."
+description: "[DEPRECATED] Create ROADMAP.md with phase structure. Use `/plan:create` instead - auto-infers and creates brief/roadmap as needed."
 argument-hint: [optional: phases to plan]
+---
+
+> **DEPRECATED**: This command has been merged into `/plan:create` for intelligent auto-inference.
+>
+> **Migration guide:**
+>
+> - `/plan:roadmap` → `/plan:create` (auto-detects need for roadmap)
+> - `/plan:create` now creates brief + roadmap together when no structure exists
+> - Use `/plan:create` to continue from brief to roadmap automatically
+>
+> This command remains for backward compatibility but will be removed in a future version.
+
 ---
 
 # Roadmap Creation

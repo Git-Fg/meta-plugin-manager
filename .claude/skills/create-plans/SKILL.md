@@ -417,15 +417,20 @@ This skill provides domain logic for planning workflows. Commands handle routing
 
 **Available commands:**
 
-| **Command**     | **Purpose**               | **When to Use**                               |
-| --------------- | ------------------------- | --------------------------------------------- |
-| `/plan:create`  | Create hierarchical plans | Main entry point - context-aware routing      |
-| `/plan:brief`   | Create project vision     | Starting new projects or clarifying direction |
-| `/plan:roadmap` | Define phase structure    | BRIEF.md exists, phases need definition       |
-| `/plan:chunk`   | Plan immediate next tasks | Phase in progress, next steps unclear         |
-| `/plan:execute` | Execute PLAN.md files     | Running implementation phases                 |
-| `/plan:handoff` | Create context handoff    | Pausing work or switching sessions            |
-| `/plan:resume`  | Continue from handoff     | Resuming from previous work                   |
+| **Command**         | \*\*Purpose                               | **When to Use**                                           |
+| ------------------- | ----------------------------------------- | --------------------------------------------------------- |
+| `/plan:create`      | Create plans with auto-inference          | Main entry point - detects context, creates what's needed |
+| `/plan:execute`     | Execute single PLAN.md file               | Running specific implementation phase                     |
+| `/plan:execute-all` | Execute all incomplete plans sequentially | Running complete project from current state               |
+| `/plan:chunk`       | Plan immediate next tasks (2-3 tasks)     | Phase in progress, next steps unclear                     |
+| `/plan:handoff`     | Create context handoff                    | Pausing work or switching sessions                        |
+| `/plan:resume`      | Continue from handoff                     | Resuming from previous work                               |
+
+**Simplified workflow:**
+
+- `/plan:create` handles everything: brief → roadmap → phases
+- Auto-detects planning state and creates appropriate artifacts
+- No need to call `/plan:brief` or `/plan:roadmap` directly (deprecated)
 
 **Command orchestration pattern:**
 

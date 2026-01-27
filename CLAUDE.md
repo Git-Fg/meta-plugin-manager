@@ -225,17 +225,18 @@ Need to build a portable component?
 
 ### Planning Commands
 
-| **Command**     | **Purpose**                       |
-| --------------- | --------------------------------- |
-| `/plan:create`  | Create hierarchical project plans |
-| `/plan:brief`   | Create project vision             |
-| `/plan:roadmap` | Create phase structure            |
-| `/plan:chunk`   | Plan immediate next tasks         |
-| `/plan:execute` | Execute PLAN.md files             |
-| `/plan:handoff` | Create context handoff            |
-| `/plan:resume`  | Continue from handoff             |
+| **Command**         | **Purpose**                                       |
+| ------------------- | ------------------------------------------------- |
+| `/plan:create`      | Create plans (auto-infers brief/roadmap/phases)   |
+| `/plan:execute`     | Execute single PLAN.md file                       |
+| `/plan:execute-all` | Execute all incomplete PLAN.md files sequentially |
+| `/plan:chunk`       | Plan immediate next tasks (2-3 tasks)             |
+| `/plan:handoff`     | Create context handoff                            |
+| `/plan:resume`      | Continue from handoff                             |
 
-**Planning system**: Hierarchical project planning (brief → roadmap → phase → PLAN.md) with context-aware routing. Domain logic in `create-plans` skill.
+**Planning system**: Hierarchical project planning with intelligent auto-inference. Single command (`/plan:create`) detects context and creates brief → roadmap → phases as needed. Domain logic in `create-plans` skill.
+
+**Deprecated**: `/plan:brief`, `/plan:roadmap` - merged into `/plan:create` for auto-inference.
 
 ---
 

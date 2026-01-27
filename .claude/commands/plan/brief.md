@@ -1,6 +1,18 @@
 ---
-description: "Create BRIEF.md project vision document. Use when starting new projects or clarifying project direction."
+description: "[DEPRECATED] Create BRIEF.md project vision document. Use `/plan:create` instead - auto-infers and creates brief/roadmap as needed."
 argument-hint: [project description]
+---
+
+> **DEPRECATED**: This command has been merged into `/plan:create` for intelligent auto-inference.
+>
+> **Migration guide:**
+>
+> - `/plan:brief` → `/plan:create` (auto-detects need for brief)
+> - `/plan:create` now creates brief + roadmap together when no structure exists
+> - Use `/plan:create` with project description to start new projects
+>
+> This command remains for backward compatibility but will be removed in a future version.
+
 ---
 
 # Brief Creation
