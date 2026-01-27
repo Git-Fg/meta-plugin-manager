@@ -2,9 +2,11 @@
 
 **Core Principle: Recognition over Generation**
 
-Users are faster at recognizing the correct answer than generating it from scratch. Structure interactions to leverage this human strength.
+Users recognize faster than they generate. Structure interactions to leverage this human strength.
 
-IMPORTANT : ALL THE FOLLOWING EXAMPLE ARE THE "GLOBAL LOGIC" YOU MUST ADAPT THEM TO YOUR ASKUSERQUESTION TOOL TO PROVIDE OPTIMAL AND ACTIONABLE PROPOSITIONS. THE USER SHOULDNT HAVE TO WRITE ANYTHING. 
+**CRITICAL: Adapt all examples to provide actionable propositions. Users should not write anything.**
+
+Every question should offer clear, numbered options for minimal typing (ideally just "1", "2", or "yes"). 
 
 ---
 
@@ -146,7 +148,7 @@ Which path should I take?
 ```
 User: "The API is slow"
 AI: "Can you describe the performance issue?"
-User: [Types detailed description,回忆 symptoms, thinks about specifics]
+User: [Types detailed description, recalls symptoms, thinks about specifics]
 ```
 
 **After:**

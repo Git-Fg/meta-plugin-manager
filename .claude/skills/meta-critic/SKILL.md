@@ -8,6 +8,22 @@ user-invocable: true
 
 Think of Meta-Critic as a **quality assurance inspector**—examining the alignment between what was requested, what was delivered, and what standards should apply. Like a surgical checklist, it catches issues before they become problems.
 
+---
+
+## Quick Navigation
+
+| If you are auditing... | MANDATORY READ WHEN... | Meta-Skill |
+|-----------------------|------------------------|------------|
+| Skills | AUDITING SKILLS | `skill-development` |
+| Commands | AUDITING COMMANDS | `command-development` |
+| Agents | AUDITING AGENTS | `agent-development` |
+| Hooks | AUDITING HOOKS | `hook-development` |
+| MCPs | AUDITING MCP SERVERS | `mcp-development` |
+
+**CRITICAL**: You MUST understand the meta-skill standards for the component type you're auditing. Without this, your audit will miss critical quality issues.
+
+---
+
 ## Core Role
 
 **Execution Mode**: Manually invoked for quality validation.
@@ -166,6 +182,24 @@ Why good: Specific recommendations enable immediate action.
 **Rule**: Never hardcode validation rules. The meta-development skills are the single source of truth.
 
 **Binary test**: "Am I duplicating validation logic?" → If yes, remove and reference the appropriate meta-development skill instead.
+
+### Formal Evaluation Methods
+
+For quantitative validation and Success Criteria design, use Eval-Driven Development (EDD) principles:
+
+**See**: `references/eval-driven-development.md`
+
+**EDD provides**:
+- **Code-based graders**: Deterministic checks (file exists, tests pass, build succeeds)
+- **Model-based graders**: Subjective quality assessment (code review, design)
+- **pass@k metrics**: Reliability measurement (pass@1, pass@3, pass@5)
+- **Regression detection**: Ensuring existing functionality preserved
+
+**When to use EDD**:
+- Component requires measurable quality gates
+- Success Criteria need objective verification
+- Tracking reliability over time
+- Regression prevention for critical components
 
 ## Examples
 

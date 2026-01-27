@@ -107,22 +107,6 @@ Tier 3 (reference file):
 
 ---
 
-## Content Organization
-
-### Single Source of Truth
-
-**Each concept should be documented once.**
-
-- Component-specific patterns → component's meta-skill
-- Generic patterns → `.claude/rules/patterns.md`
-- CLAUDE.md → references both
-
-**Recognition**: "Is this concept already documented elsewhere?" Cross-reference instead of duplicating.
-
-**For implementation**: See component-specific meta-skills for organization patterns.
-
----
-
 ## Recognition Questions
 
 ### Writing Style

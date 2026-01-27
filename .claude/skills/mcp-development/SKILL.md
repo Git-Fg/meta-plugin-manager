@@ -9,6 +9,39 @@ description: This skill should be used when the user asks to "add MCP server", "
 
 ---
 
+## Critical References (MANDATORY)
+
+MANDATORY READ BEFORE ANYTHING ELSE: references/transports.md
+READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
+
+This reference contains transport configuration patterns for HTTP and stdio. Wrong transport = MCP server doesn't connect at all.
+
+The reference contains:
+- Complete HTTP transport configuration (URLs, headers, authentication)
+- Complete stdio transport configuration (commands, args, environment)
+- Connection testing strategies
+- Common transport errors that cause silent failures
+- Environment variable patterns
+
+You cannot create working MCP servers without understanding transport configuration.
+
+---
+
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Configuring transports | BEFORE CONFIGURING | `references/transports.md` |
+| Defining tools | WHEN DEFINING TOOLS | `references/tool-development.md` |
+| Using primitives | WHEN USING RESOURCES/PROMPTS | `references/primitives.md` |
+| Adding authentication | WHEN ADDING AUTH | `references/authentication.md` |
+| Integrating with plugins | WHEN INTEGRATING | `references/plugin-integration.md` |
+| Using 2026 features | WHEN USING NEW FEATURES | `references/2026-features.md` |
+
+**CRITICAL REMINDER**: transports.md contains connection patterns. Wrong transport configuration = server doesn't connect. READ COMPLETELY before configuring transports.
+
+---
+
 ## What MCP Servers Are
 
 MCP (Model Context Protocol) servers are connectors that give Claude access to external systems, databases, APIs, and data sources through standardized primitives.
@@ -51,19 +84,23 @@ MCPs use configuration disclosure (transport + primitives):
 > Good MCP = Transport/primitive knowledge − Generic connector concepts
 
 Include in MCPs (Positive Delta):
-- Transport-specific configuration (HTTP vs stdio)
-- Authentication patterns (Bearer tokens, API keys)
-- Tool definitions with schemas
-- Resource URI patterns
-- Error handling for the external system
+- **Transport best practices** - When to use HTTP vs stdio (and WHY)
+- **Authentication patterns** - Service-specific auth, not generic
+- **Tool definitions with schemas** - Complete JSON Schema for validation
+- **Resource URI patterns** - Service-specific resource structure
+- **Error handling** - Service-specific error responses and retry logic
+- **Modern conventions** - Latest MCP protocol features
 
 Exclude from MCPs (Zero/Negative Delta):
 - Generic "MCPs are connectors" explanations
 - Obvious JSON structure
 - General HTTP concepts
-- Common authentication patterns (unless specific to the service)
+- Things Claude would configure by default
 
-**Recognition**: "Is this configuration specific to this external system?"
+**Recognition questions**:
+1. "Is this specific to THIS external service?" → Include
+2. "Does this teach BEST PRACTICE for this service?" → Include
+3. "Would Claude configure this by default?" → Delete
 
 ### Voice and Freedom for MCPs
 
@@ -218,6 +255,28 @@ For stdio:
 Why good: Self-contained servers work anywhere
 
 **Question**: Does this server assume external documentation? If yes, include that configuration directly.
+
+---
+
+## Tool Development (CRITICAL)
+
+MANDATORY TO READ WHEN DEFINING TOOLS: references/tool-development.md
+
+Tools define what actions Claude can execute through your MCP server. Invalid tool definitions cause the server to fail or tools to not work.
+
+**CRITICAL principles for tools:**
+- **ALWAYS use valid JSON schemas**: Invalid schema = tool doesn't load
+- **NEVER omit required parameters**: Missing parameters = tool calls fail
+- **Include clear descriptions**: Claude needs to understand what tools do
+- **Test tool execution**: Verify tools work before deploying
+
+**The reference contains:**
+- Complete tool schema patterns with examples
+- Input validation strategies
+- Error handling for tool failures
+- Common tool definition errors
+
+You cannot create working MCP tools without understanding these patterns.
 
 ---
 

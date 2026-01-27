@@ -9,6 +9,37 @@ description: This skill should be used when the user asks to "create a hook", "a
 
 ---
 
+## Critical References (MANDATORY)
+
+MANDATORY READ BEFORE ANYTHING ELSE: references/patterns.md
+READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
+
+This reference contains event-specific patterns for all hook types. Without understanding these patterns, your hooks will not work correctly.
+
+The reference contains:
+- Complete patterns for PreToolUse, PostToolUse, Stop, and other events
+- Response format requirements for each event type
+- Security considerations for validation hooks
+- Common errors that cause hook failures
+- Testing strategies for validation logic
+
+You cannot create effective hooks without understanding these patterns.
+
+---
+
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Learning hook patterns | BEFORE ANYTHING ELSE | `references/patterns.md` |
+| Validating hook quality | WHEN VALIDATING HOOKS | `references/quality.md` |
+| Implementing advanced hooks | WHEN USING ADVANCED FEATURES | `references/advanced.md` |
+| Migrating from hooks.json | WHEN MIGRATING | `references/migration.md` |
+
+**CRITICAL REMINDER**: patterns.md contains all event-specific patterns. Wrong event pattern = hook doesn't trigger or blocks incorrectly. READ COMPLETELY before creating hooks.
+
+---
+
 ## What Hooks Are
 
 Hooks are event-driven automation scripts that execute in response to Claude Code events. They validate operations, enforce policies, and integrate external tools into workflows.
@@ -53,18 +84,23 @@ Hooks use targeted disclosure (event-specific validation):
 > Good hook = Event-specific validation knowledge − Generic hook concepts
 
 Include in hooks (Positive Delta):
-- Event-specific patterns (PreToolUse vs PostToolUse)
-- Validation logic for the event
-- Response format requirements
-- Security considerations for the operation
-- Error handling patterns
+- **Event-specific patterns** - PreToolUse vs PostToolUse vs Stop
+- **Validation logic** - What to check for THIS event
+- **Response format requirements** - JSON structure, blocking vs allowing
+- **Security considerations** - What's dangerous for THIS operation
+- **Error handling patterns** - How to respond to failures
+- **Best practices** - When to allow vs block (with rationale)
 
 Exclude from hooks (Zero/Negative Delta):
-- General "hooks are event-driven" explanations
+- Generic "hooks are event-driven" explanations
 - Obvious JSON structure
 - Generic validation concepts
+- Things Claude would validate by default
 
-**Recognition**: "Is this validation logic specific to this event type?"
+**Recognition questions**:
+1. "Is this specific to THIS event type?" → Include
+2. "Does this teach WHEN to allow vs block?" → Include
+3. "Would Claude do this by default?" → Delete
 
 ### Voice and Freedom for Hooks
 
@@ -433,6 +469,30 @@ Stack multiple hooks for layered validation:
 ```
 
 **Remember**: Hooks run independently and don't see each other's output.
+
+---
+
+## Hook Security (CRITICAL)
+
+MANDATORY TO READ WHEN CREATING SECURITY HOOKS: references/patterns.md
+
+Security hooks protect against destructive operations and data loss. Incorrect security hooks can either:
+- **Block legitimate work** (false positives = lost productivity)
+- **Allow dangerous operations** (false negatives = data loss, security breaches)
+
+**CRITICAL principles for security hooks:**
+- **NEVER block without clear reason**: Users must understand why operations are blocked
+- **ALWAYS exit code 0**: Hooks that exit non-zero block Claude entirely
+- **Test blocking conditions**: Verify hooks block actual threats, not normal work
+- **Use specific matchers**: Broad matchers create unexpected blocking
+
+**The reference contains:**
+- Security patterns for common threats (system paths, credentials, destructive ops)
+- Proper response formats for blocking
+- Testing strategies for security hooks
+- Common security hook errors
+
+You cannot create safe security hooks without understanding these patterns.
 
 ---
 

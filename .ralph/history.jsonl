@@ -1,6 +1,0 @@
-{"ts":"2026-01-26T13:29:23.229423Z","type":{"kind":"loop_started","prompt":"create auth skill"}}
-{"ts":"2026-01-26T13:40:54.674945Z","type":{"kind":"loop_completed","reason":"completion_promise"}}
-{"ts":"2026-01-26T13:58:02.833326Z","type":{"kind":"loop_completed","reason":"consecutive_failures"}}
-{"ts":"2026-01-26T13:58:22.690745Z","type":{"kind":"loop_completed","reason":"consecutive_failures"}}
-{"ts":"2026-01-26T14:00:28.160093Z","type":{"kind":"loop_completed","reason":"completion_promise"}}
-{"ts":"2026-01-26T14:00:46.050966Z","type":{"kind":"loop_completed","reason":"completion_promise"}}

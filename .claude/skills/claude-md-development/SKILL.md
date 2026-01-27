@@ -51,26 +51,31 @@ Project memory follows these core principles for effectiveness.
 
 ### The Delta Standard for Project Memory
 
-> Good project memory = Project-specific knowledge − What Claude Already Knows
+> Good project memory = Project-specific knowledge − What Claude Does By Default
 
 Include in CLAUDE.md/rules (Positive Delta):
-- Project-specific architecture decisions
-- Domain expertise not in general training
-- Tech stack and tooling choices (bun vs node, pnpm vs npm)
-- Non-obvious bug workarounds
-- Team-specific conventions
-- Local environment quirks
-- Invariants Claude must never violate
+- **Project-specific decisions** - Architecture, tech stack choices (bun vs node, pnpm vs npm)
+- **Best practices** - Not just what's possible, but what's RECOMMENDED
+- **Modern patterns** - Evolving conventions (React 19, Next.js 15, etc.)
+- **Explicit conventions** - Ensuring consistency across sessions
+- **Domain expertise** - Specialized knowledge not in general training
+- **Anti-patterns** - What to avoid in THIS project
+- **Invariants** - Rules Claude must never violate
+- **Rationale** - WHY certain choices were made
 
 Exclude from CLAUDE.md/rules (Zero/Negative Delta):
-- General programming concepts
-- Standard library documentation
-- Common patterns Claude already knows
-- Generic tutorials
-- Obvious best practices
-- Linter-style rules (use real tools instead)
+- **Basic definitions** - "What is TypeScript", "What is React"
+- **How-to tutorials** - "How to write a function", "How to use npm"
+- **Standard library docs** - "What Array.map does"
+- **Linter-style rules** - Use real tools (ESLint, Biome) instead
+- **Things Claude does by default** - Obvious operations
 
-**Recognition**: For each piece of content, ask "Would Claude know this without being told?" If yes, delete it.
+**Recognition questions**:
+1. "Does this teach BEST PRACTICE for this project?" → Include
+2. "Does this explain WHY, not just WHAT?" → Include
+3. "Is this a MODERN pattern specific to our stack?" → Include
+4. "Is this just defining basic concepts?" → Delete
+5. "Would Claude do this by default?" → Delete
 
 ### Self-Containment for Project Memory
 

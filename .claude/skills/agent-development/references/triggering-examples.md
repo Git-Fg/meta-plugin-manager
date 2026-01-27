@@ -2,6 +2,166 @@
 
 Complete guide to writing effective `<example>` blocks in agent descriptions for reliable triggering.
 
+## Proactive Activation Language
+
+**Strong activation language ensures agents trigger reliably.**
+
+For critical agents that MUST run proactively, use strong activation keywords in your description:
+
+### Activation Keywords
+
+| Keyword | Usage | When to Use |
+|---------|-------|-------------|
+| `PROACTIVELY` | Agent runs automatically after relevant work | Code review, security analysis, validation |
+| `MUST BE USED` | Mandatory gate that cannot be skipped | Security reviews, quality checks, testing |
+| `Automatically activated` | Triggers based on context without asking | Planning, analysis, documentation |
+| `Immediately after` | Timing-specific activation | Post-commit, post-deployment checks |
+| `Before [action]` | Pre-condition gate | Before commit, before deploy |
+
+### Strong vs Weak Activation
+
+**Strong activation (use these):**
+```yaml
+# Proactive + Mandatory
+description: Expert code reviewer. Use PROACTIVELY after writing code.
+MUST BE USED for all code changes before commit.
+
+# Automatic triggering
+description: Expert planner. Automatically activated for feature
+implementation requests exceeding 5 files.
+
+# Timing-specific with mandate
+description: Security analyzer. MUST BE USED immediately after
+implementing authentication, payment, or data handling code.
+
+# Pre-condition gate
+description: Test validator. MUST BE USED before committing any test
+changes to ensure quality.
+```
+
+**Weak activation (avoid these):**
+```yaml
+❌ "Use this agent for code review"
+❌ "Helps with planning tasks"
+❌ "Can be used for security analysis"
+❌ "Available for validation"
+```
+
+### Pattern: Proactive After Work
+
+```yaml
+---
+name: code-reviewer
+description: Expert code quality reviewer. Use PROACTIVELY after writing
+or modifying code. MUST BE USED for all code changes. Examples:
+
+<example>
+Context: User just finished implementing a feature
+user: "I've added the user authentication system"
+assistant: "Great! Let me review the implementation."
+<commentary>
+Code was written (authentication is security-critical). PROACTIVELY
+trigger code-reviewer agent for mandatory security and quality review.
+</commentary>
+assistant: "I'll use the code-reviewer agent to analyze the authentication code."
+</example>
+
+<example>
+Context: User explicitly requests review
+user: "Can you review my changes?"
+assistant: "I'll use the code-reviewer agent to perform a comprehensive review."
+<commentary>
+Explicit review request also triggers the agent.
+</commentary>
+---
+```
+
+### Pattern: Automatic Activation
+
+```yaml
+---
+name: architect
+description: Software architecture specialist. Automatically activated
+for architectural decisions, system design, and complex refactoring.
+Use PROACTIVELY when planning features affecting 3+ files. Examples:
+
+<example>
+Context: User requests complex feature implementation
+user: "I need to add real-time collaboration across multiple components"
+assistant: "This requires architectural planning."
+<commentary>
+Multi-component feature request (affects 3+ files). Automatically
+trigger architect agent for system design.
+</commentary>
+assistant: "I'll use the architect agent to design the architecture."
+</example>
+---
+```
+
+### Pattern: Mandatory Pre-Condition
+
+```yaml
+---
+name: security-analyzer
+description: Security vulnerability specialist. MUST BE USED before
+deploying any code handling user input, authentication, or payments.
+Use PROACTIVELY after implementing security-critical features. Examples:
+
+<example>
+Context: User implemented payment processing
+user: "I've added the Stripe integration for payments"
+assistant: "Let me review this for security issues."
+<commentary>
+Payment code is security-critical. MUST USE security-analyzer
+before this can be deployed.
+</commentary>
+assistant: "I'll use the security-analyzer agent to conduct a security review."
+</example>
+---
+```
+
+### Pattern: Timing-Specific
+
+```yaml
+---
+name: test-validator
+description: Test quality specialist. Use PROACTIVELY after writing
+tests. MUST BE USED before committing test changes. Examples:
+
+<example>
+Context: User wrote tests for a new feature
+user: "I've added tests for the user registration flow"
+assistant: "Let me validate the test quality."
+<commentary>
+Tests were written. PROACTIVELY validate test quality before commit.
+</commentary>
+assistant: "I'll use the test-validator agent to review the tests."
+</example>
+---
+```
+
+### Summary: Writing Strong Descriptions
+
+Combine strong keywords with clear conditions:
+
+```yaml
+# Template
+description: [Role]. [STRONG KEYWORD] when [condition].
+[MORE STRONG KEYWORDS] for [scenario]. Examples:
+
+# Examples
+description: Expert code reviewer. Use PROACTIVELY after writing code.
+MUST BE USED for all changes before commit.
+
+description: Security specialist. MUST BE USED before deploying
+authentication/payment code. Use PROACTIVELY for security features.
+
+description: Test generator. Automatically activated for new code
+without tests. Use when test coverage is needed.
+```
+
+---
+
 ## Example Block Format
 
 The standard format for triggering examples:

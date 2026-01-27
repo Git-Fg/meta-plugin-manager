@@ -1,349 +1,558 @@
 ---
 name: refactor-elegant-teaching
-description: AI-agent skill for autonomous refactoring of Claude components. Transforms verbose instructions into elegant, pattern-based guidance through progressive disclosure, recognition structures, and contrast examples.
-allowed-tools: Read, Edit, Grep
+description: AI-agent skill for refining the writing craft of Claude components (skills, commands, agents, hooks). Focuses on form: syntax, voice, teaching structure, and examples. Not for: validating correctness or assessing meaning. Use when: a component's writing needs polish.
+allowed-tools: Read, Edit, Grep, Write
 ---
 
 # Elegant Teaching Refactor
 
-**Purpose:** Transform verbose Claude components into elegant, autonomous teaching through pattern-based refactoring.
+**Purpose:** Refine the writing craft of Claude components through form-focused analysis.
 
-Think of content refactoring like organizing information for quick access: core concepts live in SKILL.md (always visible), while specialized data sits in references/ (available when needed).
+Think of this like editing for style: you're not judging the content's correctness, but polishing how it's written—the syntax, the voice, the teaching structure, the examples.
 
-**Core principle:** Claude processes pattern recognition faster than content generation. Structure components for autonomous adaptation, not rigid instruction-following.
+**Core principle:** Focus on form, not meaning. Improve how the component teaches, not what it teaches.
 
 ---
 
 ## What This Skill Does
 
-This skill helps AI agents refactor Claude components to be more elegant and autonomous.
+This skill refines the **writing quality** of Claude components:
 
-**Good refactored components:**
-- Work without constant guidance
-- Enable pattern recognition
-- Maintain clear structure
-- Include concrete examples
+**Form improvements (in scope):**
+- Syntax and structure
+- Voice and tone
+- Teaching clarity
+- Example quality
+- Progressive disclosure
+- Contrast and comparison
 
-❌ **Bad:** Components that require external documentation or step-by-step instructions
-✅ **Good:** Components that provide guidance and examples for autonomous operation
-
-**Remember:** If this skill is being used, the conditions are already met. Focus on pure guidance, not usage instructions.
-
-**Question:** Would this component work if someone only read this file? If not, include more context.
-
----
-
-## What Good Refactoring Has
-
-### 1. Natural Imperative Form
-
-**Build autonomous behavior through guidance, not commands.**
-
-✅ **Good:**
-```markdown
-Transform content using pattern recognition. Trust intelligence to adapt to context.
-```
-
-❌ **Bad:**
-```markdown
-Execute step 1. Execute step 2. Execute step 3. Always use imperative form.
-```
-
-**Why:** Natural language builds understanding; prescriptive commands create dependency.
-
-### 2. Progressive Disclosure
-
-**Keep SKILL.md focused on core workflows, move edge cases to references.**
-
-✅ **Good:**
-```markdown
-Core workflow in SKILL.md. Edge cases in references/.
-For comprehensive examples, see examples/imperative-phrases.md
-```
-
-❌ **Bad:**
-```markdown
-Include all information in SKILL.md. Never use references/.
-Here are 50 examples...
-```
-
-**Why:** Progressive disclosure maintains flow; flat structure creates cognitive overload.
-
-### 3. Pattern Recognition Structure
-
-**Enable binary validation through observable patterns.**
-
-✅ **Good (Internal Validation):**
-```markdown
-Check: "Can headers be scanned in 5 seconds?" → If no, restructure
-Check: "Is this explanation necessary?" → If obvious, remove
-```
-
-❌ **Bad:**
-```markdown
-Make content clear and scannable
-```
-
-**Critical distinction:** "Recognition" patterns in SKILL.md are for **internal validation** (e.g., "Is this section clear?"), NOT for activation conditions.
-
-**Activation logic** (when to use the component) MUST live in the `description` field of frontmatter:
-```yaml
----
-description: "Component purpose. Use when: [activation conditions]. Not for: [exclusion conditions]."
----
-```
-
-**Why:** Once a skill is loaded, it's too late to decide "when to load it." Activation logic belongs in discovery metadata (description), not execution body (SKILL.md).
+**Meaning judgments (out of scope):**
+- Whether content is correct
+- Whether approach is optimal
+- Whether component should exist
+- Whether examples are semantically right
 
 ---
 
-### Example 5: Avoid Meta-Instructions
+## Phase 1: Component Type Detection
 
-**Before (Meta-Instruction Noise):**
-```markdown
-Use this skill when you want to refactor content for elegance.
-Load this skill when content seems verbose.
-Apply this when you need progressive disclosure.
+**Identify the component type from structure:**
+
+```
+1. Read the component file
+2. Detect structure:
+   - Has description + body (no <example>) → Skill
+   - Has !/@ syntax, orchestration focus → Command
+   - Has <example> triggering blocks → Agent
+   - Has event matcher + exit code → Hook
+3. Note form-specific elements for that type
 ```
 
-**After (Pure Guidance):**
-```markdown
-Transform verbose content. Add concrete examples.
-Apply progressive disclosure to reduce cognitive load.
-```
+**Form signatures by type:**
 
-**Why:** If the skill is being used, the conditions are already met. Meta-instructions add noise without value.
+| Component | Form Signature | Key Writing Elements |
+|-----------|---------------|---------------------|
+| **Skill** | Tiered content, teaching voice | Progressive disclosure, imperative examples, references/ structure |
+| **Command** | Orchestration language, parameters | !/@ syntax, numbered steps, guardrails section |
+| **Agent** | `<example>` blocks, system prompt | Triggering format, responsibility lists, output structure |
+| **Hook** | Event matcher, validation logic | Matcher syntax, JSON response, stderr logging |
 
 ---
 
-## How to Refactor Content
+## Phase 2: Form Analysis
 
-### Step 1: Audit for Dependency Patterns
+**Analyze the writing form, not the meaning.**
 
-Look for these patterns that reduce autonomy:
+### Universal Form Elements (All Components)
 
-**Subject Dependency:** "You/Your/We" creates instruction-following mode
-**Prescriptive Commands:** "Always/Never/Must" implies oversight needed
-**Abstract Rules:** Rules without examples lack clarity
-**Dense Blocks:** Paragraphs >4 lines reduce scanability
-**External Dependencies:** Core principles hidden in other files
-**Example Overload:** Too many examples create noise
+#### Voice: Imperative Teaching
 
-### Step 2: Distribute Content Strategically
+**Check the writing voice:**
 
-**SKILL.md (Core Knowledge):**
-- Information needed for standard workflows
-- Common variations users encounter
-- Typical troubleshooting steps
-
-**References/ (Specialized Knowledge):**
-- Highly specialized tools
-- Rare edge cases
-- Comprehensive example catalogs
-- Platform-specific variations
-
-**Question:** Is this needed for standard tasks? Put in SKILL.md. Only for specific cases? Put in references/.
-
-### Reviewing References
-
-References should be self-contained knowledge modules that work without SKILL.md.
-
-**Checklist:**
-
-✅ **Good Reference:**
-- No meta-instructions ("This file contains... Load this when...")
-- Clear headers for scanning
-- Pure content without circular logic
-- Self-contained and understandable alone
-
-❌ **Bad Reference:**
-- References SKILL.md for context
-- Contains instructions about when to read it
-- Unclear structure
-- Duplicates content from SKILL.md
-
-**Question:** Can you understand this reference without reading SKILL.md first? If no, fix it.
-
-### Pattern 4: Transformation Arsenal
-
-## Refactoring Examples
-
-### Example 1: Natural Imperative vs Commands
-
-**Before (Dependency-Creating):**
+**Elegant form:**
 ```markdown
-You should transform content. You must remove dependencies. You need to trust AI.
+Transform verbose content. Apply progressive disclosure.
+Remember that context is expensive.
 ```
 
-**After (Autonomy-Building):**
+**Needs work:**
 ```markdown
-Transform verbose content. Remove dependency patterns. Trust autonomous adaptation.
+You should transform content. We need to apply progressive disclosure.
+The user must remember that context is expensive.
 ```
 
-**Why:** Natural imperative builds understanding; prescriptive commands create dependency.
+**Recognition:** Scan for "you/your/we" - these indicate prescriptive voice, not teaching voice.
+
+#### Examples: Concrete and Copyable
+
+**Check example quality:**
+
+**Elegant form:**
+```markdown
+Use imperative form: "Transform content. Remove noise. Trust intelligence."
+```
+
+**Needs work:**
+```markdown
+Use imperative form for clear instructions.
+```
+
+**Recognition:** Does the example show exactly what the text describes? Can the reader copy it directly?
+
+#### Structure: Scannable Headers
+
+**Check header organization:**
+
+**Elegant form:**
+```markdown
+## Core Workflow
+## Edge Cases
+## Reference Material
+```
+
+**Needs work:**
+```markdown
+## Some information about workflows
+## Additional notes
+## More stuff
+```
+
+**Recognition:** Can a reader understand the outline from headers alone in 5 seconds?
 
 ---
 
-### Example 2: Progressive Disclosure
+### Skill Form Analysis
 
-**Before (Cognitive Overload):**
+**Skills use progressive disclosure structure.**
+
+#### Tier 1: Core Content (SKILL.md)
+
+**Check for elegant tiering:**
+
+**Elegant form:**
 ```markdown
-Include all information in SKILL.md. Never use references/.
-Here are 50 examples of imperative form...
+## Core Workflow
+
+Identify the task. Apply the pattern. Validate results.
+
+For comprehensive examples, see references/advanced-patterns.md
 ```
 
-**After (Elegant Structure):**
+**Needs work:**
 ```markdown
-Core workflow in SKILL.md. Edge cases in references/.
-For comprehensive examples, see examples/imperative-phrases.md
+## Core Workflow
+
+Identify the task. Apply the pattern. Validate results.
+
+Here are 50 examples of every possible variation:
+[50 examples embedded]
 ```
 
-**Why:** Progressive disclosure maintains flow; flat structure creates cognitive clutter.
+**Recognition:** Is the core content focused on the 80% use case? Are specialized cases moved to references/?
 
-### Example 3: Binary Recognition Patterns
+#### Contrast Structure
 
-**Before (Abstract Rules):**
+**Check for before/after contrast:**
+
+**Elegant form:**
 ```markdown
-Make content clear and easy to read
-Ensure good organization
+✅ **Elegant:**
+"Transform content. Trust intelligence."
+
+❌ **Verbose:**
+"You should transform the content. You need to trust the intelligence."
 ```
 
-**After (Pattern Recognition):**
+**Needs work:**
 ```markdown
-Look for: Paragraphs >4 lines → split into bullets
-Look for: "You/Your/We" → replace with imperative form
-Look for: Dense blocks → apply progressive disclosure
+Use imperative form instead of prescriptive form.
 ```
 
-**Why:** Observable patterns enable autonomous detection and correction.
+**Recognition:** Does the skill show the difference through concrete examples?
 
 ---
 
-### Example 4: Data vs Logic Separation
+### Command Form Analysis
 
-**Before (Mixed Content):**
+**Commands use orchestration language and dynamic syntax.**
+
+#### Dynamic Context Syntax
+
+**Check for proper !/@ usage:**
+
+**Elegant form:**
 ```markdown
-Logic and data mixed in SKILL.md
-50 examples embedded directly
-No catalog separation
+Inspect @ for context:
+- Current file: @!file
+- Selection: @!selection
+- Working directory: @!cwd
 ```
 
-**After (Separated Concerns):**
+**Needs work:**
 ```markdown
-Logic: Use imperative form for autonomous behavior
-Data: 50 examples in examples/imperative-catalogue.md
+Look at the file path passed as an argument.
 ```
 
-**Why:** Pattern recognition separated from data retrieval improves clarity.
+**Recognition:** Does the command use dynamic context markers instead of manual references?
 
-## Validation Checklist
+#### Numbered Steps
 
-After refactoring, check:
+**Check for clear sequence:**
 
-**Structure:**
-- [ ] Headers enable 5-second scan?
-- [ ] Examples concrete and copyable?
-- [ ] Content flows logically?
+**Elegant form:**
+```markdown
+1. Analyze the file structure
+2. Identify refactoring opportunities
+3. Apply transformations
+4. Validate results
+```
 
-**Autonomy:**
-- [ ] Uses natural imperative form (no "you/your")?
-- [ ] Every principle has contrast example?
-- [ ] Standard workflow works without references/?
+**Needs work:**
+```markdown
+Analyze the file structure, then identify refactoring opportunities, then apply transformations, then validate results.
+```
 
-**Distribution:**
-- [ ] Core content in SKILL.md?
-- [ ] Edge cases in references/?
-- [ ] References self-contained?
-
-**Question:** Would this work if someone only read SKILL.md? If no, consolidate.
+**Recognition:** Are multi-step processes broken into numbered items?
 
 ---
 
-## Complete Refactoring Example
+### Agent Form Analysis
 
-**Before (Bloated):**
+**Agents use specific triggering formats and complete prompts.**
+
+#### Example Block Structure
+
+**Check for proper `<example>` syntax:**
+
+**Elegant form:**
 ```markdown
-Use imperative form. Here are 20 examples:
-1. Run the test
-2. Build the image
+<example>
+<context>User is working on authentication code</context>
+<user>Review this auth module for security issues</user>
+<assistant>[Performs security audit, reports findings]</assistant>
+</example>
+```
+
+**Needs work:**
+```markdown
+Trigger when user asks for security review.
+```
+
+**Recognition:** Does the agent show concrete triggering scenarios?
+
+#### System Prompt Structure
+
+**Check for complete prompt format:**
+
+**Elegant form:**
+```markdown
+You are a security analyst specializing in authentication systems.
+
+**Responsibilities:**
+- Identify vulnerabilities
+- Check for secrets
+- Validate inputs
+
+**Process:**
+1. Scan for obvious issues
+2. Analyze authentication flow
+3. Report findings
+
+**Output format:**
+## Security Audit Report
+### Critical
+[...]
+```
+
+**Needs work:**
+```markdown
+You are a security analyst. Find vulnerabilities.
+```
+
+**Recognition:** Does the system prompt specify responsibilities, process, and output format?
+
+---
+
+### Hook Form Analysis
+
+**Hooks use event matcher syntax and validation structure.**
+
+#### Matcher Syntax
+
+**Check for precise matcher patterns:**
+
+**Elegant form:**
+```json
+{
+  "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.env$\"",
+  "description": "Prevent .env file writes"
+}
+```
+
+**Needs work:**
+```json
+{"matcher": "tool == \"Write\""}
+```
+
+**Recognition:** Does the matcher target specific events, not generic categories?
+
+#### Response Structure
+
+**Check for proper hook response format:**
+
+**Elegant form:**
+```bash
+# Log decision
+echo "BLOCKED: .env write detected" >&2
+
+# Return structured response
+echo '{"blocked": true, "reason": ".env files may contain secrets"}'
+```
+
+**Needs work:**
+```bash
+# Just exit
+exit 1
+```
+
+**Recognition:** Does the hook log decisions AND return structured JSON?
+
+---
+
+## Phase 3: Form Refactoring
+
+**Apply form-specific patterns to improve writing quality.**
+
+### Pattern 1: Voice Transformation
+
+**Transform prescriptive to teaching voice:**
+
+**Before:**
+```markdown
+You should always use imperative form.
+You must provide examples for every pattern.
+We need to focus on clarity.
+```
+
+**After:**
+```markdown
+Use imperative form for clarity.
+Provide examples for every pattern.
+Focus on clarity in teaching.
+```
+
+**Recognition:** Remove "you/your/we" - rewrite as direct imperative.
+
+---
+
+### Pattern 2: Example Enrichment
+
+**Add concrete, copyable examples:**
+
+**Before:**
+```markdown
+Use progressive disclosure to structure content.
+```
+
+**After:**
+```markdown
+Use progressive disclosure: core content in SKILL.md, edge cases in references/.
+
+**Example:**
+```markdown
+## Core Workflow
+[Basics]
+
+For advanced patterns, see references/advanced.md
+```
+```
+
+**Recognition:** Every abstract principle needs a concrete example.
+
+---
+
+### Pattern 3: Progressive Disclosure
+
+**Structure content by frequency of use:**
+
+**Before (Flat):**
+```markdown
+## How to Use This Skill
+
+1. Basic usage
+2. Advanced usage
+3. Edge case 1
+4. Edge case 2
+5. Edge case 3
 ...
-20. Delete the cache
-For Kubernetes, check pod limits
-For Docker, check volume mounts
+20. All possible variations
 ```
 
-**After (Elegant):**
+**After (Tiered):**
 ```markdown
-Use imperative form. Remember that this reduces processing latency.
+## Core Workflow
 
-Comprehensive imperative patterns: examples/imperative-catalogue.md
+[Basics for 80% of use cases]
 
-Container orchestration:
-- Kubernetes specifics → references/k8s-patterns.md
-- Docker specifics → references/docker-variations.md
+## Advanced Patterns
+
+For comprehensive edge cases, see references/edge-cases.md
 ```
 
-**Why better:** Separates core patterns from data catalogs; enables context-aware retrieval.
+**Recognition:** Is the reader overwhelmed by detail up front?
 
 ---
 
-## Quality Checklist
+### Pattern 4: Contrast Teaching
 
-A well-refactored component:
+**Show difference through comparison:**
 
-**Content Quality:**
-- [ ] Uses natural imperative form (no "you/your")
-- [ ] Every principle has contrast example
-- [ ] Headers enable 5-second scan
-- [ ] Examples concrete and copyable
+**Before:**
+```markdown
+Avoid using prescriptive language in components.
+```
 
-**Structure:**
-- [ ] Core content in SKILL.md
-- [ ] Edge cases in references/
-- [ ] Standard workflow works without opening references/
-- [ ] References self-contained
+**After:**
+```markdown
+❌ **Prescriptive (creates dependency):**
+"You should transform the content."
 
-**Autonomy:**
-- [ ] No circular dependencies
-- [ ] Pattern recognition enabled through examples
-- [ ] Binary validation for quality checks
-- [ ] No meta-instructions about when to use this
+✅ **Imperative (builds autonomy):**
+"Transform the content."
 
-**Self-check:** Would this component work if moved to a project with no external rules? If no, make it self-contained.
+**Why:** Prescriptive language implies oversight; imperative enables autonomous operation.
+```
+
+**Recognition:** Does the component show both "bad" and "good" forms with rationale?
 
 ---
 
-## Getting Started
+### Pattern 5: Header Scannability
 
-1. **Identify the content to refactor**
-   - What component needs simplification?
-   - What patterns reduce autonomy?
+**Make headers informative and scannable:**
 
-2. **Apply refactoring patterns**
-   - Remove dependency language ("you/your")
-   - Add concrete examples with contrast
-   - Separate core from edge cases
-   - Enable pattern recognition
+**Before:**
+```markdown
+## Information
+## Details
+## More Information
+## Additional Details
+```
 
-3. **Validate the result**
-   - Run through quality checklist
-   - Test if SKILL.md works standalone
-   - Verify references are self-contained
+**After:**
+```markdown
+## Core Workflow
+## Edge Cases
+## Reference Material
+## Troubleshooting
+```
 
-4. **Iterate and improve**
-   - Refine based on validation
-   - Add more examples where needed
-   - Remove unnecessary complexity
+**Recognition:** Can a reader understand the component structure from headers alone?
+
+---
+
+## Component-Specific Form Patterns
+
+### Skill Form Patterns
+
+**Teaching voice + progressive disclosure:**
+
+| Element | Elegant Form | Why It Matters |
+|---------|-------------|----------------|
+| Voice | Imperative with "Remember/Think/Consider" | Teaching, not commanding |
+| Examples | Concrete and copyable | Recognition over generation |
+| Structure | Tiered (core → references/) | Cognitive load management |
+| Contrast | Before/after with rationale | Shows difference, doesn't tell |
+
+### Command Form Patterns
+
+**Orchestration language + dynamic syntax:**
+
+| Element | Elegant Form | Why It Matters |
+|---------|-------------|----------------|
+| Syntax | Uses @!file, @!selection | Runtime flexibility |
+| Steps | Numbered for multi-step processes | Clear sequence |
+| Guardrails | Explicit safety sections | Destructive operation awareness |
+| Parameters | Clear argument documentation | Usability |
+
+### Agent Form Patterns
+
+**Specific triggering + complete prompts:**
+
+| Element | Elegant Form | Why It Matters |
+|---------|-------------|----------------|
+| Triggering | `<example>` blocks with context/user/assistant | Shows activation clearly |
+| System Prompt | Responsibilities + Process + Output | Complete guidance |
+| Output | Structured format specification | Predictable results |
+| Preload | `skills:` for domain knowledge | Context isolation |
+
+### Hook Form Patterns
+
+**Event targeting + decision logging:**
+
+| Element | Elegant Form | Why It Matters |
+|---------|-------------|----------------|
+| Matcher | Specific event patterns | Precision targeting |
+| Response | JSON + stderr logging | Auditability |
+| Validation | Complete logic in hook | Self-contained |
+| Exit | Always code 0 | Non-blocking design |
+
+---
+
+## Form Validation Checklist
+
+**After refactoring, verify the writing form:**
+
+### Universal Checks (All Components)
+- [ ] No "you/your/we" in instructions?
+- [ ] Examples concrete and copyable?
+- [ ] Headers enable 5-second scan?
+- [ ] Contrast examples with rationale?
+- [ ] Progressive disclosure applied?
+
+### Skill-Specific
+- [ ] Core content focused on 80% use cases?
+- [ ] Edge cases moved to references/?
+- [ ] Each principle has concrete example?
+- [ ] Teaching voice ("Remember/Think/Consider")?
+
+### Command-Specific
+- [ ] Uses !/@ syntax for dynamic context?
+- [ ] Multi-step processes numbered?
+- [ ] Safety sections for destructive operations?
+- [ ] Parameters clearly documented?
+
+### Agent-Specific
+- [ ] `<example>` blocks with context/user/assistant?
+- [ ] System prompt has responsibilities + process + output?
+- [ ] Output format clearly specified?
+- [ ] Domain knowledge preloaded if needed?
+
+### Hook-Specific
+- [ ] Matcher targets specific events (not generic)?
+- [ ] Returns JSON + logs to stderr?
+- [ ] Validation logic self-contained?
+- [ ] Always exits code 0?
 
 ---
 
 ## Remember
 
-Refactoring transforms verbose content into elegant, autonomous teaching. Focus on:
+**Form refinement focuses on:**
 
-- **Pattern recognition** over rule-following
-- **Autonomous operation** over external dependencies
-- **Clear examples** over abstract explanations
-- **Progressive disclosure** over flat structure
+- **Voice** - Imperative teaching, not prescriptive commands
+- **Examples** - Concrete and copyable, not abstract
+- **Structure** - Progressive disclosure, not flat information
+- **Contrast** - Before/after with rationale, not rules
+- **Syntax** - Component-specific patterns, not generic
 
-**Final tip:** The best refactoring makes complex content feel simple and self-evident. When someone reads it, they understand exactly what to do without asking questions.
+**What form refinement doesn't do:**
+
+- Assess whether content is correct
+- Judge if the component should exist
+- Validate semantic meaning
+- Determine optimal approach
+
+**The principle:** Polish the writing craft. Let others judge the meaning.
+
+**Final tip:** Elegant form makes content teach itself. The reader should understand exactly how to write well from the examples alone.

@@ -220,6 +220,23 @@ See [troubleshooting.md](references/troubleshooting.md) for issues.
 
 ---
 
+## Rationalization Prevention
+
+Common excuses for skipping quality checks, and reality:
+
+| Rationalization (Stop) | Reality |
+|------------------------|---------|
+| "This is just a quick skill" | Quality shortcuts create maintenance debt |
+| "I'll clean it up later" | "Later" never comes |
+| "It's obvious how to use" | Clear descriptions prevent confusion |
+| "They can figure it out" | Self-documenting code is a myth |
+| "Generic content is fine" | Claude already knows this |
+| "More details can't hurt" | Every token costs context |
+| "Questions are OK" | Autonomy requires minimal questions |
+| "Tier structure is overkill" | Progressive disclosure prevents overwhelm |
+| "I know what I'm doing" | Subjective quality leads to inconsistency |
+| "Tests will catch issues" | Quality prevents issues, tests find them |
+
 ## Recognition Questions
 
 Use these questions to assess quality:

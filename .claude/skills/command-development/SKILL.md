@@ -9,7 +9,24 @@ Commands are human-invoked orchestrators that bundle skills and tools into coher
 
 **Core principle**: Commands should work standalone without depending on external files or documentation.
 
-**Mandatory reading**: Before using bash injection or file reference syntax, read examples/executable-examples.md for complete working examples.
+---
+
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Creating your first command | **BEFORE ANYTHING ELSE** | `references/executable-examples.md` |
+| Using bash injection (! syntax) | **BEFORE USING** | `references/executable-examples.md` |
+| Using file references (@ syntax) | **BEFORE USING** | `references/executable-examples.md` |
+| Configuring frontmatter | **WHEN ADDING FRONTMATTER** | `references/frontmatter-reference.md` |
+| Creating interactive commands | **WHEN USING ASKUSERQUESTION** | `references/interactive-commands.md` |
+| Testing your command | **BEFORE TESTING** | `references/testing-strategies.md` |
+| Documenting complex commands | **WHEN ADDING DOCS** | `references/documentation-patterns.md` |
+| Designing multi-step workflows | **WHEN DESIGNING WORKFLOWS** | `references/advanced-workflows.md` |
+| Preparing for marketplace | **WHEN PUBLISHING** | `references/marketplace-considerations.md` |
+| Using plugin-specific features | **WHEN USING PLUGIN FEATURES** | `references/plugin-features-reference.md` |
+
+**CRITICAL**: `executable-examples.md` contains bash injection and file reference syntax. Using these without understanding causes silent failures and syntax errors. **READ COMPLETELY. DO NOT SKIP.**
 
 ---
 
@@ -340,6 +357,25 @@ Create a skill file at `~/.claude/skills/learned/[pattern-name].md`:
 
 ---
 
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Creating your first command | BEFORE ANYTHING ELSE | `references/executable-examples.md` |
+| Using bash injection (! syntax) | BEFORE USING | `references/executable-examples.md` |
+| Using file references (@ syntax) | BEFORE USING | `references/executable-examples.md` |
+| Configuring frontmatter | WHEN ADDING FRONTMATTER | `references/frontmatter-reference.md` |
+| Creating interactive commands | WHEN USING ASKUSERQUESTION | `references/interactive-commands.md` |
+| Testing your command | BEFORE TESTING | `references/testing-strategies.md` |
+| Documenting complex commands | WHEN ADDING DOCS | `references/documentation-patterns.md` |
+| Designing multi-step workflows | WHEN DESIGNING WORKFLOWS | `references/advanced-workflows.md` |
+| Preparing for marketplace | WHEN PUBLISHING | `references/marketplace-considerations.md` |
+| Using plugin-specific features | WHEN USING PLUGIN FEATURES | `references/plugin-features-reference.md` |
+
+**CRITICAL REMINDER**: executable-examples.md contains bash injection (!) and file reference (@) syntax. Using these without understanding causes silent failures and syntax errors. READ COMPLETELY. DO NOT SKIP.
+
+---
+
 ## Command Variety: One Size Does Not Fit All
 
 Commands vary widely in structure and complexity. Choose the right structure based on your needs.
@@ -473,11 +509,11 @@ Ensure:
 - Combine with `allowed-tools: Read` if needed
 - Useful for code review, documentation generation
 
-### Bash Injection with `!` Syntax
+### Bash Injection with ! Syntax
 
 **Purpose**: Execute bash commands and include output in command
 
-**Syntax**: `!`` followed by the command in backticks
+**Syntax**: !`` followed by the command in backticks (in this case it's blank)
 
 **Key characteristic**: This is **preprocessing** - commands run BEFORE Claude reads the prompt. The shell command output replaces the placeholder, so Claude receives actual data, not the command itself.
 
@@ -525,7 +561,7 @@ Ensure:
 - Use absolute or project-relative paths
 - Requires Read tool permission (implicit for most cases)
 
-**For `!`` bash injection syntax**:
+**For bash injection syntax**:
 - Commands execute as preprocessing BEFORE Claude sees the prompt
 - **Must have** `allowed-tools: Bash` in frontmatter
 - Output becomes part of command prompt
@@ -534,7 +570,7 @@ Ensure:
 - NOT interactive - use Bash tool during execution for interactive flows
 
 **Anti-patterns**:
-- ❌ Using `!` without `allowed-tools: Bash`
+- ❌ Using bash injection syntax without `allowed-tools: Bash`
 - ❌ Complex bash logic (keep it simple)
 - ❌ Not validating file paths with `@`
 - ❌ Not testing bash commands before using
@@ -939,6 +975,22 @@ This mirrors the real examples from /plan and /tdd.
 
 ---
 
+## Frontmatter Configuration (CRITICAL)
+
+MANDATORY TO READ WHEN ADDING FRONTMATTER: references/frontmatter-reference.md
+
+Invalid frontmatter causes silent failures—your command simply won't load, with no error messages.
+
+The reference contains:
+- Required vs optional fields
+- Validation rules for each field
+- Common errors that cause silent failures
+- Testing strategies to verify frontmatter
+
+You cannot proceed without reading this when adding frontmatter.
+
+---
+
 ## Frontmatter Deep Dive
 
 ### Field Reference
@@ -1123,11 +1175,11 @@ Before finalizing a command, verify:
 - [ ] Safety constraints (for destructive operations)
 
 **Quality**:
-- [ ] Self-contained (no external file references)
-- [ ] Imperative tone (what Claude should do)
+- [ ] Self-contained (NEVER reference external files)
+- [ ] Imperative tone (direct instructions)
 - [ ] Concise (not verbose, not cryptic)
 - [ ] Specific (not vague, not over-prescriptive)
-- [ ] Uses `AskUserQuestion` for multi-turn interactions (not natural conversation)
+- [ ] Uses `AskUserQuestion` for multi-turn interactions (ALWAYS use, never natural conversation)
 - [ ] Understands command window lifecycle and statelessness
 
 **Integration** (only if applicable):
@@ -1135,10 +1187,10 @@ Before finalizing a command, verify:
 - [ ] "Related Agents" (ONLY for commands that invoke specific agents)
 
 **Dynamic features** (if applicable):
-- [ ] `allowed-tools: Bash` included when using `!` syntax
+- [ ] `allowed-tools: Bash` included when using bash injection (MANDATORY - command will fail without it)
 - [ ] `@` file paths validated
 - [ ] Bash commands tested independently
-- [ ] Error handling for bash failures
+- [ ] Error handling for bash failures (CRITICAL for robustness)
 
 **Self-check**: Would this command work in a project with ZERO `.claude/rules/` dependencies?
 
@@ -1400,7 +1452,7 @@ $ARGUMENTS can be:
 - `option2` - Description
 ```
 
-**Dynamic Context Command** (with `!`` bash injection and `@` file references):
+**Dynamic Context Command** (with bash injection and `@` file references):
 - Uses bash injection to get changed files from git
 - Uses @FILE reference to review each file
 - Checks for security, code quality, best practices
@@ -1462,7 +1514,7 @@ user-invocable: false              # Use to hide from menu
 allowed-tools: ["Bash", "Read"]   # REQUIRED when using `!`` or `@` syntax
 ```
 
-**Important**: If using `!`` bash injection syntax, you MUST include `allowed-tools: Bash`.
+**Important**: If using bash injection syntax, you MUST include `allowed-tools: Bash`.
 
 **Key insight**: Frontmatter is OPTIONAL. Many great commands don't use it.
 

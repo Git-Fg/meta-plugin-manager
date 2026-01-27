@@ -74,27 +74,32 @@ Project-specific configuration belongs in the project, not in global settings or
 
 ## The Delta Standard
 
-> **Good Customization = Expert-only Knowledge − What Claude Already Knows**
+> **Good Customization = Expert Knowledge − What Claude Does By Default**
 
-Only provide information that has a "knowledge delta" - the gap between what Claude knows from training and what it needs to know for this specific project.
+Only provide information that has a "knowledge delta" - the gap between default Claude behavior and what's needed for this specific project.
 
 **Positive Delta** (keep these):
-- Project-specific architecture decisions
-- Domain expertise not in general training
-- Business logic and constraints
-- Non-obvious bug workarounds
-- Team-specific conventions
-- Local environment quirks
+- **Best practices** - Not just what's possible, but what's RECOMMENDED
+- **Modern patterns** - Evolving conventions (React 19, Next.js 15, etc.)
+- **Explicit conventions** - Ensuring consistency across sessions
+- **Rationale** - Teaching WHY patterns are preferred, not just WHAT
+- **Project-specific decisions** - Architecture, tech stack choices
+- **Domain expertise** - Specialized knowledge not in general training
+- **Anti-patterns** - What to avoid, not just what to do
+- **Non-obvious trade-offs** - When to use X vs Y (and why)
 
 **Zero/Negative Delta** (remove these):
-- General programming concepts
-- Standard library documentation
-- Common patterns Claude already knows
-- Generic tutorials
-- Obvious best practices
-- Universal truths
+- **Basic definitions** - "What is a function", "What is TypeScript"
+- **How-to tutorials** - "How to write a for loop", "How to use npm"
+- **Standard library docs** - "What Array.map does"
+- **Things Claude does by default** - Obvious operations that require no guidance
 
-**Recognition**: For each piece of content, ask "Would Claude know this without me being told?" If yes, delete it.
+**Recognition questions**:
+1. "Does this teach BEST PRACTICE, not just possibility?" → Keep
+2. "Does this explain WHY, not just WHAT?" → Keep
+3. "Is this a MODERN pattern Claude might not default to?" → Keep
+4. "Is this just defining basic concepts?" → Delete
+5. "Would Claude do this by default without being told?" → Delete
 
 ---
 

@@ -9,6 +9,39 @@ description: This skill should be used when the user wants to "create a skill", 
 
 ---
 
+## Critical References (MANDATORY)
+
+MANDATORY READ BEFORE ANYTHING ELSE: references/quality-framework.md
+READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
+
+This reference contains success criteria and validation patterns for skills. Without understanding these, you cannot create effective skills that actually activate and provide value.
+
+The reference contains:
+- Success criteria for effective skills
+- Autonomy targets (80-95% autonomy)
+- Validation frameworks
+- Common quality issues
+- Testing strategies
+
+You cannot create effective skills without understanding these patterns.
+
+---
+
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Writing skill descriptions | WHEN WRITING DESCRIPTIONS | `references/description-guidelines.md` |
+| Designing for autonomy | WHEN DESIGNING AUTONOMY | `references/autonomy-design.md` |
+| Creating orchestration skills | WHEN ORCHESTRATING | `references/orchestration-patterns.md` |
+| Troubleshooting skill issues | WHEN TROUBLESHOOTING | `references/anti-patterns.md` |
+| Organizing skill content | WHEN ORGANIZING | `references/progressive-disclosure.md` |
+| Using advanced execution | WHEN USING ADVANCED | `references/advanced-execution.md` |
+
+**CRITICAL REMINDER**: description-guidelines.md contains trigger phrase patterns. Your skill will not activate without proper description. READ COMPLETELY when writing descriptions.
+
+---
+
 ## What Skills Are
 
 Skills are self-contained packages that extend Claude's capabilities. They provide specialized knowledge, workflows, and tools without depending on external files or documentation.
@@ -51,23 +84,30 @@ Skills use a three-tier disclosure structure to manage cognitive load:
 
 ### The Delta Standard for Skills
 
-> Good skill = Expert-only Knowledge − What Claude Already Knows
+> Good skill = Expert Knowledge − What Claude Does By Default
 
 Include in skills (Positive Delta):
-- Project-specific architecture decisions
-- Domain expertise not in general training
-- Non-obvious bug workarounds
-- Team-specific conventions
-- Local environment quirks
+- **Best practices** - Not just what's possible, but what's RECOMMENDED
+- **Modern patterns** - Evolving conventions (React 19, Next.js 15, etc.)
+- **Explicit conventions** - Ensuring consistency across sessions
+- **Rationale** - Teaching WHY patterns are preferred, not just WHAT
+- **Project-specific decisions** - Architecture, tech stack choices
+- **Domain expertise** - Specialized knowledge not in general training
+- **Anti-patterns** - What to avoid, not just what to do
+- **Non-obvious trade-offs** - When to use X vs Y (and why)
 
 Exclude from skills (Zero/Negative Delta):
-- General programming concepts
-- Standard library documentation
-- Common patterns Claude already knows
-- Generic tutorials
-- Obvious best practices
+- **Basic definitions** - "What is a function", "What is TypeScript"
+- **How-to tutorials** - "How to write a for loop", "How to use npm"
+- **Standard library docs** - "What Array.map does"
+- **Things Claude does by default** - Obvious operations that require no guidance
 
-**Recognition**: For each piece of content, ask "Would Claude know this without being told?" If yes, delete it.
+**Recognition questions**:
+1. "Does this teach BEST PRACTICE, not just possibility?" → Include
+2. "Does this explain WHY, not just WHAT?" → Include
+3. "Is this a MODERN pattern Claude might not default to?" → Include
+4. "Is this just defining basic concepts?" → Delete
+5. "Would Claude do this by default without being told?" → Delete
 
 ### Voice and Freedom for Skills
 
@@ -109,6 +149,22 @@ Always include everything directly:
 **Recognition**: "Does this skill reference files outside itself?" If yes, include that information directly.
 
 **Portability test**: Would this skill work in a project with ZERO `.claude/rules/` dependencies?
+
+---
+
+## Skill Description (CRITICAL)
+
+MANDATORY TO READ WHEN WRITING DESCRIPTIONS: references/description-guidelines.md
+
+Your skill description is the ONLY thing Claude sees to decide when to activate. Poor descriptions = skill never used.
+
+The reference contains:
+- Exact trigger phrases that work
+- WHEN/NOT patterns for specificity
+- Description length guidelines
+- Common description errors
+
+Your skill will not activate without a proper description. READ THIS when writing descriptions.
 
 ---
 

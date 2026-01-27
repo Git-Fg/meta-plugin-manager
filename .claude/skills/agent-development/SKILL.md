@@ -9,6 +9,40 @@ description: This skill should be used when the user asks to "create an agent", 
 
 ---
 
+## Critical References (MANDATORY)
+
+MANDATORY READ BEFORE ANYTHING ELSE: examples/complete-agent-examples.md
+READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
+
+This reference contains working examples of every agent pattern. Attempting to create agents without reading these examples will result in agents that don't trigger, produce poor output, or fail autonomously.
+
+The reference contains:
+- Complete agent examples with <example> blocks
+- Triggering patterns for different agent types
+- System prompt structures for autonomy
+- Common errors that prevent triggering
+- Output format examples
+
+You cannot create effective agents without understanding these patterns.
+
+---
+
+## Quick Navigation
+
+| If you are... | MANDATORY READ WHEN... | File |
+|---------------|------------------------|------|
+| Creating agent frontmatter | WHEN CREATING FRONTMATTER | `references/triggering-examples.md` |
+| Designing system prompts | WHEN DESIGNING PROMPTS | `references/system-prompt-design.md` |
+| Adding ADR patterns | WHEN ADDING ADR | `references/system-prompt-design.md` (Pattern 5) |
+| Creating background agents | WHEN USING BACKGROUND MODE | `examples/complete-agent-examples.md` (Example 5) |
+| Adding risk assessment | WHEN ADDING RISK ASSESSMENT | `references/system-prompt-design.md` (Advanced) |
+| Orchestrating multi-agent workflows | WHEN ORCHESTRATING | `references/agent-orchestration.md` |
+| Solving subagent context issues | WHEN SOLVING CONTEXT ISSUES | `references/iterative-retrieval.md` |
+
+**CRITICAL REMINDER**: triggering-examples.md contains <example> block syntax. Your agent will NOT self-trigger without correct <example> blocks. READ COMPLETELY when creating frontmatter.
+
+---
+
 ## What Agents Are
 
 Agents are autonomous subprocesses that handle complex, multi-step tasks in an isolated context window. They work independently without depending on conversation history or external documentation.
@@ -50,19 +84,25 @@ Agents use condensed disclosure (isolation context requires completeness):
 > Good agent = Domain-specific knowledge − General agent concepts
 
 Include in agents (Positive Delta):
-- Specific domain expertise
-- Triggering logic with examples
-- Analysis frameworks for the domain
-- Output format requirements
-- Domain-specific validation criteria
+- **Specific domain expertise** - Specialized knowledge for THIS domain
+- **Triggering logic with examples** - When THIS agent should activate
+- **Analysis frameworks** - How to analyze problems in THIS domain
+- **Output format requirements** - Expected output structure
+- **Domain-specific validation** - What makes output valid for THIS domain
+- **Best practices** - Recommended approaches for THIS domain (with rationale)
+- **Modern patterns** - Current conventions for THIS type of work
 
 Exclude from agents (Zero/Negative Delta):
 - General coding practices
 - How to use tools Claude already knows
 - Generic "be thorough" instructions
 - Obvious task steps
+- Things Claude would do by default
 
-**Recognition**: "Is this knowledge specific to this agent's domain?"
+**Recognition questions**:
+1. "Is this knowledge specific to THIS agent's domain?" → Include
+2. "Does this teach BEST APPROACH for this domain?" → Include
+3. "Would Claude do this by default?" → Delete
 
 ### Voice and Freedom for Agents
 
@@ -147,6 +187,48 @@ Agent should trigger when user asks for security analysis
 ✅ Good: Specific triggering examples with context, user request, and assistant response
 ❌ Bad: Vague descriptions like "use for code help"
 Why good: Specific triggers enable autonomous decision-making
+
+### Proactive Activation Language
+
+**Strong activation language ensures agents trigger at the right time.**
+
+For agents that should run proactively (without explicit request):
+
+```yaml
+description: Use PROACTIVELY when [condition]. MUST BE USED for [scenario].
+```
+
+**Strong activation keywords:**
+- `PROACTIVELY` - Agent runs automatically after relevant work
+- `MUST BE USED` - Mandatory agent for quality/safety gates
+- `Automatically activated` - Triggers based on context
+- `Immediately after` - Timing-specific activation
+
+**Example patterns:**
+```yaml
+# Proactive + Mandatory
+description: Expert code reviewer. Use PROACTIVELY after writing code.
+MUST BE USED for all code changes before commit.
+
+# Automatic triggering
+description: Expert planner. Automatically activated for feature
+implementation requests. Use when complexity requires structured planning.
+
+# Timing-specific
+description: Security analyzer. Use immediately after implementing
+authentication, payment, or data handling code.
+```
+
+**Weak activation (avoid):**
+```yaml
+❌ "Use this agent for code review"
+❌ "Helps with planning"
+❌ "Can be used for security"
+```
+
+✅ Good: Strong activation language (PROACTIVELY, MUST BE USED, Automatically)
+❌ Bad: Passive language (helps with, can be used for, use for)
+Why good: Strong language ensures critical agents trigger reliably
 
 ### 2. Complete System Prompt
 
@@ -268,6 +350,12 @@ You are [agent role description]...
 - Model to use: `sonnet`, `opus`, `haiku`, or `inherit`
 - Default: inherit (uses same model as main conversation)
 
+**Model selection guidance:**
+- `opus`: Complex reasoning, architectural decisions, security analysis, multi-step planning
+- `sonnet`: General-purpose tasks, code analysis, test generation, documentation
+- `haiku`: Simple, repetitive tasks, quick validations, straightforward analysis
+- `inherit`: Let the context determine appropriate model
+
 **color** (optional):
 - Visual identifier for UI
 - Default: blue
@@ -323,6 +411,24 @@ description: "Use when user asks to 'analyze code for security issues'"
 # Just use Read tool directly
 ```
 
+---
+
+## Agent Frontmatter (CRITICAL)
+
+MANDATORY TO READ WHEN CREATING FRONTMATTER: references/triggering-examples.md
+
+Agents use <example> blocks for autonomous triggering. Incorrect triggering syntax causes agents to never activate.
+
+The reference contains:
+- Complete <example> block syntax with context/user/assistant structure
+- Triggering patterns for different agent types
+- Common errors that prevent triggering
+- Testing strategies to verify triggering
+
+Your agent will not work without correct <example> blocks. READ THIS when creating frontmatter.
+
+---
+
 ### Triggering Examples
 
 Make triggering concrete and specific:
@@ -342,6 +448,34 @@ assistant: "I'll use the code-reviewer agent to analyze it"
 ```yaml
 description: "Use for code review tasks"
 ```
+
+### Agent Orchestration
+
+For complex workflows, coordinate multiple agents in sequence or parallel.
+
+**Sequential workflows** (output of one agent becomes input for next):
+- **Feature**: `planner -> tdd-guide -> code-reviewer -> security-reviewer`
+- **Bugfix**: `explorer -> tdd-guide -> code-reviewer`
+- **Refactor**: `architect -> code-reviewer -> tdd-guide`
+
+**Parallel workflows** (independent operations):
+- Multiple agents analyze different aspects simultaneously
+- Merge results into single report
+- Use for: security + performance + quality review of same code
+
+**For detailed orchestration patterns**, see `references/agent-orchestration.md`.
+
+### Context Retrieval for Subagents
+
+Subagents don't inherit conversation context. Use iterative retrieval to discover relevant files:
+
+**The 4-phase loop:**
+1. **DISPATCH**: Broad search with domain keywords
+2. **EVALUATE**: Score relevance (0-1 scale)
+3. **REFINE**: Add discovered terminology, follow patterns
+4. **LOOP**: Repeat max 3 cycles until 3+ high-relevance files found
+
+**For detailed iterative retrieval patterns**, see `references/iterative-retrieval.md`.
 
 ---
 
@@ -689,16 +823,39 @@ Recognition-based patterns to avoid when creating agents.
 
 A good agent:
 
+**Triggering and Activation:**
 - [ ] Has clear description with specific triggering examples
 - [ ] Includes <example> blocks with context, user request, and assistant response
+- [ ] Uses strong activation language (PROACTIVELY, MUST BE USED) when appropriate
+- [ ] Covers both proactive and explicit triggering scenarios
+
+**System Prompt:**
 - [ ] Has complete system prompt with responsibilities and process
-- [ ] Works in isolation without external references
 - [ ] Includes all necessary context (no conversation history dependency)
-- [ ] Uses appropriate fields (name, description, model, color, tools)
+- [ ] Uses imperative voice ("You are...", "Analyze...", not "You should...")
+- [ ] Defines clear output format
+- [ ] Handles edge cases explicitly
+- [ ] Includes red flags/smell tests for domain (when applicable)
+- [ ] Has risk assessment for decision-making agents (when applicable)
+- [ ] Uses ADR format for architect agents (when applicable)
+
+**Self-Containment:**
+- [ ] Works in isolation without external references
 - [ ] Uses `skills` for domain knowledge (not external references)
+- [ ] No references to .claude/rules/ or external documentation
+
+**Frontmatter:**
+- [ ] Uses appropriate fields (name, description, model, color, tools)
+- [ ] Uses `skills` for preloading domain knowledge (when needed)
 - [ ] Uses `disallowedTools` for tool restrictions (when needed)
 - [ ] Specifies `permissionMode` for permission handling (when needed)
 - [ ] Uses `hooks` for lifecycle automation (when needed)
+
+**Model Selection:**
+- [ ] Uses `opus` for complex reasoning/architectural decisions
+- [ ] Uses `sonnet` for general-purpose tasks
+- [ ] Uses `haiku` for simple, repetitive tasks
+- [ ] Uses `inherit` when model choice depends on context
 
 **Self-check**: Could this agent work if moved to a fresh project? If not, it needs more context.
 

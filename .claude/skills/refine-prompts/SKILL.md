@@ -8,6 +8,27 @@ user-invocable: true
 
 Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology.
 
+---
+
+## Critical Methodology (MANDATORY)
+
+**MANDATORY**: Understand L1/L2/L3/L4 refinement levels before refining prompts.
+
+**WRONG LEVEL = POOR RESULTS**:
+- **L1 (too simple)**: Misses critical context → Claude makes wrong assumptions
+- **L2/L3 (appropriate)**: Right balance → Good results
+- **L4 (too complex)**: Template for simple task → Wasted tokens, over-constrained
+
+**LEVEL SELECTION CRITERIA:**
+- **L1**: Single-sentence outcome (quick clarifications)
+- **L2**: Context-rich paragraph (most prompts - **DEFAULT**)
+- **L3**: Structured bullets (complex tasks, multiple constraints)
+- **L4**: Template/framework (ONLY for reusable patterns)
+
+**CRITICAL**: Default to L2. Only use L3/L4 when justified. Over-structuring wastes tokens and under-structuring misses requirements.
+
+---
+
 ## Core Methodology
 
 **FROM_SCRATCH method**: Convert user's goal/topic into outcome + minimal context + hard constraints
