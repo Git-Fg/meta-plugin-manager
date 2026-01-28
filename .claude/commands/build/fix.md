@@ -40,12 +40,8 @@ Execute safe, incremental build error resolution:
 
 Automatically detects build command:
 
-```bash
-# Checks in order:
-npm run build 2>&1 | tail -20
-# OR
-pnpm build 2>&1 | tail -20
-```
+- `Bash: npm run build 2>&1 | tail -20` → Run npm build
+- `Bash: pnpm build 2>&1 | tail -20` → Run pnpm build
 
 ## Error Analysis Process
 

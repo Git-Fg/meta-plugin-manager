@@ -118,25 +118,6 @@ team_name: { { TEAM_CONTEXT | optional } }
 <constraints>{{OPERATIONAL_CONSTRAINTS}}</constraints>
 </persona_definition>
 
-<philosophy_bundle>
-<principles>
-
-- {{PRINCIPLE_1}}
-- {{PRINCIPLE_2}}
-- {{PRINCIPLE_3}}
-  </principles>
-
-<patterns>
-- {{PATTERN_1}}
-- {{PATTERN_2}}
-</patterns>
-
-<anti_patterns>
-
-- {{ANTI_PATTERN_1}}
-- {{ANTI_PATTERN_2}}
-  </anti_patterns>
-  </philosophy_bundle>
 
 <autonomy_protocol>
 <decision_making>
@@ -269,6 +250,7 @@ team_name: team-context
 | Creation workflow    | `references/agent-creation-system-prompt.md` |
 
 ---
+
 
 ## Absolute Constraints (Non-Negotiable)
 

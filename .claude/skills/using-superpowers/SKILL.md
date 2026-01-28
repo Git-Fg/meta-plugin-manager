@@ -118,7 +118,7 @@ Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
 **Process Skills (Check First):**
 
 - `systematic-debugging` - For any bug/issue
-- `verification-before-completion` - Before claiming complete
+- `quality-standards` - Before claiming complete
 - `engineering-lifecycle` - For any new code or implementation planning
 - `brainstorming` - For any creative work
 
@@ -145,7 +145,7 @@ When working on complex tasks:
 2. **Use brainstorming** - Refine requirements
 3. **Use engineering-lifecycle** - Create implementation plan
 4. **Use subagent-driven-development** - Execute with review
-5. **Use verification-before-completion** - Verify before claiming done
+5. **Use quality-standards** - Verify before claiming done
 
 ### Example Integration
 
@@ -161,7 +161,7 @@ After refining requirements:
 [Use engineering-lifecycle to create implementation plan]
 [Use using-git-worktrees to create workspace]
 [Use subagent-driven-development to execute]
-[Use verification-before-completion to verify]
+[Use quality-standards to verify]
 [Use finishing-a-development-branch to complete]
 ```
 
@@ -227,7 +227,7 @@ You: I need to check if any skills apply to this debugging task.
 - "Is this debugging?" → Check systematic-debugging
 - "Is this creative work?" → Check brainstorming
 - "Is this implementation?" → Check engineering-lifecycle
-- "Am I claiming completion?" → Check verification-before-completion
+- "Am I claiming completion?" → Check quality-standards
 - "Is this a complex task?" → Check multiple skills
 
 **If yes to any → Invoke the skill**
@@ -310,7 +310,7 @@ You: I need to check if any skills apply to this debugging task.
 - Creative work → brainstorming
 - New code → engineering-lifecycle
 - Planning → engineering-lifecycle
-- Claims of completion → verification-before-completion
+- Claims of completion → quality-standards
 
 **Check for applicable skill FIRST, then proceed.**
 

@@ -154,6 +154,7 @@ Hooks provide:
 
 ---
 
+
 <critical_constraint>
 MANDATORY: Hooks must have timeout values to prevent blocking operations
 

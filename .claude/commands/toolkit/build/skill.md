@@ -12,22 +12,25 @@ argument-hint: [skill description or requirements]
 
 ## Context Inference
 
-When invoked, analyze conversation to determine:
+When invoked, analyze conversation:
 
-1. **Was a skill just created?**
-   - Check for recent SKILL.md file operations
-   - Look for invocable-development skill usage
-   - Identify target skill path
+**Detection:**
 
-2. **What should be created?**
-   - Parse $ARGUMENTS for skill description
-   - Infer skill type from context (workflow, knowledge, context)
-   - Detect domain and complexity level
+- `Glob: skills/**/*.md` (check for recent SKILL.md)
+- `Grep: invocable-development` (check for skill usage)
+- `Read: skills/*/SKILL.md` (identify target path)
 
-3. **What's already done?**
-   - Check if skill directory exists
-   - Verify SKILL.md presence
-   - Assess completeness
+**Inference:**
+
+- `Extract: $ARGUMENTS` for skill description
+- `Infer: skill type from context`
+- `Detect: domain and complexity level`
+
+**Verification:**
+
+- `Bash: ls -la skills/*/` (check directory exists)
+- `Glob: skills/*/SKILL.md` (verify presence)
+- `Read: skills/*/SKILL.md` (assess completeness)
 
 ## Creation Workflow
 
@@ -53,26 +56,26 @@ If skill just created:
 
 Use `invocable-development` skill via Skill tool:
 
-- Pass inferred requirements and context
-- Let skill handle architectural decisions
-- Skill provides structural guidance and patterns
+- `Skill: invocable-development` with inferred requirements
+- `Trust: skill handles architectural decisions`
+- `Apply: structural guidance from skill output`
 
 ### Phase 3: Validation
 
 Verify:
 
-- Skill meets portability standards (zero external dependencies)
-- UHP compliance (mission_control, trigger, critical_constraint)
-- Progressive disclosure (SKILL.md size appropriate)
-- Autonomy targets (80-95% completion rate)
+- `Grep: "\.claude/rules\|external.*dependency"` - zero external dependencies
+- `Grep: "mission_control\|trigger\|critical_constraint"` - UHP compliance
+- `Bash: wc -w skills/*/SKILL.md` - appropriate size
+- `Verify: autonomy targets 80-95%`
 
 ### Phase 4: Genetic Injection
 
-Inject condensed Seed System principles for context: fork isolation:
+Inject condensed Seed System principles:
 
-1. **Load template**: Read `invocable-development/references/genetic-code-template.md`
-2. **Inject before footer**: Add Genetic Code section before the final `<critical_constraint>`
-3. **Verify portability**: Confirm component works with zero .claude/rules dependencies
+1. `Read: invocable-development/references/genetic-code-template.md`
+2. `Edit: skills/*/SKILL.md` + Genetic Code before `<critical_constraint>`
+3. `Verify: grep -c "\.claude/rules" skills/*/SKILL.md == 0`
 
 ```markdown
 ## Genetic Code

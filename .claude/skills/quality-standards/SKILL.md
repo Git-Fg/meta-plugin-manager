@@ -116,3 +116,6 @@ MANDATORY: No completion claims without fresh evidence
 MANDATORY: Show evidence (output) for every gate check
 No exceptions. Quality gates exist to prevent substandard work and completion hallucinations.
 </critical_constraint>
+
+---
+

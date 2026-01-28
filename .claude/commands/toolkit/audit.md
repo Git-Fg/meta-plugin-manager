@@ -14,19 +14,20 @@ argument-hint: [target-path or "auto" for context detection]
 
 ### Auto-Detection Priority
 
-1. **Was a component just created/modified?**
-   - Check conversation for recent .md or SKILL.md operations
-   - Look for creation in commands/ or skills/ in last 10 turns
+1. **Recent creation detection:**
+   - `Grep: "\.md\|\.SKILL" conversation history` - Check for recent .md operations
+   - `Glob: commands/*.md` (last 10 turns) - Look for creation in commands/
+   - `Glob: skills/*/SKILL.md` - Look for SKILL.md operations
    - If found → Auto-target that component
 
-2. **Is $ARGUMENTS provided?**
-   - If path → Target that path
-   - If "auto" → Search for most recently modified component
+2. **Argument handling:**
+   - `Extract: $ARGUMENTS` - If path → Target that path
+   - If "auto" → `Glob: commands/*.md skills/*/SKILL.md` → Sort by mtime → Target most recent
    - If empty → Use recent creation detection
 
 3. **Search strategy** (when needed):
-   - Use Glob to find .md files in commands/ and SKILL.md in skills/
-   - Sort by modification time
+   - `Glob: commands/**/*.md` and `skills/*/SKILL.md`
+   - `Bash: ls -lt | head -10` - Sort by modification time
    - Target most recent
 
 ## Auto-Reference Router
@@ -65,19 +66,19 @@ argument-hint: [target-path or "auto" for context detection]
 
 Apply context inference rules:
 
-- Auto-detect when possible (don't ask)
-- Confirm with user only if ambiguous
-- Proceed with confidence when clear
+- `Auto-detect: when possible` (don't ask)
+- `AskUserQuestion: only if ambiguous`
+- `Proceed: with confidence when clear`
 
 ### Phase 2: Reference Routing
 
 Based on target file extension:
 
-| Extension            | Action                                                       |
-| -------------------- | ------------------------------------------------------------ |
-| `.md` (commands/)    | Evaluate frontmatter, description format, portability        |
-| `SKILL.md` (skills/) | Evaluate quality framework, progressive disclosure, autonomy |
-| Unknown              | Apply general invocable-development standards                |
+| Extension            | Action                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| `.md` (commands/)    | `Read: invocable-development/references/frontmatter-reference.md` + `executable-examples.md` |
+| `SKILL.md` (skills/) | `Read: invocable-development/references/quality-framework.md` + `workflows-audit.md`         |
+| Unknown              | Apply general invocable-development patterns                                                 |
 
 ### Phase 3: Audit Execution
 

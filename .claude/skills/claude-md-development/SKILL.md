@@ -67,7 +67,7 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 | CLAUDE.md Reference | Meta-Skill                  | Sync Action                                    |
 | ------------------- | --------------------------- | ---------------------------------------------- |
 | Component Guidance  | invocable-development, etc. | Update links when meta-skill structure changes |
-| Quality Standards   | meta-critic                 | Align Success Criteria descriptions            |
+| Quality Standards   | quality-standards           | Align Success Criteria descriptions            |
 
 ---
 
@@ -92,7 +92,7 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 - Validate all links actually exist
 - Ensure consistency with .claude/rules/
 - Keep meta-skill table current
-- Sync Success Criteria with meta-critic
+- Sync Success Criteria with quality-standards
 
 ---
 

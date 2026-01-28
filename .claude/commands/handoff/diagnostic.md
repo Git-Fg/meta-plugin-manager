@@ -40,15 +40,7 @@ Generate a diagnostic handoff document that captures:
 
 Before creating a new diagnostic handoff, archive the existing one:
 
-```bash
-# Archive existing diagnostic.yaml if it exists
-DIAGNOSTIC_FILE=".claude/workspace/handoffs/diagnostic.yaml"
-if [ -f "$DIAGNOSTIC_FILE" ]; then
-  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-  mv "$DIAGNOSTIC_FILE" ".attic/diagnostic_${TIMESTAMP}.yaml"
-  echo "Archived: diagnostic_${TIMESTAMP}.yaml"
-fi
-```
+- `Bash: DIAGNOSTIC_FILE=".claude/workspace/handoffs/diagnostic.yaml" && [ -f "$DIAGNOSTIC_FILE" ] && mv "$DIAGNOSTIC_FILE" ".attic/diagnostic_$(date +%Y%m%d_%H%M%S).yaml"` → Archive with timestamp
 
 ### Phase 2: Gather Diagnostics
 
@@ -184,13 +176,7 @@ files:
 
 Save to standardized location:
 
-```bash
-# Save diagnostic.yaml
-DIAGNOSTIC_FILE=".claude/workspace/handoffs/diagnostic.yaml"
-cat > "$DIAGNOSTIC_FILE" << 'EOF'
-# ... YAML content ...
-EOF
-```
+- `Write: .claude/workspace/handoffs/diagnostic.yaml` → Save YAML content
 
 **File location**: `.claude/workspace/handoffs/diagnostic.yaml`
 
@@ -200,17 +186,9 @@ EOF
 
 When resuming diagnostic work:
 
-```bash
-# Read the diagnostic
-cat .claude/workspace/handoffs/diagnostic.yaml
-
-# Extract key fields
-GOAL=$(grep "^goal:" .claude/workspace/handoffs/diagnostic.yaml | sed 's/^goal: //')
-NOW=$(grep "^now:" .claude/workspace/handoffs/diagnostic.yaml | sed 's/^now: //')
-
-# Or use command substitution
-!{cat .claude/workspace/handoffs/diagnostic.yaml}
-```
+- `Read: .claude/workspace/handoffs/diagnostic.yaml` → Read the diagnostic
+- `Grep: "^goal:" .claude/workspace/handoffs/diagnostic.yaml | sed 's/^goal: //'` → Extract goal
+- `Grep: "^now:" .claude/workspace/handoffs/diagnostic.yaml | sed 's/^now: //'` → Extract now
 
 ## Diagnostic Field Guide
 

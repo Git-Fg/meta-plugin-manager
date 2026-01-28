@@ -107,5 +107,8 @@ Target: 2-3 tasks per plan, 50% context maximum, 2-5 min per task
 <critical_constraint>
 MANDATORY: Apply <iron_law> before any production code
 MANDATORY: Keep plans to <task_rule> (2-3 tasks, 50% context)
-MANDATORY: Run verification-loop after TDD cycle completes
+MANDATORY: Run quality-standards after TDD cycle completes
 </critical_constraint>
+
+---
+

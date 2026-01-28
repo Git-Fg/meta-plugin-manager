@@ -357,7 +357,7 @@ Skills referenced for related evaluation capabilities.
 | When You Need To...                  | Use This Skill       | Routing Command               |
 | ------------------------------------ | -------------------- | ----------------------------- |
 | Implement progressive disclosure     | `filesystem-context` | `Skill("filesystem-context")` |
-| Validate component quality           | `meta-critic`        | `Skill("meta-critic")`        |
+| Validate component quality           | `quality-standards`  | `Skill("quality-standards")`  |
 | Build evaluation rubrics and scoring | (this skill)         | (current context)             |
 
 **Research References**:

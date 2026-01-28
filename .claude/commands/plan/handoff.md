@@ -37,12 +37,8 @@ Analyze conversation to capture:
 
 ### Determine Handoff Location
 
-```bash
-# Find current phase
-find .claude/workspace/planning/phases -name "PLAN.md" -exec grep -l "in_progress" {} \;
-
-# Use current phase directory
-```
+- `Grep: "in_progress" .claude/workspace/planning/phases/**/PLAN.md` → Find current phase with in-progress status
+- `Bash: dirname "$(grep -l 'in_progress' .claude/workspace/planning/phases/*/*-PLAN.md 2>/dev/null | head -1)"` → Get current phase directory
 
 Create handoff as: `.claude/workspace/planning/phases/XX-phase-name/.continue-here.md`
 

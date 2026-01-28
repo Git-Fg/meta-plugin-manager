@@ -1,43 +1,40 @@
 ---
-description: "Perform three-way meta-critic review (Request vs Delivery vs Standards) for any invocable component. Auto-detects target and loads meta-critic skill for quality validation and drift detection."
+description: "Perform quality audit (Request vs Delivery vs Standards + six-phase gates) for any invocable component. Auto-detects target and loads quality-standards skill for validation and drift detection."
 argument-hint: [target-path or "auto" for conversation context]
 ---
 
 # Universal Critique
 
 <mission_control>
-<objective>Perform three-way meta-critic review for quality validation and drift detection</objective>
-<success_criteria>Three-way comparison completed with specific findings, standards citations, and actionable recommendations</success_criteria>
+<objective>Perform quality audit with three-way comparison and six-phase gates for validation and drift detection</objective>
+<success_criteria>Three-way comparison completed + six-phase gates passed with specific findings, standards citations, and actionable recommendations</success_criteria>
 </mission_control>
 
 ## Context Inference
 
 ### Auto-Detection Priority
 
-1. **Recent component creation or modification?**
-   - Detect recent .md or SKILL.md operations
-   - Identify the component involved
-   - Auto-target for review
+1. **Recent component detection:**
+   - `Grep: "\.md\|SKILL" conversation history` - Detect recent operations
+   - `Identify: component involved` - Extract target path
+   - `Auto-target: for review` - Proceed without asking
 
-2. **User providing feedback?**
-   - Analyze conversation for dissatisfaction
-   - "This doesn't feel right"
-   - "Something's off"
-   - "Not what I asked for"
-   - Trigger critique to diagnose
+2. **User feedback trigger:**
+   - `Grep: "not.*right\|not.*what\|feel.*off" conversation` - Analyze dissatisfaction
+   - If found → Trigger critique to diagnose
 
-3. **Explicit invocation?**
-   - $ARGUMENTS = path → Target that component
-   - $ARGUMENTS = "auto" → Analyze conversation for context
-   - $ARGUMENTS empty → Use recent work
+3. **Explicit invocation:**
+   - `Extract: $ARGUMENTS` - If path → Target that component
+   - If "auto" → `Analyze: conversation` for context
+   - If empty → `Use: recent work`
 
 ## Auto-Reference Router
 
 <router>
 <extension_detect>
 <rule>.md file in commands/ → Load `invocable-development` for standards comparison</rule>
-<rule>SKILL.md in skills/ → Load `meta-critic` skill and `invocable-development` for standards</rule>
-<rule>Unknown extension → Use meta-critic skill for three-way analysis</rule>
+<rule>SKILL.md in skills/ → Load `quality-standards` skill and `invocable-development` for standards</rule>
+<rule>Unknown extension → Use quality-standards skill for three-way analysis + gates</rule>
 </extension_detect>
 </router>
 
@@ -45,35 +42,56 @@ argument-hint: [target-path or "auto" for conversation context]
 
 ### Phase 1: Target and Reference Setup
 
-- Auto-detect target component
-- Route to appropriate references based on file extension
-- Load `meta-critic` skill for three-way comparison
+- `Auto-detect: target component`
+- `Route: based on file extension`
+- `Skill: quality-standards` for three-way comparison + gates
 
-### Phase 2: Three-Way Analysis
+### Phase 2: Six-Phase Gate Execution
 
-Meta-critic performs:
+quality-standards executes gates in sequence:
+
+| Phase | Gate     | Check                | Evidence Required |
+| ----- | -------- | -------------------- | ----------------- |
+| 1     | BUILD    | Compilation succeeds | Exit code 0       |
+| 2     | TYPE     | Type safety          | 0 type errors     |
+| 3     | LINT     | Code style           | 0 errors          |
+| 4     | TEST     | Tests pass           | All pass, ≥80%    |
+| 5     | SECURITY | No secrets/vulns     | 0 issues          |
+| 6     | DIFF     | Clean changes        | Clean diff        |
+
+### Phase 3: Three-Way Analysis
+
+quality-standards performs:
 
 1. **Request Extraction**
-   - What did user ask for?
-   - What constraints specified?
-   - What goals implied?
+   - `Read: conversation history` - What did user ask for?
+   - `Extract: constraints specified`
+   - `Identify: goals implied`
 
 2. **Delivery Analysis**
-   - What was implemented?
-   - How was it executed?
-   - What deviations occurred?
+   - `Read: implementation` - What was implemented?
+   - `Trace: execution path` - How was it executed?
+   - `Compare: against request` - What deviations occurred?
 
 3. **Standards Comparison**
-   - Load invocable-development skill for standards
-   - Compare delivery against standards
-   - Identify gaps and violations
+   - `Skill: invocable-development` - Load standards
+   - `Compare: delivery against standards`
+   - `Identify: gaps and violations`
 
-### Phase 3: Findings Formulation
+### Phase 4: Findings Formulation
 
-Meta-critic generates structured report:
+quality-standards generates structured report:
 
 ```markdown
-## Critique Review
+## Quality Audit Review
+
+### Six-Phase Gate Results
+
+| Phase | Gate  | Result |
+| ----- | ----- | ------ |
+| 1     | BUILD | PASS   |
+| 2     | TYPE  | PASS   |
+| ...   | ...   | ...    |
 
 ### Critical Issues (Blocking)
 
@@ -92,7 +110,7 @@ Meta-critic generates structured report:
 [Minor improvements or optimizations]
 ```
 
-### Phase 4: Resolution
+### Phase 5: Resolution
 
 - Present findings with severity classification
 - Offer to apply changes
@@ -107,6 +125,7 @@ Meta-critic generates structured report:
 - Examine user requests
 - Analyze agent actions
 - Compare with standards
+- Run verification commands
 
 **Strategic questioning:**
 
@@ -146,6 +165,7 @@ AI: [Suggests] /toolkit:critique
 
 ## Success Criteria
 
+- Six-phase gates completed in sequence
 - Three-way comparison completed
 - Specific file:line references provided
 - Standards cited from invocable-development
@@ -155,7 +175,8 @@ AI: [Suggests] /toolkit:critique
 ---
 
 <critical_constraint>
-MANDATORY: Load meta-critic skill for three-way comparison
+MANDATORY: Load quality-standards skill for three-way comparison + gates
+MANDATORY: Run all six phases before claiming verification complete
 MANDATORY: Auto-detect context from conversation when possible
 MANDATORY: Cite specific standards from invocable-development
 MANDATORY: Route to appropriate references based on file extension

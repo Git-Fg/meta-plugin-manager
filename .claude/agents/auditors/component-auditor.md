@@ -2,7 +2,7 @@
 description: General component auditor for skills, commands, agents, and hooks. Evaluates against Seed System best practices with contextual judgment.
 name: component-auditor
 skill:
-  - meta-critic
+  - quality-standards
   - invocable-development
   - deviation-rules
   - file-search
@@ -120,7 +120,7 @@ Use invocable-development for detailed criteria:
 
 1. **Identify component type** - Skill, command, agent, or hook
 2. **Load component** - Read full component file
-3. **Apply meta-critic** - Three-way comparison (claims vs implementation vs standards)
+3. **Apply quality-standards** - Three-way comparison + six-phase gates
 4. **Categorize findings** - By severity and impact
 5. **Generate report** - Structured output
 

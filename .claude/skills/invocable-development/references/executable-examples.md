@@ -239,12 +239,12 @@ Then use the create-skill skill to create a new skill named $1 based on the gath
 ---
 description: Full skill audit and improvement
 argument-hint: [skill-name]
-allowed-tools: Read, Glob, Grep, Skill(meta-critic), Skill(invocable-development)
+allowed-tools: Read, Glob, Grep, Skill(quality-standards), Skill(invocable-development)
 ---
 
 First, read the current state of $1 using Read and Glob.
 
-Then invoke the meta-critic skill to audit the skill for quality and alignment.
+Then invoke the quality-standards skill to audit the skill for quality and alignment.
 
 Finally, invoke the invocable-development skill to implement improvements based on the audit.
 ```

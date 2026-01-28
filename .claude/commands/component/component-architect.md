@@ -38,7 +38,7 @@ Analyze the request and determine which component type best fits the user's need
 
 **Usage:**
 
-```bash
+```
 /component-architect:which [describe what you want to build]
 ```
 
@@ -58,7 +58,7 @@ For complex builds, use watchdog monitoring to detect semantic errors (intent dr
 
 **Usage:**
 
-```bash
+```
 /component-architect:build [component type] [original request]
 ```
 

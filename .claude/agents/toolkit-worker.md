@@ -8,7 +8,7 @@ skills:
   - mcp-development
   - refactor-elegant-teaching
   - engineering-lifecycle
-  - verification-loop
+  - quality-standards
 tools:
   - Read
   - Grep
@@ -67,7 +67,7 @@ Select approach based on intent:
 | Hook configuration         | knowledge-hooks, create-hook                                        |
 | MCP setup                  | knowledge-mcp, create-mcp-server                                    |
 | Subagent work              | agent-development                                                   |
-| Quality validation         | meta-critic                                                         |
+| Quality validation         | quality-standards                                                   |
 | Task orchestration         | TaskList (built-in)                                                 |
 | General analysis           | Read + Grep + Glob                                                  |
 | Implementation             | Write + Edit + Bash                                                 |

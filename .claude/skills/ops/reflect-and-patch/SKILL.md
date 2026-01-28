@@ -124,7 +124,7 @@ Expected: Claude will now verify directory names before creation.
 ## Related Skills
 
 - `deviation-rules` - Handles unexpected work during execution
-- `meta-critic` - Audits conversation alignment
+- `quality-standards` - Audits conversation alignment and quality gates
 - `memory-persistence` - Session lifecycle and transcript handling
 
 ---

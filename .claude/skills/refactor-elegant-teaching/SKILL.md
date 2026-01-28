@@ -339,7 +339,7 @@ This skill works alongside:
 
 - **engineering-lifecycle**: Refactor during the GREEN phase, never during RED
 - **code-review**: Identify refactoring opportunities in PRs
-- **verification-before-completion**: Verify refactoring preserved behavior
+- **quality-standards**: Verify refactoring preserved behavior
 
 **Recognition**: "Am I in the RED phase? STOP—do not refactor yet."
 

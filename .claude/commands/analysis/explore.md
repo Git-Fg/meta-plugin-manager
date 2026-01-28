@@ -21,26 +21,22 @@ Explore and analyze a skill/command through guided questioning.
 **Target**: $ARGUMENTS
 
 **Files present:**
-!`TARGET="$ARGUMENTS"; if [ -n "$TARGET" ] && [ -d "$TARGET" ]; then find "$TARGET" -name "*.md" -type f | sort; elif [ -n "$TARGET" ] && [ -f "$TARGET" ]; then echo "$TARGET"; else echo "No valid target provided"; fi`
+
+- `Bash: find "$ARGUMENTS" -name "*.md" -type f 2>/dev/null | sort`
 
 **Content:**
-!`TARGET="$ARGUMENTS"; if [ -d "$TARGET" ]; then find "$TARGET" -name "*.md" -type f -exec echo "=== {} ===" \; -exec cat {} \; -exec echo "" \; | head -c 50000; elif [ -f "$TARGET" ]; then cat "$TARGET"; else echo "# No valid target provided\n\nPlease provide a path to a skill folder or command file.\n\nUsage:\n  /explore .claude/skills/skill-name\n  /explore .claude/commands/command-name.md"; fi`
+
+- `Read: $ARGUMENTS/*.md` or `$ARGUMENTS` if file
 
 ## The Approach
 
 **L'Entonnoir pattern applied:**
 
-```
-AskUserQuestion (batch of 2-4 options, recognition-based)
-     ↓
-User selects from options (no typing)
-     ↓
-Explore based on selection
-     ↓
-AskUserQuestion (narrower batch)
-     ↓
-Repeat until ready → Conclude
-```
+- `AskUserQuestion: batch of 2-4 options, recognition-based`
+- `User selects: from options (no typing)`
+- `Explore: based on selection`
+- `AskUserQuestion: narrower batch`
+- `Repeat until ready → Conclude`
 
 **Core principles:**
 

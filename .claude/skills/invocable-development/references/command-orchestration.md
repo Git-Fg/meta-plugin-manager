@@ -250,8 +250,8 @@ Subagent: Performs comprehensive evaluation
 ```
 User: "This doesn't feel right"
 AI: [Suggests] /toolkit:critique:skill
-Command: Analyzes conversation, invokes meta-critic
-Critique: Three-way comparison (Request vs Delivery vs Standards)
+Command: Analyzes conversation, invokes quality-standards
+Critique: Three-way comparison + six-phase gates
 ```
 
 ---

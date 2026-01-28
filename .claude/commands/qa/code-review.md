@@ -17,7 +17,7 @@ Comprehensive security and quality review of uncommitted changes before committi
 
 Perform multi-level review of all uncommitted changes:
 
-1. **Get changed files** - `git diff --name-only HEAD`
+1. **Get changed files** - `Bash: git diff --name-only HEAD`
 2. **Analyze each file for**:
    - **Security Issues (CRITICAL)**: Hardcoded credentials, API keys, tokens, SQL injection, XSS vulnerabilities
    - **Code Quality (HIGH)**: Long functions, large files, deep nesting, missing error handling, console.log, TODOs
@@ -33,17 +33,10 @@ Perform multi-level review of all uncommitted changes:
 
 ### Detection Patterns
 
-```bash
-# Check for secrets
-git diff | grep -E "(sk-|api_key|token|password|secret)"
-grep -rn "sk-" --include="*.ts" --include="*.js" . 2>/dev/null | head -10
-
-# Check for hardcoded credentials
-git diff | grep -E "(mongodb://|postgres://|mysql://|redis://)"
-
-# Check for API keys
-git diff | grep -E "(AIza|AIzaSy|AKIA|ghp_|github_pat)"
-```
+- `Bash: git diff | grep -E "(sk-|api_key|token|password|secret)"` → Check for secrets
+- `Bash: grep -rn "sk-" --include="*.ts" --include="*.js" . 2>/dev/null | head -10` → Find API keys in codebase
+- `Bash: git diff | grep -E "(mongodb://|postgres://|mysql://|redis://)"` → Check for hardcoded credentials
+- `Bash: git diff | grep -E "(AIza|AI4Sy|AKIA|ghp_|github_pat)"` → Check for API keys
 
 ### What to Block
 
@@ -58,22 +51,11 @@ git diff | grep -E "(AIza|AIzaSy|AKIA|ghp_|github_pat)"
 
 ### Detection Patterns
 
-```bash
-# Check for long functions
-git diff | grep -E "(function|const.*=.*=>)\s*\{" | awk 'length > 50 {print FILE ":" NR ":" length+1 }'
-
-# Check for large files
-git diff --name-only | xargs wc -l | awk '$1 > 800 {print $1}'
-
-# Check for deep nesting
-git diff | grep -E "^\s{20,}"  # 20+ spaces = 5+ levels
-
-# Check for console.log
-git diff | grep -n "console\.log"
-
-# Check for TODO/FIXME
-git diff | grep -n "TODO\|FIXME"
-```
+- `Bash: git diff | grep -E "(function|const.*=.*=>)\s*\{" | awk 'length > 50 {print FILE ":" NR ":" length+1 }'` → Check for long functions
+- `Bash: git diff --name-only | xargs wc -l | awk '$1 > 800 {print $1}'` → Check for large files
+- `Bash: git diff | grep -E "^\s{20,}"` → Check for deep nesting (20+ spaces = 5+ levels)
+- `Bash: git diff | grep -n "console\.log"` → Check for console.log
+- `Bash: git diff | grep -n "TODO\|FIXME"` → Check for TODO/FIXME
 
 ### What to Flag
 
@@ -89,16 +71,9 @@ git diff | grep -n "TODO\|FIXME"
 
 ### Detection Patterns
 
-```bash
-# Check for mutation patterns
-git diff | grep -E "(\\.[^=]*=[^=])"  # Direct assignment
-
-# Check for emoji in code
-git diff | grep -E ":[a-z_]+:"
-
-# Check for accessibility issues
-# (manual review of UI components)
-```
+- `Bash: git diff | grep -E "(\.[^=]*=[^=])"` → Check for mutation patterns (direct assignment)
+- `Bash: git diff | grep -E ":[a-z_]+:"` → Check for emoji in code
+- `Read: [files]` → Check for accessibility issues (manual review of UI components)
 
 ### What to Flag
 
@@ -150,22 +125,15 @@ Recommendations:
 
 ### 1. Get Changed Files
 
-```bash
-git diff --name-only HEAD
-git diff HEAD~1 --name-only
-```
+- `Bash: git diff --name-only HEAD` → Get current uncommitted changes
+- `Bash: git diff HEAD~1 --name-only` → Get last commit changes
 
 ### 2. Analyze Each File
 
-For each changed file, run:
+For each changed file:
 
-```bash
-# Show full diff
-git diff HEAD -- [file]
-
-# Check for specific patterns
-git diff HEAD -- [file] | grep -n "console\.log"
-```
+- `Bash: git diff HEAD -- [file]` → Show full diff
+- `Bash: git diff HEAD -- [file] | grep -n "console\.log"` → Check for specific patterns
 
 ### 3. Categorize Issues
 

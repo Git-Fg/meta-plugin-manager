@@ -26,7 +26,7 @@ Orchestrate the development of components by invoking the appropriate xxx-develo
 
 ## Usage
 
-```bash
+```
 /component-architect:build [component type] [original request]
 ```
 
@@ -35,7 +35,7 @@ Orchestrate the development of components by invoking the appropriate xxx-develo
 ```
 User: /component-architect:build Command deploy command
 
-→ Invoke: skill: "invocable-development"
+→ Invoke: `Skill: invocable-development`
 → Args: "User wants: deploy command. Component type: Command."
 → Trust: invocable-development architecture expertise
 → Result: /deploy command created
@@ -45,43 +45,28 @@ User: /component-architect:build Command deploy command
 
 ### Command Components
 
-```bash
-/component-architect:build Command [request]
-→ Invoke: skill: "invocable-development"
-→ Args: "User wants: [request]. Component type: Command."
-```
+- `Skill: invocable-development` → For Command components
+- Args: "User wants: [request]. Component type: Command."
 
 ### Skill Components
 
-```bash
-/component-architect:build Skill [request]
-→ Invoke: skill: "invocable-development"
-→ Args: "User wants: [request]. Component type: Skill."
-```
+- `Skill: invocable-development` → For Skill components
+- Args: "User wants: [request]. Component type: Skill."
 
 ### Agent Components
 
-```bash
-/component-architect:build Agent [request]
-→ Invoke: skill: "agent-development"
-→ Args: "User wants: [request]. Component type: Agent."
-```
+- `Skill: agent-development` → For Agent components
+- Args: "User wants: [request]. Component type: Agent."
 
 ### Hook Components
 
-```bash
-/component-architect:build Hook [request]
-→ Invoke: skill: "hook-development"
-→ Args: "User wants: [request]. Component type: Hook."
-```
+- `Skill: hook-development` → For Hook components
+- Args: "User wants: [request]. Component type: Hook."
 
 ### MCP Components
 
-```bash
-/component-architect:build MCP [request]
-→ Invoke: skill: "mcp-development"
-→ Args: "User wants: [request]. Component type: MCP."
-```
+- `Skill: mcp-development` → For MCP components
+- Args: "User wants: [request]. Component type: MCP."
 
 ## Orchestration Flow
 
@@ -109,22 +94,11 @@ Trust the xxx-development skills' architectural expertise:
 
 Use the `Skill` tool to invoke development skills with full trust:
 
-```bash
-# For Command components
-skill: "invocable-development", args: "User wants: [original request]. Component type: Command. Keywords: [detected]. Rationale: [why Command]."
-
-# For Skill components
-skill: "invocable-development", args: "User wants: [original request]. Component type: Skill. Keywords: [detected]. Rationale: [why Skill]."
-
-# For Agent components
-skill: "agent-development", args: "User wants: [original request]. Component type: Agent. Keywords: [detected]. Rationale: [why Agent]."
-
-# For Hook components
-skill: "hook-development", args: "User wants: [original request]. Component type: Hook. Keywords: [detected]. Rationale: [why Hook]."
-
-# For MCP components
-skill: "mcp-development", args: "User wants: [original request]. Component type: MCP. Keywords: [detected]. Rationale: [why MCP]."
-```
+- `Skill: invocable-development` → "User wants: [original request]. Component type: Command. Keywords: [detected]. Rationale: [why Command]."
+- `Skill: invocable-development` → "User wants: [original request]. Component type: Skill. Keywords: [detected]. Rationale: [why Skill]."
+- `Skill: agent-development` → "User wants: [original request]. Component type: Agent. Keywords: [detected]. Rationale: [why Agent]."
+- `Skill: hook-development` → "User wants: [original request]. Component type: Hook. Keywords: [detected]. Rationale: [why Hook]."
+- `Skill: mcp-development` → "User wants: [original request]. Component type: MCP. Keywords: [detected]. Rationale: [why MCP]."
 
 Each invocation passes:
 

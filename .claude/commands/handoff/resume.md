@@ -30,18 +30,9 @@ Resume work by injecting the latest handoff context using shell command substitu
 
 Use shell command substitution to auto-find the latest handoff:
 
-```bash
-# Find most recently modified handoff
-LATEST=!{ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1}
-
-if [ -z "$LATEST" ]; then
-  echo "No handoffs found in .claude/workspace/handoffs/"
-  exit 1
-fi
-
-echo "Found: $LATEST"
-!{cat "$LATEST"}
-```
+- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Find most recently modified handoff
+- `Bash: [ -z "$LATEST" ] && echo "No handoffs found in .claude/workspace/handoffs/"; exit 1` → Validate handoff exists
+- `Bash: cat "$LATEST"` → Display handoff content
 
 **Command substitution pattern:**
 
@@ -52,59 +43,27 @@ echo "Found: $LATEST"
 
 Before resuming, archive any existing handoffs:
 
-```bash
-# Archive all existing handoffs with timestamp
-for f in .claude/workspace/handoffs/*.yaml; do
-  [ -f "$f" ] || continue
-  TIMESTAMP=!{date +%Y%m%d_%H%M%S}
-  mv "$f" ".attic/!{basename "$f" .yaml}_old_${TIMESTAMP}.yaml"
-done
-```
+- `Glob: .claude/workspace/handoffs/*.yaml` → Find existing handoffs
+- `Bash: for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/$(basename "$f" .yaml)_$(date +%Y%m%d_%H%M%S).yaml"; done` → Archive with timestamp
 
 ### Phase 3: Inject Handoff Context
 
 Read and format the handoff for context injection:
 
-```bash
-# Load latest handoff
-HANDOFF=!{ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1}
-
-# Extract key fields
-GOAL=!{grep "^goal:" "$HANDOFF" | sed 's/^goal: //'}
-NOW=!{grep "^now:" "$HANDOFF" | sed 's/^now: //'}
-
-echo "=== RESUMING SESSION ==="
-echo "Goal: $GOAL"
-echo "Now: $NOW"
-echo ""
-echo "Full handoff:"
-!{cat "$HANDOFF"}
-```
+- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Load latest handoff
+- `Grep: "^goal:" .claude/workspace/handoffs/*.yaml | sed 's/^goal: //'` → Extract goal
+- `Grep: "^now:" .claude/workspace/handoffs/*.yaml | sed 's/^now: //'` → Extract now
 
 ## Inline Command Substitution Examples
 
-```bash
-# Direct inline content
-!{cat "$(ls -t .claude/workspace/handoffs/*.yaml | head -1)"}
-
-# With echo prefix
-echo "=== LATEST HANDOFF ==="
-!{cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"}
-
-# Parse specific fields
-echo "Goal: !{grep '^goal:' \"$(ls -t .claude/workspace/handoffs/*.yaml | head -1)\" | sed 's/^goal: //'}"
-echo "Now: !{grep '^now:' \"$(ls -t .claude/workspace/handoffs/*.yaml | head -1)\" | sed 's/^now: //'}"
-```
+- `Bash: cat "$(ls -t .claude/workspace/handoffs/*.yaml | head -1)"` → Direct inline content
+- `Bash: echo "=== LATEST HANDOFF ===" && cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → With echo prefix
+- `Bash: echo "Goal: $(grep '^goal:' \"$(ls -t .claude/workspace/handoffs/*.yaml | head -1)\" | sed 's/^goal: //')"` → Parse specific fields
 
 ## Quick Resume Pattern
 
-```bash
-# One-liner resume
-!{cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"}
-
-# With archive
-for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/!{basename "$f" .yaml}_resumed_!{date +%Y%m%d_%H%M%S}.yaml"; done && !{cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"}
-```
+- `Bash: cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → One-liner resume
+- `Bash: for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/$(basename "$f" .yaml)_$(date +%Y%m%d_%H%M%S).yaml"; done && cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → With archive
 
 ## Handoff Format Reference
 

@@ -20,7 +20,7 @@ Analyze user requests to determine the most suitable component type.
 
 ## Usage
 
-```bash
+```
 /component-architect:which [describe what you want to build]
 ```
 
@@ -89,12 +89,9 @@ Keywords -> Skill [label="default / reusable logic"];
 
 When user request is ambiguous or could match multiple component types:
 
-```
-Invoke the xxx-development skill to verify:
-skill: "[skill-name]", args: "User request: [request]. Need architectural guidance to determine if this fits [component type] pattern. Please review your documentation and advise."
+- `Skill: [skill-name]` → "User request: [request]. Need architectural guidance to determine if this fits [component type] pattern. Please review your documentation and advise."
 
 Then trust the skill's recommendation and proceed with orchestration.
-```
 
 **Examples of when to verify deeply:**
 

@@ -796,3 +796,6 @@ This reference contains critical patterns for tool definition.
 
 **No exceptions. MCP servers require strict schema compliance and prompt-engineered descriptions for protocol correctness.**
 </critical_constraint>
+
+---
+

@@ -2,7 +2,7 @@
 description: Specialized agent for evaluating skills against best practices with contextual judgment. Reviews skill structure, content quality, and portability standards.
 name: skill-auditor
 skill:
-  - meta-critic
+  - quality-standards
   - invocable-development
   - deviation-rules
   - file-search
@@ -35,7 +35,7 @@ Invoke this agent when:
 
 ## Audit Scope
 
-Use loaded skills (invocable-development, meta-critic) to validate:
+Use loaded skills (invocable-development, quality-standards) to validate:
 
 ### 1. Structure
 
@@ -102,7 +102,7 @@ Use loaded skills (invocable-development, meta-critic) to validate:
 
 1. **Load the skill** - Read SKILL.md and references/
 2. **Evaluate against standards** - Use invocable-development quality frameworks
-3. **Apply meta-critic** - Three-way comparison (claims vs capability vs standards)
+3. **Apply quality-standards** - Three-way comparison + six-phase gates
 4. **Categorize findings** - Critical vs Recommendations vs Quick Fixes
 5. **Generate report** - Structured output with autonomy estimate
 

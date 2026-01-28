@@ -209,9 +209,20 @@ if [ $error_count -eq 0 ] && [ $warning_count -eq 0 ]; then
   echo "✅ All checks passed!"
   exit 0
 elif [ $error_count -eq 0 ]; then
-  echo "⚠️  Validation passed with $warning_count warning(s)"
+  echo "⚠️ Validation passed with $warning_count warning(s)"
   exit 0
 else
-  echo "❌ Validation failed with $error_count error(s) and $warning_count warning(s)"
+  echo "❌ VALIDATION FAILED"
+  echo ""
+  echo "Micro-Prompt: Fix validation errors in $AGENT_FILE"
+  echo ""
+  if [ $error_count -gt 0 ]; then
+    echo "Errors ($error_count): Fix before proceeding"
+  fi
+  if [ $warning_count -gt 0 ]; then
+    echo "Warnings ($warning_count): Consider addressing"
+  fi
+  echo ""
+  echo "Invocation: skill:agent-development"
   exit 1
 fi

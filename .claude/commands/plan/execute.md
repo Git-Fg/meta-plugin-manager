@@ -22,19 +22,14 @@ Execute PLAN.md files with fresh context. PLAN.md IS the executable prompt - it 
 
 Find the next plan to execute:
 
-```bash
-# Check roadmap for in-progress phase
-cat .claude/workspace/planning/ROADMAP.md
-
-# Find plans in that phase
-ls .claude/workspace/planning/phases/XX-name/*-PLAN.md 2>/dev/null | sort
-ls .claude/workspace/planning/phases/XX-name/*-SUMMARY.md 2>/dev/null | sort
-```
+- `Read: .claude/workspace/planning/ROADMAP.md` - Check roadmap for in-progress phase
+- `Glob: .claude/workspace/planning/phases/*/*-PLAN.md` - Find plans
+- `Glob: .claude/workspace/planning/phases/*/*-SUMMARY.md` - Find summaries
 
 **Logic:**
 
 - If `01-01-PLAN.md` exists but `01-01-SUMMARY.md` doesn't → execute 01-01
-- Pattern: Find first PLAN file without matching SUMMARY file
+- Pattern: `Bash: find .claude/workspace/planning/phases -name "*-PLAN.md" ! -name "*-SUMMARY.md" | head -1`
 
 **If $ARGUMENTS is a path:** Use that plan directly
 
@@ -42,20 +37,18 @@ ls .claude/workspace/planning/phases/XX-name/*-SUMMARY.md 2>/dev/null | sort
 
 Check for checkpoints to determine execution mode:
 
-```bash
-grep -n "checkpoint:" .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md
-```
+- `Grep: "checkpoint:" .claude/workspace/planning/phases/*/*-PLAN.md`
 
 **Execution modes:**
 
 - **AUTONOMOUS**: No checkpoints → Use subagent for entire plan
 - **SEGMENTED**: Verify checkpoints only → Subagent for segments, main for checkpoints
-- **MAIN CONTEXT**: Decision/action checkpoints → Sequential execution with user interaction
+- **MAIN CONTEXT**: Decision/action checkpoints → Sequential execution
 - **REVIEWED**: Quality gates → Two-stage review process
 
 ### Load Execution Orchestrator
 
-Use `engineering-lifecycle` skill for intelligent execution routing.
+Use `Skill: engineering-lifecycle` for intelligent execution routing.
 
 The skill handles:
 
@@ -69,7 +62,7 @@ The skill handles:
 
 ### Execute
 
-Delegate to `engineering-lifecycle` skill with:
+Delegate to `Skill: engineering-lifecycle` with:
 
 - Plan file path
 - Execution mode (autonomous/segmented/main/reviewed)
@@ -79,42 +72,19 @@ Delegate to `engineering-lifecycle` skill with:
 
 After execution completes, create SUMMARY.md:
 
-```markdown
-# Summary: Phase [Name] - Plan [N]
-
-## Completion
-
-- [ ] All tasks completed successfully
-- [ ] Some tasks had deviations (documented below)
-
-## Tasks Completed
-
-1. [Task N]: [Name] - [Outcome]
-2. [Task N+1]: [Name] - [Outcome]
-   ...
-
-## Deviations
-
-[If any occurred during execution, document here per deviation rules]
-
-## Time Taken
-
-[Optional: Record actual time vs estimated]
-```
+- `Write: .claude/workspace/planning/phases/*/*-SUMMARY.md`
+- Document: tasks completed, deviations, time taken
 
 ### Update Roadmap
 
 Update phase status in ROADMAP.md:
 
-- Mark phase as "completed" or "in_progress" as appropriate
+- `Edit: .claude/workspace/planning/ROADMAP.md` - Mark phase status
 - Update task counts if needed
 
 ### Commit Changes
 
-```bash
-git add .
-git commit -m "feat: complete [phase-name] plan [N]"
-```
+- `Bash: git add . && git commit -m "feat: complete [phase-name] plan [N]"`
 
 ## Usage Patterns
 

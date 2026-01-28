@@ -408,5 +408,35 @@ Forked skills run in isolation and lose access to `.claude/rules/`. To maintain 
 
 See `references/advanced-execution.md` - "Philosophy Bundles" section for implementation.
 
+---
+
+<philosophy_bundle>
+<portability_invariant>
+<mandatory_rule>Every component MUST work with zero .claude/rules dependencies</mandatory_rule>
+<recognition_question>Would this work in a project with no .claude/rules?</recognition_question>
+</portability_invariant>
+
+<quality_invariant>
+<iron_law>NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE</iron_law>
+<verification_protocol>
+<claims>Mark every factual claim with VERIFIED/INFERRED/UNCERTAIN</claims>
+<files>Read actual file before asserting "X exists"</files>
+<logic>Trace behavior by reading code, not just grep</logic>
+</verification_protocol>
+</quality_invariant>
+
+<architecture_invariant>
+<uhp>XML for control, Markdown for data</uhp>
+<recency_bias>Place critical constraints at bottom of files</recency_bias>
+<progressive_disclosure>Tier 2 lean, Tier 3 deep</progressive_disclosure>
+</architecture_invariant>
+
+<principles_invariant>
+<map_not_script>Provide boundaries and invariants; trust the Pilot</map_not_script>
+<delta_standard>Good Component = Expert Knowledge − What Claude Already Knows</delta_standard>
+<positive_delta>Only document knowledge Claude wouldn't already have</positive_delta>
+</principles_invariant>
+</philosophy_bundle>
+
 No exceptions. Portability invariant must be maintained.
 </critical_constraint>

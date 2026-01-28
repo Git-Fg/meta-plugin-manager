@@ -3,7 +3,7 @@ description: Specialized agent for evaluating commands against best practices. R
 name: command-auditor
 allowed-tools: ["Read", "Grep", "Glob"]
 skill:
-  - meta-critic
+  - quality-standards
   - invocable-development
   - deviation-rules
   - file-search
@@ -47,7 +47,7 @@ Invoke this agent when:
 
 ## Audit Scope
 
-Use loaded skills (invocable-development, meta-critic) to validate:
+Use loaded skills (invocable-development, quality-standards) to validate:
 
 ### 1. Structure
 
@@ -102,7 +102,7 @@ Use loaded skills (invocable-development, meta-critic) to validate:
 
 1. **Load the command** - Read full command file
 2. **Evaluate against standards** - Use invocable-development patterns
-3. **Apply three-way comparison** - Use meta-critic framework
+3. **Apply three-way comparison** - Use quality-standards framework
 4. **Categorize findings** - Critical vs Recommendations vs Quick Fixes
 5. **Generate report** - Structured output with severity levels
 

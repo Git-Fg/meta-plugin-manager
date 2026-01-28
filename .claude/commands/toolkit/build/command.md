@@ -14,20 +14,23 @@ argument-hint: [command description or requirements]
 
 When invoked, analyze conversation:
 
-1. **Was a command just created?**
-   - Check for recent .md file creation in commands/
-   - Look for invocable-development skill usage
-   - Identify target command path
+**Detection:**
 
-2. **What should be created?**
-   - Parse $ARGUMENTS for command description
-   - Infer command category from context
-   - Determine folder structure
+- `Glob: commands/**/*.md` (check for recent creation)
+- `Grep: invocable-development` (check for skill usage)
+- `Read: last modified .md in commands/` (identify target path)
 
-3. **What's already done?**
-   - Check if command file exists
-   - Verify folder structure
-   - Assess completeness
+**Inference:**
+
+- `Extract: $ARGUMENTS` for command description
+- `Infer: command category from context`
+- `Determine: folder structure from description`
+
+**Verification:**
+
+- `Glob: commands/**/*.md` (check if file exists)
+- `Bash: ls -la commands/*/` (verify folder structure)
+- `Read: commands/*/*.md` (assess completeness)
 
 ## Creation Workflow
 
@@ -53,26 +56,26 @@ If command just created:
 
 Use `invocable-development` skill via Skill tool:
 
-- Pass inferred requirements and context
-- Let skill handle architectural decisions
-- Skill provides structural guidance and patterns
+- `Skill: invocable-development` with inferred requirements
+- `Trust: skill handles architectural decisions`
+- `Apply: structural guidance from skill output`
 
 ### Phase 3: Validation
 
 Verify:
 
-- Valid frontmatter (name, description)
-- Proper folder structure for nesting
-- What-When-Not description format
-- No command/skill name references in description
+- `Edit: frontmatter.yaml` - valid name/description
+- `Glob: commands/*/` - proper folder structure
+- `Extract: description pattern` - What-When-Not format
+- `Grep: skill.*reference|command.*reference` - no name references
 
 ### Phase 4: Genetic Injection
 
-Inject condensed Seed System principles for context: fork isolation:
+Inject condensed Seed System principles:
 
-1. **Load template**: Read `invocable-development/references/genetic-code-template.md`
-2. **Inject before footer**: Add Genetic Code section before the final `<critical_constraint>`
-3. **Verify portability**: Confirm command works with zero .claude/rules dependencies
+1. `Read: invocable-development/references/genetic-code-template.md`
+2. `Edit: .claude/commands/*/*.md` + Genetic Code before `<critical_constraint>`
+3. `Verify: grep -c "\.claude/rules" commands/*/*.md == 0`
 
 ```markdown
 ## Genetic Code

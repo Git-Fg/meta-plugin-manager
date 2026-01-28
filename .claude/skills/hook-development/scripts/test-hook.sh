@@ -127,9 +127,18 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $# -ne 2 ]; then
-  echo "Error: Missing required arguments"
+  echo "❌ VALIDATION FAILED: Missing arguments"
   echo ""
-  show_usage
+  echo "Micro-Prompt: Fix command invocation"
+  echo ""
+  echo "1. Hook script path is required"
+  echo "   Fix: Provide path to hook script as first argument"
+  echo ""
+  echo "2. Test input JSON is required"
+  echo "   Fix: Provide path to test input as second argument"
+  echo ""
+  echo "Invocation: bash $0 <hook-script> <test-input.json>"
+  exit 1
 fi
 
 HOOK_SCRIPT="$1"
@@ -137,7 +146,14 @@ TEST_INPUT="$2"
 
 # Validate inputs
 if [ ! -f "$HOOK_SCRIPT" ]; then
-  echo "❌ Error: Hook script not found: $HOOK_SCRIPT"
+  echo "❌ VALIDATION FAILED: Hook script not found"
+  echo ""
+  echo "Micro-Prompt: Fix the hook script path"
+  echo ""
+  echo "1. File does not exist: $HOOK_SCRIPT"
+  echo "   Fix: Verify path is correct and file exists"
+  echo ""
+  echo "Invocation: bash $0 <hook-script> <test-input.json>"
   exit 1
 fi
 
@@ -147,13 +163,28 @@ if [ ! -x "$HOOK_SCRIPT" ]; then
 fi
 
 if [ ! -f "$TEST_INPUT" ]; then
-  echo "❌ Error: Test input not found: $TEST_INPUT"
+  echo "❌ VALIDATION FAILED: Test input not found"
+  echo ""
+  echo "Micro-Prompt: Fix the test input path"
+  echo ""
+  echo "1. File does not exist: $TEST_INPUT"
+  echo "   Fix: Verify path is correct and file exists"
+  echo ""
+  echo "Invocation: bash $0 <hook-script> <test-input.json>"
   exit 1
 fi
 
 # Validate test input JSON
 if ! jq empty "$TEST_INPUT" 2>/dev/null; then
-  echo "❌ Error: Test input is not valid JSON"
+  echo "❌ VALIDATION FAILED: Invalid JSON"
+  echo ""
+  echo "Micro-Prompt: Fix JSON syntax in test input"
+  echo ""
+  echo "1. File is not valid JSON: $TEST_INPUT"
+  echo "   Fix: Run 'jq . $TEST_INPUT' to see parsing errors"
+  echo "   Fix: Use 'jq empty $TEST_INPUT' to validate"
+  echo ""
+  echo "Invocation: skill:hook-development"
   exit 1
 fi
 
@@ -247,6 +278,17 @@ if [ $exit_code -eq 0 ] || [ $exit_code -eq 2 ]; then
   echo "✅ Test completed successfully"
   exit 0
 else
-  echo "❌ Test failed"
+  echo "❌ TEST FAILED"
+  echo ""
+  echo "Micro-Prompt: Debug hook execution failure"
+  echo ""
+  echo "Exit code: $exit_code"
+  echo "Duration: ${duration}s"
+  echo ""
+  echo "1. Check hook script for errors"
+  echo "2. Verify timeout is sufficient (current: ${TIMEOUT}s)"
+  echo "3. Review test input matches expected schema"
+  echo ""
+  echo "Invocation: skill:hook-development"
   exit 1
 fi

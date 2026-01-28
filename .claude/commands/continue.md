@@ -31,13 +31,13 @@ When the user is unclear, vague, or you need to narrow down their intent:
 
 Read the user's message carefully. What are they actually asking?
 
-- What words suggest intent?
-- What context is available?
-- What seems most likely?
+- `Grep: conversation` → What words suggest intent?
+- `Grep: conversation` → What context is available?
+- `Grep: conversation` → What seems most likely?
 
 ### Step 2: Ask Clarifying Questions
 
-Use AskUserQuestion with l'entonnoir (funnel) pattern:
+Use `AskUserQuestion` with L'Entonnoir (funnel) pattern:
 
 **Good patterns:**
 
@@ -48,7 +48,7 @@ Use AskUserQuestion with l'entonnoir (funnel) pattern:
 
 **Batch related questions in one call:**
 
-- 1-4 questions per AskUserQuestion call
+- 1-4 questions per `AskUserQuestion` call
 - Questions that share context
 - Natural language
 - Few options (2-3 per question)

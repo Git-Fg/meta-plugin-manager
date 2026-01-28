@@ -30,16 +30,9 @@ Execute 6-phase verification pipeline to ensure code quality before committing o
 
 Confirm the project builds successfully:
 
-```bash
-# Detect and run appropriate build command
-if [ -f "package.json" ]; then
-  npm run build 2>&1 | tail -20
-elif [ -f "Cargo.toml" ]; then
-  cargo build 2>&1 | tail -20
-elif [ -f "go.mod" ]; then
-  go build 2>&1 | tail -20
-fi
-```
+- `Glob: package.json` → `Bash: npm run build | tail -20`
+- `Glob: Cargo.toml` → `Bash: cargo build | tail -20`
+- `Glob: go.mod` → `Bash: go build | tail -20`
 
 **If build fails**: STOP and fix before continuing.
 
@@ -47,13 +40,8 @@ fi
 
 Verify type safety:
 
-```bash
-# TypeScript projects
-npx tsc --noEmit 2>&1 | head -30
-
-# Python projects
-pyright . 2>&1 | head -30
-```
+- `Glob: tsconfig.json` → `Bash: tsc --noEmit | head -30`
+- `Glob: pyproject.toml` → `Bash: pyright . | head -30`
 
 Report all type errors. Fix critical ones before continuing.
 
@@ -61,13 +49,8 @@ Report all type errors. Fix critical ones before continuing.
 
 Enforce code style standards:
 
-```bash
-# JavaScript/TypeScript
-npm run lint 2>&1 | head -30
-
-# Python
-ruff check . 2>&1 | head -30
-```
+- `Glob: package.json` → `Bash: npm run lint | head -30`
+- `Glob: pyproject.toml` → `Bash: ruff check . | head -30`
 
 Report warning count. Fix critical style issues.
 
@@ -75,13 +58,8 @@ Report warning count. Fix critical style issues.
 
 Run tests with coverage:
 
-```bash
-# Run tests with coverage
-npm run test -- --coverage 2>&1 | tail -50
-
-# Or for Python
-pytest --cov=. --cov-report=term-missing 2>&1 | tail -50
-```
+- `Glob: package.json` → `Bash: npm run test -- --coverage | tail -50`
+- `Glob: pyproject.toml` → `Bash: pytest --cov=. --cov-report=term-missing | tail -50`
 
 **Target**: 80% minimum coverage.
 
@@ -96,32 +74,17 @@ pytest --cov=. --cov-report=term-missing 2>&1 | tail -50
 
 Check for security issues:
 
-```bash
-# Check for secrets
-grep -rn "sk-" --include="*.ts" --include="*.js" --include="*.tsx" . 2>/dev/null | head -10
-grep -rn "api_key" --include="*.ts" --include="*.js" . 2>/dev/null | head -10
-
-# Check for console.log in production code
-grep -rn "console.log" --include="*.ts" --include="*.tsx" src/ 2>/dev/null | head -10
-
-# Check for TODO/FIXME in new files
-git diff --name-only | xargs grep -n "TODO\|FIXME" 2>/dev/null | head -10
-```
+- `Grep: "sk-\|api_key\|password" --include="*.ts" --include="*.js"` - Secrets
+- `Grep: "console.log" --include="*.ts" --include="*.tsx" src/` - Debug code
+- `Bash: git diff --name-only | xargs grep -n "TODO\|FIXME"` - TODOs in diff
 
 ### Phase 6: Diff Review
 
 Review what changed:
 
-```bash
-# Show changed files
-git diff --stat
-
-# Show changed file list
-git diff HEAD~1 --name-only
-
-# Show actual changes for review
-git diff
-```
+- `Bash: git diff --stat` - Changed files summary
+- `Bash: git diff HEAD~1 --name-only` - Changed file list
+- `Bash: git diff` - Actual changes for review
 
 Review each changed file for:
 
@@ -181,7 +144,7 @@ Run `qa/verify` at each checkpoint.
 This command integrates with:
 
 - `engineering-lifecycle` - TDD patterns for test-first development
-- `meta-critic` - Quality validation framework
+- `quality-standards` - Quality validation framework
 - `coding-standards` - Style and convention reference
 
 ## Arguments

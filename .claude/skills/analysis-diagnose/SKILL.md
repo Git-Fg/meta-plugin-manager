@@ -422,12 +422,12 @@ STOP and return to Phase 1.
 
 [Full stack trace]
 
-```
+````
 
 ### Test Code
 ```javascript
 [Relevant test code]
-```
+````
 
 ### Implementation
 
@@ -479,8 +479,7 @@ STOP and return to Phase 1.
 ## References
 
 For related diagnostic capabilities:
-- **Use the skill `quality-gates`** - Quality validation and enforcement
-- **Use the skill `meta-critic`** - Three-way quality validation (Request vs Delivery vs Standards)
+- **Use the skill `quality-standards`** - Unified quality validation and three-way audit
 
 ---
 

@@ -22,29 +22,22 @@ Single fully autonomous command for all planning operations. Auto-detects and ex
 
 ## Context Scan
 
-```bash
-# Full planning state detection
-STATE=""
+**State Detection:**
 
-# Check for planning directory
-[ -d .claude/workspace/planning ] && STATE+="planning_exists "
+- `Bash: [ -d .claude/workspace/planning ] && echo "planning_exists"` - Planning dir
+- `Glob: .claude/workspace/planning/BRIEF.md` → `echo "brief"` - Brief exists
+- `Glob: .claude/workspace/planning/ROADMAP.md` → `echo "roadmap"` - Roadmap exists
+- `Bash: find .claude/workspace/planning/phases -name "*-PLAN.md" | wc -l` - Plan count
+- `Bash: find .claude/workspace/planning/phases -name ".continue-here.md"` - Handoff exists
 
-# Check for artifacts
-[ -f .claude/workspace/planning/BRIEF.md ] && STATE+="brief "
-[ -f .claude/workspace/planning/ROADMAP.md ] && STATE+="roadmap "
-
-# Check for phase plans and completion
-PLAN_COUNT=$(find .claude/workspace/planning/phases -name "*-PLAN.md" 2>/dev/null | wc -l)
-SUMMARY_COUNT=$(find .claude/workspace/planning/phases -name "*-SUMMARY.md" 2>/dev/null | wc -l)
-[ "$PLAN_COUNT" -gt 0 ] && STATE+="plans:${PLAN_COUNT} "
-[ "$SUMMARY_COUNT" -gt 0 ] && STATE+="summaries:${SUMMARY_COUNT} "
-
-# Check for handoffs
-HANDOFF=$(find .claude/workspace/planning/phases -name ".continue-here.md" 2>/dev/null)
-[ -n "$HANDOFF" ] && STATE+="handoff "
-
-echo "Detected: $STATE"
-```
+**Decision Matrix:**
+| Detected State | Action |
+|----------------|--------|
+| No structure | Create brief + roadmap |
+| Brief only | Create roadmap |
+| Roadmap only | Create first phase plan |
+| Incomplete phase | Present next 1-3 tasks |
+| Handoff exists | Resume from handoff |
 
 ## Fully Autonomous Logic
 

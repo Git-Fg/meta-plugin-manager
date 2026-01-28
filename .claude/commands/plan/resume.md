@@ -20,12 +20,9 @@ Load context from a handoff file and restore working state. After loading, DELET
 
 Context scan already found handoff. Read it:
 
-```bash
-cat .claude/workspace/planning/phases/*/.continue-here.md 2>/dev/null
-```
-
-Parse YAML frontmatter for: phase, task, status, last_updated
-Parse markdown body for: context, completed work, remaining work
+- `Glob: .claude/workspace/planning/phases/*/.continue-here.md` → Find handoff files
+- `Read: .claude/workspace/planning/phases/*/.continue-here.md` → Parse YAML frontmatter for: phase, task, status, last_updated
+- `Read: .claude/workspace/planning/phases/*/.continue-here.md` → Parse markdown body for: context, completed work, remaining work
 
 ### Calculate Time Ago
 
@@ -76,9 +73,7 @@ On confirmation:
 
 After user confirms and context is loaded:
 
-```bash
-rm .claude/workspace/planning/phases/XX-name/.continue-here.md
-```
+- `Bash: rm .claude/workspace/planning/phases/XX-name/.continue-here.md` → Delete handoff file
 
 Tell user: "Handoff loaded and cleared. Let's continue."
 

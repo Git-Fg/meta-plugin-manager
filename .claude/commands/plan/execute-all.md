@@ -22,15 +22,9 @@ Execute all incomplete PLAN.md files in order. Each plan gets fresh context via 
 
 Find all incomplete plans:
 
-```bash
-# Find all PLAN files
-find .claude/workspace/planning/phases -name "*-PLAN.md" -type f | sort
-
-# Find which have summaries (complete)
-find .claude/workspace/planning/phases -name "*-SUMMARY.md" -type f | sort
-
-# Identify incomplete: PLAN.md exists without matching SUMMARY.md
-```
+- `Glob: .claude/workspace/planning/phases/**/*-PLAN.md` → Collect plan files
+- `Glob: .claude/workspace/planning/phases/**/*-SUMMARY.md` → Collect summary files
+- `Bash: diff <(echo "$PLANS" | sort) <(echo "$SUMMARIES" | sed "s/-SUMMARY/-PLAN/") | grep "^<" | sed "s/^< //"` → Identify incomplete plans
 
 **Logic:**
 
@@ -43,9 +37,7 @@ find .claude/workspace/planning/phases -name "*-SUMMARY.md" -type f | sort
 
 For each plan, check checkpoints:
 
-```bash
-grep -n "checkpoint:" .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md
-```
+- `Grep: "checkpoint:" .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md` → Extract checkpoint markers
 
 **Execution modes:**
 
@@ -60,23 +52,10 @@ For each incomplete plan in order:
 
 1. **Load plan** as executable prompt
 2. **Determine mode** from checkpoint analysis
-3. **Execute via** `engineering-lifecycle` skill
+3. **Execute via** `Skill: engineering-lifecycle`
 4. **Create SUMMARY.md** with outcomes and deviations
 5. **Update ROADMAP.md** phase status
 6. **Commit** the phase completion
-
-**Subagent delegation for AUTONOMOUS mode:**
-
-```python
-for plan in incomplete_plans:
-    result = execute_subagent(
-        plan_content=read_plan(plan),
-        fresh_context=True,
-        mode="autonomous"
-    )
-    create_summary(plan, result)
-    commit_phase(plan)
-```
 
 ### Create Summary
 
@@ -107,17 +86,14 @@ After each plan completes, create SUMMARY.md:
 
 After each plan:
 
-- Mark phase status as "completed" or "in_progress"
-- Update task counts if needed
+- `Read: .claude/workspace/planning/ROADMAP.md` → Parse phase status
+- `Edit: .claude/workspace/planning/ROADMAP.md` → Mark phase status as "completed" or "in_progress"
 
 ### Commit Progress
 
 After each plan completion:
 
-```bash
-git add .claude/workspace/planning/phases/XX-name/
-git commit -m "feat: complete [phase-name] plan [N]"
-```
+- `Bash: git add .claude/workspace/planning/phases/XX-name/ && git commit -m "feat: complete [phase-name] plan [N]"` → Commit phase completion
 
 ### Final Report
 

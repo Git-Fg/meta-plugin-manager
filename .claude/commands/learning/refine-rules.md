@@ -288,7 +288,7 @@ After refinement:
 This command uses knowledge from:
 
 - `claude-md-development` - CLAUDE.md and rules best practices
-- `meta-critic` - Quality validation framework
+- `quality-standards` - Quality validation framework
 - `refine-prompts` - L1/L2/L3/L4 prompt refinement
 
 ## Arguments

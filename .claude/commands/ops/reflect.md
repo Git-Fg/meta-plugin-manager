@@ -25,10 +25,10 @@ Review conversation to identify patterns, detect drift, and suggest improvements
 
 Review:
 
-- Recent git changes (new files, modifications)
-- Decisions made and their rationale
-- Patterns used (successful or failed)
-- Issues encountered and resolutions
+- `Bash: git diff HEAD~10 --stat` → Recent changes
+- `Read: conversation history` → Decisions and rationale
+- `Grep: conversation` → Extract patterns used (success or failure)
+- `Grep: conversation` → Identify issues encountered and resolutions
 
 ### Phase 2: Pattern Extraction
 
@@ -42,13 +42,13 @@ For each pattern identified:
 
 Check:
 
-- New files added to .claude/ - are they in correct locations?
-- Cross-references - do they use portable paths?
-- Documentation - is knowledge centralized or scattered?
+- `Bash: git status --porcelain .claude/` → New files in correct locations
+- `Grep: "\.claude/.*\.claude/" .claude/` → Portable paths (no nested .claude references)
+- `Grep: "(concept|pattern).*\n.*\1" skills/` → Centralized or scattered documentation
 
 ### Phase 4: Patch Generation
 
-Generate recommendations:
+Generate recommendations with `Write: SUMMARY.md`
 
 ```markdown
 ## Reflection Summary

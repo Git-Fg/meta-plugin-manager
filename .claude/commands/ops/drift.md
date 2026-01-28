@@ -110,11 +110,11 @@ Centralize all instructions and knowledge in their correct locations.
 
 **After any refactoring:**
 
-- [ ] No file paths in CLAUDE.md
-- [ ] Each concept has exactly one source
-- [ ] Skills reference nothing external
-- [ ] Tier 2 ≠ Tier 3 content
-- [ ] All cross-references use portable paths
+- `Glob: CLAUDE.md` → `Grep: "\.claude/"` - No file paths in CLAUDE.md
+- `Grep: "(pattern|concept).*\n.*\1"` - Each concept has exactly one source
+- `Grep: "external\|dependency" skills/*/SKILL.md` - Skills reference nothing external
+- `Bash: wc -w skills/*/SKILL.md` - Tier 2 ≠ Tier 3 content
+- `Grep: "^/\|^\."` - All cross-references use portable paths
 
 **Binary test:** "Does architecture follow single source of truth?" → Check all five criteria.
 

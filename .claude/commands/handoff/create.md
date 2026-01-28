@@ -34,14 +34,8 @@ Generate a comprehensive handoff document that preserves:
 
 Before creating a new handoff, archive any existing one:
 
-```bash
-# Find and archive existing handoffs
-for f in .claude/workspace/handoffs/*.yaml; do
-  [ -f "$f" ] || continue
-  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-  mv "$f" ".attic/$(basename "$f" .yaml)_old_${TIMESTAMP}.yaml"
-done
-```
+- `Glob: .claude/workspace/handoffs/*.yaml` → Find existing handoffs
+- `Bash: for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/$(basename "$f" .yaml)_$(date +%Y%m%d_%H%M%S).yaml"; done` → Archive existing with timestamp
 
 ### Phase 2: Generate Handoff Document
 
@@ -100,13 +94,8 @@ files:
 
 Save to standardized location with timestamp naming:
 
-```bash
-# Save with timestamp
-HANDOFF_FILE=".claude/workspace/handoffs/$(date +%Y-%m-%d_%H-%M)-[task-name].yaml"
-cat > "$HANDOFF_FILE" << 'EOF'
-# ... YAML content ...
-EOF
-```
+- `Bash: echo 'HANDOFF_FILE=".claude/workspace/handoffs/$(date +%Y-%m-%d_%H-%M)-[task-name].yaml"'` → Generate filename
+- `Write: .claude/workspace/handoffs/YYYY-MM-DD_HH-MM-[task-name].yaml` → Save YAML content
 
 **File naming**: `YYYY-MM-DD_HH-MM-[descriptive-name].yaml`
 
@@ -114,14 +103,7 @@ EOF
 
 When resuming work, use command substitution to load the latest handoff:
 
-```bash
-# Load the latest handoff
-LATEST=$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)
-cat "$LATEST"
-
-# Or inline in a prompt:
-!cat $(ls -t .claude/workspace/handoffs/*.yaml | head -1)
-```
+- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Get latest handoff path
 
 ## Reading Latest Handoff
 
@@ -198,15 +180,9 @@ files:
 
 ### When Resuming from Handoffs
 
-```bash
-# Read and parse latest handoff
-LATEST=$(ls -t .claude/workspace/handoffs/*.yaml | head -1)
-GOAL=$(grep "^goal:" "$LATEST" | sed 's/^goal: //')
-NOW=$(grep "^now:" "$LATEST" | sed 's/^now: //')
-
-echo "Goal: $GOAL"
-echo "Now: $NOW"
-```
+- `Bash: ls -t .claude/workspace/handoffs/*.yaml | head -1` → Get latest handoff
+- `Grep: "^goal:" .claude/workspace/handoffs/*.yaml | sed 's/^goal: //'` → Extract goal
+- `Grep: "^now:" .claude/workspace/handoffs/*.yaml | sed 's/^now: //'` → Extract now
 
 ## Recognition Questions
 
