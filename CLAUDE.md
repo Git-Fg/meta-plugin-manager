@@ -96,6 +96,32 @@ This project demonstrates the **Knowledge-Factory architecture**:
 
 **Usage pattern**: Use toolkit commands for workflow orchestration, which invoke `invocable-development` for domain logic.
 
+### Semantic Anchoring Pattern
+
+**Pattern**: Replace bash code blocks with tool invocation anchors to force correct tool usage.
+
+**Format**: `- \`Tool: command\` → description`
+
+**Example**:
+
+````markdown
+# Before:
+
+```bash
+npx knip
+```
+````
+
+# After:
+
+- `Bash: npx knip` → Run knip for unused exports/files/dependencies
+
+```
+
+**Applied to**: All commands, agents (68+ files converted)
+
+**Why**: Forces AI to use native tools instead of treating commands as prose text.
+
 ---
 
 ## Toolkit Commands
@@ -173,22 +199,25 @@ See `invocable-development/references/command-orchestration.md` for complete pat
 ### For Health Maintenance (Current Session)
 
 ```
+
 Need to maintain project health?
 │
 ├─ Self-maintenance → Use /ops namespace
-│  ├─ /ops:rooter - Router for all ops commands
-│  ├─ /ops:extract - Extract patterns from conversation
-│  ├─ /ops:drift - Detect and fix context drift
-│  └─ /ops:reflect - Review session for improvements
+│ ├─ /ops:rooter - Router for all ops commands
+│ ├─ /ops:extract - Extract patterns from conversation
+│ ├─ /ops:drift - Detect and fix context drift
+│ └─ /ops:reflect - Review session for improvements
 ├─ Update rules → Check .claude/rules/ for consistency
 ├─ Audit quality → Use quality-standards skill
 ├─ Fix autonomy issues → Review architecture.md (L'Entonnoir pattern)
 └─ Validate structure → Check quality.md (anti-patterns)
+
 ```
 
 ### For Component Factory (Building Offspring)
 
 ```
+
 Need to build a portable component?
 │
 ├─ Complete package → /toolkit:build:package
@@ -200,6 +229,7 @@ Need to build a portable component?
 ├─ Add hook → hook-development
 ├─ Add MCP server → mcp-development
 └─ Refine prompt → refine-prompts
+
 ```
 
 ---
@@ -303,11 +333,15 @@ When documenting file operations, search, or text manipulation in skills, use na
 **Example**:
 
 ```
+
 <!-- Instead of -->
+
 grep -n "type=\"checkpoint" PLAN.md
 
 <!-- Use -->
+
 Grep: Search PLAN.md for pattern type="checkpoint (shows line numbers)
+
 ```
 
 **Files updated with this pattern**:
@@ -405,3 +439,4 @@ MANDATORY: Use ExitPlanMode before implementation
 <critical_constraint>
 MANDATORY: Every component MUST work with zero .claude/rules dependencies
 </critical_constraint>
+```
