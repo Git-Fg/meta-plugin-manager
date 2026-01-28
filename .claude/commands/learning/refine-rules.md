@@ -30,16 +30,9 @@ Perform comprehensive analysis of all project memory files:
 
 Scan the project for all memory files:
 
-```bash
-# Find all CLAUDE.md locations
-find . -name "CLAUDE.md" -type f 2>/dev/null
-
-# Find all .claude/rules files
-find .claude/rules -name "*.md" -type f 2>/dev/null
-
-# Check for symlinks
-find .claude/rules -type l 2>/dev/null
-```
+- `Bash: find . -name "CLAUDE.md" -type f 2>/dev/null` → Find all CLAUDE.md locations
+- `Bash: find .claude/rules -name "*.md" -type f 2>/dev/null` → Find all .claude/rules files
+- `Bash: find .claude/rules -type l 2>/dev/null` → Check for symlinks
 
 ### Phase 2: Quality Analysis
 

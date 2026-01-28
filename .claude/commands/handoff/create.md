@@ -107,16 +107,27 @@ When resuming work, use command substitution to load the latest handoff:
 
 ## Reading Latest Handoff
 
-```bash
-# Method 1: Assign to variable
+When resuming work, use command substitution to load the latest handoff:
+
+- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Get latest handoff path
+
+**Method 1: Assign to variable**
+
+```
 LATEST=$(ls -t .claude/workspace/handoffs/*.yaml | head -1)
 echo "Resuming from: $LATEST"
 cat "$LATEST"
+```
 
-# Method 2: Direct command substitution
+**Method 2: Direct command substitution**
+
+```
 !cat $(ls -t .claude/workspace/handoffs/*.yaml | head -1)
+```
 
-# Method 3: One-liner with inline display
+**Method 3: One-liner with inline display**
+
+```
 !cat $(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)
 ```
 

@@ -139,7 +139,7 @@ Generate table:
 
 Extract variables:
 
-```bash
+```
 # Database
 DATABASE_URL=postgresql://user:pass@host:5432/db
 DATABASE_POOL_SIZE=10
@@ -167,16 +167,9 @@ Generate documentation:
 
 Identify documentation not modified in 90+ days:
 
-```bash
-# Find files older than 90 days
-find docs/ -type f -mtime +90
-
-# Show last modified date
-ls -la docs/
-
-# Check git history
-git log -1 --format="%ai" -- docs/FILE.md
-```
+- `Bash: find docs/ -type f -mtime +90` → Find files older than 90 days
+- `Bash: ls -la docs/` → Show last modified dates
+- `Bash: git log -1 --format="%ai" -- docs/FILE.md` → Check git history for specific file
 
 List for manual review:
 

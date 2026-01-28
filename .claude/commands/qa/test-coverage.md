@@ -37,12 +37,9 @@ Execute coverage analysis and test generation:
 
 ### Step 1: Run Coverage
 
-```bash
-# Detect test framework and run coverage
-npm run test:coverage     # or
-pnpm test --coverage      # or
-bun test --coverage
-```
+- `Bash: npm run test:coverage` → Run coverage with npm
+- `Bash: pnpm test --coverage` → Run coverage with pnpm
+- `Bash: bun test --coverage` → Run coverage with bun
 
 ### Step 2: Analyze Report
 

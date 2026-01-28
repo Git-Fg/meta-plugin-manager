@@ -63,64 +63,34 @@ Single fully autonomous command for all planning operations. Auto-detects and ex
 
 **AUTONOMOUS CREATE**:
 
-```bash
-# Create structure
-mkdir -p .claude/workspace/planning/phases
-
-# Create brief (inferred from $ARGUMENTS)
-cat > .claude/workspace/planning/BRIEF.md <<BRIEF_EOF
-# Project: [INFERRED_NAME]
-
-## Description
-[INFERRED_ONE_LINER]
-
-## Problem
-[INFERRED_PROBLEM]
-
-## Success Criteria
-- [Criterion 1 - inferred from goals]
-- [Criterion 2 - inferred from goals]
-
-## Constraints
-[INFERRED_CONSTRAINTS if any]
-
-## Out of Scope
-[What's clearly NOT in scope]
-BRIEF_EOF
-
-# Create roadmap (3-6 phases from domain patterns)
-cat > .claude/workspace/planning/ROADMAP.md <<ROADMAP_EOF
-# Project Roadmap
-
-## Phases
-
-### Phase 01: foundation
-[Status: not_started]
-Core infrastructure setup
-
-### Phase 02: [inferred from project type]
-[Status: not_started]
-[Description]
+- `Bash: mkdir -p .claude/workspace/planning/phases` → Create planning directory structure
+- `Bash: cat > .claude/workspace/planning/BRIEF.md <<BRIEF_EOF` → Create brief file with inferred content
+- `Bash: cat > .claude/workspace/planning/ROADMAP.md <<ROADMAP_EOF` → Create roadmap with 3-6 phases
 
 ... (3-6 phases total)
 ROADMAP_EOF
 
 # Create phase directories
-for phase in 01-*; do mkdir -p ".claude/workspace/planning/phases/$phase"; done
+
+for phase in 01-\*; do mkdir -p ".claude/workspace/planning/phases/$phase"; done
 
 # Commit initialization
+
 git add .claude/workspace/planning/
 git commit -m "docs: initialize [INFERRED_NAME] ([N] phases)"
+
 ```
 
 **CONFIRM** (single question):
 
 ```
+
 ✓ Created brief + roadmap for [INFERRED_NAME]
 ✓ [N] phases defined
 ✓ Committed initialization
 
 Next: Plan Phase 1 tasks? (yes/no/customize)
+
 ```
 
 ### State 2: Brief Only (No Roadmap)
@@ -150,10 +120,12 @@ Next: Plan Phase 1 tasks? (yes/no/customize)
 **CONFIRM**:
 
 ```
+
 ✓ Created roadmap with [N] phases
 ✓ Phase directories created
 
 Next: Plan Phase 1? (yes/review)
+
 ```
 
 ### State 3: Roadmap Only (No Phase Plans)
@@ -177,21 +149,25 @@ Next: Plan Phase 1? (yes/review)
 **AUTONOMOUS CREATE** via `engineering-lifecycle` skill:
 
 ```
+
 Skill: plan-phase workflow
 Input: Phase 1 scope from ROADMAP
 Output: 2-3 atomic tasks in PLAN.md
+
 ```
 
 **CONFIRM**:
 
 ```
+
 ✓ Phase 1 planned: [N] tasks
 → Task 1: [name]
 → Task 2: [name]
 → Task 3: [name]
 
 Execute Phase 1? (yes/review/customize)
-```
+
+````
 
 ### State 4: Incomplete Phase (Plans > Summaries)
 
@@ -201,18 +177,8 @@ Execute Phase 1? (yes/review/customize)
 
 **EXPLORE** phase state:
 
-```bash
-# Find current incomplete phase
-INCOMPLETE_PHASE=$(find .claude/workspace/planning/phases -name "*-PLAN.md" -exec sh -c '
-  plan="$1"
-  summary="${plan%-PLAN.md}-SUMMARY.md"
-  [ ! -f "$summary" ] && echo "$plan"
-' _ {} \; | head -1 | xargs dirname)
-
-# Read the plan
-CURRENT_PLAN="$INCOMPLETE_PHASE/$(basename $INCOMPLETE_PHASE)-PLAN.md"
-cat "$CURRENT_PLAN"
-```
+- `Bash: find .claude/workspace/planning/phases -name "*-PLAN.md" -exec sh -c 'plan="$1"; summary="${plan%-PLAN.md}-SUMMARY.md"; [ ! -f "$summary" ] && echo "$plan"' _ {} \; | head -1 | xargs dirname` → Find current incomplete phase
+- `Read: CURRENT_PLAN` → Read the incomplete plan file
 
 **ANALYZE** plan content:
 
@@ -347,3 +313,4 @@ MANDATORY: Delete handoff after resume (not permanent storage)
 
 No exceptions. Fully autonomous single-command planning.
 </critical_constraint>
+````

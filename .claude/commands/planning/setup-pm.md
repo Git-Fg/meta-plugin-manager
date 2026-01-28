@@ -39,16 +39,9 @@ When determining which package manager to use, the following order is checked:
 
 Set `CLAUDE_PACKAGE_MANAGER` to override all other detection methods:
 
-```bash
-# macOS/Linux
-export CLAUDE_PACKAGE_MANAGER=pnpm
-
-# Windows (PowerShell)
-$env:CLAUDE_PACKAGE_MANAGER = "pnpm"
-
-# Windows (CMD)
-set CLAUDE_PACKAGE_MANAGER=pnpm
-```
+- `Bash: export CLAUDE_PACKAGE_MANAGER=pnpm` → Set on macOS/Linux
+- `Bash: $env:CLAUDE_PACKAGE_MANAGER = "pnpm"` → Set in PowerShell
+- `Bash: set CLAUDE_PACKAGE_MANAGER=pnpm` → Set in Windows CMD
 
 **Best for**: Temporary override, CI/CD environments
 
@@ -90,15 +83,14 @@ Create `~/.claude/package-manager.json`:
 
 ## Detection Workflow
 
-```bash
-# Check current detection
-1. Check for CLAUDE_PACKAGE_MANAGER environment variable
-2. Check for .claude/package-manager.json
-3. Check package.json "packageManager" field
+Detection follows this priority order:
+
+1. Check for `CLAUDE_PACKAGE_MANAGER` environment variable
+2. Check for `.claude/package-manager.json`
+3. Check `package.json` "packageManager" field
 4. Detect lock file (package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb)
-5. Check ~/.claude/package-manager.json
+5. Check `~/.claude/package-manager.json`
 6. Fall back to available (pnpm > bun > yarn > npm)
-```
 
 ## Lock File Detection
 
@@ -121,12 +113,10 @@ This command integrates with:
 
 This command interprets special arguments to set configuration:
 
-```bash
-/setup-pm pnpm          # Set project preference to pnpm
-/setup-pm global bun    # Set global preference to bun
-/setup-pm detect        # Show current detection result
-/setup-pm list          # Show available package managers
-```
+- `/setup-pm pnpm` → Set project preference to pnpm
+- `/setup-pm global bun` → Set global preference to bun
+- `/setup-pm detect` → Show current detection result
+- `/setup-pm list` → Show available package managers
 
 **Available package managers**: npm, pnpm, yarn, bun
 
