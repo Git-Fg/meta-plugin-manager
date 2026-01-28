@@ -28,6 +28,18 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session-end.sh \"$CLAUDE_TRANSCRIPT_PATH\"",
+            "description": "Save raw transcript for post-mortem analysis by ops/reflect-and-patch skill"
+          }
+        ]
+      }
     ]
   }
 }
