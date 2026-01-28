@@ -123,30 +123,18 @@ Use Grep to discover patterns:
 
 #### Dependencies
 
-```bash
-# Find import relationships
-Grep pattern: "from\s+['\"]([^'\"]+)['\"]"
-
-# Find external dependencies
-Grep patterns:
-- "from\s+['\"]@?\w+/"
-- "import\s+.*\s+from\s+['\"]"
-
-# Find internal dependencies
-Grep patterns:
-- "from\s+['\"]\./"
-- "from\s+['\"]\.\./"
-```
+- `Grep: "from\\s+['\\\"]([^'\\\"]+)['\\\"]"` → Find import relationships
+- `Grep: "from\\s+['\\\"]@?\\w+/"` → Find external dependencies
+- `Grep: "import\\s+.*\\s+from\\s+['\\\"]"` → Find import statements
+- `Grep: "from\\s+['\\\"]\\./"` → Find internal dependencies (relative)
+- `Grep: "from\\s+['\\\"]\\.\\./"` → Find internal dependencies (parent)
 
 #### Layer Relationships
 
-```bash
-# Detect layer boundaries
-Grep: "router|route|endpoint|api"
-Grep: "service|business|logic"
-Grep: "repository|model|data"
-Grep: "database|db|mongo|postgres"
-```
+- `Grep: "router|route|endpoint|api"` → Detect routing layer
+- `Grep: "service|business|logic"` → Detect service layer
+- `Grep: "repository|model|data"` → Detect data layer
+- `Grep: "database|db|mongo|postgres"` → Detect database patterns
 
 ## Output Format
 
