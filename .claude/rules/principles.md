@@ -365,19 +365,36 @@ Only document the knowledge delta—what Claude wouldn't already have.
 
 Think of the Map as having layers. Not every piece of information belongs in the main file.
 
-| Layer      | Content                            | Tokens        |
-| ---------- | ---------------------------------- | ------------- |
-| **Tier 1** | YAML metadata (What-When-Not)      | ~100          |
-| **Tier 2** | Core workflows, mission, patterns  | 1.5k-2k words |
-| **Tier 3** | Deep patterns, API specs, examples | Unlimited     |
+**CRITICAL**: Progressive disclosure applies ONLY to `.claude/skills/` - NOT to commands, agents, hooks, or MCP servers.
 
-**Principle:** Keep Tier 2 lean. Move detailed content to references/.
+| Layer      | Content                                         | Tokens        | Guideline                               |
+| ---------- | ----------------------------------------------- | ------------- | --------------------------------------- |
+| **Tier 1** | YAML metadata (What-When-Not)                   | ~100          | Always                                  |
+| **Tier 2** | SKILL.md - full philosophy, patterns, workflows | 1.5k-2k words | Target ~500 lines, flexible for context |
+| **Tier 3** | references/ - ultra-situational lookup material | Unlimited     | 2-3 files (rule of thumb)               |
+
+**Principle**: Tier 2 contains the FULL philosophy and context. Tier 3 is ONLY for ultra-situational information that AI would need to look up (API specs, code examples, detailed troubleshooting).
+
+**Key clarifications**:
+
+- **~500 lines is a rule of thumb**, NOT enforced against contextualization and readability
+- **Full philosophy in SKILL.md** - Delegation patterns, TDD requirements, domain knowledge belong in Tier 2
+- **References/ for ultra-situational info only** - Things you'd grep/search for when needed
+- **Each reference must have "Use when" context** - Clear trigger without spoiling content
+- **2-3 reference files is typical** - Big libraries/APIs can have more, but prefer fewer
 
 ### How to Progressive Disclose
 
-- Tier 2: Core concepts, main workflows, key patterns
-- Tier 3: Edge cases, API references, worked examples
-- Navigation: "For X, see references/Y.md"
+- **Tier 2 (SKILL.md)**: Core concepts, philosophy, main workflows, key patterns, complete examples
+- **Tier 3 (references/)**: API specifications, lookup tables, code snippets, edge case details
+- **Navigation**: "If you need... Read..." table pattern
+
+### Recognition Questions
+
+- "Is this ultra-situational?" (API spec, lookup) → references/
+- "Is this general philosophy/context?" (delegation, TDD) → SKILL.md
+- "Would AI need this every time?" → SKILL.md
+- "Would AI only need this occasionally?" → references/
 
 ---
 

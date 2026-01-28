@@ -400,11 +400,11 @@ After user selects a solution, create actionable implementation plan with specif
 **Implementation Plan:**
 ```markdown
 ### Changes
-File: .claude/skills/my-delegate-skill/SKILL.md:15
+Invoke my-delegate-skill and edit SKILL.md line 15:
 - Current: allowed-tools: ["Task", "Read", "Write"]
 + Change to: allowed-tools: ["Skill(other-skill)", "Read", "Write"]
 
-File: .claude/skills/my-delegate-skill/SKILL.md:45
+Invoke my-delegate-skill and edit SKILL.md line 45:
 - Current: "Use Task tool to spawn subagent for delegation"
 + Change to: "Use Skill tool to delegate to other-skill when needed"
 
@@ -413,8 +413,8 @@ File: .claude/skills/my-delegate-skill/SKILL.md:45
 [ ] Test skill triggers Skill tool correctly
 [ ] Check conversation context preserved
 
-### Related Files
-- .claude/skills/other-skill/SKILL.md - Ensure accepts delegation
+### Related Skills
+- Invoke other-skill and read SKILL.md - Ensure accepts delegation
 ````
 
 ---

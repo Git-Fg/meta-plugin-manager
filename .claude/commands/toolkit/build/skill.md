@@ -18,7 +18,7 @@ When invoked, analyze conversation:
 
 - `Glob: skills/**/*.md` (check for recent SKILL.md)
 - `Grep: invocable-development` (check for skill usage)
-- `Read: skills/*/SKILL.md` (identify target path)
+- Invoke skill and read SKILL.md from its folder (identify target path)
 
 **Inference:**
 
@@ -30,7 +30,7 @@ When invoked, analyze conversation:
 
 - `Bash: ls -la skills/*/` (check directory exists)
 - `Glob: skills/*/SKILL.md` (verify presence)
-- `Read: skills/*/SKILL.md` (assess completeness)
+- Invoke skill and read SKILL.md from its folder (assess completeness)
 
 ## Creation Workflow
 
@@ -73,8 +73,8 @@ Verify:
 
 Inject condensed Seed System principles:
 
-1. `Read: invocable-development/references/genetic-code-template.md`
-2. `Edit: skills/*/SKILL.md` + Genetic Code before `<critical_constraint>`
+1. Invoke invocable-development skill and read genetic-code-template.md from references folder
+2. Invoke skill and edit SKILL.md + Genetic Code before `<critical_constraint>`
 3. `Verify: grep -c "\.claude/rules" skills/*/SKILL.md == 0`
 
 ```markdown

@@ -60,7 +60,8 @@ The difference is **structural and organizational**:
 ### Choose Skill When
 
 - Content benefits from multiple files
-- Progressive disclosure needed (core + detailed references)
+- SKILL.md contains full philosophy (~500 lines flexible for context)
+- Ultra-situational content needs references/ (API specs, code snippets, troubleshooting)
 - Multiple workflow files provide better organization
 - Examples or scripts should be bundled
 - Domain expertise that warrants structured documentation
@@ -125,13 +126,14 @@ commands/
 
 ```
 skill-name/
-├── SKILL.md           # Main content (~1500-2000 words)
+├── SKILL.md           # Full philosophy, patterns, workflows (~400-600 lines)
 ├── workflows/         # Optional: separate workflow files
 │   ├── workflow-1.md
 │   └── workflow-2.md
-├── references/        # Optional: detailed documentation
-│   ├── topic-1.md
-│   └── topic-2.md
+├── references/        # Optional: ultra-situational lookup (2-3 files)
+│   ├── api-spec.md    # API endpoints, field definitions
+│   ├── examples.md     # Ready-to-copy code snippets
+│   └── troubleshooting.md  # Edge cases, debugging
 ├── templates/         # Optional: reusable output structures
 │   └── template.md
 ├── scripts/           # Optional: executable automation scripts
@@ -140,7 +142,7 @@ skill-name/
     └── example.md
 ```
 
-**Folder structure** enables progressive disclosure - main content in SKILL.md, details in references/, reusable structures in templates/, automation in scripts/.
+**Folder structure** enables progressive disclosure - SKILL.md contains full philosophy and patterns, references/ contains ultra-situational lookup material only.
 
 ---
 

@@ -73,7 +73,7 @@ Verify:
 
 Inject condensed Seed System principles:
 
-1. `Read: invocable-development/references/genetic-code-template.md`
+1. Invoke invocable-development skill and read genetic-code-template.md from references folder
 2. `Edit: .claude/commands/*/*.md` + Genetic Code before `<critical_constraint>`
 3. `Verify: grep -c "\.claude/rules" commands/*/*.md == 0`
 

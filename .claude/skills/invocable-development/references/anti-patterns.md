@@ -282,32 +282,57 @@ description: "Validate YAML structure and required fields. Use when testing skil
 
 ## Structure Anti-Patterns
 
-### Anti-Pattern 11: Tier 2 Bloat
+### Anti-Pattern 11: Tier 2 Arbitrary Line Limiting
 
-**Problem**: SKILL.md exceeds 500 lines
+**Problem**: Enforcing 500-line limit against contextualization and readability
 
-**Recognition**: "Could this be a reference file?"
+**Recognition**: "Is this being split just to hit a target, rather than for organization?"
 
 **Bad**:
 
 ```markdown
-# Security Validator (800 lines)
+# Security Validator (520 lines)
 
-## OWASP Top 10 Details
+Reviewer: "This exceeds 500 lines, move content to references/"
 
-[A01 detailed... detailed...]
-[10 sections of detailed explanations...]
-
-## Remediation Examples
-
-[100 examples...]
-
-## Testing Strategies
-
-[200 lines of testing details...]
+[Content gets split just to meet target, not because it's better organized]
 ```
 
-**Fix**: Move detailed content to Tier 3 (references/)
+**Fix**: The ~500 line target is a rule of thumb, NOT enforced. SKILL.md should contain full philosophy and patterns. If content requires 600+ lines to be complete and readable, that's acceptable.
+
+**Better approach**:
+
+```markdown
+# Security Validator (600 lines)
+
+## Delegation Philosophy
+
+[Complete patterns with full explanations...]
+
+## TDD Requirements
+
+[Full TDD methodology...]
+
+## Key Patterns
+
+[All important patterns inline...]
+
+## Navigation
+
+**Local References**:
+
+| If you need...         | Read...                       |
+| ---------------------- | ----------------------------- |
+| OWASP Top 10 reference | references/owasp-reference.md |
+
+Note: 600 lines is acceptable because the content is complete, readable, and well-organized. References/ are for ultra-situational lookup only (API specs, detailed examples).
+```
+
+**Recognition Questions**:
+
+- "Is the content complete and readable?" → Keep in SKILL.md
+- "Is this ultra-situational lookup?" → Move to references/
+- "Would AI need this every time?" → Keep in SKILL.md
 
 ---
 

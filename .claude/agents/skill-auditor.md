@@ -33,7 +33,7 @@ During audits, prioritize evaluation of:
 
 - YAML compliance (name length, description quality, third person POV)
 - XML structure (required tags, semantic anchoring where needed, proper nesting)
-- Progressive disclosure structure (SKILL.md < 500 lines, references one level deep)
+- Progressive disclosure structure (SKILL.md ~500 lines with full philosophy, references/ for ultra-situational only)
 - Conciseness and signal-to-noise ratio (every word earns its place)
 - Required XML tags (objective, quick_start, success_criteria)
 - Conditional XML tags (appropriate for complexity level)
@@ -76,7 +76,7 @@ Check for:
 
 Check for:
 
-- **Progressive disclosure**: SKILL.md is overview (<500 lines), detailed content in reference files, references one level deep
+- **Progressive disclosure**: SKILL.md contains full philosophy (~500 lines flexible for context), references/ for ultra-situational lookup only
 - **XML structure quality**:
   - Required tags present (objective, quick_start, success_criteria)
   - XML tags used for semantic anchoring (critical constraints, patterns, triggers, state transitions)

@@ -135,15 +135,15 @@ The toolkit provides command-based interfaces for creating and validating invoca
 | Component    | Structure                                                      | Naming                                 | Best For                                |
 | ------------ | -------------------------------------------------------------- | -------------------------------------- | --------------------------------------- |
 | **Commands** | Single `.md` file                                              | `commands/build/fix.md` → `/build:fix` | Intent/state definition, folder nesting |
-| **Skills**   | Folder with `SKILL.md` + optional `workflows/` + `references/` | Flat: `skills/engineering-lifecycle/`  | Domain logic, progressive disclosure    |
+| **Skills**   | Folder with `SKILL.md` + optional `references/`                | Flat: `skills/engineering-lifecycle/`  | Domain logic, progressive disclosure    |
 
 ### Build Commands
 
 | Command                  | Purpose                                                             | Autonomy             |
 | ------------------------ | ------------------------------------------------------------------- | -------------------- |
-| `/toolkit:build:command` | Create one-file commands                                            | High (0-2 questions) |
-| `/toolkit:build:skill`   | Create skills with workflows/ and references/                       | High (0-2 questions) |
-| `/toolkit:build:package` | Create complete packages (command + skill + workflows + references) | High (0-3 questions) |
+| `/toolkit:build:command` | Create one-file commands                         | High (0-2 questions) |
+| `/toolkit:build:skill`   | Create skills with SKILL.md + optional references/ | High (0-2 questions) |
+| `/toolkit:build:package` | Create complete packages (command + skill + references) | High (0-3 questions) |
 
 ### Audit Commands
 
@@ -160,8 +160,7 @@ The toolkit provides command-based interfaces for creating and validating invoca
 **Rooter Archetype**: A complete capability package with multiple entry points:
 
 - **Command**: Quick intent invocation
-- **Workflows**: Guided step-by-step processes
-- **Skill**: Comprehensive domain knowledge
+- **Skill**: Comprehensive domain knowledge with optional step-by-step workflows in SKILL.md
 - **Examples/Scripts**: Working demonstrations and automation
 
 ### Key Features
@@ -239,7 +238,7 @@ Need to build a portable component?
 **Commands and Skills are the same system** with identical capabilities. The difference is structural:
 
 | **Commands** | Single `.md` file | Folder nesting: `commands/analysis/diagnose.md` → `/analysis:diagnose` |
-| **Skills** | Folder with `SKILL.md` + optional `workflows/` and `references/` | Flat: `skills/engineering-lifecycle/SKILL.md` |
+| **Skills** | Folder with `SKILL.md` + optional `references/` | Flat: `skills/engineering-lifecycle/SKILL.md` |
 
 **Both are auto-invocable** - AI and users can invoke either based on description and context.
 
@@ -303,11 +302,31 @@ The Seed System consolidates all guidance into three rule files:
 | "Background event handling (use hook-development)" | "Background event handling"                        |
 | "Create agents (use agent-development)"            | "Autonomous agents with independent execution"     |
 
-**What belongs in descriptions**:
+---
 
-- What the component does (verb + object)
-- When to use it (use cases)
-- What it's NOT for (by behavior, not by referencing other components)
+## Skill Reference Pattern in Commands
+
+**Pattern**: Use invocation-based references instead of direct file paths to skill content.
+
+**Why**: Direct file paths like `invocable-development/references/genetic-code-template.md` create implicit dependencies. Using invocation patterns makes the intent clearer and follows the skill system's design.
+
+**Conversion Pattern**:
+
+| Instead of... | Use... |
+| ------------- | ------ |
+| `Read: invocable-development/references/genetic-code-template.md` | "Invoke invocable-development skill and read genetic-code-template.md from references folder" |
+| `Read: skills/*/SKILL.md` | "Invoke skill and read SKILL.md from its folder" |
+| `File: .claude/skills/my-skill/SKILL.md:15` | "Invoke my-skill and edit SKILL.md line 15" |
+
+**When to apply**: In command documentation, router tables, guidance sections, and implementation plans.
+
+**When NOT to apply**:
+- Tool invocation arguments (Glob patterns, file paths as command arguments)
+- Bash/grep commands that require file paths as syntax
+- Code examples showing implementation
+- Example output demonstrating results
+
+**Binary test**: "Is this a conceptual reference to skill content, or a tool argument/code syntax?" → Apply pattern only to conceptual references.
 
 ---
 
@@ -373,6 +392,25 @@ See `.claude/rules/principles.md` for:
 **Tier 3**: References/ (on-demand)
 
 Keep SKILL.md focused and lean. Move detailed content to references/.
+
+**Skill Structure Standard**:
+
+```
+
+skill-name/
+├── SKILL.md # Full philosophy - fully self-sufficient
+└── references/ # Optional - lookup tables, API specs, detailed examples
+├── pattern-catalog.md
+└── troubleshooting.md
+
+```
+
+**Why no workflows/ folder**:
+
+- SKILL.md must contain full workflow processes for self-sufficiency
+- references/ is for ultra-situational lookup material (API specs, tables), not guided processes
+- Commands orchestrate by invoking skills and reading specific references when needed
+- This ensures skills work standalone even if references/ are deleted
 
 ---
 

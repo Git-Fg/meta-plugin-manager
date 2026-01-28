@@ -34,8 +34,8 @@ argument-hint: [target-path or "auto" for context detection]
 
 <router>
 <extension_detect>
-<rule>.md file in commands/ → Load `invocable-development/references/frontmatter-reference.md` and `references/executable-examples.md`</rule>
-<rule>SKILL.md in skills/ → Load `invocable-development/references/quality-framework.md` and `references/workflows-audit.md`</rule>
+<rule>.md file in commands/ → Invoke invocable-development skill and read frontmatter-reference.md and executable-examples.md from references folder</rule>
+<rule>SKILL.md in skills/ → Invoke invocable-development skill and read quality-framework.md and workflows-audit.md from references folder</rule>
 <rule>Unknown extension → Use default invocable-development patterns</rule>
 </extension_detect>
 
@@ -74,11 +74,11 @@ Apply context inference rules:
 
 Based on target file extension:
 
-| Extension            | Action                                                                                       |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| `.md` (commands/)    | `Read: invocable-development/references/frontmatter-reference.md` + `executable-examples.md` |
-| `SKILL.md` (skills/) | `Read: invocable-development/references/quality-framework.md` + `workflows-audit.md`         |
-| Unknown              | Apply general invocable-development patterns                                                 |
+| Extension            | Action                                                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `.md` (commands/)    | Invoke invocable-development skill and read frontmatter-reference.md and executable-examples.md from references folder |
+| `SKILL.md` (skills/) | Invoke invocable-development skill and read quality-framework.md and workflows-audit.md from references folder         |
+| Unknown              | Apply general invocable-development patterns                                                                           |
 
 ### Phase 3: Audit Execution
 

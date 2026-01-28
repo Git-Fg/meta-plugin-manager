@@ -11,13 +11,15 @@
 
 ## Gate 2: Progressive Disclosure
 
-| Tier   | Content                           | Max Tokens/Lines |
-| ------ | --------------------------------- | ---------------- |
-| Tier 1 | YAML metadata (What-When-Not)     | ~100 tokens      |
-| Tier 2 | Core workflows, mission, patterns | <500 lines       |
-| Tier 3 | References/ directory for details | Unlimited        |
+**CRITICAL**: Applies ONLY to `.claude/skills/` - NOT to commands, agents, hooks, or MCP servers.
 
-Verification: Confirm Tier 2 is lean, Tier 3 exists with details.
+| Tier   | Content                                         | Guideline                         |
+| ------ | ----------------------------------------------- | --------------------------------- |
+| Tier 1 | YAML metadata (What-When-Not)                   | ~100 tokens                       |
+| Tier 2 | SKILL.md - full philosophy, patterns, workflows | ~500 lines (flexible for context) |
+| Tier 3 | references/ - ultra-situational lookup only     | 2-3 files (rule of thumb)         |
+
+Verification: Confirm Tier 2 contains full philosophy (not just summaries), Tier 3 has ultra-situational content (API specs, code snippets) with "Use when" context.
 
 ## Gate 3: Portability Verification
 
