@@ -39,19 +39,10 @@ You are an expert refactoring specialist focused on code cleanup and consolidati
 
 ### Analysis Commands
 
-```bash
-# Run knip for unused exports/files/dependencies
-npx knip
-
-# Check unused dependencies
-npx depcheck
-
-# Find unused TypeScript exports
-npx ts-prune
-
-# Check for unused disable-directives
-npx eslint . --report-unused-disable-directives
-```
+- `Bash: npx knip` → Run knip for unused exports/files/dependencies
+- `Bash: npx depcheck` → Check unused dependencies
+- `Bash: npx ts-prune` → Find unused TypeScript exports
+- `Bash: npx eslint . --report-unused-disable-directives` → Check for unused disable-directives
 
 ## Refactoring Workflow
 
@@ -288,13 +279,10 @@ See DELETION_LOG.md for complete details.
 If something breaks after removal:
 
 1. **Immediate rollback:**
-
-   ```bash
-   git revert HEAD
-   npm install
-   npm run build
-   npm test
-   ```
+   - `Bash: git revert HEAD` → Rollback last commit
+   - `Bash: npm install` → Reinstall dependencies
+   - `Bash: npm run build` → Verify build
+   - `Bash: npm test` → Run all tests
 
 2. **Investigate:**
    - What failed?
