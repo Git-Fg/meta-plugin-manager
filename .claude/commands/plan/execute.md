@@ -1,5 +1,5 @@
 ---
-description: "Execute PLAN.md files with fresh context and generate SUMMARY.md outcomes. Use when running implementation phases."
+description: "Execute PLAN.md files with fresh context and generate SUMMARY.md outcomes. Use when running implementation phases. Not for planning new work - use /plan:create for that."
 argument-hint: [path/to/PLAN.md or "auto" for latest]
 ---
 

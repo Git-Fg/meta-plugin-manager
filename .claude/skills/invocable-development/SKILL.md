@@ -9,8 +9,9 @@ description: "Create, validate, and audit portable invocable components (command
 <objective>Create portable, self-contained invocable components that work in isolation without external dependencies</objective>
 <success_criteria>Component created with valid frontmatter, clear description, and appropriate organization for complexity level</success_criteria>
 <standards_gate>
-MANDATORY: Load invocable-development references BEFORE creating components:
+MANDATORY: Read skills documentation BEFORE creating components:
 
+- Frontmatter fields → https://code.claude.com/docs/en/skills.md
 - Frontmatter patterns → references/frontmatter-reference.md
 - Progressive disclosure → references/progressive-disclosure.md
 - Quality framework → references/quality-framework.md
@@ -165,8 +166,17 @@ Both commands and skills use the same frontmatter:
 ---
 name: component-name
 description: "What it does. Use when [trigger condition]."
+argument-hint: "[arg1] [arg2]"
 ---
 ```
+
+### Field Reference
+
+| Field           | Required    | Description                                                         |
+| --------------- | ----------- | ------------------------------------------------------------------- |
+| `name`          | Yes         | Unique identifier (max 64 chars, lowercase letters/numbers/hyphens) |
+| `description`   | Recommended | What the component does and when to use it (What-When-Not format)   |
+| `argument-hint` | No          | Hint shown during autocomplete indicating expected arguments        |
 
 ### Description Guidelines
 
@@ -174,6 +184,46 @@ description: "What it does. Use when [trigger condition]."
 - What-When-Not format
 - No references to other commands/skills by name
 - Clear and actionable
+
+### Argument Hint Guidelines
+
+**Purpose**: Show users what arguments are expected during autocomplete `/` invocation.
+
+**Format**: Use bracket notation for placeholders: `[arg1] [arg2]`
+
+**Examples**:
+
+```yaml
+# Single required argument
+argument-hint: "[issue-number]"
+
+# Multiple arguments
+argument-hint: "[filename] [format]"
+
+# Optional arguments (use ? suffix)
+argument-hint: "[filename] [format?]"
+
+# Variadic arguments (use ...)
+argument-hint: "[files...]"
+
+# Combined patterns
+argument-hint: "[pattern] [path?]"
+```
+
+**Best Practices**:
+
+- Keep hints concise (use short, descriptive placeholder names)
+- Use `?` suffix for optional arguments
+- Use `...` suffix for variadic arguments (accepts multiple values)
+- Align hint with actual `$ARGUMENTS` usage in skill body
+- Order hints to match argument position: `$0`, `$1`, `$2`...
+
+**When to Use**:
+
+- Skills/commands that accept specific arguments
+- Workflow components with clear expected inputs
+- When argument structure isn't obvious from description alone
+- Skip for simple boolean flags or context-only operations
 
 ### Name Validation Rules
 
@@ -323,7 +373,27 @@ See `references/command-orchestration.md` for complete pattern documentation.
 
 ---
 
+---
+
+## Dynamic Sourcing Protocol
+
+<fetch_protocol>
+**MANDATORY FETCH**: Before creating commands or skills, fetch the content from:
+
+- https://code.claude.com/docs/en/skills.md (frontmatter reference)
+- https://agentskills.io/specification.md (Agent Skills specification)
+
+This skill builds on these standards with Seed System-specific patterns and philosophy.
+</fetch_protocol>
+
+---
+
 ## Navigation
+
+**Official Documentation**:
+
+- Frontmatter reference → https://code.claude.com/docs/en/skills.md
+- Agent Skills specification → https://agentskills.io/specification.md
 
 ### Toolkit Commands
 
@@ -336,47 +406,6 @@ See `references/command-orchestration.md` for complete pattern documentation.
 | Audit a skill      | `/toolkit:audit:skill`      |
 | Critique (command) | `/toolkit:critique:command` |
 | Critique (skill)   | `/toolkit:critique:skill`   |
-
-### References
-
-#### Unified References
-
-| If you need...                | Reference                              |
-| ----------------------------- | -------------------------------------- |
-| Command orchestration pattern | `references/command-orchestration.md`  |
-| Description guidelines        | `references/description-guidelines.md` |
-| Progressive disclosure        | `references/progressive-disclosure.md` |
-| Autonomy design               | `references/autonomy-design.md`        |
-| Orchestration patterns        | `references/orchestration-patterns.md` |
-| Anti-patterns                 | `references/anti-patterns.md`          |
-| Quality framework             | `references/quality-framework.md`      |
-| Advanced execution            | `references/advanced-execution.md`     |
-| Skill creation workflow       | `references/workflows-create.md`       |
-| Skill audit workflow          | `references/workflows-audit.md`        |
-
-#### Command-Specific References
-
-| If you need...        | Reference                             |
-| --------------------- | ------------------------------------- |
-| Executable examples   | `references/executable-examples.md`   |
-| Frontmatter reference | `references/frontmatter-reference.md` |
-| Interactive commands  | `references/interactive-commands.md`  |
-| Advanced workflows    | `references/advanced-workflows.md`    |
-| Testing strategies    | `references/testing-strategies.md`    |
-
-**CRITICAL FOR context: fork:**
-
-| If you need...                 | Reference                                                         |
-| ------------------------------ | ----------------------------------------------------------------- |
-| Philosophy bundles (MANDATORY) | `references/advanced-execution.md` - "Philosophy Bundles" section |
-
-#### Skill-Specific References
-
-| If you need...       | Reference                            |
-| -------------------- | ------------------------------------ |
-| Creation workflow    | `references/workflows-create.md`     |
-| Audit workflow       | `references/workflows-audit.md`      |
-| Meta-critic workflow | `references/workflows-metacritic.md` |
 
 ---
 

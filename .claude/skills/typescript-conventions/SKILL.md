@@ -350,11 +350,42 @@ This skill integrates with:
 
 ---
 
+## Dynamic Sourcing Protocol
+
+<fetch_protocol>
+**CONDITIONAL FETCH**: For TypeScript language questions, fetch from:
+
+- https://www.typescriptlang.org/docs/handbook/ (Type fundamentals)
+
+This skill contains Seed System-specific conventions (Result<T> pattern, immutability, naming conventions) that extend TypeScript fundamentals.
+</fetch_protocol>
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
 <critical_constraint>
-MANDATORY: Never use `any` type (use `unknown` instead)
-MANDATORY: Define explicit return types for all functions
-MANDATORY: Use Result<T> pattern for operations that can fail
-MANDATORY: Use typed error classes, never bare Error
-MANDATORY: Never mutate objects directly (use spread operator)
-No exceptions. Type safety prevents runtime bugs.
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
 </critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+  MANDATORY: Define explicit return types for all functions
+  MANDATORY: Use Result<T> pattern for operations that can fail
+  MANDATORY: Use typed error classes, never bare Error
+  MANDATORY: Never mutate objects directly (use spread operator)
+  No exceptions. Type safety prevents runtime bugs.
+  </critical_constraint>

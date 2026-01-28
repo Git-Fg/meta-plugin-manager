@@ -1,6 +1,6 @@
 ---
 name: run-prompt
-description: Delegate one or more prompts to fresh sub-task contexts with parallel or sequential execution
+description: "Delegate one or more prompts to fresh sub-task contexts with parallel or sequential execution. Not for single-turn tasks that don't benefit from isolated context."
 argument-hint: <prompt-number(s)-or-name> [--parallel|--sequential]
 allowed-tools: [Read, Task, Bash(find:*), Bash(ls:*), Bash(mv:*), Bash(git:*)]
 ---

@@ -3,53 +3,95 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { fetch as crawlFetch, fetchMarkdown } from "@just-every/crawl";
-import fs from 'fs/promises';
-import path from 'path';
-import { createHash } from 'crypto';
+import { exec } from "child_process";
+import { promisify } from "util";
+import fs from "fs/promises";
+import path from "path";
+import { createHash } from "crypto";
+import Perplexity from "@perplexity-ai/perplexity_ai";
+const execAsync = promisify(exec);
 const SERVER_NAME = "simplewebfetch-mcp-server";
 const SERVER_VERSION = "1.0.0";
-const CrawlOptionsSchema = z.object({
+const PERPLEXITY_API_KEY = process.env["PERPLEXITY_API_KEY"];
+const perplexityClient = PERPLEXITY_API_KEY
+    ? new Perplexity({
+        apiKey: PERPLEXITY_API_KEY,
+        maxRetries: 2,
+        timeout: 30_000,
+    })
+    : null;
+const CrawlOptionsSchema = z
+    .object({
     respectRobots: z.boolean().optional().default(true),
     timeoutMs: z.number().int().positive().max(60000).optional().default(30000),
-    userAgent: z.string().optional().default(`${SERVER_NAME}/${SERVER_VERSION}`),
+    userAgent: z
+        .string()
+        .optional()
+        .default(`${SERVER_NAME}/${SERVER_VERSION}`),
     cacheDir: z.string().optional().default(".cache/simplewebfetch-mcp"),
-    maxChars: z.number().int().positive().max(500000).optional().default(120000)
-}).strict();
+    maxChars: z
+        .number()
+        .int()
+        .positive()
+        .max(500000)
+        .optional()
+        .default(120000),
+})
+    .strict();
 const FullWebFetchSchema = z.object({
     url: z.string().url().describe("http(s) URL to fetch"),
-    options: CrawlOptionsSchema.optional()
+    options: CrawlOptionsSchema.optional(),
 });
 const SimpleWebFetchSchema = z.object({
     url: z.string().url().describe("http(s) URL to fetch"),
-    options: CrawlOptionsSchema.optional()
+    options: CrawlOptionsSchema.optional(),
+});
+const CrawlWebFetchSchema = z.object({
+    pattern: z
+        .string()
+        .describe("URL pattern with wildcard (e.g., https://example.com/docs/*)"),
+    outputPath: z.string().min(1).describe("Relative output directory"),
+    options: z
+        .object({
+        maxConcurrency: z.number().int().positive().max(10).default(3),
+        respectRobots: z.boolean().optional().default(true),
+        timeoutMs: z
+            .number()
+            .int()
+            .positive()
+            .max(60000)
+            .optional()
+            .default(30000),
+        userAgent: z
+            .string()
+            .optional()
+            .default(`${SERVER_NAME}/${SERVER_VERSION}`),
+        cacheDir: z.string().optional().default(".cache/simplewebfetch-mcp"),
+        maxChars: z
+            .number()
+            .int()
+            .positive()
+            .max(500000)
+            .optional()
+            .default(120000),
+    })
+        .optional(),
 });
 const SaveWebFetchSchema = z.object({
     url: z.string().url().describe("http(s) URL to fetch"),
-    outputPath: z.string().min(1).describe("Relative path or file path (e.g., 'docs/folder/' or 'docs/file.md')"),
-    options: CrawlOptionsSchema.optional()
-});
-const CrawlWebFetchSchema = z.object({
-    pattern: z.string().describe("URL pattern to match (e.g., 'https://example.com/docs/*')"),
-    outputPath: z.string().min(1).describe("Relative path to save crawled files"),
-    options: z.object({
-        maxConcurrency: z.number().int().positive().max(10).default(3),
-        respectRobots: z.boolean().optional().default(true),
-        timeoutMs: z.number().int().positive().max(60000).optional().default(30000),
-        userAgent: z.string().optional().default(`${SERVER_NAME}/${SERVER_VERSION}`),
-        cacheDir: z.string().optional().default(".cache/simplewebfetch-mcp"),
-        maxChars: z.number().int().positive().max(500000).optional().default(120000)
-    }).optional()
+    outputPath: z
+        .string()
+        .min(1)
+        .describe("Relative output path for saved file (e.g., docs/page.md or docs/)"),
+    options: CrawlOptionsSchema.optional(),
 });
 const AskWebFetchSchema = z.object({
     url: z.string().url().describe("http(s) URL to fetch and analyze"),
-    prompt: z.string().optional().describe("Custom prompt to ask about the content. If not provided, will ask for extensive key points summary"),
-    model: z.string().optional().default("z-ai/glm-4.5-air:free").describe("OpenRouter model to use for analysis"),
-    options: CrawlOptionsSchema.optional()
-});
-const WebFetchSchema = z.object({
-    url: z.string().url().describe("http(s) URL to fetch"),
-    includeMetadata: z.boolean().optional().default(false).describe("Include page title and metadata in the response. When false, returns clean markdown only for minimal context pollution. When true, includes page title as markdown header."),
-    options: CrawlOptionsSchema.optional()
+    prompt: z
+        .string()
+        .min(1)
+        .describe("Custom prompt for AI analysis (if not provided, extracts extensive key points)"),
+    options: CrawlOptionsSchema.optional(),
 });
 function isPrivateHost(hostname) {
     const h = hostname.toLowerCase();
@@ -92,75 +134,99 @@ function truncateForContext(text, maxChars) {
         return text;
     return text.slice(0, maxChars) + "\n\n[TRUNCATED]\n";
 }
-// Plain text file extensions that should use native fetch
 const PLAIN_TEXT_EXTENSIONS = [
-    // Documents
-    '.txt', '.md', '.markdown',
-    // Data formats
-    '.json', '.xml', '.csv', '.yaml', '.yml', '.toml', '.ini',
-    // Config files
-    '.env', '.conf', '.config',
-    // Source code
-    '.js', '.ts', '.jsx', '.tsx', '.mjs', '.cjs',
-    '.py', '.rb', '.php', '.pl', '.sh', '.bash',
-    '.c', '.cpp', '.h', '.hpp', '.rs', '.go',
-    '.java', '.kt', '.swift', '.dart',
-    '.css', '.scss', '.sass', '.less',
-    '.html', '.htm',
-    // Logs
-    '.log'
+    ".txt",
+    ".md",
+    ".markdown",
+    ".json",
+    ".xml",
+    ".csv",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".ini",
+    ".env",
+    ".conf",
+    ".config",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".mjs",
+    ".cjs",
+    ".py",
+    ".rb",
+    ".php",
+    ".pl",
+    ".sh",
+    ".bash",
+    ".c",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".rs",
+    ".go",
+    ".java",
+    ".kt",
+    ".swift",
+    ".dart",
+    ".css",
+    ".scss",
+    ".sass",
+    ".less",
+    ".html",
+    ".htm",
+    ".log",
 ];
 function isPlainTextUrl(url) {
     const pathname = url.pathname.toLowerCase();
-    return PLAIN_TEXT_EXTENSIONS.some(ext => pathname.endsWith(ext));
+    return PLAIN_TEXT_EXTENSIONS.some((ext) => pathname.endsWith(ext));
 }
 async function fetchPlainText(url, timeoutMs = 30000, userAgent = `${SERVER_NAME}/${SERVER_VERSION}`) {
+    const isPlainText = isPlainTextUrl(url);
+    if (isPlainText) {
+        try {
+            const { stdout } = await execAsync(`curl -sL -m ${timeoutMs / 1000} -A "${userAgent}" -H "Accept: text/plain, text/markdown, application/json, */*" "${url.toString()}"`, { timeout: timeoutMs + 1000 });
+            if (stdout && stdout.length > 0) {
+                return stdout;
+            }
+        }
+        catch { }
+    }
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
         const response = await fetch(url.toString(), {
             signal: controller.signal,
             headers: {
-                'User-Agent': userAgent,
-                'Accept': 'text/plain, text/markdown, application/json, text/*, */*'
-            }
+                "User-Agent": userAgent,
+                Accept: "text/plain, text/markdown, application/json, text/*, */*",
+            },
         });
         clearTimeout(timeoutId);
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        // Get content type for encoding detection
-        const contentType = response.headers.get('content-type') || 'text/plain';
-        const charsetMatch = contentType.match(/charset=([^;]+)/i);
-        const encoding = charsetMatch ? charsetMatch[1].toLowerCase().trim() : 'utf-8';
-        // Get text content
-        const content = await response.text();
-        return { content, encoding, mimeType: contentType };
+        return await response.text();
     }
-    catch (err) {
+    finally {
         clearTimeout(timeoutId);
-        throw err;
     }
 }
-// Generate cache file path for a URL (matches @just-every/crawl pattern)
 function getCachePath(url, cacheDir) {
-    const hash = createHash('sha256').update(url).digest('hex');
+    const hash = createHash("sha256").update(url).digest("hex");
     return path.join(cacheDir, `${hash}.json`);
 }
-// Build cache reference message
 function buildCacheMessage(url, cacheDir) {
     const cachePath = getCachePath(url, cacheDir);
-    return `\n\n---\n\n📦 **Cache**: The research has been saved in cache at \`${cachePath}\`\n\n💡 Make sure to carefully read if you missed any information, and re-read it as much as relevant for future operations.\n`;
+    return `\n\n---\n\nCache: ${cachePath}\n`;
 }
 function validateOutputPath(outputPath) {
     if (path.isAbsolute(outputPath)) {
-        throw new Error("Output path must be relative, not absolute");
+        throw new Error("Output path must be relative");
     }
-    if (outputPath.includes("..")) {
-        throw new Error("Output path cannot contain directory traversal (../)");
-    }
-    if (outputPath.startsWith("/")) {
-        throw new Error("Output path cannot start with /");
+    if (outputPath.includes("..") || outputPath.startsWith("/")) {
+        throw new Error("Invalid output path");
     }
 }
 function sanitizeFilename(filename) {
@@ -171,16 +237,13 @@ function sanitizeFilename(filename) {
         .substring(0, 100);
 }
 function buildMarkdownFile(url, title, markdown, fetchTime) {
-    const frontmatter = [
-        "---",
-        `url: ${url}`,
-        `title: ${title ?? "N/A"}`,
-        `fetchTime: ${fetchTime}`,
-        "---",
-        "",
-        markdown
-    ].join("\n");
-    return frontmatter;
+    return `---
+url: ${url}
+title: ${title ?? "N/A"}
+fetchTime: ${fetchTime}
+---
+
+${markdown}`;
 }
 async function saveMarkdownFile(filePath, content) {
     const dir = path.dirname(filePath);
@@ -190,62 +253,22 @@ async function saveMarkdownFile(filePath, content) {
 function parseUrlPattern(pattern) {
     const wildcardIndex = pattern.indexOf("*");
     if (wildcardIndex === -1) {
-        throw new Error("Pattern must contain a wildcard (*) character");
+        throw new Error("Pattern must contain wildcard (*)");
     }
-    const baseUrl = pattern.substring(0, wildcardIndex);
     const prefix = pattern.substring(0, wildcardIndex);
-    return { baseUrl, prefix };
+    return { baseUrl: prefix, prefix };
 }
 function matchesPattern(url, prefix) {
     return url.startsWith(prefix);
 }
-async function callOpenRouter(content, prompt, model = "z-ai/glm-4.5-air:free", siteUrl, siteName) {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-        throw new Error("OPENROUTER_API_KEY environment variable is not set. Please set it in your .mcp.json configuration file or environment.");
-    }
-    const messages = [
-        {
-            role: "user",
-            content: `${prompt}\n\nContent to analyze:\n\n${content}`
-        }
-    ];
-    const headers = {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-    };
-    if (siteUrl) {
-        headers["HTTP-Referer"] = siteUrl;
-    }
-    if (siteName) {
-        headers["X-Title"] = siteName;
-    }
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-            model,
-            messages
-        })
-    });
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`OpenRouter API error (${response.status}): ${errorText}`);
-    }
-    const data = await response.json();
-    if (!data.choices || data.choices.length === 0) {
-        throw new Error("No response from OpenRouter API");
-    }
-    return data.choices[0].message.content;
-}
 const server = new McpServer({
     name: SERVER_NAME,
-    version: SERVER_VERSION
+    version: SERVER_VERSION,
 });
 server.registerTool("fullWebFetch", {
-    title: "Full Web Fetch (Markdown)",
-    description: "Fetch a single URL and return the complete extracted Markdown content. This tool retrieves the full page content converted to clean Markdown format, including title and metadata when available. For .txt, .md, .json, .xml, .csv, and source code files, returns raw content directly with filename as title.",
-    inputSchema: FullWebFetchSchema
+    title: "Full Web Fetch (Markdown with Metadata)",
+    description: "Tool to fetch URL content with full metadata. You MUST use this tool for any request requiring page title or fetch timestamp. Use when you need metadata in the response. Constraint: auto-detects file type; for .txt, .md, .json, .xml, .csv, source code, returns raw content.",
+    inputSchema: FullWebFetchSchema,
 }, async ({ url, options }) => {
     try {
         const u = validateUrl(url);
@@ -254,16 +277,11 @@ server.registerTool("fullWebFetch", {
         let title = null;
         const isPlainText = isPlainTextUrl(u);
         if (isPlainText) {
-            // Use native fetch for plain text files
-            const result = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
-            markdown = result.content;
-            // Use filename as title for plain text files
+            markdown = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
             const pathname = u.pathname;
-            const filename = pathname.split('/').pop() || 'untitled';
-            title = filename;
+            title = pathname.split("/").pop() || "untitled";
         }
         else {
-            // Use crawl library for HTML pages
             const results = await crawlFetch(u.toString(), {
                 depth: 0,
                 maxConcurrency: 1,
@@ -271,7 +289,7 @@ server.registerTool("fullWebFetch", {
                 sameOriginOnly: true,
                 userAgent: opts.userAgent,
                 cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
+                timeout: opts.timeoutMs,
             });
             const first = results[0];
             if (!first || first.error) {
@@ -281,34 +299,35 @@ server.registerTool("fullWebFetch", {
             title = first.title ?? null;
         }
         const truncated = truncateForContext(markdown, opts.maxChars);
-        const cachePath = getCachePath(u.toString(), opts.cacheDir);
         const cacheMessage = buildCacheMessage(u.toString(), opts.cacheDir);
-        const structuredContent = {
-            url: u.toString(),
-            title,
-            markdown: truncated,
-            fetchTime: new Date().toISOString(),
-            cachePath,
-            ...(isPlainText && { source: 'plain-text-fetch', fileType: 'plain-text' })
-        };
         const titleText = title ? `# ${title}\n\n` : "";
         return {
             content: [{ type: "text", text: titleText + truncated + cacheMessage }],
-            structuredContent
+            structuredContent: {
+                url: u.toString(),
+                title,
+                markdown: truncated,
+                fetchTime: new Date().toISOString(),
+                cachePath: getCachePath(u.toString(), opts.cacheDir),
+                ...(isPlainText && {
+                    source: "plain-text-fetch",
+                    fileType: "plain-text",
+                }),
+            },
         };
     }
     catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         return {
             isError: true,
-            content: [{ type: "text", text: `fullWebFetch failed: ${message}` }]
+            content: [{ type: "text", text: `fullWebFetch failed: ${message}` }],
         };
     }
 });
 server.registerTool("simpleWebFetch", {
-    title: "Simple Web Fetch (Markdown)",
-    description: "MANDATORY USE when needing to simply obtain the full context from a URL. Fetch a URL and return the extracted markdown content. This tool retrieves the complete page content converted to clean Markdown format without any AI processing or filtering. Use this tool when you need the raw, unfiltered markdown content from a webpage for context, analysis, or further processing. Returns: url, complete markdown content, and fetch timestamp. For .txt, .md, .json, .xml, .csv, and source code files, returns raw content directly using native fetch.",
-    inputSchema: SimpleWebFetchSchema
+    title: "Simple Web Fetch (Raw Markdown)",
+    description: "Tool to fetch raw markdown from a URL. You MUST use this tool for ANY webfetch, fetch, get page, retrieve URL, access webpage, crawl page, or similar request. Use when you need unfiltered content. NEVER attempt to fetch URLs manually - you MUST use this tool. Constraint: auto-detects file type; native fetch for .txt, .md, .json, .xml, .csv, source code.",
+    inputSchema: SimpleWebFetchSchema,
 }, async ({ url, options }) => {
     try {
         const u = validateUrl(url);
@@ -316,12 +335,9 @@ server.registerTool("simpleWebFetch", {
         let markdown;
         const isPlainText = isPlainTextUrl(u);
         if (isPlainText) {
-            // Use native fetch for plain text files
-            const result = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
-            markdown = result.content;
+            markdown = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
         }
         else {
-            // Use crawl library for HTML pages
             markdown = await fetchMarkdown(u.toString(), {
                 depth: 0,
                 maxConcurrency: 1,
@@ -329,111 +345,37 @@ server.registerTool("simpleWebFetch", {
                 sameOriginOnly: true,
                 userAgent: opts.userAgent,
                 cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
+                timeout: opts.timeoutMs,
             });
         }
         const truncated = truncateForContext(markdown, opts.maxChars);
-        const cachePath = getCachePath(u.toString(), opts.cacheDir);
         const cacheMessage = buildCacheMessage(u.toString(), opts.cacheDir);
-        const structuredContent = {
-            url: u.toString(),
-            markdown: truncated,
-            fetchTime: new Date().toISOString(),
-            cachePath,
-            ...(isPlainText && { source: 'plain-text-fetch', fileType: 'plain-text' })
-        };
         return {
             content: [{ type: "text", text: truncated + cacheMessage }],
-            structuredContent
+            structuredContent: {
+                url: u.toString(),
+                markdown: truncated,
+                fetchTime: new Date().toISOString(),
+                cachePath: getCachePath(u.toString(), opts.cacheDir),
+                ...(isPlainText && {
+                    source: "plain-text-fetch",
+                    fileType: "plain-text",
+                }),
+            },
         };
     }
     catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         return {
             isError: true,
-            content: [{ type: "text", text: `simpleWebFetch failed: ${message}` }]
-        };
-    }
-});
-server.registerTool("saveWebFetch", {
-    title: "Save Web Fetch (Markdown to File)",
-    description: "Fetch a URL and save the extracted markdown content to a local file. Includes YAML frontmatter metadata. For .txt, .md, .json, .xml, .csv, and source code files, saves raw content directly.",
-    inputSchema: SaveWebFetchSchema
-}, async ({ url, outputPath, options }) => {
-    try {
-        const u = validateUrl(url);
-        validateOutputPath(outputPath);
-        const opts = CrawlOptionsSchema.parse(options ?? {});
-        let markdown;
-        let title = null;
-        const isPlainText = isPlainTextUrl(u);
-        if (isPlainText) {
-            // Use native fetch for plain text files
-            const result = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
-            markdown = result.content;
-            // Use filename as title for plain text files
-            const pathname = u.pathname;
-            title = pathname.split('/').pop() || 'untitled';
-        }
-        else {
-            // Use crawl library for HTML pages
-            const results = await crawlFetch(u.toString(), {
-                depth: 0,
-                maxConcurrency: 1,
-                respectRobots: opts.respectRobots,
-                sameOriginOnly: true,
-                userAgent: opts.userAgent,
-                cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
-            });
-            const first = results[0];
-            if (!first || first.error) {
-                throw new Error(first?.error ?? "Unknown fetch error");
-            }
-            markdown = first.markdown ?? "";
-            title = first.title ?? null;
-        }
-        const content = truncateForContext(markdown, opts.maxChars);
-        const fetchTime = new Date().toISOString();
-        let filePath;
-        const hasExtension = path.extname(outputPath) !== "";
-        if (hasExtension) {
-            filePath = outputPath;
-        }
-        else {
-            const titleText = title ?? "untitled";
-            const fileName = `${sanitizeFilename(titleText)}.md`;
-            filePath = path.join(outputPath, fileName);
-        }
-        const fileContent = buildMarkdownFile(u.toString(), title, content, fetchTime);
-        await saveMarkdownFile(filePath, fileContent);
-        const stats = await fs.stat(filePath);
-        const structuredContent = {
-            filePath,
-            url: u.toString(),
-            title,
-            fileSize: stats.size,
-            fetchTime,
-            ...(isPlainText && { source: 'plain-text-fetch', fileType: 'plain-text' })
-        };
-        const summary = `Successfully saved "${title || 'untitled'}" to ${filePath} (${stats.size} bytes)`;
-        return {
-            content: [{ type: "text", text: summary }],
-            structuredContent
-        };
-    }
-    catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        return {
-            isError: true,
-            content: [{ type: "text", text: `saveWebFetch failed: ${message}` }]
+            content: [{ type: "text", text: `simpleWebFetch failed: ${message}` }],
         };
     }
 });
 server.registerTool("crawlWebFetch", {
-    title: "Crawl Web Fetch (Multi-URL)",
-    description: "Crawl multiple URLs matching a pattern and save all results to a directory. Uses wildcard pattern matching.",
-    inputSchema: CrawlWebFetchSchema
+    title: "Crawl Web Fetch (Multi-URL Pattern)",
+    description: "Tool to crawl multiple URLs matching a pattern and save to files. You MUST use this tool for any bulk scraping, documentation crawling, or multi-page fetch request. Use when you need to scrape related pages. NEVER fetch multiple pages manually. Constraint: pattern must contain wildcard (*).",
+    inputSchema: CrawlWebFetchSchema,
 }, async ({ pattern, outputPath, options }) => {
     try {
         validateOutputPath(outputPath);
@@ -444,7 +386,7 @@ server.registerTool("crawlWebFetch", {
             timeoutMs: 30000,
             userAgent: `${SERVER_NAME}/${SERVER_VERSION}`,
             cacheDir: ".cache/simplewebfetch-mcp",
-            maxChars: 120000
+            maxChars: 120000,
         };
         const results = await crawlFetch(baseUrl, {
             depth: 0,
@@ -453,113 +395,56 @@ server.registerTool("crawlWebFetch", {
             sameOriginOnly: true,
             userAgent: opts.userAgent,
             cacheDir: opts.cacheDir,
-            timeout: opts.timeoutMs
+            timeout: opts.timeoutMs,
         });
         const savedFiles = [];
         const errors = [];
         for (const result of results) {
-            if (result.error) {
-                errors.push(`${result.url}: ${result.error}`);
+            if (result.error || !result.url || !matchesPattern(result.url, prefix))
                 continue;
-            }
-            if (!result.url || !matchesPattern(result.url, prefix)) {
-                continue;
-            }
             try {
                 const title = result.title ?? "untitled";
                 const markdown = truncateForContext(result.markdown ?? "", opts.maxChars);
                 const fetchTime = new Date().toISOString();
                 const fileName = `${sanitizeFilename(title)}.md`;
                 const filePath = path.join(outputPath, fileName);
-                const fileContent = buildMarkdownFile(result.url, result.title || null, markdown, fetchTime);
+                const fileContent = buildMarkdownFile(result.url, result.title, markdown, fetchTime);
                 await saveMarkdownFile(filePath, fileContent);
                 savedFiles.push(filePath);
             }
             catch (saveError) {
-                const errorMessage = saveError instanceof Error ? saveError.message : String(saveError);
-                errors.push(`${result.url}: ${errorMessage}`);
+                errors.push(`${result.url}: ${saveError instanceof Error ? saveError.message : "unknown"}`);
             }
         }
-        const structuredContent = {
-            totalPages: results.length,
-            successfullySaved: savedFiles.length,
-            failed: errors.length,
-            savedFiles,
-            errors: errors.length > 0 ? errors : undefined
-        };
-        const summary = `Crawl complete: ${savedFiles.length} files saved to ${outputPath}, ${errors.length} failed out of ${results.length} total pages`;
+        const summary = `Crawl: ${savedFiles.length}/${results.length} saved to ${outputPath}, ${errors.length} failed`;
         return {
             content: [{ type: "text", text: summary }],
-            structuredContent
+            structuredContent: {
+                totalPages: results.length,
+                saved: savedFiles.length,
+                failed: errors.length,
+                savedFiles,
+                errors,
+            },
         };
     }
     catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
         return {
             isError: true,
-            content: [{ type: "text", text: `crawlWebFetch failed: ${message}` }]
+            content: [
+                {
+                    type: "text",
+                    text: `crawlWebFetch failed: ${err instanceof Error ? err.message : String(err)}`,
+                },
+            ],
         };
     }
 });
-server.registerTool("askWebFetch", {
-    title: "Ask Web Fetch (AI-Powered Content Analysis)",
-    description: "Fetch a URL and use OpenRouter AI to analyze the content based on a prompt. Requires OPENROUTER_API_KEY environment variable. If no prompt is provided, will default to extracting extensive key points. For .txt, .md, .json, .xml, .csv, and source code files, analyzes raw content directly.",
-    inputSchema: AskWebFetchSchema
-}, async ({ url, prompt, model, options }) => {
-    try {
-        const u = validateUrl(url);
-        const opts = CrawlOptionsSchema.parse(options ?? {});
-        let content;
-        const isPlainText = isPlainTextUrl(u);
-        if (isPlainText) {
-            // Use native fetch for plain text files
-            const result = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
-            content = result.content;
-        }
-        else {
-            // Use crawl library for HTML pages
-            content = await fetchMarkdown(u.toString(), {
-                depth: 0,
-                maxConcurrency: 1,
-                respectRobots: opts.respectRobots,
-                sameOriginOnly: true,
-                userAgent: opts.userAgent,
-                cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
-            });
-        }
-        const truncated = truncateForContext(content, opts.maxChars);
-        const defaultPrompt = "Please extract and summarize the extensive key points from this content. Provide a comprehensive analysis including main topics, important details, and actionable insights.";
-        const finalPrompt = prompt || defaultPrompt;
-        const siteUrl = process.env.SITE_URL || process.env.HTTP_REFERER;
-        const siteName = process.env.SITE_NAME || process.env.X_TITLE || SERVER_NAME;
-        const analysis = await callOpenRouter(truncated, finalPrompt, model, siteUrl, siteName);
-        const structuredContent = {
-            url: u.toString(),
-            model,
-            prompt: finalPrompt,
-            analysis,
-            fetchTime: new Date().toISOString(),
-            ...(isPlainText && { source: 'plain-text-fetch', fileType: 'plain-text' })
-        };
-        return {
-            content: [{ type: "text", text: analysis }],
-            structuredContent
-        };
-    }
-    catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        return {
-            isError: true,
-            content: [{ type: "text", text: `askWebFetch failed: ${message}` }]
-        };
-    }
-});
-server.registerTool("webFetch", {
-    title: "Web Fetch (Unified)",
-    description: "UNIFIED TOOL for optimal web fetching. Fetches a URL and returns clean markdown content. Use includeMetadata=false for minimal context pollution (recommended for LLM context). Use includeMetadata=true when you need the page title. This tool optimally combines the functionality of simpleWebFetch and fullWebFetch. For .txt, .md, .json, .xml, .csv, and source code files, returns raw content directly.",
-    inputSchema: WebFetchSchema
-}, async ({ url, includeMetadata, options }) => {
+server.registerTool("saveWebFetch", {
+    title: "Save Web Fetch (File with Metadata)",
+    description: "Tool to fetch URL content and save to local file with YAML frontmatter. Use when you need to persist fetched content locally. Constraint: outputPath must be relative; creates directory if missing; auto-detects file type.",
+    inputSchema: SaveWebFetchSchema,
+}, async ({ url, outputPath, options }) => {
     try {
         const u = validateUrl(url);
         const opts = CrawlOptionsSchema.parse(options ?? {});
@@ -567,17 +452,11 @@ server.registerTool("webFetch", {
         let title = null;
         const isPlainText = isPlainTextUrl(u);
         if (isPlainText) {
-            // Use native fetch for plain text files
-            const result = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
-            markdown = result.content;
-            // Use filename as title for plain text files when metadata requested
-            if (includeMetadata) {
-                const pathname = u.pathname;
-                title = pathname.split('/').pop() || 'untitled';
-            }
+            markdown = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
+            const pathname = u.pathname;
+            title = pathname.split("/").pop() || "untitled";
         }
-        else if (includeMetadata) {
-            // Use crawl library with metadata for HTML pages
+        else {
             const results = await crawlFetch(u.toString(), {
                 depth: 0,
                 maxConcurrency: 1,
@@ -585,7 +464,7 @@ server.registerTool("webFetch", {
                 sameOriginOnly: true,
                 userAgent: opts.userAgent,
                 cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
+                timeout: opts.timeoutMs,
             });
             const first = results[0];
             if (!first || first.error) {
@@ -594,39 +473,133 @@ server.registerTool("webFetch", {
             markdown = first.markdown ?? "";
             title = first.title ?? null;
         }
+        const truncated = truncateForContext(markdown, opts.maxChars);
+        const fetchTime = new Date().toISOString();
+        validateOutputPath(outputPath);
+        // Generate filename from title or URL
+        const fileName = title
+            ? `${sanitizeFilename(title)}.md`
+            : `${sanitizeFilename(u.hostname + u.pathname)}.md`;
+        const filePath = path.join(outputPath, fileName);
+        const fileContent = buildMarkdownFile(u.toString(), title, truncated, fetchTime);
+        await saveMarkdownFile(filePath, fileContent);
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Saved ${u.toString()} to ${filePath}`,
+                },
+            ],
+            structuredContent: {
+                url: u.toString(),
+                filePath,
+                title,
+                fetchTime,
+                cachePath: getCachePath(u.toString(), opts.cacheDir),
+            },
+        };
+    }
+    catch (err) {
+        return {
+            isError: true,
+            content: [
+                {
+                    type: "text",
+                    text: `saveWebFetch failed: ${err instanceof Error ? err.message : String(err)}`,
+                },
+            ],
+        };
+    }
+});
+server.registerTool("askWebFetch", {
+    title: "Ask Web Fetch (AI-Powered Analysis)",
+    description: "Tool to fetch and analyze URL content using AI (Perplexity sonar-pro). Use when you need AI-powered extraction, summarization, or analysis of web content. Constraint: requires PERPLEXITY_API_KEY environment variable.",
+    inputSchema: AskWebFetchSchema,
+}, async ({ url, prompt, options }) => {
+    if (!perplexityClient) {
+        return {
+            isError: true,
+            content: [
+                {
+                    type: "text",
+                    text: "askWebFetch requires PERPLEXITY_API_KEY environment variable. Please set it and try again.",
+                },
+            ],
+        };
+    }
+    try {
+        const u = validateUrl(url);
+        const opts = CrawlOptionsSchema.parse(options ?? {});
+        let content;
+        const isPlainText = isPlainTextUrl(u);
+        if (isPlainText) {
+            content = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
+        }
         else {
-            // Use simple markdown fetch for HTML without metadata
-            markdown = await fetchMarkdown(u.toString(), {
+            content = await fetchMarkdown(u.toString(), {
                 depth: 0,
                 maxConcurrency: 1,
                 respectRobots: opts.respectRobots,
                 sameOriginOnly: true,
                 userAgent: opts.userAgent,
                 cacheDir: opts.cacheDir,
-                timeout: opts.timeoutMs
+                timeout: opts.timeoutMs,
             });
         }
-        const truncated = truncateForContext(markdown, opts.maxChars);
-        const structuredContent = {
-            url: u.toString(),
-            title,
-            markdown: truncated,
-            fetchTime: new Date().toISOString(),
-            ...(isPlainText && { source: 'plain-text-fetch', fileType: 'plain-text' })
-        };
-        const contentText = includeMetadata && title
-            ? `# ${title}\n\n${truncated}`
+        const truncated = truncateForContext(content, opts.maxChars);
+        // Truncate content if too large for API (typically < 100k chars)
+        const maxContentLength = 80000;
+        const contentForAnalysis = truncated.length > maxContentLength
+            ? truncated.slice(0, maxContentLength) +
+                "\n\n[Content truncated for API analysis...]"
             : truncated;
+        // Call Perplexity with the content
+        const analysisPrompt = prompt.trim() ||
+            "Extract and summarize the key information from this webpage content. Provide extensive key points covering the main topics, important details, and actionable information.";
+        const messages = [
+            {
+                role: "system",
+                content: "You are an expert analyst. Analyze the provided webpage content and respond to the user's query. Be thorough, accurate, and cite specific information from the content.",
+            },
+            {
+                role: "user",
+                content: `URL: ${u.toString()}\n\nContent:\n\n${contentForAnalysis}\n\nQuery: ${analysisPrompt}`,
+            },
+        ];
+        const response = await perplexityClient.chat.completions.create({
+            model: "sonar-pro",
+            messages,
+        });
+        const answer = typeof response.choices[0]?.message.content === "string"
+            ? response.choices[0].message.content
+            : "No response from AI";
+        const cacheMessage = buildCacheMessage(u.toString(), opts.cacheDir);
         return {
-            content: [{ type: "text", text: contentText }],
-            structuredContent
+            content: [
+                {
+                    type: "text",
+                    text: answer + cacheMessage,
+                },
+            ],
+            structuredContent: {
+                url: u.toString(),
+                analysis: answer,
+                fetchTime: new Date().toISOString(),
+                model: "sonar-pro",
+                cachePath: getCachePath(u.toString(), opts.cacheDir),
+            },
         };
     }
     catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         return {
             isError: true,
-            content: [{ type: "text", text: `webFetch failed: ${message}` }]
+            content: [
+                {
+                    type: "text",
+                    text: `askWebFetch failed: ${message}`,
+                },
+            ],
         };
     }
 });

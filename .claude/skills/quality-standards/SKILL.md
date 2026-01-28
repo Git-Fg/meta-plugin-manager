@@ -1,6 +1,12 @@
 ---
 name: quality-standards
 description: "Unified quality assurance skill: enforce evidence-based completion claims through 6-phase gates and three-way audits. Use when claiming completion, committing code, or validating components. Not for skipping verification or assuming correctness."
+auto_load_mapping:
+  - If path contains ".mcp.json" -> load mcp-development
+  - If path contains ".claude/skills" -> load invocable-development
+  - If path contains ".claude/agents" -> load agent-development
+  - If path contains ".claude/commands" -> load invocable-development
+  - If path contains "SKILL.md" -> load invocable-development
 ---
 
 <mission_control>
@@ -108,6 +114,30 @@ Gates pass **in order**. If a gate fails:
 
 ---
 
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---
+
 <critical_constraint>
 MANDATORY: Gates pass in sequence—stop on first failure
 MANDATORY: Each claim requires fresh verification output
@@ -118,4 +148,3 @@ No exceptions. Quality gates exist to prevent substandard work and completion ha
 </critical_constraint>
 
 ---
-

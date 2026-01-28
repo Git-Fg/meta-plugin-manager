@@ -1,6 +1,11 @@
 # Scratchpad/working directories
 .cache/
 
+# Environment variables (API keys, secrets)
+.env
+.env.local
+.env.*.local
+
 # Session transcripts (auto-generated, not versioned)
 .claude/transcripts/
 

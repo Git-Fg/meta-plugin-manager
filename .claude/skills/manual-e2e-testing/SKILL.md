@@ -278,3 +278,59 @@ MANDATORY: Implement retry logic with exponential backoff
 MANDATORY: Verify element presence before any interaction
 No exceptions. Text-first validation is reliable; visual validation is not.
 </critical_constraint>
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---
+
+## Validation Pattern
+
+Use native tools to validate skill structure:
+
+**Glob: Verify skill structure exists**
+
+- `Glob: pattern "**/SKILL.md" in skill directory` → Main skill file
+- `Glob: pattern "**/references/*.md"` → Reference files
+- `Glob: pattern "**/scripts/*.sh"` → Scripts directory
+
+**Grep: Verify frontmatter**
+
+- `Grep: search for "^name: manual-e2e-testing" in SKILL.md` → Name field
+- `Grep: search for "^description:" in SKILL.md` → Description field
+- `Grep: search for "^---" in SKILL.md` → Frontmatter markers
+
+**Read: Check file contents**
+
+- `Read: SKILL.md` → Verify structure and content
+- `Read: references/` → Verify reference files exist
+
+**Validation workflow**:
+
+1. `Glob: pattern "**/SKILL.md"` in skill dir → Confirm main file exists
+2. `Glob: pattern "**/references/"` → Verify references directory
+3. `Grep: search for "^name:\|^description:"` → Verify required fields
+4. `Grep: search for "<critical_constraint>"` → Check for constraints
+
+---

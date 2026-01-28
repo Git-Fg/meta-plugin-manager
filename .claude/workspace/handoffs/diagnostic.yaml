@@ -1,176 +1,108 @@
 ---
 date: 2026-01-28
-session: mcp-development-skill-discovery-failure
+session: dynamic-sourcing-refactor
 status: complete
-outcome: PARTIAL_MINUS
-severity: medium
+outcome: SUCCEEDED
+severity: low
 ---
-goal: Review simpleWebFetch MCP server and provide refinement suggestions, while understanding why mcp-development skill was not auto-triggered
-now: Meta-critic skill needs explicit auto-loading mechanism for component-type detection, as frontmatter description alone is insufficient for skill auto-discovery during audit workflows
-test: N/A - diagnostic session
+goal: Transform 4 skills to use Dynamic Sourcing Framework with embedded URLs pointing to official Claude documentation
+now: Consider extending Dynamic Sourcing to other skills (build, ci-pipeline-manager, etc.)
+test: grep "<fetch_protocol>" .claude/skills/*/SKILL.md
 
 done_this_session:
-  - task: Reviewed simpleWebFetch MCP server code
-    files: [Custom_MCP/simpleWebFetch/src/server.ts:1-793, Custom_MCP/simpleWebFetch/README.md:1-510, Custom_MCP/simpleWebFetch/package.json:1-33, Custom_MCP/simpleWebFetch/TEST_RESULTS.md:1-175]
-  - task: Investigated mcp-development skill for trigger mechanism
-    files: [.claude/skills/mcp-development/SKILL.md:1-343]
-  - task: Identified root cause of skill non-discovery
-    files: []
+  - task: Updated invocable-development/SKILL.md
+    files: [.claude/skills/invocable-development/SKILL.md:11-17, .claude/skills/invocable-development/SKILL.md:331-349]
+  - task: Updated mcp-development/SKILL.md
+    files: [.claude/skills/mcp-development/SKILL.md:11-18, .claude/skills/mcp-development/SKILL.md:728-760, .claude/skills/mcp-development/SKILL.md:814-819]
+  - task: Updated hook-development/SKILL.md
+    files: [.claude/skills/hook-development/SKILL.md:9-15, .claude/skills/hook-development/SKILL.md:147-167]
+  - task: Updated agent-development/SKILL.md
+    files: [.claude/skills/agent-development/SKILL.md:11-18, .claude/skills/agent-development/SKILL.md:241-263]
+  - task: Verified all 7 official documentation URLs are accessible (HTTP 200)
 
 user_interactions:
-  - type: request
-    user_says: |
-      Perform a global review of the simpleWebFetch MCP server and provide the top suggestions of refinement
-    context: User opened .mcp.json file, then requested MCP server review
-    impact: Started generic code review without checking mcp-development skill first
-    response: Provided 8 suggestions without referencing mcp-development validation framework
-    resolution: User corrected the process
-
   - type: correction
     user_says: |
-      "why didnt u used the mcp-development skill which should have been auto triggered"
-    context: User pointed out meta-critic should have auto-loaded mcp-development
-    impact: Triggered investigation into skill discovery mechanism
-    response: I investigated and incorrectly concluded mcp-development needs a <trigger> tag
-    resolution: User corrected my misunderstanding
-
-  - type: clarification
+      OK that's still not the case; let's input directly the urls within the body of the skills.
+      Make sure before; that urls contains relevant informations; and remove informations that
+      strictly duplicate it from skills + references
+    context: I had created a claude-docs-index.md file and was updating skills to reference it
+    impact: User rejected the centralized index approach, requested direct URL embedding in each skill
+    response: Verified URLs contain relevant documentation, deleted index file, embedded URLs directly in each skill
+    resolution: User approved the direct URL embedding approach
+  - type: request
     user_says: |
-      "The mcp-development skill needs a <trigger> tag" is wrong advice; as it changes nothing to have a trigger within the body: only title and description are passed to the ai agent to guide it when/how to call a skill
-    context: User corrected my incorrect technical advice
-    impact: Forced re-investigation of actual root cause
-    response: I acknowledged the correct architecture
-    resolution: User pointed to real issue: meta-critic lacks auto-loading mechanism
-
-  - type: insight
-    user_says: |
-      "The real issue is meta-critic has no auto-loading mechanism"
-    context: User identified actual root cause
-    impact: Concluded that meta-critic requires explicit component-type detection logic
-    response: Agreed and asked if fix should be in meta-critic
-    resolution: User invoked /handoff:diagnostic to capture findings
+      This refactoring transforms the guide from a static manual into a Dynamic Sourcing
+      Framework. The core philosophy is: Never hardcode volatile syntax. Instead, teach
+      the agent to fetch the "Live Instance" of the documentation...
+    context: Initial request for Dynamic Sourcing Framework refactor
+    impact: Defined the entire approach - embed URLs, add fetch protocol, remove duplicate static docs
+    response: Created plan, verified URLs, implemented changes
+    resolution: Approved and completed
 
 behavior_signals:
-  - signal: under_engineering
-    description: Provided generic code review suggestions without referencing MCP-specific validation framework
-    evidence: |
-      8 suggestions provided (Unused Types, Code Duplication, Crawl Validation, Outdated Docs, Inconsistent Metadata, Missing Response Types, No Retry Logic, Typo)
-      None referenced mcp-development skill patterns or validation rules
-    correction: Should have loaded mcp-development skill before reviewing
-    severity: high
-    note: Meta-critic has explicit instruction to "Load the appropriate meta-development skill for validation standards" but no mechanism to know WHICH skill to load
-
   - signal: assumption_error
-    description: Assumed <trigger> tag inside body affects skill auto-discovery
+    description: Initially assumed user wanted a centralized index file
     evidence: |
-      "The mcp-development skill has NO <trigger> tag" - I concluded this was the problem
-      "MANDATORY READ: `references/tool-development.md`" - internal tag I thought would help
-    correction: User corrected - only frontmatter title/description matter for discovery
-    severity: high
-    note: Confused internal documentation structure with skill discovery mechanism
-
-  - signal: drift
-    description: Moved from reviewing MCP server to giving technical advice about adding trigger tags without verifying architecture
-    evidence: |
-      Recommended adding <trigger> tag to mcp-development
-      Suggested specific XML content for the trigger
-    correction: User caught the incorrect advice before implementation
+      Created claude-docs-index.md in references/ directory and updated skills to point to it
+      User corrected: "let's input directly the urls within the body of the skills"
+    correction: Deleted index file, embedded URLs directly in each skill body
     severity: medium
+    note: User's preference for direct embedding vs indirection through index file
 
-behavior_issues:
-  - issue: Meta-critic skill has no component-type auto-detection
-    context: When meta-critic is invoked to audit an MCP server, it doesn't know to load mcp-development
-    manifestation: |
-      Meta-critic says: "Load the appropriate meta-development skill for validation standards"
-      But provides NO logic to determine WHICH meta-skill for WHICH component type
-    impact: Audit misses MCP-specific validation patterns (tool schema, transport logic, portability requirements)
-    correction: Meta-critic needs explicit component-type → meta-skill mapping or auto-detection
-    prevention: Add component-type detection logic to meta-critic instructions
-
-  - issue: Skill discovery relies only on frontmatter, not body content
-    context: I assumed <trigger> or other internal tags affect skill selection
-    manifestation: |
-      Spent time analyzing internal tags (<trigger>, <critical_constraint>, etc.)
-      Thought adding <trigger> to mcp-development would fix auto-loading
-    correction: User clarified only title/description in frontmatter matter
-    prevention: Understand architecture before proposing fixes
-
-issues:
-  - description: Meta-critic lacks auto-loading mechanism for meta-development skills
-    source_1: meta-critic SKILL.md: "Load the appropriate meta-development skill for validation standards"
-    source_2: No component-type detection logic or mapping table provided
-    impact: MCP server audits don't use mcp-development validation framework
-
-  - description: Skill discovery depends only on frontmatter, not body tags
-    source_1: My analysis of mcp-development: "The mcp-development skill has NO <trigger> tag"
-    source_2: User correction: "only title and description are passed to the ai agent to guide it when/how to call a skill"
-    impact: Internal tags (<trigger>, <tool_schema>, etc.) don't affect skill auto-discovery
-
-incoherences:
-  - description: mcp-development description includes "MCP server audits" but skill doesn't get auto-loaded during meta-critic execution
-    source_1: mcp-development frontmatter description: "Use when creating MCP servers, tools, resources, or prompts for Claude integration... MCP server audits"
-    source_2: meta-critic behavior: Doesn't auto-load mcp-development when auditing MCP server
-    impact: Meta-critic performs generic audit instead of MCP-specific validation
-
-  - description: Meta-critic instructs to "Load the appropriate meta-development skill" but provides no mechanism to determine which skill
-    source_1: meta-critic SKILL.md: "Load the appropriate meta-development skill for validation standards"
-    source_2: meta-critic SKILL.md: No logic for component-type → meta-skill mapping
-    impact: Audits are incomplete because right meta-skill isn't loaded
-
-remarks:
-  - mcp-development description DOES include "MCP server audits" in use cases, so skill SHOULD be discoverable
-  - The problem is meta-critic's workflow, not mcp-development's description
-  - Meta-critic needs explicit "If component is MCP → load mcp-development" logic
-  - User correctly identified root cause: meta-critic has no auto-loading mechanism
-  - mcp-development has internal tags (<tool_schema>, <transport_selection>) that aren't used for discovery
-  - Only frontmatter title/description passed to AI for skill auto-selection
+behavior_issues: []
 
 fixes:
-  - issue: N/A - this session was diagnostic, not implementation
-    approach: Identified root cause without applying fix
-    rationale: User invoked /handoff:diagnostic to capture findings for future fix
-    effectiveness: N/A
-    alternatives: Could have fixed meta-critic, but user requested diagnostic capture first
+  - issue: Centralized index file rejected by user
+    approach: Deleted claude-docs-index.md, embedded URLs directly in each skill
+    rationale: User requested direct URL embedding in skill bodies
+    effectiveness: 10
+    alternatives: [Could have kept index but added direct links, or used hybrid approach]
+
+remarks:
+  - All 7 official Claude documentation URLs are accessible and return HTTP 200
+  - Official docs contain rich, current documentation that supersedes static content in skills
+  - skills.md contains complete frontmatter reference (name, description, context, agent, hooks)
+  - mcp.md contains comprehensive MCP docs including tool schema, transports, server config
+  - hooks.md contains complete hook lifecycle, configuration structure, all event types
+  - sub-agents.md contains agent frontmatter fields, execution modes, spawn conditions
+  - Each skill now has <fetch_protocol> section with 5-step process (DETECT → FETCH → EXTRACT → IMPLEMENT → DISPOSE)
+  - Each skill has Navigation section with official documentation URL
+  - No duplicate static documentation remains in skills (was already minimal)
+
+issues: []
+
+incoherences: []
 
 errors: []
 
-difficulties:
-  - Understanding skill discovery mechanism (only frontmatter matters, not body tags)
-  - Meta-critic provides no explicit component-type → meta-skill mapping
+difficulties: []
 
 diagnostics:
-  - hypothesis: mcp-development needs <trigger> tag for auto-discovery
-    test: Analyzed mcp-development SKILL.md for trigger mechanism
-    result: Found no <trigger> tag, but also realized internal tags don't affect discovery
-    conclusion: User corrected - only frontmatter title/description matter
-  - hypothesis: Meta-critic automatically loads relevant meta-skill
-    test: Reviewed meta-critic workflow instructions
-    result: Meta-critic says to "Load the appropriate meta-development skill" but provides NO mechanism
-    conclusion: Meta-critic lacks auto-loading logic - user identified correctly
+  - hypothesis: User might want to remove more static documentation from skills
+    test: Checked skills for content that duplicates official docs
+    result: Skills already contain minimal static docs - mostly patterns and guidance, not syntax
+    conclusion: No further cleanup needed - current balance is appropriate
 
 workarounds: []
 
 decisions:
-  - diagnostic_mode: User invoked /handoff:diagnostic to capture findings before fixing
+  - direct_urls: "Embed URLs directly in skill bodies instead of centralized index"
+  - fetch_protocol: "Add <fetch_protocol> sections to each skill with 5-step process"
+  - minimal_removal: "Skills already minimal - no need to remove more content"
 
 findings:
-  - skill_discovery: Only frontmatter title/description affect AI's skill selection
-  - meta_critic_gap: No component-type detection or auto-loading mechanism
-  - mcp_development_complete: Description includes "MCP server audits" but meta-critic doesn't use it
+  - url_content_quality: "Official docs are comprehensive and current"
+  - skill_content_balance: "Skills focus on patterns/guidance, official docs cover syntax"
 
-worked:
-  - Identified root cause: meta-critic lacks auto-loading mechanism
-  - Confirmed only frontmatter matters for skill discovery
+worked: [direct URL embedding, fetch protocol sections, verification of URL accessibility]
 
-failed:
-  - Proposing <trigger> tag addition - incorrect solution
+failed: [initial index file approach - rejected by user]
 
 next:
-  - Fix meta-critic skill to include explicit component-type detection and auto-loading
-  - Add mapping: MCP → mcp-development, Skill/Command → invocable-development, Hook → hook-development, Agent → agent-development
-  - Alternative: Create meta-skill auto-loader utility that inspects context and loads appropriate meta-skills
+  - Consider extending Dynamic Sourcing to other skills (build, ci-pipeline-manager, etc.) as needed
+  - Monitor official documentation for changes that affect skills
 
 files:
   created: []
-  modified: []
----
+  modified: [.claude/skills/invocable-development/SKILL.md, .claude/skills/mcp-development/SKILL.md, .claude/skills/hook-development/SKILL.md, .claude/skills/agent-development/SKILL.md]

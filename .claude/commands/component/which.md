@@ -1,5 +1,5 @@
 ---
-description: Analyze user requests and determine the optimal component type for their needs
+description: "Analyze user requests and determine the optimal component type for their needs. Not for creating components - use /component:build for that."
 ---
 
 <mission_control>

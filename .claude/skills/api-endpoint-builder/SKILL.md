@@ -110,11 +110,30 @@ This skill integrates with:
 
 ---
 
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
 <critical_constraint>
-MANDATORY: Always validate input using schema validation (Zod or similar)
-MANDATORY: Use parameterized queries to prevent SQL injection
-MANDATORY: Implement proper authentication/authorization checks
-MANDATORY: Return appropriate HTTP status codes (400, 401, 403, 500)
-MANDATORY: Log security events (authentication failures, errors)
-No exceptions. API security is non-negotiable.
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
 </critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+  MANDATORY: Use parameterized queries to prevent SQL injection
+  MANDATORY: Implement proper authentication/authorization checks
+  MANDATORY: Return appropriate HTTP status codes (400, 401, 403, 500)
+  MANDATORY: Log security events (authentication failures, errors)
+  No exceptions. API security is non-negotiable.
+  </critical_constraint>

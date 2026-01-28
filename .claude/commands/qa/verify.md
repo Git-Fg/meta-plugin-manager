@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Comprehensive verification workflow for quality gates. Use after completing features, before PRs, or when ensuring code quality. Runs build, types, lint, tests, security, and diff checks.
+description: "Comprehensive verification workflow for quality gates. Use after completing features, before PRs, or when ensuring code quality. Runs build, types, lint, tests, security, and diff checks. Not for security reviews - use /qa:security-scan for that."
 disable-model-invocation: true
 ---
 

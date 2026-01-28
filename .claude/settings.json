@@ -6,6 +6,18 @@
   ],
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session-start.sh",
+            "description": "Inject native tool discipline into session context"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash(rm*)",

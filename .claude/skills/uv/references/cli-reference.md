@@ -1,305 +1,216 @@
 # uv CLI Reference
 
-Detailed command reference for uv. See official docs at https://docs.astral.sh/uv/
+<fetch_protocol>
+**MANDATORY FETCH**: Before using uv commands, fetch from https://docs.astral.sh/uv/
+
+This contains the authoritative and complete CLI reference. The local content focuses on Seed System philosophy and workflow patterns.
+</fetch_protocol>
 
 ---
 
-## Project Commands
+## Seed System uv Philosophy
 
-### uv init
+The Seed System uses uv for modern Python package management with these principles:
 
-Initialize a new project.
-
-```bash
-uv init [project-name]              # Initialize new project
-uv init --lib                       # Initialize library project
-uv init --script script.py          # Initialize standalone script
-uv init --app                       # Initialize application project
-```
-
-**Options:**
-
-- `--python <version>` - Set Python version
-- `--no-readme` - Skip README.md creation
-- `--no-workspace` - Don't create workspace
-
-### uv add
-
-Add dependencies to the project.
-
-```bash
-uv add <package>                    # Add to production dependencies
-uv add --dev <package>              # Add to dev dependencies
-uv add --group <name> <package>     # Add to optional group
-uv add "package>=1.0,<2.0"          # With version constraint
-uv add package @ git+https://...    # From git repository
-uv add package --index-url <url>    # From custom index
-```
-
-**Options:**
-
-- `--dev` - Add to dev dependencies
-- `--group <name>` - Add to optional dependency group
-- `--extras <names>` - Include extras
-- `--script <path>` - Add to script instead of project
-- `--python <version>` - Require specific Python version
-
-### uv remove
-
-Remove dependencies from the project.
-
-```bash
-uv remove <package>
-uv remove --dev <package>
-uv remove --group <name> <package>
-```
-
-### uv lock
-
-Create or update the lockfile.
-
-```bash
-uv lock                            # Update uv.lock
-uv lock --upgrade <package>        # Upgrade specific package
-uv lock --upgrade-package <package> # Same as above
-uv lock --no-refresh               # Don't refresh package metadata
-```
-
-**Options:**
-
-- `--upgrade` / `--upgrade-package` - Upgrade specific packages
-- `--no-refresh` - Don't refresh package metadata
-- `--script <path>` - Lock script instead of project
-
-### uv sync
-
-Synchronize the environment with the lockfile.
-
-```bash
-uv sync                            # Sync all dependencies
-uv sync --frozen                   # Fail if lockfile out of date
-uv sync --no-dev                   # Skip dev dependencies
-uv sync --all-extras               # Include all optional extras
-uv sync --group <name>             # Include specific group
-```
-
-**Options:**
-
-- `--frozen` - Require up-to-date lockfile (CI mode)
-- `--no-dev` - Skip development dependencies
-- `--all-extras` - Include all optional dependency groups
-- `--group <name>` - Include specific optional group
-- `--no-build-isolation` - Disable build isolation
-
-### uv run
-
-Run commands in the project environment.
-
-```bash
-uv run python script.py            # Run Python script
-uv run pytest                      # Run pytest
-uv run -m pytest                   # Run as module
-uv run --with <package> script.py  # Run with temporary extra dep
-uv run --no-sync script.py         # Skip auto-sync
-```
-
-**Options:**
-
-- `--with <package>` - Add temporary dependency
-- `--no-sync` - Skip automatic sync
-- `--no-active` - Don't use active environment
-- `--python <version>` - Use specific Python version
+- **Speed**: uv is 10-100x faster than pip
+- **Reliability**: Deterministic dependency resolution
+- **Simplicity**: Single tool for all Python workflows
+- **Compatibility**: Drop-in pip replacement
 
 ---
 
-## Script Commands
+## Core Workflow Patterns
+
+### Project Initialization
 
 ```bash
-uv run script.py                   # Run script
-uv add --script script.py <pkg>    # Add script dependency
-uv remove --script script.py <pkg> # Remove script dependency
-uv lock --script script.py         # Lock script
+# Create new project
+uv init my-project
+cd my-project
+
+# Add dependencies (auto-syncs environment)
+uv add fastapi uvicorn
+uv add --dev pytest ruff
+
+# Run with project environment
+uv run python main.py
+uv run pytest
+```
+
+### Script Workflow
+
+```bash
+# Single-file Python script with inline dependencies
+uv init --script app.py
+uv add --script app.py requests pydantic
+
+# Run script (manages virtualenv transparently)
+uv run app.py
+```
+
+### Global Tools
+
+```bash
+# Install CLI tools globally
+uv tool install ruff
+uv tool install black
+uv tool install mypy
+
+# Run tools directly
+uvx ruff check .
+uvx black .
 ```
 
 ---
 
-## Tool Commands (uvx/uv tool)
+## Environment Management
 
-### uvx / uv tool run
-
-Run tools in isolated environments.
+uv automatically manages virtual environments:
 
 ```bash
-uvx ruff check .                   # Run ruff
-uvx ruff@0.3.0 check .             # Run specific version
-uvx --from ruff black .            # Install from compatible package
-uv tool run ruff check .           # Same as uvx
-```
+# Environment created automatically at first dependency
+uv add requests  # Creates .venv if needed
 
-**Options:**
+# Explicit venv creation (rarely needed)
+uv venv --python 3.12
 
-- `--from <package>` - Install from different package
-- `--with <package>` - Include additional dependency
-- `--python <version>` - Use specific Python version
-
-### uv tool install
-
-Install tools globally.
-
-```bash
-uv tool install ruff               # Install ruff
-uv tool install ruff black mypy    # Install multiple
-uv tool list                       # List installed tools
-uv tool uninstall ruff             # Uninstall tool
-uv tool update-shell               # Update shell integration
+# Environment location
+# - Project: .venv in project root
+# - Global: ~/.local/share/uv/tool/
 ```
 
 ---
 
-## Python Version Commands
+## Seed System Best Practices
+
+### Dependency Organization
 
 ```bash
-uv python install 3.12             # Install Python 3.12
-uv python install 3.12.1           # Install specific version
-uv python list                     # List available versions
-uv python list --only-installed    # List installed versions
-uv python find 3.12                # Find matching version
-uv python pin 3.12                 # Pin project to version
+# Production dependencies
+uv add fastapi pydantic
+
+# Development dependencies (not installed in production)
+uv add --dev pytest ruff mypy
+
+# Optional dependency groups
+uv add --group docs mkdocs-material
+uv add --group test pytest-cov
+
+# Install specific group
+uv sync --group test
+```
+
+### Version Constraints
+
+```bash
+# Pin exact version
+uv add "package==1.2.3"
+
+# Minimum version
+uv add "package>=1.0.0"
+
+# Range constraint
+uv add "package>=1.0.0,<2.0.0"
+
+# From git repository
+uv add "package @ git+https://github.com/user/repo.git"
+```
+
+### CI/CD Integration
+
+```bash
+# Frozen mode (requires up-to-date lockfile)
+uv sync --frozen
+
+# No development dependencies
+uv sync --no-dev
+
+# Specific Python version
+uv run --python 3.12 script.py
 ```
 
 ---
 
-## Pip Interface Commands
+## Common Seed System Workflows
+
+### Adding New Dependencies
+
+1. Search for package: `uv search <package>` (check availability)
+2. Add to project: `uv add <package>`
+3. Auto-sync: Environment updates automatically
+4. Commit: `uv.lock` (lockfile) and `pyproject.toml`
+
+### Updating Dependencies
 
 ```bash
-uv pip install <package>           # Install package
-uv pip install -r requirements.txt # Install from file
-uv pip freeze                      # List installed packages
-uv pip list                        # List installed packages
-uv pip show <package>              # Show package details
-uv pip uninstall <package>         # Uninstall package
-uv pip check                       # Check for conflicts
-uv pip tree                        # Show dependency tree
+# Update specific package
+uv lock --upgrade-package <package>
+
+# Update all (caution: may break)
+uv lock --upgrade
 ```
 
-### uv pip compile
-
-Compile requirements to lockfile format.
+### Type Safety Workflow
 
 ```bash
-uv pip compile requirements.in -o requirements.lock
-uv pip compile requirements.in --extra-index-url <url>
-uv pip compile requirements.in --upgrade <package>
-```
+# Add type checker
+uv add --dev mypy
 
-**Options:**
+# Install type stubs for packages
+uv add --dev types-requests
 
-- `-o` / `--output-file` - Output file
-- `--extra-index-url` - Additional package index
-- `--upgrade` - Upgrade packages
-- `--no-header` - Exclude generation header
-
-### uv pip sync
-
-Sync environment with requirements file.
-
-```bash
-uv pip sync requirements.txt       # Sync environment
-uv pip sync requirements.lock      # Sync from lockfile
-```
-
----
-
-## Build and Publish
-
-```bash
-uv build                           # Build wheel and sdist
-uv build --out-dir dist/           # Specify output directory
-uv build --package <name>          # Build specific package (workspace)
-
-uv publish                         # Publish to PyPI
-uv publish --publish-url <url>     # Publish to custom URL
-uv publish --token <token>         # Use auth token
-```
-
----
-
-## Virtual Environment Commands
-
-```bash
-uv venv                            # Create .venv
-uv venv --python 3.11              # Create with specific Python
-uv venv .venv-name                 # Create with custom name
-```
-
----
-
-## Cache Commands
-
-```bash
-uv cache dir                       # Show cache directory
-uv cache clean                     # Clear all caches
-uv cache prune                     # Remove unused cache entries
-```
-
----
-
-## Tree Commands
-
-```bash
-uv tree                            # Show project dependency tree
-uv pip tree                        # Show environment dependency tree
-uv tree --in-depth                 # Show full tree
-uv tree --duplicate <name>         # Show duplicates
-```
-
----
-
-## Environment Variables
-
-```bash
-UV_CACHE_DIR=<path>                # Cache directory
-UV_NO_CACHE=1                      # Disable cache
-UV_INDEX_URL=<url>                 # Default package index
-UV_EXTRA_INDEX_URL=<url>           # Additional package index
-UV_PYTHON_INSTALL_DIR=<path>       # Python installations
-UV_TOOL_DIR=<path>                 # Tool installations
-UV_TOOL_BIN_DIR=<path>             # Tool binary directory
+# Run type checking
+uv run mypy .
 ```
 
 ---
 
 ## Configuration (pyproject.toml)
 
+Seed System projects use this structure:
+
 ```toml
+[project]
+name = "my-project"
+version = "0.1.0"
+dependencies = [
+    "fastapi>=0.100.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.1.0", "mypy>=1.0.0"]
+
 [tool.uv]
 dev-dependencies = [
     "pytest>=7.0",
-    "ruff>=0.1",
+    "ruff>=0.1.0",
 ]
-
-[tool.uv.sources]
-# Custom package sources
-my-package = { workspace = true }
-private-package = { url = "https://..." }
 
 [tool.uv.workspace]
 members = ["packages/*"]
-exclude = ["packages/deprecated"]
-
-[tool.uv.dependency-groups]
-docs = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "pytest-cov"]
 ```
 
 ---
 
-## Common Flags (Global)
+## Migration from pip
 
 ```bash
--v, --verbose                      # Increase verbosity
--q, --quiet                        # Decrease verbosity
---no-cache                         # Disable cache
---offline                          # Work offline
---python <version>                 # Python version constraint
+# One-time migration
+pip install uv
+uv pip compile requirements.in -o requirements.lock
+uv pip sync requirements.lock
+
+# Then switch to native uv workflow
+uv add <package>  # Instead of pip install
 ```
+
+---
+
+<critical_constraint>
+MANDATORY: Consult https://docs.astral.sh/uv/ for complete command reference
+MANDATORY: Use uv over pip for all new Seed System Python projects
+MANDATORY: Commit uv.lock to version control for reproducibility
+MANDATORY: Use --dev flag for development-only dependencies
+No exceptions. uv provides superior performance and reliability.
+</critical_constraint>

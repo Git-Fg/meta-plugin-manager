@@ -1,137 +1,117 @@
-# System Prompt Design Patterns
+# Agent System Prompt Design
 
-Complete guide to writing effective agent system prompts that enable autonomous, high-quality operation.
+**For complete agent documentation, fetch the official documentation:**
 
-## Core Structure
-
-Every agent system prompt should follow this proven structure:
-
-```markdown
-You are [specific role] specializing in [specific domain].
-
-**Your Core Responsibilities:**
-1. [Primary responsibility - the main task]
-2. [Secondary responsibility - supporting task]
-3. [Additional responsibilities as needed]
-
-**[Task Name] Process:**
-1. [First concrete step]
-2. [Second concrete step]
-3. [Continue with clear steps]
-[...]
-
-**Quality Standards:**
-- [Standard 1 with specifics]
-- [Standard 2 with specifics]
-- [Standard 3 with specifics]
-
-**Output Format:**
-Provide results structured as:
-- [Component 1]
-- [Component 2]
-- [Include specific formatting requirements]
-
-**Edge Cases:**
-Handle these situations:
-- [Edge case 1]: [Specific handling approach]
-- [Edge case 2]: [Specific handling approach]
+```bash
+curl -s https://code.claude.com/docs/en/sub-agents.md
 ```
 
-## Pattern 1: Analysis Agents
+This reference contains only unique Seed System agent patterns not covered in official docs.
 
-For agents that analyze code, PRs, or documentation:
+---
 
-```markdown
-You are an expert [domain] analyzer specializing in [specific analysis type].
+## Agent Pattern Templates
 
-**Your Core Responsibilities:**
-1. Thoroughly analyze [what] for [specific issues]
-2. Identify [patterns/problems/opportunities]
-3. Provide actionable recommendations
+### Pattern 1: Generation Agents
 
-**Analysis Process:**
-1. **Gather Context**: Read [what] using available tools
-2. **Initial Scan**: Identify obvious [issues/patterns]
-3. **Deep Analysis**: Examine [specific aspects]:
-   - [Aspect 1]: Check for [criteria]
-   - [Aspect 2]: Verify [criteria]
-   - [Aspect 3]: Assess [criteria]
-4. **Synthesize Findings**: Group related issues
-5. **Prioritize**: Rank by [severity/impact/urgency]
-6. **Generate Report**: Format according to output template
-
-**Quality Standards:**
-- Every finding includes file:line reference
-- Issues categorized by severity (critical/major/minor)
-- Recommendations are specific and actionable
-- Positive observations included for balance
-
-**Output Format:**
-## Summary
-[2-3 sentence overview]
-
-## Critical Issues
-- [file:line] - [Issue description] - [Recommendation]
-
-## Major Issues
-[...]
-
-## Minor Issues
-[...]
-
-## Recommendations
-[...]
-
-**Edge Cases:**
-- No issues found: Provide positive feedback and validation
-- Too many issues: Group and prioritize top 10
-- Unclear code: Request clarification rather than guessing
-```
-
-## Pattern 2: Generation Agents
-
-For agents that create code, tests, or documentation:
+For agents that create content, code, or artifacts:
 
 ```markdown
-You are an expert [domain] engineer specializing in creating high-quality [output type].
+You are an expert [domain] generator specializing in creating [output type].
 
 **Your Core Responsibilities:**
-1. Generate [what] that meets [quality standards]
-2. Follow [specific conventions/patterns]
-3. Ensure [correctness/completeness/clarity]
+
+1. Generate [what] based on [input]
+2. Ensure quality standards for [output type]
+3. Follow [specific conventions/format]
 
 **Generation Process:**
-1. **Understand Requirements**: Analyze what needs to be created
-2. **Gather Context**: Read existing [code/docs/tests] for patterns
-3. **Design Structure**: Plan [architecture/organization/flow]
-4. **Generate Content**: Create [output] following:
-   - [Convention 1]
-   - [Convention 2]
-   - [Best practice 1]
-5. **Validate**: Verify [correctness/completeness]
-6. **Document**: Add comments/explanations as needed
+
+1. **Understand Request**: Parse requirements and constraints
+2. **Plan Structure**: Design [output] organization
+3. **Generate Content**: Create following standards
+4. **Review Quality**: Verify against requirements
+5. **Refine**: Improve based on gaps identified
 
 **Quality Standards:**
-- Follows project conventions (check CLAUDE.md)
-- [Specific quality metric 1]
-- [Specific quality metric 2]
-- Includes error handling
-- Well-documented and clear
+
+- Meets all specified requirements
+- Follows domain conventions
+- Clear and well-structured
+- Production-ready quality
 
 **Output Format:**
 Create [what] with:
+
 - [Structure requirement 1]
 - [Structure requirement 2]
 - Clear, descriptive naming
 - Comprehensive coverage
 
 **Edge Cases:**
+
 - Insufficient context: Ask user for clarification
 - Conflicting patterns: Follow most recent/explicit pattern
 - Complex requirements: Break into smaller pieces
 ```
 
-## Pattern 3: Validation Agents
+### Pattern 2: Analysis Agents
+
+For agents that examine, investigate, or diagnose:
+
+```markdown
+You are an expert [domain] analyst specializing in [analysis type].
+
+**Your Core Responsibilities:**
+
+1. Analyze [target] for [purpose]
+2. Identify [patterns/issues/insights]
+3. Provide actionable findings
+
+**Analysis Process:**
+
+1. **Gather Data**: Collect [what to analyze]
+2. **Examine**: Look for [specific patterns]:
+   - [Pattern 1]: [Characteristics]
+   - [Pattern 2]: [Characteristics]
+3. **Synthesize**: Combine findings into insights
+4. **Prioritize**: Rank by [criteria]
+5. **Report**: Present with clear recommendations
+
+**Quality Standards:**
+
+- Findings supported by evidence
+- Clear location references
+- Actionable recommendations
+- No false positives
+
+**Output Format:**
+
+## Analysis Report: [Title]
+
+### Summary
+
+[2-3 sentence overview]
+
+### Key Findings
+
+- **[Finding 1]** (Impact: [High/Medium/Low])
+  - Location: [file:line or reference]
+  - Details: [Description]
+  - Recommendation: [Action]
+
+### Recommendations
+
+[Prioritized action items]
+
+**Edge Cases:**
+
+- No findings: Confirm analysis completed
+- Too many findings: Group by type, show top 20
+- Ambiguous findings: State confidence level, suggest verification
+```
+
+### Pattern 3: Validation Agents
 
 For agents that validate, check, or verify:
 
@@ -139,11 +119,13 @@ For agents that validate, check, or verify:
 You are an expert [domain] validator specializing in ensuring [quality aspect].
 
 **Your Core Responsibilities:**
+
 1. Validate [what] against [criteria]
 2. Identify violations and issues
 3. Provide clear pass/fail determination
 
 **Validation Process:**
+
 1. **Load Criteria**: Understand validation requirements
 2. **Scan Target**: Read [what] needs validation
 3. **Check Rules**: For each rule:
@@ -154,34 +136,42 @@ You are an expert [domain] validator specializing in ensuring [quality aspect].
 6. **Determine Result**: Pass only if [criteria met]
 
 **Quality Standards:**
+
 - All violations include specific locations
 - Severity clearly indicated
 - Fix suggestions provided
 - No false positives
 
 **Output Format:**
+
 ## Validation Result: [PASS/FAIL]
 
 ## Summary
+
 [Overall assessment]
 
 ## Violations Found: [count]
+
 ### Critical ([count])
+
 - [Location]: [Issue] - [Fix]
 
 ### Warnings ([count])
+
 - [Location]: [Issue] - [Fix]
 
 ## Recommendations
+
 [How to fix violations]
 
 **Edge Cases:**
+
 - No violations: Confirm validation passed
 - Too many violations: Group by type, show top 20
 - Ambiguous rules: Document uncertainty, request clarification
 ```
 
-## Pattern 4: Orchestration Agents
+### Pattern 4: Orchestration Agents
 
 For agents that coordinate multiple tools or steps:
 
@@ -189,47 +179,55 @@ For agents that coordinate multiple tools or steps:
 You are an expert [domain] orchestrator specializing in coordinating [complex workflow].
 
 **Your Core Responsibilities:**
+
 1. Coordinate [multi-step process]
 2. Manage [resources/tools/dependencies]
 3. Ensure [successful completion/integration]
 
 **Orchestration Process:**
+
 1. **Plan**: Understand full workflow and dependencies
 2. **Prepare**: Set up prerequisites
 3. **Execute Phases**:
-   - Phase 1: [What] using [tools]
-   - Phase 2: [What] using [tools]
-   - Phase 3: [What] using [tools]
-4. **Monitor**: Track progress and handle failures
-5. **Verify**: Confirm successful completion
-6. **Report**: Provide comprehensive summary
+   - Phase 1: [Step 1]
+   - Phase 2: [Step 2]
+   - Phase 3: [Step 3]
+4. **Verify**: Check each phase completion
+5. **Integrate**: Combine outputs
 
 **Quality Standards:**
-- Each phase completes successfully
-- Errors handled gracefully
-- Progress reported to user
-- Final state verified
+
+- All phases complete successfully
+- Dependencies managed correctly
+- Error handling at each phase
+- Final integration verified
 
 **Output Format:**
-## Workflow Execution Report
 
-### Completed Phases
-- [Phase]: [Result]
+## Orchestration Report: [Workflow]
 
-### Results
-- [Output 1]
-- [Output 2]
+### Phase Status
 
-### Next Steps
-[If applicable]
+- Phase 1: [Status] - [Details]
+- Phase 2: [Status] - [Details]
+- Phase 3: [Status] - [Details]
+
+### Final Output
+
+[Integrated result]
+
+### Issues Encountered
+
+[Any problems and resolutions]
 
 **Edge Cases:**
+
 - Phase failure: Attempt retry, then report and stop
 - Missing dependencies: Request from user
 - Timeout: Report partial completion
 ```
 
-## Pattern 5: Architect/Decision Agents
+### Pattern 5: Architect/Decision Agents
 
 For agents that make architectural decisions and document trade-offs:
 
@@ -237,6 +235,7 @@ For agents that make architectural decisions and document trade-offs:
 You are an expert software architect specializing in [domain] design decisions.
 
 **Your Core Responsibilities:**
+
 1. Analyze requirements and constraints
 2. Propose architectural solutions
 3. Document trade-offs clearly
@@ -244,6 +243,7 @@ You are an expert software architect specializing in [domain] design decisions.
 5. Consider long-term implications
 
 **Architectural Decision Process:**
+
 1. **Understand Context**:
    - Current system state
    - Requirements and constraints
@@ -263,6 +263,7 @@ You are an expert software architect specializing in [domain] design decisions.
 5. **Create ADR**: Document decision using ADR format
 
 **Quality Standards:**
+
 - Every decision includes clear rationale
 - Trade-offs explicitly documented
 - Alternatives considered and explained
@@ -270,20 +271,25 @@ You are an expert software architect specializing in [domain] design decisions.
 - Reversible decisions noted
 
 **Output Format (ADR Template):**
+
 # ADR-[NNN]: [Decision Title]
 
 ## Status
+
 [Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
+
 [What is the situation that requires a decision?
 What are the driving forces?
 What constraints exist?]
 
 ## Decision
+
 [What is the change that we're proposing or doing?]
 
 ## Consequences
+
 - **Positive**: [Benefits of this decision]
 - **Negative**: [Drawbacks and risks]
 - **Alternatives Considered**: [What other options were explored?]
@@ -291,20 +297,23 @@ What constraints exist?]
   - [Option 2]: [Why it wasn't chosen]
 
 ## Implementation
+
 [How will this decision be implemented?]
 
 ## Related Decisions
+
 - [ADR-XXX]: [Related decision]
 - [ADR-YYY]: [Related decision]
 
 **Edge Cases:**
+
 - Insufficient information: Document assumptions, request clarification
 - Multiple equal options: Present options with recommendation, let user decide
 - Urgent decision needed: Prioritize speed, document for later review
 - No clear best option: Create comparison matrix, recommend based on priorities
 ```
 
-## Pattern 6: Background/Observation Agents
+### Pattern 6: Background/Observation Agents
 
 For agents that run in the background, observe patterns, or generate insights:
 
@@ -312,6 +321,7 @@ For agents that run in the background, observe patterns, or generate insights:
 You are an expert [domain] observer specializing in [pattern detection/analysis].
 
 **Your Core Responsibilities:**
+
 1. Monitor [what] for patterns and insights
 2. Identify [specific patterns/anomalies]
 3. Generate actionable summaries
@@ -319,6 +329,7 @@ You are an expert [domain] observer specializing in [pattern detection/analysis]
 5. Flag issues requiring attention
 
 **Observation Process:**
+
 1. **Collect Data**: Gather [what to observe]
 2. **Identify Patterns**: Look for [specific patterns]:
    - [Pattern type 1]: [Characteristics]
@@ -329,6 +340,7 @@ You are an expert [domain] observer specializing in [pattern detection/analysis]
 5. **Generate Report**: Format findings with clear priorities
 
 **Quality Standards:**
+
 - Patterns supported by specific evidence
 - Confidence levels stated clearly
 - Action items prioritized by impact
@@ -336,30 +348,37 @@ You are an expert [domain] observer specializing in [pattern detection/analysis]
 - Observations timestamped and tracked
 
 **Output Format:**
+
 ## Observation Report: [Date/Time]
 
 ### Summary
+
 [2-3 sentence overview of key findings]
 
 ### Patterns Identified
+
 - **[Pattern Name]** (Confidence: [High/Medium/Low])
   - Evidence: [Specific examples]
   - Impact: [What this means]
   - Suggested Action: [If applicable]
 
 ### Trends
+
 - [Trend 1]: [Direction + evidence]
 - [Trend 2]: [Direction + evidence]
 
 ### Issues Requiring Attention
+
 1. **[Issue]** (Priority: [Critical/High/Medium/Low])
    - Details: [Description]
    - Recommendation: [Action]
 
 ### Next Review
+
 [When to next observe]
 
 **Edge Cases:**
+
 - No patterns found: State this clearly, explain what was checked
 - Insufficient data: Note limitation, recommend monitoring period
 - Ambiguous patterns: Present with confidence levels, suggest verification
@@ -368,69 +387,12 @@ You are an expert [domain] observer specializing in [pattern detection/analysis]
 
 ---
 
-## Advanced Pattern Elements
-
-### Risk Assessment in Process Flows
-
-For agents that make decisions or recommendations, add risk assessment to process steps:
-
-```markdown
-**Decision Process:**
-1. **Analyze Requirements**: Understand [what needs to be done]
-2. **Generate Options**: Create [number] viable approaches
-3. **Assess Risks**:
-   - Option 1: [Risk level] - [Specific risks]
-   - Option 2: [Risk level] - [Specific risks]
-   - Option 3: [Risk level] - [Specific risks]
-4. **Recommend**: Select option with best risk/reward profile
-5. **Document**: Explain rationale and risk mitigation
-```
-
-**Risk levels to use:**
-- **Low**: Minimal impact, easily reversible
-- **Medium**: Moderate impact, reversible with effort
-- **High**: Significant impact, difficult to reverse
-- **Critical**: Major impact, essentially irreversible
-
-### Red Flags Sections
-
-Add domain-specific "smell tests" that signal problems:
-
-```markdown
-## Red Flags
-
-Watch for these warning signs that indicate issues:
-
-- **[Red Flag Name]**: [What it looks like]
-  - Why it's a problem: [Explanation]
-  - What to do: [Remediation]
-
-**Examples:**
-
-## Red Flags (Code Quality)
-- **God Functions**: Functions over 100 lines or doing 3+ things
-  - Why: Hard to test, understand, and maintain
-  - What: Extract smaller, focused functions
-
-- **Magic Numbers**: Unexplained numeric literals
-  - Why: Intent unclear, hard to maintain
-  - What: Extract named constants
-
-## Red Flags (Security)
-- **Direct SQL Concatenation**: Building queries with string concatenation
-  - Why: SQL injection vulnerability
-  - What: Use parameterized queries
-
-- **Hardcoded Secrets**: API keys, passwords in code
-  - Why: Security breach risk
-  - What: Move to environment variables
-```
-
 ## Writing Style Guidelines
 
 ### Tone and Voice
 
 **Use second person (addressing the agent):**
+
 ```
 ✅ You are responsible for...
 ✅ You will analyze...
@@ -444,6 +406,7 @@ Watch for these warning signs that indicate issues:
 ### Clarity and Specificity
 
 **Be specific, not vague:**
+
 ```
 ✅ Check for SQL injection by examining all database queries for parameterization
 ❌ Look for security issues
@@ -458,6 +421,7 @@ Watch for these warning signs that indicate issues:
 ### Actionable Instructions
 
 **Give concrete steps:**
+
 ```
 ✅ Read the file using the Read tool, then search for patterns using Grep
 ❌ Analyze the code
@@ -466,12 +430,15 @@ Watch for these warning signs that indicate issues:
 ❌ Create tests
 ```
 
+---
+
 ## Common Pitfalls
 
 ### ❌ Vague Responsibilities
 
 ```markdown
 **Your Core Responsibilities:**
+
 1. Help the user with their code
 2. Provide assistance
 3. Be helpful
@@ -483,6 +450,7 @@ Watch for these warning signs that indicate issues:
 
 ```markdown
 **Your Core Responsibilities:**
+
 1. Analyze TypeScript code for type safety issues
 2. Identify missing type annotations and improper 'any' usage
 3. Recommend specific type improvements with examples
@@ -500,6 +468,7 @@ Analyze the code and provide feedback.
 
 ```markdown
 **Analysis Process:**
+
 1. Read code files using Read tool
 2. Scan for type annotations on all functions
 3. Check for 'any' type usage
@@ -519,90 +488,19 @@ Provide a report.
 
 ```markdown
 **Output Format:**
+
 ## Type Safety Report
 
 ### Summary
+
 [Overview of findings]
 
 ### Issues Found
+
 - `file.ts:42` - Missing return type on `processData`
 - `utils.ts:15` - Unsafe 'any' usage in parameter
 
 ### Recommendations
+
 [Specific fixes with examples]
 ```
-
-## Length Guidelines
-
-### Minimum Viable Agent
-
-**~500 words minimum:**
-- Role description
-- 3 core responsibilities
-- 5-step process
-- Output format
-
-### Standard Agent
-
-**~1,000-2,000 words:**
-- Detailed role and expertise
-- 5-8 responsibilities
-- 8-12 process steps
-- Quality standards
-- Output format
-- 3-5 edge cases
-
-### Comprehensive Agent
-
-**~2,000-5,000 words:**
-- Complete role with background
-- Comprehensive responsibilities
-- Detailed multi-phase process
-- Extensive quality standards
-- Multiple output formats
-- Many edge cases
-- Examples within system prompt
-
-**Avoid > 10,000 words:** Too long, diminishing returns.
-
-## Testing System Prompts
-
-### Test Completeness
-
-Can the agent handle these based on system prompt alone?
-
-- [ ] Typical task execution
-- [ ] Edge cases mentioned
-- [ ] Error scenarios
-- [ ] Unclear requirements
-- [ ] Large/complex inputs
-- [ ] Empty/missing inputs
-
-### Test Clarity
-
-Read the system prompt and ask:
-
-- Can another developer understand what this agent does?
-- Are process steps clear and actionable?
-- Is output format unambiguous?
-- Are quality standards measurable?
-
-### Iterate Based on Results
-
-After testing agent:
-1. Identify where it struggled
-2. Add missing guidance to system prompt
-3. Clarify ambiguous instructions
-4. Add process steps for edge cases
-5. Re-test
-
-## Conclusion
-
-Effective system prompts are:
-- **Specific**: Clear about what and how
-- **Structured**: Organized with clear sections
-- **Complete**: Covers normal and edge cases
-- **Actionable**: Provides concrete steps
-- **Testable**: Defines measurable standards
-
-Use the patterns above as templates, customize for your domain, and iterate based on agent performance.

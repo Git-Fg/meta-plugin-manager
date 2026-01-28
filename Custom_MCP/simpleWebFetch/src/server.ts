@@ -9,11 +9,22 @@ import { promisify } from "util";
 import fs from "fs/promises";
 import path from "path";
 import { createHash } from "crypto";
+import Perplexity from "@perplexity-ai/perplexity_ai";
 
 const execAsync = promisify(exec);
 
 const SERVER_NAME = "simplewebfetch-mcp-server";
 const SERVER_VERSION = "1.0.0";
+
+const PERPLEXITY_API_KEY = process.env["PERPLEXITY_API_KEY"];
+
+const perplexityClient = PERPLEXITY_API_KEY
+  ? new Perplexity({
+      apiKey: PERPLEXITY_API_KEY,
+      maxRetries: 2,
+      timeout: 30_000,
+    })
+  : null;
 
 const CrawlOptionsSchema = z
   .object({
@@ -77,6 +88,28 @@ const CrawlWebFetchSchema = z.object({
         .default(120000),
     })
     .optional(),
+});
+
+const SaveWebFetchSchema = z.object({
+  url: z.string().url().describe("http(s) URL to fetch"),
+  outputPath: z
+    .string()
+    .min(1)
+    .describe(
+      "Relative output path for saved file (e.g., docs/page.md or docs/)",
+    ),
+  options: CrawlOptionsSchema.optional(),
+});
+
+const AskWebFetchSchema = z.object({
+  url: z.string().url().describe("http(s) URL to fetch and analyze"),
+  prompt: z
+    .string()
+    .min(1)
+    .describe(
+      "Custom prompt for AI analysis (if not provided, extracts extensive key points)",
+    ),
+  options: CrawlOptionsSchema.optional(),
 });
 
 function isPrivateHost(hostname: string): boolean {
@@ -490,6 +523,207 @@ server.registerTool(
           {
             type: "text",
             text: `crawlWebFetch failed: ${err instanceof Error ? err.message : String(err)}`,
+          },
+        ],
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "saveWebFetch",
+  {
+    title: "Save Web Fetch (File with Metadata)",
+    description:
+      "Tool to fetch URL content and save to local file with YAML frontmatter. Use when you need to persist fetched content locally. Constraint: outputPath must be relative; creates directory if missing; auto-detects file type.",
+    inputSchema: SaveWebFetchSchema,
+  },
+  async ({ url, outputPath, options }) => {
+    try {
+      const u = validateUrl(url);
+      const opts = CrawlOptionsSchema.parse(options ?? {});
+
+      let markdown: string;
+      let title: string | null = null;
+      const isPlainText = isPlainTextUrl(u);
+
+      if (isPlainText) {
+        markdown = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
+        const pathname = u.pathname;
+        title = pathname.split("/").pop() || "untitled";
+      } else {
+        const results = await crawlFetch(u.toString(), {
+          depth: 0,
+          maxConcurrency: 1,
+          respectRobots: opts.respectRobots,
+          sameOriginOnly: true,
+          userAgent: opts.userAgent,
+          cacheDir: opts.cacheDir,
+          timeout: opts.timeoutMs,
+        });
+
+        const first = results[0];
+        if (!first || first.error) {
+          throw new Error(first?.error ?? "Unknown fetch error");
+        }
+
+        markdown = first.markdown ?? "";
+        title = first.title ?? null;
+      }
+
+      const truncated = truncateForContext(markdown, opts.maxChars);
+      const fetchTime = new Date().toISOString();
+
+      validateOutputPath(outputPath);
+
+      // Generate filename from title or URL
+      const fileName = title
+        ? `${sanitizeFilename(title)}.md`
+        : `${sanitizeFilename(u.hostname + u.pathname)}.md`;
+
+      const filePath = path.join(outputPath, fileName);
+      const fileContent = buildMarkdownFile(
+        u.toString(),
+        title,
+        truncated,
+        fetchTime,
+      );
+
+      await saveMarkdownFile(filePath, fileContent);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Saved ${u.toString()} to ${filePath}`,
+          },
+        ],
+        structuredContent: {
+          url: u.toString(),
+          filePath,
+          title,
+          fetchTime,
+          cachePath: getCachePath(u.toString(), opts.cacheDir),
+        },
+      };
+    } catch (err) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: `saveWebFetch failed: ${err instanceof Error ? err.message : String(err)}`,
+          },
+        ],
+      };
+    }
+  },
+);
+
+server.registerTool(
+  "askWebFetch",
+  {
+    title: "Ask Web Fetch (AI-Powered Analysis)",
+    description:
+      "Tool to fetch and analyze URL content using AI (Perplexity sonar-pro). Use when you need AI-powered extraction, summarization, or analysis of web content. Constraint: requires PERPLEXITY_API_KEY environment variable.",
+    inputSchema: AskWebFetchSchema,
+  },
+  async ({ url, prompt, options }) => {
+    if (!perplexityClient) {
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: "askWebFetch requires PERPLEXITY_API_KEY environment variable. Please set it and try again.",
+          },
+        ],
+      };
+    }
+
+    try {
+      const u = validateUrl(url);
+      const opts = CrawlOptionsSchema.parse(options ?? {});
+
+      let content: string;
+      const isPlainText = isPlainTextUrl(u);
+
+      if (isPlainText) {
+        content = await fetchPlainText(u, opts.timeoutMs, opts.userAgent);
+      } else {
+        content = await fetchMarkdown(u.toString(), {
+          depth: 0,
+          maxConcurrency: 1,
+          respectRobots: opts.respectRobots,
+          sameOriginOnly: true,
+          userAgent: opts.userAgent,
+          cacheDir: opts.cacheDir,
+          timeout: opts.timeoutMs,
+        });
+      }
+
+      const truncated = truncateForContext(content, opts.maxChars);
+
+      // Truncate content if too large for API (typically < 100k chars)
+      const maxContentLength = 80000;
+      const contentForAnalysis =
+        truncated.length > maxContentLength
+          ? truncated.slice(0, maxContentLength) +
+            "\n\n[Content truncated for API analysis...]"
+          : truncated;
+
+      // Call Perplexity with the content
+      const analysisPrompt =
+        prompt.trim() ||
+        "Extract and summarize the key information from this webpage content. Provide extensive key points covering the main topics, important details, and actionable information.";
+
+      const messages = [
+        {
+          role: "system" as const,
+          content:
+            "You are an expert analyst. Analyze the provided webpage content and respond to the user's query. Be thorough, accurate, and cite specific information from the content.",
+        },
+        {
+          role: "user" as const,
+          content: `URL: ${u.toString()}\n\nContent:\n\n${contentForAnalysis}\n\nQuery: ${analysisPrompt}`,
+        },
+      ];
+
+      const response = await perplexityClient.chat.completions.create({
+        model: "sonar-pro",
+        messages,
+      });
+
+      const answer =
+        typeof response.choices[0]?.message.content === "string"
+          ? response.choices[0].message.content
+          : "No response from AI";
+
+      const cacheMessage = buildCacheMessage(u.toString(), opts.cacheDir);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: answer + cacheMessage,
+          },
+        ],
+        structuredContent: {
+          url: u.toString(),
+          analysis: answer,
+          fetchTime: new Date().toISOString(),
+          model: "sonar-pro",
+          cachePath: getCachePath(u.toString(), opts.cacheDir),
+        },
+      };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        isError: true,
+        content: [
+          {
+            type: "text",
+            text: `askWebFetch failed: ${message}`,
           },
         ],
       };

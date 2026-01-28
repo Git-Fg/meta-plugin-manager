@@ -1,6 +1,6 @@
 ---
 name: search
-description: "Execute iterative retrieval search with progressive refinement. Use 4-phase loop: DISPATCH → EVALUATE → REFINE → LOOP to find high-relevance files."
+description: "Execute iterative retrieval search with progressive refinement. Use 4-phase loop: DISPATCH → EVALUATE → REFINE → LOOP to find high-relevance files. Not for simple file searches - use Glob for that."
 ---
 
 <mission_control>

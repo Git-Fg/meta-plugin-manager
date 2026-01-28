@@ -7,8 +7,9 @@ description: "Create, validate, and audit event-driven hooks for intercepting ev
 <objective>Create event-driven hooks that intercept operations and enforce security patterns</objective>
 <success_criteria>Generated hook has valid matcher, action type, and timeout configuration</success_criteria>
 <standards_gate>
-MANDATORY: Load hook-development references BEFORE creating hooks:
+MANDATORY: Read hooks documentation BEFORE creating hooks:
 
+- Event matchers & payloads → https://code.claude.com/docs/en/hooks.md
 - Security patterns → references/patterns.md
 - Quality guidelines → references/quality.md
 - Advanced techniques → references/advanced.md
@@ -143,7 +144,23 @@ Hooks provide:
 
 ---
 
+## Dynamic Sourcing Protocol
+
+<fetch_protocol>
+**MANDATORY FETCH**: Before creating hooks, fetch the content from:
+
+- https://code.claude.com/docs/en/hooks.md (event types, matchers, payloads)
+
+This skill contains Seed System-specific hook patterns and quality standards.
+</fetch_protocol>
+
+---
+
 ## Navigation
+
+**Official Documentation**:
+
+- Event matchers & payloads → https://code.claude.com/docs/en/hooks.md
 
 | If you need...      | Reference                          |
 | ------------------- | ---------------------------------- |
@@ -154,6 +171,56 @@ Hooks provide:
 
 ---
 
+## Validation Pattern
+
+Use native tools to validate hook scripts:
+
+**Grep: Search for required safety patterns**
+
+- `Grep: search for "^#!/"` → Shebang present
+- `Grep: search for "set -euo pipefail"` → Error handling enabled
+- `Grep: search for "cat\|read"` → stdin reading capability
+- `Grep: search for "jq"` → JSON parsing support
+- `Grep: search for "exit 0\|exit 2"` → Explicit exit codes
+- `Grep: search for ">&2"` → Error messages to stderr
+
+**Grep: Search for anti-patterns**
+
+- `Grep: search for "/home/\|/usr/\|/opt/"` → Hardcoded paths (anti-pattern)
+- `Grep: search for "sleep [0-9]{3,}"` → Long-running operations
+
+**Validation workflow**:
+
+1. `Glob: pattern "**/*.sh" in hooks/` → Find all hook scripts
+2. `Grep: search for "set -euo pipefail"` in each → Verify safety patterns
+3. `Grep: search for "cat\|read"` in each → Verify stdin handling
+4. `Grep: search for "/home/\|/usr/\|/opt/"` in each → Flag hardcoded paths
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---
 
 <critical_constraint>
 MANDATORY: Hooks must have timeout values to prevent blocking operations

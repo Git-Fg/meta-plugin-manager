@@ -326,10 +326,29 @@ Using Superpowers is about **systematic discipline**. Skills exist to enforce be
 
 ---
 
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
 <critical_constraint>
-MANDATORY: Invoke relevant skills BEFORE any response or action
-MANDATORY: If there's even 1% chance a skill applies, invoke it
-MANDATORY: Process skills before implementation skills
-MANDATORY: Read current skill version (don't assume you remember)
-No exceptions. Rationalization is the enemy of discipline.
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
 </critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+  MANDATORY: If there's even 1% chance a skill applies, invoke it
+  MANDATORY: Process skills before implementation skills
+  MANDATORY: Read current skill version (don't assume you remember)
+  No exceptions. Rationalization is the enemy of discipline.
+  </critical_constraint>

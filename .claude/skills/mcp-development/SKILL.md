@@ -9,10 +9,10 @@ description: "Create, validate, and audit MCP servers for Claude integration. Us
 <objective>Create portable MCP servers with strict tool schema definitions, clear transport logic, and prompt-engineered descriptions that guide agent behavior</objective>
 <success_criteria>Generated MCP server has valid JSON Schema for tools, prompt-engineered descriptions, and proper transport configuration</success_criteria>
 <standards_gate>
-MANDATORY: Load mcp-development references BEFORE creating MCP servers:
+MANDATORY: Read MCP documentation BEFORE creating servers:
 
-- Tool development → references/tool-development.md
-- Transport mechanisms → references/transports.md
+- Tool schema & transport → https://code.claude.com/docs/en/mcp.md
+- Performance & security → references/tool-development.md
 - Authentication → references/authentication.md
   </standards_gate>
   </mission_control>
@@ -621,26 +621,68 @@ await server.connect(transport);
 
 ### Validation Framework
 
-**MANDATORY: Verify logic with a programmatic test script (Inspector is flaky).**
+**MANDATORY: Verify MCP servers using @modelcontextprotocol/inspector CLI**
 
-```javascript
-// test.mjs
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+The inspector CLI provides fast, scriptable contract validation for MCP servers. Use it for smoke tests, schema validation, and functional verification.
 
-// Import your server code here or mock it
-// ...
+**Basic CLI patterns:**
 
-// Validate registration
-const tools = server._registeredTools; // Access internal registry
-console.log("Tools found:", tools.length);
+```bash
+# Health check
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method ping
 
-if (tools.some((t) => t.name === "tool-name")) {
-  console.log("✅ Tool registered");
-} else {
-  console.error("❌ Tool missing");
-  process.exit(1);
-}
+# List tools (verify schema and descriptions)
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method tools/list
+
+# List resources
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method resources/list
+
+# List prompts
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method prompts/list
+
+# Call a tool (happy path)
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js \
+  --method tools/call --tool-name mytool --tool-arg key=value
+
+# Call a tool with JSON arg
+npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js \
+  --method tools/call --tool-name mytool --tool-arg 'options={"format": "json"}'
+```
+
+**CI/CD validation script example:**
+
+```bash
+#!/bin/bash
+set -e
+
+PROJECT="your-project-name"
+SERVER_PATH="Custom_MCP/${PROJECT}/dist/server.js"
+INSPECTOR="npx -y @modelcontextprotocol/inspector --cli node ${SERVER_PATH}"
+
+echo "=> 1. Health check"
+$INSPECTOR --method ping
+
+echo "=> 2. Verify tools list"
+TOOLS=$($INSPECTOR --method tools/list)
+echo "$TOOLS" | jq -e '.tools | length > 0'
+
+echo "=> 3. Test critical tools"
+$INSPECTOR --method tools/call --tool-name diagnostics
+
+echo "=> 4. Verify resources/prompts"
+$INSPECTOR --method resources/list
+$INSPECTOR --method prompts/list
+
+echo "✅ MCP server validation: PASS"
+```
+
+**For deep spec compliance**, combine with external validators like `mcp-validator`:
+
+```bash
+# STDIO compliance test
+python -m mcp_testing.scripts.compliance_report \
+  --server-command "node Custom_MCP/${PROJECT}/dist/server.js" \
+  --protocol-version 2025-06-18
 ```
 
 ---
@@ -717,28 +759,74 @@ Before fetching MCP specification URLs:
 - Error guidance (covered with examples)
 - Strong language usage (covered in patterns)
 
-**Instance Resources** (fetch only when needed, after freshness gate):
+**Official Documentation** (fetch for current MCP syntax):
 
-| Trigger           | URL                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------- |
-| SDK changes       | https://github.com/modelcontextprotocol/specification                                                   |
-| Transport specs   | https://github.com/modelcontextprotocol/specification/blob/main/docs/specification/server/transports.md |
-| Latest primitives | https://github.com/modelcontextprotocol/specification/blob/main/specification.md                        |
+- Tool schema & transport → https://code.claude.com/docs/en/mcp.md
+- Inspector CLI (testing) → https://github.com/modelcontextprotocol/inspector
+- MCP Validator (compliance) → https://github.com/Janix-ai/mcp-validator
+- Protocol spec → https://modelcontextprotocol.io/
+- Best practices → https://modelcontextprotocol.info/docs/best-practices
+- SDK docs → https://modelcontextprotocol.io/quickstart/server
+- Testing guide → https://www.stainless.com/mcp/how-to-test-mcp-servers
 
 **Workflow:** Freshness check → Verify npm package version → Consult skill patterns → Fetch spec only if behavior differs → Extract delta → Dispose
 
 ---
 
+## Dynamic Sourcing Protocol
+
+<fetch_protocol>
+**MANDATORY FETCH**: Before creating MCP servers, fetch the content from:
+
+- https://code.claude.com/docs/en/mcp.md (tool schema and transport)
+
+**CONDITIONAL FETCH**: For CLI testing, fetch from https://github.com/modelcontextprotocol/inspector when needed.
+</fetch_protocol>
+
+---
+
 ## Navigation
 
-| If you need...       | Reference                                   |
-| -------------------- | ------------------------------------------- |
-| Tool development     | MANDATORY: `references/tool-development.md` |
-| Transport mechanisms | `references/transports.md`                  |
-| Primitives overview  | `references/primitives.md`                  |
-| Authentication       | `references/authentication.md`              |
-| Plugin integration   | `references/plugin-integration.md`          |
-| 2026 features        | `references/2026-features.md`               |
+**Official Documentation**:
+
+- Tool schema & transport → https://code.claude.com/docs/en/mcp.md
+- Inspector CLI (testing) → https://github.com/modelcontextprotocol/inspector
+- MCP Validator (compliance) → https://github.com/Janix-ai/mcp-validator
+- Protocol spec → https://modelcontextprotocol.io/
+- Best practices → https://modelcontextprotocol.info/docs/best-practices
+- SDK docs → https://modelcontextprotocol.io/quickstart/server
+- Testing guide → https://www.stainless.com/mcp/how-to-test-mcp-servers
+
+| If you need...     | Reference                                   |
+| ------------------ | ------------------------------------------- |
+| Tool development   | MANDATORY: `references/tool-development.md` |
+| Authentication     | `references/authentication.md`              |
+| Plugin integration | `references/plugin-integration.md`          |
+| 2026 features      | `references/2026-features.md`               |
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---
 
@@ -787,15 +875,14 @@ Before fetching MCP specification URLs:
 MANDATORY READ: `references/tool-development.md` before creating tools
 This reference contains critical patterns for tool definition.
 
-**MANDATORY: URL Mastery - Never store documentation in session**
+**MANDATORY: Dynamic Sourcing from Official Documentation**
 
-- NEVER copy documentation from URLs into the session context
-- Fetch URL → Identify current syntax → Apply directly to local file → Dispose
-- Use Freshness Gate: Check last-updated date. If > 6 months old, search for updated version
-- Prefer npm package version checks over URL content for SDK docs
+- For MCP tool schema → fetch https://code.claude.com/docs/en/mcp.md
+- Verify current syntax before implementation
+- Fetch → Extract → Implement → Dispose
+- Never store documentation in session context
 
 **No exceptions. MCP servers require strict schema compliance and prompt-engineered descriptions for protocol correctness.**
 </critical_constraint>
 
 ---
-

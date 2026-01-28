@@ -9,8 +9,9 @@ description: "Create, validate, and audit autonomous agents with isolated subpro
 <objective>Create autonomous agents with isolated context and self-contained philosophy</objective>
 <success_criteria>Generated agent includes valid frontmatter, clear triggers, and bundled behavioral guidance</success_criteria>
 <standards_gate>
-MANDATORY: Load agent-development references BEFORE creating agents:
+MANDATORY: Read agent documentation BEFORE creating agents:
 
+- Agent configuration → https://code.claude.com/docs/en/sub-agents.md
 - Agent structure → references/agent-structure.md
 - Philosophy bundle pattern → references/philosophy-bundle.md
 - Agent validation → references/validation.md
@@ -117,7 +118,6 @@ team_name: { { TEAM_CONTEXT | optional } }
 <personality>{{BEHAVIORAL_TRAITS}}</personality>
 <constraints>{{OPERATIONAL_CONSTRAINTS}}</constraints>
 </persona_definition>
-
 
 <autonomy_protocol>
 <decision_making>
@@ -239,18 +239,56 @@ team_name: team-context
 
 ---
 
-## Navigation
+## Dynamic Sourcing Protocol
 
-| If you need...       | Reference                                    |
-| -------------------- | -------------------------------------------- |
-| System prompt design | `references/system-prompt-design.md`         |
-| Triggering examples  | `references/triggering-examples.md`          |
-| Agent orchestration  | `references/agent-orchestration.md`          |
-| Iterative retrieval  | `references/iterative-retrieval.md`          |
-| Creation workflow    | `references/agent-creation-system-prompt.md` |
+<fetch_protocol>
+**MANDATORY FETCH**: Before creating agents, fetch the content from:
+
+- https://code.claude.com/docs/en/sub-agents.md (agent configuration fields, execution modes)
+
+This skill contains Seed System-specific agent patterns and orchestration strategies.
+</fetch_protocol>
 
 ---
 
+## Navigation
+
+**Official Documentation**:
+
+- Agent configuration → https://code.claude.com/docs/en/sub-agents.md
+
+---
+
+## Validation Pattern
+
+Use native tools to validate agent files:
+
+**Read: Check frontmatter structure**
+
+- `Read: first 20 lines of agent.md` → Verify frontmatter starts with `---`
+- `Read: lines 2-30` → Extract frontmatter content
+
+**Grep: Verify required fields**
+
+- `Grep: search for "^name:"` → Agent identifier present
+- `Grep: search for "^description:"` → Description present
+- `Grep: search for "^model:"` → Model specified
+- `Grep: search for "^mode:"` → Execution mode defined
+- `Grep: search for "Use when\|Not for"` → Trigger clauses present
+
+**Grep: Validate frontmatter format**
+
+- `Grep: search for "^---$"` → Closing frontmatter marker
+- `Grep: search for "inherit|sonnet|opus|haiku"` → Valid model value
+
+**Validation workflow**:
+
+1. `Read: agent.md` → Load full agent file
+2. `Grep: search for "^name:|^description:|^model:|^mode:"` → Verify required fields
+3. `Grep: search for "Use when.*Not for"` → Confirm What-When-Not format
+4. `Grep: search for "<mission_control>"` → Check for mission control section
+
+---
 
 ## Absolute Constraints (Non-Negotiable)
 

@@ -267,51 +267,35 @@ Never hardcode API keys. Use environment variables or secret managers.
 
 TypeScript >= 4.9 required.
 
-## Relevance Heuristic
+---
 
-**Protocol: Check Principles → Fetch Instance → Extract Delta → Dispose**
+## Dynamic Sourcing Protocol
 
-Before fetching any URL:
+<fetch_protocol>
+**CONDITIONAL FETCH**: For API questions, fetch from:
 
-1. **Check Principles** - This skill covers installation, API usage, error handling, and best practices. The patterns here are stable.
+- https://docs.perplexity.ai (model capabilities, latest features)
 
-2. **Fetch Instance Only When**:
-   - npm package shows new version with breaking changes
-   - SDK API signature differs from documented patterns
-   - Error code behavior has changed
-   - New model capabilities not yet covered
+This skill contains Seed System-specific Perplexity integration patterns. Version-specific API details should be fetched when needed.
+</fetch_protocol>
 
-3. **Extract Delta** - Keep only what this skill doesn't cover:
-   - Version-specific migration notes
-   - New API methods not in examples
-   - Updated rate limits or quotas
-
-4. **Dispose Context** - Remove fetched content after extracting delta
-
-**When NOT to fetch:**
-
-- General API concepts (covered in skill)
-- Basic usage patterns (covered with examples)
-- Error handling patterns (covered in tables)
-- Security best practices (covered in constraints)
-
-**Instance Resources** (fetch only when needed):
-
-| Trigger                | URL                                                              |
-| ---------------------- | ---------------------------------------------------------------- |
-| Version verification   | https://www.npmjs.com/package/@perplexity-ai/perplexity_ai       |
-| API signature changes  | https://github.com/perplexityai/perplexity-node/blob/main/api.md |
-| New model capabilities | https://docs.perplexity.ai                                       |
-
-**Workflow:** Verify npm version → Consult skill patterns → Fetch instance docs only if behavior differs → Extract delta → Dispose
+---
 
 ## References
 
-| If you need...     | Read...                      |
-| ------------------ | ---------------------------- |
-| SDK API details    | references/api-reference.md  |
-| Search filters     | references/search-filters.md |
-| Streaming patterns | references/streaming.md      |
+**Official Documentation**:
+
+- Complete SDK API → https://github.com/perplexityai/perplexity-node/blob/main/api.md
+- Model capabilities → https://docs.perplexity.ai
+- Package version → https://www.npmjs.com/package/@perplexity-ai/perplexity_ai
+
+**Local References**:
+
+| If you need...           | Read...                      |
+| ------------------------ | ---------------------------- |
+| Seed System patterns     | references/api-reference.md  |
+| Search filter examples   | references/search-filters.md |
+| Streaming implementation | references/streaming.md      |
 
 ---
 

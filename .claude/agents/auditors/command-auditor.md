@@ -17,7 +17,7 @@ skill:
 <interaction_schema>
 context_initialization → structure_audit → content_quality → execution_patterns → examples_validation → report</interaction_schema>
 
-# Command Auditor Agent
+## Command Auditor Agent
 
 Specialized agent for evaluating slash commands against Seed System standards.
 

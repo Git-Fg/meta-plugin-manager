@@ -17,7 +17,7 @@ skill:
 <interaction_schema>
 component_identification → universal_checks → type_specific_audit → synthesis → report</interaction_schema>
 
-# Component Auditor Agent
+## Component Auditor Agent
 
 General-purpose auditor for all Seed System components (skills, commands, agents, hooks) with contextual judgment.
 

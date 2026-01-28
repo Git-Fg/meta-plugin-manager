@@ -15,6 +15,7 @@
   "dependencies": {
     "@just-every/crawl": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.25.1",
+    "@perplexity-ai/perplexity_ai": "^0.23.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

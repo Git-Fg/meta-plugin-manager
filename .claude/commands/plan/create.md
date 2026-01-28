@@ -1,5 +1,5 @@
 ---
-description: "Create project plans with intelligent auto-inference. Single command for brief/roadmap/phases/chunks - detects context and acts autonomously."
+description: "Create project plans with intelligent auto-inference. Single command for brief/roadmap/phases/chunks - detects context and acts autonomously. Not for simple tasks that don't require structured planning."
 argument-hint: [project description or "auto" for context detection]
 ---
 

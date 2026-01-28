@@ -105,3 +105,29 @@ MANDATORY: Verify state is preserved before proceeding
 MANDATORY: Never lose TaskList ID between sessions
 No exceptions. Cross-session continuity requires explicit ID management.
 </critical_constraint>
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---

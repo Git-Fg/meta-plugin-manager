@@ -49,13 +49,38 @@ Backend patterns provide proven solutions for common architectural challenges:
 - Use appropriate HTTP status codes
 - Implement rate limiting for public APIs
 
+---
+
+## Dynamic Sourcing Protocol
+
+<fetch_protocol>
+**MANDATORY FETCH**: Before designing REST APIs, fetch the content from:
+
+- https://restfulapi.net/ (REST principles and constraints)
+- https://developer.mozilla.org/en-US/docs/Web/HTTP/Status (HTTP status codes)
+
+**CONDITIONAL FETCH**: Fetch https://swagger.io/docs/specification/ only when documenting APIs with OpenAPI.
+
+The local skill focuses on Seed System-specific backend patterns.
+</fetch_protocol>
+
+---
+
 ## Navigation
 
-For detailed examples, see:
+**Official Documentation**:
 
-- `references/api-patterns.md` - REST/GraphQL/RPC patterns
-- `references/database-patterns.md` - Repository, Unit of Work, transactions
-- `references/security-patterns.md` - Authentication, authorization, validation
+- REST API standards → https://restfulapi.net/
+- HTTP status codes → https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+- OpenAPI specification → https://swagger.io/docs/specification/
+
+**Local References**:
+
+| If you need...            | Read...                         |
+| ------------------------- | ------------------------------- |
+| Seed System REST patterns | references/api-patterns.md      |
+| Database patterns         | references/database-patterns.md |
+| Security patterns         | references/security-patterns.md |
 
 ---
 
@@ -75,3 +100,29 @@ NEVER hardcode secrets or credentials in code
 
 Choose patterns based on actual requirements, not theoretical future needs. Start simple, add complexity only when justified.
 </critical_constraint>
+
+---
+
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+MANDATORY: Description MUST use What-When-Not format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Progressive disclosure - references/ for detailed content
+MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+
+**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+
+**Recognition Questions**:
+
+- "Would Claude know this without being told?" → Delete (zero delta)
+- "Can this work standalone?" → Fix if no (non-self-sufficient)
+- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---
