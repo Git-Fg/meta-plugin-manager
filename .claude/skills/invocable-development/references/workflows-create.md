@@ -10,7 +10,7 @@ Analyze the request to extract:
 
 ### Skill Type
 
-- **Workflow skill**: Executes multi-step processes (e.g., `tdd-workflow`)
+- **Workflow skill**: Executes multi-step processes (e.g., `engineering-lifecycle`)
 - **Knowledge skill**: Provides domain expertise (e.g., `backend-patterns`)
 - **Context skill**: Manages session state (e.g., `memory-persistence`)
 

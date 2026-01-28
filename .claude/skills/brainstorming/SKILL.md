@@ -47,7 +47,7 @@ Start by understanding the current project context, then use the l'entonnoir pat
 
 - Ask: "Ready to set up for implementation?"
 - Use `using-git-worktrees` to create isolated workspace
-- Use `writing-plans` to create detailed implementation plan
+- Use `engineering-lifecycle` to create detailed implementation plan
 
 ## Key Principles
 

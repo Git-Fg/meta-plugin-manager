@@ -408,7 +408,7 @@ This skill integrates with:
 - `security` - Security vulnerability detection
 - `coding-standards` - Code quality standards
 - `backend-patterns` - Architecture best practices
-- `tdd-workflow` - Testing requirements
+- `engineering-lifecycle` - Testing requirements
 
 ---
 

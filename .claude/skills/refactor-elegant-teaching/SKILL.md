@@ -337,7 +337,7 @@ Before considering refactoring complete:
 
 This skill works alongside:
 
-- **tdd-workflow**: Refactor during the GREEN phase, never during RED
+- **engineering-lifecycle**: Refactor during the GREEN phase, never during RED
 - **code-review**: Identify refactoring opportunities in PRs
 - **verification-before-completion**: Verify refactoring preserved behavior
 

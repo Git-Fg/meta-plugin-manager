@@ -344,7 +344,7 @@ Before considering TypeScript code complete:
 This skill integrates with:
 
 - `coding-standards` - Universal coding best practices
-- `tdd-workflow` - Testing requirements
+- `engineering-lifecycle` - Testing requirements
 - `frontend-patterns` - React/TypeScript patterns
 - `backend-patterns` - TypeScript backend patterns
 

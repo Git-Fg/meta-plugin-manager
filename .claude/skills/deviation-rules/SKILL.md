@@ -349,7 +349,7 @@ Before applying any rule, ask:
 
 This skill integrates with:
 
-- `tdd-workflow` - Test-driven development with deviation handling
+- `engineering-lifecycle` - Test-driven development with deviation handling
 - `invocable-development` - Component creation with automatic fixes
 - `/orchestrate` - Native orchestration with deviation rules
 

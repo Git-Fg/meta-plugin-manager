@@ -69,7 +69,7 @@ For each pattern found:
 - Progressive disclosure needed (core + detailed references)
 - Multiple workflow files provide better organization
 - Examples or scripts should be bundled
-- Example: `skill/tdd-workflow` - comprehensive methodology
+- Example: `skill/engineering-lifecycle` - comprehensive methodology
 
 **ALWAYS load the relevant development skill first:**
 

@@ -115,7 +115,7 @@ This command integrates with:
 
 - `verify` - Ensure package manager consistency
 - `build-fix` - Use correct package manager for builds
-- `tdd-workflow` - Test commands use detected package manager
+- `engineering-lifecycle` - Test commands use detected package manager
 
 ## Arguments
 

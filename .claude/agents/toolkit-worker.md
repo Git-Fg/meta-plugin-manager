@@ -7,8 +7,7 @@ skills:
   - hook-development
   - mcp-development
   - refactor-elegant-teaching
-  - create-plans
-  - execution-orchestrator
+  - engineering-lifecycle
   - verification-loop
 tools:
   - Read

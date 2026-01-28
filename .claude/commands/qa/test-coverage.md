@@ -181,7 +181,7 @@ describe("calculateTotal", () => {
 
 This command integrates with:
 
-- `tdd-workflow` - Ensure tests pass before committing
+- `engineering-lifecycle` - Ensure tests pass before committing
 - `code-review` - Check test coverage during review
 - `verify` - Complete quality check including coverage
 

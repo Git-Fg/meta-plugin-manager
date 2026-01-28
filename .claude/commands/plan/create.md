@@ -181,7 +181,7 @@ Next: Plan Phase 1? (yes/review)
 - Dependencies → task ordering
 - Tech stack → specific implementation steps
 
-**AUTONOMOUS CREATE** via `create-plans` skill:
+**AUTONOMOUS CREATE** via `engineering-lifecycle` skill:
 
 ```
 Skill: plan-phase workflow
@@ -240,7 +240,7 @@ Next chunk (ready to work):
 Working on these now? (yes/see full plan/different)
 ```
 
-**If yes** → Delegate to `execution-orchestrator` skill
+**If yes** → Delegate to `engineering-lifecycle` skill
 **If see full** → Show all remaining tasks
 **If different** → Ask what to focus on
 

@@ -55,7 +55,7 @@ grep -n "checkpoint:" .claude/workspace/planning/phases/XX-name/{phase}-{plan}-P
 
 ### Load Execution Orchestrator
 
-Use `execution-orchestrator` skill for intelligent execution routing.
+Use `engineering-lifecycle` skill for intelligent execution routing.
 
 The skill handles:
 
@@ -69,7 +69,7 @@ The skill handles:
 
 ### Execute
 
-Delegate to `execution-orchestrator` skill with:
+Delegate to `engineering-lifecycle` skill with:
 
 - Plan file path
 - Execution mode (autonomous/segmented/main/reviewed)
@@ -142,7 +142,7 @@ git commit -m "feat: complete [phase-name] plan [N]"
 
 - [ ] Correct plan identified
 - [ ] Execution mode determined
-- [ ] Tasks executed via execution-orchestrator
+- [ ] Tasks executed via engineering-lifecycle
 - [ ] SUMMARY.md created in phase directory
 - [ ] ROADMAP.md updated
 - [ ] Changes committed
@@ -151,7 +151,7 @@ git commit -m "feat: complete [phase-name] plan [N]"
 <critical_constraint>
 MANDATORY: PLAN.md IS the executable prompt (not a document to transform)
 
-MANDATORY: Delegate execution to execution-orchestrator skill
+MANDATORY: Delegate execution to engineering-lifecycle skill
 
 MANDATORY: Create SUMMARY.md after execution (marks phase progress)
 

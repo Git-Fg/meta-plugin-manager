@@ -160,7 +160,7 @@ This command integrates with:
 
 - `qa/verify` - Run after fixing to ensure all quality gates pass
 - `coding-standards` - Reference for type safety patterns
-- `tdd-workflow` - Ensure tests still pass after fixes
+- `engineering-lifecycle` - Ensure tests still pass after fixes
 
 ## Arguments
 

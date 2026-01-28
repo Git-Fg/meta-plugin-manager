@@ -44,7 +44,7 @@ The difference is **structural and organizational**:
 | Aspect         | Commands                                                                   | Skills                                                         |
 | -------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | **Structure**  | Single `.md` file                                                          | Folder with `SKILL.md` + optional `workflows/` + `references/` |
-| **Naming**     | Folder nesting creates `/category:command` or `/category:subgroup:command` | Flat: `skills/tdd-workflow/SKILL.md`                           |
+| **Naming**     | Folder nesting creates `/category:command` or `/category:subgroup:command` | Flat: `skills/engineering-lifecycle/SKILL.md`                  |
 | **File count** | One file                                                                   | Multiple files (main + optional workflows/references)          |
 | **Use case**   | Simple operations, categorization, or router patterns                      | Domain knowledge, progressive disclosure, complex workflows    |
 

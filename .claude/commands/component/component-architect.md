@@ -81,13 +81,13 @@ User: /component-architect I want to create a deploy command
 
 ## Component Types
 
-| Type        | Description                                        | Examples                                 |
-| ----------- | -------------------------------------------------- | ---------------------------------------- |
-| **Command** | User-invoked orchestrators with human confirmation | `/deploy`, `/commit`, `/audit`           |
-| **Skill**   | Model-first capabilities for AI use                | `tdd-workflow`, `security-checklist`     |
-| **Agent**   | Isolated context with autonomous operation         | Web scraper, background processor        |
-| **Hook**    | Event-driven automation and triggers               | Pre-commit validation, file change hooks |
-| **MCP**     | Service providers and API interfaces               | Database query interface, API gateway    |
+| Type        | Description                                        | Examples                                      |
+| ----------- | -------------------------------------------------- | --------------------------------------------- |
+| **Command** | User-invoked orchestrators with human confirmation | `/deploy`, `/commit`, `/audit`                |
+| **Skill**   | Model-first capabilities for AI use                | `engineering-lifecycle`, `security-checklist` |
+| **Agent**   | Isolated context with autonomous operation         | Web scraper, background processor             |
+| **Hook**    | Event-driven automation and triggers               | Pre-commit validation, file change hooks      |
+| **MCP**     | Service providers and API interfaces               | Database query interface, API gateway         |
 
 ## Efficiency Benefits
 

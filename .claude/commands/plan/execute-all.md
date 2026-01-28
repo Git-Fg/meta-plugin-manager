@@ -60,7 +60,7 @@ For each incomplete plan in order:
 
 1. **Load plan** as executable prompt
 2. **Determine mode** from checkpoint analysis
-3. **Execute via** `execution-orchestrator` skill
+3. **Execute via** `engineering-lifecycle` skill
 4. **Create SUMMARY.md** with outcomes and deviations
 5. **Update ROADMAP.md** phase status
 6. **Commit** the phase completion
@@ -186,7 +186,7 @@ Execute all? (yes / review specific / cancel)
 
 - [ ] All incomplete plans identified
 - [ ] Execution mode determined for each
-- [ ] Plans executed sequentially via execution-orchestrator
+- [ ] Plans executed sequentially via engineering-lifecycle
 - [ ] SUMMARY.md created for each completed plan
 - [ ] ROADMAP.md updated after each plan
 - [ ] Commits created for each phase

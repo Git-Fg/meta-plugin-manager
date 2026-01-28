@@ -109,7 +109,7 @@ The toolkit provides command-based interfaces for creating and validating invoca
 | Component    | Structure                                                      | Naming                                 | Best For                                |
 | ------------ | -------------------------------------------------------------- | -------------------------------------- | --------------------------------------- |
 | **Commands** | Single `.md` file                                              | `commands/build/fix.md` → `/build:fix` | Intent/state definition, folder nesting |
-| **Skills**   | Folder with `SKILL.md` + optional `workflows/` + `references/` | Flat: `skills/tdd-workflow/`           | Domain logic, progressive disclosure    |
+| **Skills**   | Folder with `SKILL.md` + optional `workflows/` + `references/` | Flat: `skills/engineering-lifecycle/`  | Domain logic, progressive disclosure    |
 
 ### Build Commands
 
@@ -127,9 +127,9 @@ The toolkit provides command-based interfaces for creating and validating invoca
 
 ### Critique Commands
 
-| Command             | Purpose                                                     | Autonomy                |
-| ------------------- | ----------------------------------------------------------- | ----------------------- |
-| `/toolkit:critique` | Universal meta-critic - three-way review for all components | High (analyzes context) |
+| Command             | Purpose                                             | Autonomy                |
+| ------------------- | --------------------------------------------------- | ----------------------- |
+| `/toolkit:critique` | Universal quality audit via quality-standards skill | High (analyzes context) |
 
 **Rooter Archetype**: A complete capability package with multiple entry points:
 
@@ -181,7 +181,7 @@ Need to maintain project health?
 │  ├─ /ops:drift - Detect and fix context drift
 │  └─ /ops:reflect - Review session for improvements
 ├─ Update rules → Check .claude/rules/ for consistency
-├─ Audit quality → Use meta-critic skill
+├─ Audit quality → Use quality-standards skill
 ├─ Fix autonomy issues → Review architecture.md (L'Entonnoir pattern)
 └─ Validate structure → Check quality.md (anti-patterns)
 ```
@@ -209,7 +209,7 @@ Need to build a portable component?
 **Commands and Skills are the same system** with identical capabilities. The difference is structural:
 
 | **Commands** | Single `.md` file | Folder nesting: `commands/analysis/diagnose.md` → `/analysis:diagnose` |
-| **Skills** | Folder with `SKILL.md` + optional `workflows/` and `references/` | Flat: `skills/tdd-workflow/SKILL.md` |
+| **Skills** | Folder with `SKILL.md` + optional `workflows/` and `references/` | Flat: `skills/engineering-lifecycle/SKILL.md` |
 
 **Both are auto-invocable** - AI and users can invoke either based on description and context.
 
@@ -235,7 +235,7 @@ Need to build a portable component?
 | `/plan:handoff`     | Create context handoff                                  |
 | `/plan:resume`      | Continue from handoff                                   |
 
-**Planning system**: Single command (`/plan:create`) handles everything - auto-detects state and creates brief → roadmap → phases → chunks as needed. Domain logic in `create-plans` skill.
+**Planning system**: Single command (`/plan:create`) handles everything - auto-detects state and creates brief → roadmap → phases → chunks as needed. Domain logic in 'engineering-lifecycle' skill.
 
 **Deprecated**: `/plan:brief`, `/plan:roadmap`, `/plan:chunk` - merged into `/plan:create` for fully autonomous planning.
 
@@ -312,12 +312,12 @@ Grep: Search PLAN.md for pattern type="checkpoint (shows line numbers)
 
 **Files updated with this pattern**:
 
-- `execution-orchestrator/SKILL.md`
+- `engineering-lifecycle/references/execution-modes.md`
 - `invocable-development/references/testing-strategies.md`
 - `file-search/references/advanced-workflows.md`
 - `hook-development/references/patterns.md`
 - `invocable-development/references/plugin-features-reference.md`
-- `verification-loop/SKILL.md`
+- `quality-standards/SKILL.md`
 
 ---
 

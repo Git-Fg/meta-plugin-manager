@@ -180,7 +180,7 @@ Run `qa/verify` at each checkpoint.
 
 This command integrates with:
 
-- `tdd-workflow` - TDD patterns for test-first development
+- `engineering-lifecycle` - TDD patterns for test-first development
 - `meta-critic` - Quality validation framework
 - `coding-standards` - Style and convention reference
 

@@ -106,7 +106,7 @@ This skill integrates with:
 
 - `security` - Security patterns and validation
 - `backend-patterns` - Backend best practices
-- `tdd-workflow` - Testing requirements
+- `engineering-lifecycle` - Testing requirements
 
 ---
 
