@@ -1,6 +1,6 @@
 ---
 name: inversion-thinking
-description: "Solve problems by thinking backwards when forward thinking is stuck, you need to identify risks, or find non-obvious solutions. Not for straightforward implementation tasks or simple bug fixes."
+description: "Solve problems by thinking backwards. Use when forward thinking is stuck, you need to identify risks, or find non-obvious solutions. Not for straightforward implementation tasks or simple bug fixes."
 ---
 
 # Inversion Thinking

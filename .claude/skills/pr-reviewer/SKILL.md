@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: "Review pull requests when analyzing PRs for spec compliance, security, performance, and code quality. Not for writing new code or initial development."
+description: "Review pull requests for spec compliance, security, performance, and code quality. Use when analyzing PRs. Not for writing new code or initial development."
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob, Bash
@@ -11,7 +11,14 @@ allowed-tools: Read, Grep, Glob, Bash
 <mission_control>
 <objective>Review pull requests with systematic analysis before generating feedback</objective>
 <success_criteria>All findings categorized by severity with specific recommendations</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load pr-reviewer references BEFORE starting review:
+
+- Security patterns → references/security.md
+- Quality criteria → references/quality.md
+- Performance guidelines → references/performance.md
+  </standards_gate>
+  </mission_control>
 
 Review pull request changes with comprehensive analysis including security, performance, code quality, and architecture.
 

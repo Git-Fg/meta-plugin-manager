@@ -1,6 +1,6 @@
 ---
 name: file-search
-description: "Search for files and content when investigating a codebase, finding patterns, or locating specific files. Not for reading file content or simple directory listing."
+description: "Search for files and content in a codebase. Use when investigating a codebase, finding patterns, or locating specific files. Not for reading file content or simple directory listing."
 user-invocable: true
 ---
 

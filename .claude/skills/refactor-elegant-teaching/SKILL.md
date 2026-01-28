@@ -63,7 +63,6 @@ flowchart TD
     Preserve --> Verify[Verify tests pass]
     Verify --> Done[Done]
 
-````
 </router>
 
 **Remember**: Elegant code teaches. A reader should understand WHAT the code does, WHY it exists, and HOW it works—without needing additional explanation.
@@ -83,10 +82,11 @@ Apply these patterns based on what obscures intent in the specific code you're w
 **Solution**: Rename variables and functions to describe their purpose.
 
 **Before**:
+
 ```typescript
-const d = data.filter(x => x.active)
-const h = handleUser(u)
-````
+const d = data.filter((x) => x.active);
+const h = handleUser(u);
+```
 
 **After**:
 
@@ -352,3 +352,7 @@ MANDATORY: Run tests to verify behavior is unchanged
 MANDATORY: Never refactor during RED phase (TDD workflow)
 No exceptions. Refactoring without understanding breaks things.
 </critical_constraint>
+
+```
+
+```

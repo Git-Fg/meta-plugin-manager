@@ -1,6 +1,6 @@
 ---
 name: deviation-rules
-description: "Handle unexpected work during execution when encountering bugs, missing features, blockers, or architectural changes while executing a plan. Not for initial planning or non-execution contexts."
+description: "Handle unexpected work during execution. Use when encountering bugs, missing features, blockers, or architectural changes while executing a plan. Not for initial planning or non-execution contexts."
 disable-model-invocation: false
 allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
 ---
@@ -350,7 +350,7 @@ Before applying any rule, ask:
 This skill integrates with:
 
 - `tdd-workflow` - Test-driven development with deviation handling
-- `skill-development` - Component creation with automatic fixes
+- `invocable-development` - Component creation with automatic fixes
 - `/orchestrate` - Native orchestration with deviation rules
 
 ## Arguments

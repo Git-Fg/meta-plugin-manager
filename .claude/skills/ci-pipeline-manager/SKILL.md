@@ -1,6 +1,6 @@
 ---
 name: ci-pipeline-manager
-description: "Manage CI pipelines when testing pipeline error handling, recovery, or complex dependencies. Not for simple linear scripts or unit testing individual tasks."
+description: "Manage CI pipelines with error handling, recovery, and complex dependencies. Use when testing pipeline workflows. Not for simple linear scripts or unit testing individual tasks."
 context: fork
 ---
 

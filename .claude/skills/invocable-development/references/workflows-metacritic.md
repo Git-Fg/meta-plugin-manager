@@ -172,21 +172,21 @@ Meta-critic validates:
 
 ### Example 1: After Skill Creation
 
-**Command invokes meta-critic:**
+**Command invokes critique:**
 
 ```
-User: /toolkit:skill:create Create a skill for Docker log analysis
+User: /toolkit:build:skill Create a skill for Docker log analysis
 [Skill created]
 Command: Load meta-critic to review creation
 ```
 
-**Meta-critic analyzes:**
+**Critique analyzes:**
 
 - Request: "Docker log analysis skill"
 - Delivery: [Examines created skill]
-- Standards: Loads skill-development
+- Standards: Loads invocable-development
 
-**Meta-critic reports:**
+**Critique reports:**
 
 - Critical: Missing error handling patterns
 - High: Description references other skills
@@ -199,16 +199,16 @@ Command: Load meta-critic to review creation
 
 ```
 User: "This doesn't feel right"
-AI: I'll use meta-critic to diagnose the issue
+AI: I'll use critique to diagnose the issue
 ```
 
-**Meta-critic analyzes:**
+**Critique analyzes:**
 
 - Request: [Scans conversation for original request]
 - Delivery: [Examines what was done]
 - Standards: [Loads appropriate meta-dev skill]
 
-**Meta-critic identifies:**
+**Critique identifies:**
 
 - Gap between user's mental model and implementation
 - Standard violations causing friction
@@ -219,16 +219,16 @@ AI: I'll use meta-critic to diagnose the issue
 **Component evolved over time:**
 
 ```
-User: /toolkit:skill:metacritic my-old-skill
+User: /toolkit:critique:skill my-old-skill
 ```
 
-**Meta-critic analyzes:**
+**Critique analyzes:**
 
 - Request: [Original intent from skill]
 - Delivery: [Current state]
 - Standards: [Current meta-dev standards]
 
-**Meta-critic identifies:**
+**Critique identifies:**
 
 - Standards have evolved
 - Skill uses deprecated patterns

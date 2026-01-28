@@ -1,6 +1,6 @@
 ---
 name: first-principles-thinking
-description: "Break down problems to fundamental truths when conventional solutions fail, you need innovation, or want to challenge assumptions. Not for standard problems with known solutions or minor optimizations."
+description: "Break down problems to fundamental truths. Use when conventional solutions fail, you need innovation, or want to challenge assumptions. Not for standard problems with known solutions or minor optimizations."
 ---
 
 # First Principles Thinking

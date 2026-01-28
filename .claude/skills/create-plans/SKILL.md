@@ -1,12 +1,19 @@
 ---
 name: create-plans
-description: "Create project plans when planning projects, phases, or tasks for agent execution. Not for enterprise documentation or non-actionable planning."
+description: "Create project plans for projects, phases, and tasks for agent execution. Use when planning implementation phases. Not for enterprise documentation or non-actionable planning."
 ---
 
 <mission_control>
 <objective>Create hierarchical project plans (brief → roadmap → phase → PLAN.md) for solo agentic development</objective>
 <success_criteria>Generated PLAN.md is self-contained executable prompt with verification criteria and handoff support</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load planning references BEFORE creating plans:
+
+- Plan structure → references/plan-structure.md
+- Phase definitions → references/phases.md
+- Handoff format → references/handoff.md
+  </standards_gate>
+  </mission_control>
 
 <interaction_schema>
 explore → infer → ask_one → write_plan → confirm_execution</interaction_schema>

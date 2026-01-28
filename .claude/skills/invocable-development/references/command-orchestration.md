@@ -62,7 +62,7 @@ This pattern provides:
 
 ## Example: Skill Creation
 
-### Command: `/toolkit:skill:create`
+### Command: `/toolkit:build:skill`
 
 **Command orchestrates:**
 
@@ -154,7 +154,7 @@ If a skill references its command:
 
 ### Correct Implementation
 
-**Command (`toolkit:skill:create`):**
+**Command (`/toolkit:build:skill`):**
 
 ```markdown
 ## Phase 2: Skill Generation
@@ -179,7 +179,7 @@ Use `invocable-development` skill via Skill tool:
 
 ### Incorrect Implementation
 
-**Skill (`skill-development` - WRONG):**
+**Skill (`invocable-development` - WRONG):**
 
 ```markdown
 ## Navigation
@@ -231,7 +231,7 @@ Use `invocable-development` skill via Skill tool:
 
 ```
 User: "I need a skill for Docker log analysis"
-AI: [Invokes /toolkit:skill:create]
+AI: [Invokes /toolkit:build:skill]
 Command: Infers requirements, invokes invocable-development
 Skill: Creates skill with proper architecture
 ```
@@ -240,18 +240,18 @@ Skill: Creates skill with proper architecture
 
 ```
 User: [Creates skill]
-User: "/toolkit:skill:audit"
+User: "/toolkit:audit:skill"
 Command: Detects recent skill, audits automatically
 Subagent: Performs comprehensive evaluation
 ```
 
-### Example 3: Meta-Critic with Conversation Analysis
+### Example 3: Critique with Conversation Analysis
 
 ```
 User: "This doesn't feel right"
-AI: [Suggests] /toolkit:skill:metacritic
+AI: [Suggests] /toolkit:critique:skill
 Command: Analyzes conversation, invokes meta-critic
-Meta-critic: Three-way comparison (Request vs Delivery vs Standards)
+Critique: Three-way comparison (Request vs Delivery vs Standards)
 ```
 
 ---

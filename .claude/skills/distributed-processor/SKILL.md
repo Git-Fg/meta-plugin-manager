@@ -1,6 +1,6 @@
 ---
 name: distributed-processor
-description: "Coordinate distributed processing when you need parallel execution, forked skills, or isolated work units. Not for sequential tasks or single-threaded workflows."
+description: "Coordinate distributed processing with parallel execution, forked skills, and isolated work units. Use when you need distributed processing or isolated work units. Not for sequential tasks or single-threaded workflows."
 context: fork
 ---
 

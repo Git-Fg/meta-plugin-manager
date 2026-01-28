@@ -1,0 +1,104 @@
+---
+date: 2026-01-28
+session: handoff-consolidation
+status: partial
+outcome: PARTIAL_PLUS
+severity: medium
+---
+goal: Consolidate and improve handoff commands (create, resume, diagnostic) with new features and cleanup
+now: Verify handoff commands work correctly - test /handoff:resume with archived handoff
+test: ls -la .claude/commands/handoff/
+
+done_this_session:
+alyzed handoff ecosystem - found 3 implementations
+    files: [.claude/commands/handoff/create.md, .claude/commands/plan/handoff.md, .claude/commands/whats-next.md]
+
+remarks:
+  - Three different handoff implementations existed with different formats
+  - /handoff (create.md) uses YAML with goal/now for statusline
+  - /plan:handoff uses Markdown with phase/task context
+  - /whats-next was deprecated but still present
+  - /handoff:resume is a new command created in this session
+
+issues:
+  - Duplicate handoff functionality across commands
+  - /whats-next was deprecated but not removed
+  - No /handoff:resume command existed for resuming sessions
+  - Inconsistent handoff formats (YAML vs Markdown)
+
+incoherences:
+  - /handoff create.md used `$(command)` syntax but create.md now documents `!{command}` syntax
+  - /handoff:resume uses `!{command}` syntax in examples but command substitution may not work with curly braces
+  - Session commands section in CLAUDE.md still listed /whats-next after deletion
+
+errors:
+  - message: |
+      Linter added trailing ``` after </critical_constraint> in .claude/commands/handoff/resume.md
+    location: .claude/commands/handoff/resume.md:141
+    stack_trace: |
+      File ended with:
+      </critical_constraint>
+      ```
+    frequency: once
+    impact: low
+  - message: |
+      Malformed markdown table - extra pipe characters created invalid table
+    location: .claude/commands/handoff/diagnostic.md:171-182
+    stack_trace: |
+      Table had: | --------------- | -------- | -------------------------------------- | ------ | ---- | -------- |
+      Should be: | Field | REQUIRED | Purpose |
+    frequency: once
+    impact: low
+  - message: |
+      Text corruption in critical_constraint - lines 330-331 got concatenated
+    location: .claude/commands/handoff/diagnostic.md:330-331
+    stack_trace: |
+      Original: "MANDATORY: Add severity level (low|medium|high|critical)\ncause analysis for all blocking problems"
+      Corrupted: "MANDATORY: Add severity level (low|medium|MANDATORY: Roothigh|critical)\ncause analysis..."
+    frequency: once
+    impact: medium
+
+difficulties:
+  - Understanding the distinction between plan-based and handoff-based context preservation
+  - Deciding whether to merge commands or keep them separate
+  - Choosing !{command} syntax vs $(command) for shell substitution in documentation
+
+diagnostics:
+  - Three handoff approaches serve different purposes:
+    - /handoff (create.md): General session handoff with YAML format
+    - /plan:handoff: Planning-system integrated handoff with phases/tasks
+    - /handoff:resume: New command to load and inject latest handoff
+  - Text corruption caused by edit tool output display issues, not file writing
+  - Linter issues caused by automatic formatting after file save
+
+workarounds:
+  - Manually removed trailing ``` from resume.md
+  - Fixed table formatting in diagnostic.md
+  - Fixed corrupted constraint text in diagnostic.md
+  - Moved /whats-next.md to .attic/ for preservation
+
+decisions:
+  - keep_separate: "Keep /handoff and /plan:handoff separate - different use cases"
+  - create_resume: "Create /handoff:resume for loading latest handoff with !{command} pattern"
+  - archive_whatsnext: "Move to attic instead of delete - preserves history"
+  - yaml_format: "Keep YAML as canonical handoff format - structured and parseable"
+
+findings:
+  - handoff_ecosystem: "Three commands cover different scenarios: create, resume, diagnostic"
+  - diagnostic_specialized: "/handoff:diagnostic extends basic handoff with complete problem analysis"
+  - command_substitution: "!{command} syntax may need escaping or different approach for actual use"
+
+worked:
+  [command structure, YAML schema design, documentation examples]
+
+failed:
+  []
+
+next:
+  - Test /handoff:resume with archived handoff file
+  - Verify !{command} syntax works in actual execution
+  - Consider if plan:handoff should be updated to use same YAML format
+
+files:
+  created: [.claude/commands/handoff/resume.md, .claude/commands/handoff/diagnostic.md]
+  modified: [.claude/commands/handoff/create.md, CLAUDE.md, .attic/whats-next.md]

@@ -1,6 +1,6 @@
 ---
 name: manual-e2e-testing
-description: "Run manual E2E tests using MCPs when you need to verify Flutter/mobile app behavior using Appium and Dart MCPs. Not for screenshot-based testing or non-mobile E2E."
+description: "Run manual E2E tests for Flutter/mobile apps using Appium and Dart MCPs. Use when verifying mobile app behavior. Not for screenshot-based testing or non-mobile E2E."
 user-invocable: true
 ---
 

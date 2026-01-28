@@ -1,6 +1,6 @@
 ---
 name: iterative-retrieval
-description: "4-phase loop for progressive context refinement when complex searches require multiple refinement cycles, initial searches return too many or too few results, or context gap is unknown. Not for simple file searches or known file locations."
+description: "Execute 4-phase loop for progressive context refinement. Use when complex searches require multiple refinement cycles or context gap is unknown. Not for simple file searches or known file locations."
 ---
 
 # Iterative Retrieval Pattern

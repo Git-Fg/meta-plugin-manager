@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Turn ideas into validated designs when creative work starts, requirements are vague, or user intent needs clarification. Not for execution when requirements are clear or simple fixes."
+description: "Turn ideas into validated designs. Use when creative work starts, requirements are vague, or user intent needs clarification. Not for execution when requirements are clear or simple fixes."
 ---
 
 # Brainstorming Ideas Into Designs

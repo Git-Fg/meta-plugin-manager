@@ -29,7 +29,7 @@ Audit all skills in .claude/skills/ against best practices.
 
 1. **Mark current task** as in_progress
 2. **Load the skill's SKILL.md** and its references/ (only this skill - progressive disclosure)
-3. **Load relevant quality framework** sections from skill-development
+3. **Load relevant quality framework** sections from invocable-development
 4. **Compare against** principles, patterns, anti-patterns, and quality dimensions
 5. **Document specific findings** with file:line references
 6. **Mark task completed** before starting next skill
@@ -41,7 +41,7 @@ Audit all skills in .claude/skills/ against best practices.
 - **principles rule** - Delta Standard, Progressive Disclosure, Trust AI
 - **patterns rule** - Writing style, description patterns
 - **anti-patterns rule** - Common mistakes
-- **skill-development quality-framework** - Quality dimensions
+- **invocable-development quality-framework** - Quality dimensions
 
 **Key Dimensions:** structure, writing style, content delta, autonomy, discoverability
 

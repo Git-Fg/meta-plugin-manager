@@ -1,7 +1,19 @@
 ---
 name: quality-gates
-description: "Enforce automated quality gates when validating components, checking structure, or verifying portability. Not for manual reviews or when skipping automated checks."
+description: "Enforce automated quality gates for validating components, checking structure, and verifying portability. Use when validating components or verifying portability. Not for manual reviews or when skipping automated checks."
 ---
+
+<mission_control>
+<objective>Enforce automated quality gates for validating components, structure, and portability</objective>
+<success_criteria>All gates pass with fresh verification evidence before claiming completion</success_criteria>
+<standards_gate>
+MANDATORY: Load quality-gates references BEFORE running gates:
+
+- Gate definitions → references/gates.md
+- Verification protocols → references/verification.md
+- Portability checks → references/portability.md
+  </standards_gate>
+  </mission_control>
 
 # Quality Gates
 

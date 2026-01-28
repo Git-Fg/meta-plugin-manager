@@ -675,6 +675,130 @@ Parse output for "## WORKER_COMPLETE" or "## WORKER_FAILED"
 
 ---
 
+### Anti-Pattern 26: Inconsistent Directory/Name Convention
+
+**Problem**: Directory name doesn't match skill name
+
+**Recognition**: "Does the directory match the frontmatter name?"
+
+**Bad**:
+
+- Directory: `facebook-ads`, Name: `facebook-ads-manager`
+- Directory: `stripe-integration`, Name: `stripe`
+
+**Good**:
+
+- Directory: `manage-facebook-ads`, Name: `manage-facebook-ads`
+- Directory: `setup-stripe-payments`, Name: `setup-stripe-payments`
+
+---
+
+### Anti-Pattern 27: Dynamic Context Syntax Triggers Execution
+
+**Problem**: Showing dynamic context syntax (exclamation mark + backticks) executes during skill loading
+
+**Bad** (executes during skill load):
+
+```xml
+## Examples
+Load current status with: !`git status`
+Review dependencies in: @package.json
+```
+
+**Good** (add space to prevent execution):
+
+```xml
+## Examples
+Load current status with: ! `git status` (remove space before backtick in actual usage)
+Review dependencies in: @ package.json (remove space after @ in actual usage)
+```
+
+---
+
+### Anti-Pattern 28: Unclosed XML Tags
+
+**Problem**: XML tags not properly closed
+
+**Bad**:
+
+```xml
+## Objective
+Process PDF files
+
+## Quick Start
+Use pdfplumber...
+```
+
+**Good**:
+
+```xml
+## Objective
+
+Process PDF files
+
+## Quick Start
+
+Use pdfplumber...
+
+```
+
+---
+
+### Anti-Pattern 29: Too Many Options Without Default
+
+**Problem**: Providing list of alternatives instead of one default with escape hatch
+
+**Bad**:
+
+```xml
+## Quick Start
+You can use pypdf, or pdfplumber, or PyMuPDF, or pdf2image, or pdfminer...
+Choose based on your needs.
+```
+
+**Good**:
+
+```xml
+## Quick Start
+Use pdfplumber for text extraction. For scanned PDFs requiring OCR, use pdf2image instead.
+```
+
+---
+
+### Anti-Pattern 30: Hybrid XML/Markdown Structure
+
+**Problem**: Mixing markdown headings with XML tags inconsistently
+
+**Bad**:
+
+```markdown
+## Objective
+
+PDF processing capabilities
+
+## Quick start
+
+Extract text with pdfplumber...
+```
+
+**Good** (pure XML throughout):
+
+```xml
+## Objective
+
+PDF processing capabilities
+
+## Quick Start
+
+Extract text with pdfplumber...
+
+<advanced_features>
+Form filling...
+
+```
+
+---
+
 ## Quick Recognition Questions
 
 | Anti-Pattern             | Recognition Question                          |
@@ -693,6 +817,11 @@ Parse output for "## WORKER_COMPLETE" or "## WORKER_FAILED"
 | Tier 2 Bloat             | Could this be a reference file?               |
 | Low Knowledge Delta      | Would Claude already know this?               |
 | Low Autonomy             | Are there >5 questions in output?             |
+| Inconsistent Naming      | Does directory match frontmatter name?        |
+| Dynamic Context Trigger  | Does syntax execute during skill load?        |
+| Unclosed XML Tags        | Are all XML tags properly closed?             |
+| Too Many Options         | Is there a clear default?                     |
+| Hybrid Structure         | Is XML used consistently?                     |
 
 ---
 

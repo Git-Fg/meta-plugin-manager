@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "Dispatch parallel agents when you have multiple independent problems that can be solved concurrently, like failing tests in different files. Not for sequential dependencies or shared state issues."
+description: "Dispatch parallel agents for concurrent problem-solving. Use when you have multiple independent problems that can be solved concurrently. Not for sequential dependencies or shared state issues."
 ---
 
 # Dispatching Parallel Agents

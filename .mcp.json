@@ -26,6 +26,12 @@
         "mcp-remote@next",
         "http://localhost:3000/mcp"
       ]
+    },
+    "llm-orchestrator": {
+      "command": "node",
+      "args": [
+        "/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/Custom_MCP/mcp-llm-orchestrator/dist/index.js"
+      ]
     }
   }
 }

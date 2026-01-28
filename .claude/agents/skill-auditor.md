@@ -2,7 +2,7 @@
 name: skill-auditor
 description: Expert skill auditor for Claude Code Skills. Use when auditing, reviewing, or evaluating SKILL.md files for best practices compliance. MUST BE USED when user asks to audit a skill.
 skills:
-  - create-agent-skills
+  - invocable-development
   - meta-critic
 tools: Read, Grep, Glob # Grep for finding anti-patterns across examples, Glob for validating referenced file patterns exist
 model: sonnet
@@ -47,11 +47,11 @@ During audits, prioritize evaluation of:
 <critical_workflow>
 **MANDATORY**: Read best practices FIRST, before auditing:
 
-1. Read @skills/create-agent-skills/SKILL.md for overview
-2. Read @skills/create-agent-skills/references/use-xml-tags.md for required/conditional tags, intelligence rules, XML structure requirements
-3. Read @skills/create-agent-skills/references/skill-structure.md for YAML, naming, progressive disclosure patterns
-4. Read @skills/create-agent-skills/references/common-patterns.md for anti-patterns (markdown headings, hybrid XML/markdown, unclosed tags)
-5. Read @skills/create-agent-skills/references/core-principles.md for XML structure principle, conciseness, and context window principles
+1. Read @skills/invocable-development/SKILL.md for overview
+2. Read @skills/invocable-development/references/frontmatter-reference.md for YAML requirements
+3. Read @skills/invocable-development/references/workflows-create.md for skill structure patterns
+4. Read @skills/invocable-development/references/anti-patterns.md for common mistakes (XML structure, naming, hybrid patterns)
+5. Read @skills/invocable-development/references/progressive-disclosure.md for disclosure patterns
 6. Handle edge cases:
    - If reference files are missing or unreadable, note in findings under "Configuration Issues" and proceed with available content
    - If YAML frontmatter is malformed, flag as critical issue

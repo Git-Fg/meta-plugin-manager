@@ -117,7 +117,7 @@ Before starting tasks, verify:
 
 ## Task Structure
 
-````markdown
+```markdown
 ### Task N: [Component Name]
 
 **Files:**
@@ -133,7 +133,7 @@ def test_specific_behavior():
     result = function(input)
     assert result == expected
 ```
-````
+```
 
 **Step 2: Run test to verify it fails**
 
@@ -256,13 +256,13 @@ User: "I want to add user authentication"
 [Use using-git-worktrees to create isolated workspace]
 [Execute plan in worktree]
 
-`````
+```
 
 ## Task Examples
 
 ### Example 1: Simple Feature
 
-````markdown
+```markdown
 ### Task 1: Add retry decorator
 
 **Files:**
@@ -290,7 +290,7 @@ async def test_retry_decorator():
     assert result == "success"
     assert call_count == 3
 ```
-`````
+```
 
 **Step 2: Run test to verify it fails**
 
@@ -325,7 +325,7 @@ git add src/utils/retry.py tests/test_retry.py
 git commit -m "feat: add retry decorator utility"
 ```
 
-````
+```
 
 ### Example 2: Integration Task
 
@@ -347,7 +347,7 @@ async def test_auth_middleware_redirects_unauthenticated():
     response = await client.get("/protected")
     assert response.status_code == 302
     assert "/login" in response.headers["location"]
-````
+```
 
 **Step 2: Run test to verify it fails**
 

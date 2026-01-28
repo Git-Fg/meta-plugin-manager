@@ -35,11 +35,11 @@ disable-model-invocation: true
 Validate environment: !`kubectl config current-context`
 
 If context is production:
-  Build: !`npm run build`
-  Deploy: !`kubectl apply -f k8s/production/`
-  Verify: !`kubectl rollout status deployment/app`
+Build: !`npm run build`
+Deploy: !`kubectl apply -f k8s/production/`
+Verify: !`kubectl rollout status deployment/app`
 Otherwise:
-  Error: Not in production context
+Error: Not in production context
 ```
 
 **Why this is needed:** Destructive operations require explicit sequences.
@@ -239,14 +239,14 @@ Then use the create-skill skill to create a new skill named $1 based on the gath
 ---
 description: Full skill audit and improvement
 argument-hint: [skill-name]
-allowed-tools: Read, Glob, Grep, Skill(meta-critic), Skill(skill-development)
+allowed-tools: Read, Glob, Grep, Skill(meta-critic), Skill(invocable-development)
 ---
 
 First, read the current state of $1 using Read and Glob.
 
 Then invoke the meta-critic skill to audit the skill for quality and alignment.
 
-Finally, invoke the skill-development skill to implement improvements based on the audit.
+Finally, invoke the invocable-development skill to implement improvements based on the audit.
 ```
 
 ---
@@ -320,9 +320,9 @@ Deploy to $1 environment.
 Current context: !`git log -1 --oneline`
 
 If $1 appears to be a production environment (contains prod, production, live):
-  Ask for explicit confirmation before proceeding.
-  Verify all checks pass.
-  Report deployment status clearly.
+Ask for explicit confirmation before proceeding.
+Verify all checks pass.
+Report deployment status clearly.
 ```
 
 ---
@@ -351,6 +351,7 @@ argument-hint: [arg1] [arg2] [arg3]
 ---
 
 Echo received arguments:
+
 - First: $1
 - Second: $2
 - All: $ARGUMENTS

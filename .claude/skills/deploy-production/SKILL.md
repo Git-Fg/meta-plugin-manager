@@ -1,6 +1,6 @@
 ---
 name: deploy-production
-description: "Deploy to production when releasing code to production environments with safety checks. Not for staging deploys or local builds unless specifically requested."
+description: "Deploy to production environments with safety checks. Use when releasing code to production. Not for staging deploys or local builds unless specifically requested."
 disable-model-invocation: true
 user-invocable: true
 context: fork

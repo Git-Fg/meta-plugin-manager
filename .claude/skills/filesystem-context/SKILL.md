@@ -1,6 +1,6 @@
 ---
 name: filesystem-context
-description: "Manage filesystem context when offloading large context to files, persisting state between sessions, or reducing token usage. Not for small temporary data or in-memory variables."
+description: "Manage filesystem context for offloading large context to files, persisting state between sessions, and reducing token usage. Use when managing cross-session state or context persistence. Not for small temporary data or in-memory variables."
 ---
 
 # Filesystem-Based Context Engineering

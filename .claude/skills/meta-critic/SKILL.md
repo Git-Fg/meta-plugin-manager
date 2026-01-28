@@ -1,10 +1,23 @@
 ---
 name: meta-critic
-description: "Audit conversation alignment when you need to validate quality, check standards compliance, or detect drift. Not for creating content, executing tasks, or simple status checks."
+description: "Audit conversation alignment for quality, standards compliance, and drift detection. Use when validating quality or checking standards compliance. Not for creating content, executing tasks, or simple status checks."
 user-invocable: true
 ---
 
 # Meta-Critic
+
+<mission_control>
+<objective>Audit conversation alignment against Request, Delivery, and Standards triples to identify drift and quality issues</objective>
+<success_criteria>Generated audit identifies specific drift instances with component type and meta-development skill references</success_criteria>
+<standards_gate>
+MANDATORY: Identify the component type and load the corresponding meta-development skill BEFORE generating any audit output:
+
+- Skills/Commands → `Skill("invocable-development")`
+- Agents → `Skill("agent-development")`
+- Hooks → `Skill("hook-development")`
+- MCPs → `Skill("mcp-development")`
+  </standards_gate>
+  </mission_control>
 
 Think of Meta-Critic as a **quality assurance inspector**—examining the alignment between what was requested, what was delivered, and what standards should apply. Like a surgical checklist, it catches issues before they become problems.
 
@@ -12,15 +25,33 @@ Think of Meta-Critic as a **quality assurance inspector**—examining the alignm
 
 ## Quick Navigation
 
-| If you are auditing... | MANDATORY READ WHEN... | Meta-Skill              |
-| ---------------------- | ---------------------- | ----------------------- |
-| Skills                 | AUDITING SKILLS        | `invocable-development` |
-| Commands               | AUDITING COMMANDS      | `invocable-development` |
-| Agents                 | AUDITING AGENTS        | `agent-development`     |
-| Hooks                  | AUDITING HOOKS         | `hook-development`      |
-| MCPs                   | AUDITING MCP SERVERS   | `mcp-development`       |
+| If you are auditing... | MANDATORY READ WHEN... | Meta-Skill              | Routing Command                  |
+| ---------------------- | ---------------------- | ----------------------- | -------------------------------- |
+| Skills                 | AUDITING SKILLS        | `invocable-development` | `Skill("invocable-development")` |
+| Commands               | AUDITING COMMANDS      | `invocable-development` | `Skill("invocable-development")` |
+| Agents                 | AUDITING AGENTS        | `agent-development`     | `Skill("agent-development")`     |
+| Hooks                  | AUDITING HOOKS         | `hook-development`      | `Skill("hook-development")`      |
+| MCPs                   | AUDITING MCP SERVERS   | `mcp-development`       | `Skill("mcp-development")`       |
 
-**CRITICAL**: You MUST understand the meta-skill standards for the component type you're auditing. Without this, your audit will miss critical quality issues.
+**CRITICAL**: You MUST use the `Skill` tool to load the identified meta-skill immediately after detection. Do NOT rely on memory—use the explicit routing command.
+
+---
+
+## Phase 0: Detect Component Type
+
+<component_detection>
+Before starting the audit, identify the component type to load the correct standards:
+
+| If path/context contains... | Component Type | Meta-Skill to Load    |
+| --------------------------- | -------------- | --------------------- |
+| .mcp.json or McpServer      | MCP Server     | mcp-development       |
+| .claude/skills/             | Skill          | invocable-development |
+| .claude/commands/           | Command        | invocable-development |
+| .claude/agents/             | Agent          | agent-development     |
+| PreToolUse / PostToolUse    | Hook           | hook-development      |
+
+**Action:** Use the `Skill` tool to load the identified meta-skill immediately after detection.
+</component_detection>
 
 ---
 
@@ -184,21 +215,21 @@ Why good: Specific recommendations enable immediate action.
 
 ## Validation Framework
 
-**Load the appropriate meta-development skill for validation standards.**
+<routing_table>
+Load the appropriate meta-development skill for validation standards using explicit routing.
 
-### Component Type → Meta-Skill Mapping
-
-| Component Type | Load This Skill         | Reference                         |
-| -------------- | ----------------------- | --------------------------------- |
-| Skills         | `invocable-development` | `references/quality-framework.md` |
-| Commands       | `invocable-development` | `references/quality-framework.md` |
-| Agents         | `agent-development`     | Validation sections in SKILL.md   |
-| Hooks          | `hook-development`      | Validation sections in SKILL.md   |
-| MCPs           | `mcp-development`       | Validation sections in SKILL.md   |
+| Component Type | Load This Skill         | Routing Command                  | Reference                         |
+| -------------- | ----------------------- | -------------------------------- | --------------------------------- |
+| Skills         | `invocable-development` | `Skill("invocable-development")` | `references/quality-framework.md` |
+| Commands       | `invocable-development` | `Skill("invocable-development")` | `references/quality-framework.md` |
+| Agents         | `agent-development`     | `Skill("agent-development")`     | Validation sections in SKILL.md   |
+| Hooks          | `hook-development`      | `Skill("hook-development")`      | Validation sections in SKILL.md   |
+| MCPs           | `mcp-development`       | `Skill("mcp-development")`       | Validation sections in SKILL.md   |
 
 **Rule**: Never hardcode validation rules. The meta-development skills are the single source of truth.
 
 **Binary test**: "Am I duplicating validation logic?" → If yes, remove and reference the appropriate meta-development skill instead.
+</routing_table>
 
 ### Formal Evaluation Methods
 

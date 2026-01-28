@@ -249,7 +249,7 @@ Include GraphViz diagrams for:
 
 ### Example Integration
 
-````markdown
+```markdown
 ## When to Use
 
 ```dot
@@ -266,7 +266,7 @@ digraph decision {
     "Writing new code?" -> "Add tests to existing" [label="no"];
 }
 ```
-````
+```
 
 ```
 

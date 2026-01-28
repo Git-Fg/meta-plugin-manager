@@ -1,6 +1,6 @@
 ---
 name: backend-patterns
-description: "Apply backend patterns when designing server architecture, database interactions, or API structure. Not for frontend logic or simple scripts."
+description: "Apply backend patterns for server architecture, database interactions, and API structure. Use when designing backend systems. Not for frontend logic or simple scripts."
 ---
 
 # Backend Patterns

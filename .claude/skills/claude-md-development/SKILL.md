@@ -110,9 +110,9 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 ### Meta-Skill Table Format
 
 ```markdown
-| Meta-Skill            | Purpose                  | Transformation                   |
-| --------------------- | ------------------------ | -------------------------------- |
-| **skill-development** | Creating portable skills | Tutorial → Architectural refiner |
+| Meta-Skill                | Purpose                  | Transformation                   |
+| ------------------------- | ------------------------ | -------------------------------- |
+| **invocable-development** | Creating portable skills | Tutorial → Architectural refiner |
 ```
 
 ### Component Guidance Format
@@ -122,9 +122,9 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 
 For detailed guidance on creating portable components, consult the appropriate meta-skill:
 
-| Component | Meta-Skill        | Output Traits             |
-| --------- | ----------------- | ------------------------- |
-| Skills    | skill-development | Portable, self-sufficient |
+| Component | Meta-Skill            | Output Traits             |
+| --------- | --------------------- | ------------------------- |
+| Skills    | invocable-development | Portable, self-sufficient |
 ```
 
 ---

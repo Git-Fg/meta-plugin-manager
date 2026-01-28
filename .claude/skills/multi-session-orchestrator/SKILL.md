@@ -1,6 +1,6 @@
 ---
 name: multi-session-orchestrator
-description: "Orchestrate multi-session workflows when tasks span multiple sessions or require state persistence. Not for single-session tasks or simple scripts."
+description: "Orchestrate multi-session workflows that span multiple sessions or require state persistence. Use when tasks span multiple sessions. Not for single-session tasks or simple scripts."
 ---
 
 # Multi-Session Orchestration

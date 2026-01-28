@@ -55,7 +55,7 @@ User: /component-architect:build Command deploy command
 
 ```bash
 /component-architect:build Skill [request]
-→ Invoke: skill: "skill-development"
+→ Invoke: skill: "invocable-development"
 → Args: "User wants: [request]. Component type: Skill."
 ```
 
@@ -163,7 +163,7 @@ Input: /component-architect:build Command deploy command
 Input: /component-architect:build Skill code-review + /component-architect:build Command deploy
 
 → Orchestrate sequentially:
-  1. Invoke: skill: "skill-development" for code-review
+  1. Invoke: skill: "invocable-development" for code-review
      → Creates code-review skill
 
   2. Invoke: skill: "invocable-development" for deploy

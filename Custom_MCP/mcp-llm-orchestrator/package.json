@@ -1,0 +1,36 @@
+{
+  "name": "mcp-llm-orchestrator",
+  "version": "1.2.0",
+  "description": "MCP server for Perplexity and Gemini LLM orchestration with cost optimization and multimodal support",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node --esm src/index.ts",
+    "test": "bash scripts/test-tools.sh",
+    "test:e2e": "node scripts/e2e-test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "llm",
+    "perplexity",
+    "gemini",
+    "multimodal"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@google/genai": "^1.38.0",
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@perplexity-ai/perplexity_ai": "^0.23.0",
+    "lru-cache": "^11.2.5",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

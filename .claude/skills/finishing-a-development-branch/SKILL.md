@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: "Finish development branches when implementation is complete, tests pass, and you are ready to merge or create a PR. Not for in-progress work or failed tests."
+description: "Finish development branches for merge or PR creation. Use when implementation is complete and tests pass. Not for in-progress work or failed tests."
 ---
 
 # Finishing a Development Branch

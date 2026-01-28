@@ -2,9 +2,25 @@
 
 **The "Map" for where information lives - Cognitive Load Management through Progressive Disclosure**
 
-This document defines the structural patterns for building components. It covers how to format content (UHP), how to organize information (Progressive Disclosure), how to interact with users (L'Entonnoir), and how to structure complete capability packages (Rooter Pattern).
+Think of this as the structural patterns for building components. We provide the architecture, you navigate the implementation.
 
-**Philosophy**: Architecture is the Map, not the Script. We provide well-organized information so intelligent agents can make their own decisions about how to reach the goal.
+---
+
+## The Map vs Script Principle
+
+**The Script (Low Trust):**
+
+- "First create the directory. Then create the SKILL.md file. Then add frontmatter."
+- Assumes the agent cannot manage basic operations
+- Brittle—breaks when context shifts
+
+**The Map (High Trust):**
+
+- "Here is the directory structure, quality standards, and where patterns live."
+- Respects the agent's capability to execute
+- Flexible—adapts to context
+
+**Core Principle:** Architecture provides the Map. The Agent remains the Pilot.
 
 ---
 
@@ -12,304 +28,237 @@ This document defines the structural patterns for building components. It covers
 
 **The Standard:** XML for the Machine (Control), Markdown for the Human (Content), State for Interaction.
 
-### The Principle: Architecting Latent Space
+### The 3-Layer Architecture
 
-This protocol implements a **3-Layer Architecture** that combats Context Rot through Latent Space Segmentation:
+| Layer                 | Purpose  | What It Does                                      |
+| --------------------- | -------- | ------------------------------------------------- |
+| **Control Plane**     | Steering | Creates "Attention Sinks" with semantic anchors   |
+| **Data Plane**        | Content  | Maximizes token density (45% savings vs pure XML) |
+| **Interaction Plane** | Flow     | Manages cognitive state transitions               |
 
-- **Layer 1: Control Plane (XML)** - Steering, constraints, rules, patterns → Creates "Attention Sinks"
-- **Layer 2: Data Plane (Markdown)** - Content inside XML tags → Token density (45% savings vs pure XML)
-- **Layer 3: Interaction Plane (State)** - State transitions, schema definitions → Cognitive flow management
+**Why This Architecture Works:**
 
-**Research Benefits:**
-
-- **15% performance boost** on Claude when XML is used for steering/instructions
-- **45% token savings** when Markdown is used inside XML tags (vs pure XML)
-- **Semantic Anchors** combat "Context Rot" - tags remain visible even in "Lost in the Middle" scenarios
-- **Attention Sinks** - XML tags create high-signal anchors that the model can "latch onto" during generation
-
-**Why XML Creates Attention Sinks:**
-
-XML tags are distinct, high-contrast markers in the token stream. When a model processes a 100K token context:
-
-- Plain text blends together (low contrast)
-- XML tags stand out (high contrast)
-- The model can "jump" to these anchors during generation
-
-**Example:**
-
-- Without XML: "Always validate before save. Never skip tests. Ensure quality..." (blends in)
-- With XML: `<critical_constraint>ALWAYS validate before save</critical_constraint>` (stands out)
-
----
-
-## Layer 1: Control Plane (XML) - The Attention Sinks
-
-**Purpose:** Create semantic anchors that "steer" the model's attention. These are your "high-signal" tokens.
-
-### Standard Control Plane Tags
-
-| Tag                     | Purpose                                  | Example                                                                  |
-| ----------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
-| `<mission_control>`     | Top-level objective and success criteria | `<mission_control>Create portable skill</mission_control>`               |
-| `<context_payload>`     | Wrapped data/state injection             | `<context_payload>[git diff output]</context_payload>`                   |
-| `<interaction_schema>`  | State transition definitions             | `<interaction_schema>thinking → execution → output</interaction_schema>` |
-| `<rule_category>`       | Wraps related guidelines                 | `<rule_category name="code_quality">`                                    |
-| `<critical_constraint>` | High-priority inviolable rules           | `<critical_constraint>NEVER expose secrets</critical_constraint>`        |
-| `<trigger>`             | Defines when a rule applies              | `<trigger>When writing TypeScript</trigger>`                             |
-| `<pattern>`             | Implementation patterns                  | `<pattern name="progressive_disclosure">`                                |
-| `<anti_pattern>`        | Anti-patterns with recognition           | `<anti_pattern name="command_wrapper">`                                  |
-| `<router>`              | Complex branching logic                  | `<router>[Mermaid flowchart]</router>`                                   |
-
-### When to Use Control Plane (XML)
-
-**Use XML when:**
-
-- Mission definition and success criteria
-- Critical rules that must not be ignored
-- Trigger conditions for rules
-- Implementation patterns needing semantic anchoring
-- Anti-patterns requiring recognition triggers
-
-**Skip XML when:**
-
-- Standard instructional prose
-- Code examples and logs
-- Tables and structured data
-- Navigation and references
-
----
-
-## Layer 2: Data Plane (Markdown) - Token Density
-
-**Purpose:** Maximize information density for bulk content. Use Markdown as the default for content; wrap with XML only when semantic anchoring adds value.
-
-### Default: Markdown Content
-
-- **Lists**: `-` for bullet points, `1.` for numbered lists
-- **Headers**: `#`, `##`, `###` for structure (no XML wrapper needed)
-- **Tables**: For structured data comparisons
-- **Code blocks**: ` ``` ` for code examples
-- **Bold/Italic**: `**bold**`, `*italic*` for emphasis
+- **Attention Anchors**: XML tags create high-contrast markers in the token stream—the model can "jump" to these anchors during generation
+- **Token Efficiency**: Markdown inside XML tags saves 45% of tokens compared to pure XML
+- **Context Rot Prevention**: Tags remain visible even in "Lost in the Middle" scenarios
 
 ### The 45% XML Tax: When to Pay It
 
-**Use XML when**:
-
-- Content is a non-negotiable rule or constraint
-- Pattern needs semantic recognition triggers
-- State transitions need clear boundaries
-- Content must "pop" at bottom of file (recency bias)
-
-**Skip XML when**:
-
-- Standard instructional prose
-- Code examples and logs
-- Navigation and references
-- Content that doesn't need special attention
+| Pay the Tax (Use XML)          | Skip the Tax (Use Markdown) |
+| ------------------------------ | --------------------------- |
+| Critical constraints           | Bulk data content           |
+| Rules that must not be ignored | Informational prose         |
+| State transitions              | Code examples and logs      |
+| Semantic anchoring needed      | Tables and structured data  |
 
 **Rule of Thumb:** If it's "Data" → Markdown. If it's "Instruction" → XML.
 
 **Example:**
 
-Inefficient (paying tax unnecessarily):
-
-```xml
-<instructions>
-## Step 1
-Create the directory structure
-## Step 2
-Create the SKILL.md file
-</instructions>
 ```
+Inefficient: <instructions>## Step 1\nCreate directory</instructions>
+Efficient: ## Step 1\nCreate directory
 
-Efficient (default to markdown):
-
-```markdown
-## Step 1
-
-Create the directory structure
-
-## Step 2
-
-Create the SKILL.md file
-```
-
-Only wrap when critical:
-
-```xml
-<critical_constraint>
-ALWAYS validate before save
-</critical_constraint>
+Only wrap when critical: <critical_constraint>ALWAYS validate before save</critical_constraint>
 ```
 
 ---
 
-## Layer 3: Interaction Plane (State) - Cognitive Flow
+## Standard Tags Reference
 
-**Purpose:** Manage cognitive state transitions and schema definitions for complex reasoning tasks.
+### Control Plane (XML)
 
-### State Management Tags
+| Tag                     | Purpose                                  |
+| ----------------------- | ---------------------------------------- |
+| `<mission_control>`     | Top-level objective and success criteria |
+| `<critical_constraint>` | High-priority inviolable rules           |
+| `<trigger>`             | Defines when a rule applies              |
+| `<pattern>`             | Implementation patterns                  |
+| `<anti_pattern>`        | Anti-patterns with recognition triggers  |
+| `<rule_category>`       | Wraps related guidelines                 |
+| `<context_payload>`     | Wrapped data/state injection             |
+| `<router>`              | Complex branching logic                  |
 
-| Tag                    | Purpose                       | Example                                                                             |
-| ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------- |
-| `<interaction_schema>` | Define state flow             | `<interaction_schema>thinking → planning → execution → output</interaction_schema>` |
-| `<state_transition>`   | Mark state changes            | `<state_transition>from="thinking" to="execution"</state_transition>`               |
-| `<thinking>`           | Internal reasoning sandbox    | `<thinking>[analysis here]</thinking>`                                              |
-| `<execution_plan>`     | Action steps                  | `<execution_plan>[steps here]</execution_plan>`                                     |
-| `<watchdog_report>`    | High-signal validation output | `<watchdog_report>[validation here]</watchdog_report>`                              |
+### Interaction Plane (XML)
 
-### State Transition Flow
+| Tag                    | Purpose                      |
+| ---------------------- | ---------------------------- |
+| `<interaction_schema>` | State transition definitions |
+| `<thinking>`           | Internal reasoning sandbox   |
+| `<execution_plan>`     | Action steps                 |
+| `<state_transition>`   | Mark state changes           |
 
-**Standard Reasoning Flow:**
+---
 
-1. `<thinking>` - Analyze constraints, identify approaches, weigh trade-offs
-2. `</thinking>` - **Hard Stop** - State transition signal
-3. `<execution_plan>` - Outline concrete steps
-4. `</execution_plan>` - Transition to output
-5. Output generation
+## The Rooter Pattern: Complete Capability Packages
 
-**Why `</thinking>` as Hard Stop:**
+<mission_control>
+<objective>Provide a Router (Map) that empowers agents to select specific expertise</objective>
+<success_criteria>Components organized for cognitive load management, not linear scripting</success_criteria>
+</mission_control>
 
-- The closing tag signals "analysis complete, proceed to execution"
-- Prevents "analysis paralysis" - infinite refinement loops
-- Creates clear boundary between reasoning and action
+A **Rooter** is a complete capability package with multiple entry points:
+
+```
+my-rooter/
+├── command.md              → Quick intent-based invocation
+├── skill/
+│   └── SKILL.md            → Domain logic and patterns
+├── workflows/
+│   ├── workflow-1.md       → Guided step-by-step processes
+│   └── workflow-2.md
+├── references/             → Detailed documentation
+├── examples/               (optional) → Working demonstrations
+└── scripts/                (optional) → Automation scripts
+```
+
+### Why Rooter is High Trust
+
+1. **Freedom Preserved**: The AI decides how to solve problems
+2. **Clarity Maximized**: You're providing organized expertise, not linear commands
+3. **Cognitive Load Managed**: Progressive disclosure keeps context window clean
+
+### The Rooter Workflow
+
+| Phase       | Purpose                                                  |
+| ----------- | -------------------------------------------------------- |
+| **Intake**  | Ask 1-3 batched questions to narrow intent (L'Entonnoir) |
+| **Route**   | Load the specific Workflow based on user response        |
+| **Execute** | Apply expert patterns from the Reference tier            |
+
+---
+
+## L'Entonnoir: The Funnel Pattern
+
+<mission_control>
+<objective>Iteratively narrow problem space through intelligent batching</objective>
+<success_criteria>Multiple rounds, each funneling toward execution</success_criteria>
+</mission_control>
+
+### The Core Principle
+
+Users recognize faster than they generate. Structure questions for recognition, not creation.
+
+### The Funnel Flow
+
+```
+Investigate → AskUserQuestion (batch 1-4 related questions)
+     ↓
+Analyze response → Narrow investigation
+     ↓
+AskUserQuestion (next batch)
+     ↓
+Repeat until ready → Execute
+```
+
+### Batching Guidelines
+
+**DO batch together:**
+
+- Questions sharing the same context
+- Questions where earlier answers inform later options
+- Questions about the same topic/decision area
+- 2-4 questions max per call
+
+**DON'T batch together:**
+
+- Unrelated topics
+- Questions requiring separate investigation phases
+- More than 4 questions (overwhelming)
+
+### Question Structure Patterns
+
+| Pattern                       | Flow                                                |
+| ----------------------------- | --------------------------------------------------- |
+| **Broad → Specific → Action** | Categorize → Identify → Confirm → Execute           |
+| **Dependency Chain**          | Q1: Language? Q2: Framework? Q3: Library? → Execute |
+| **Elimination**               | Q1: X/Y/Z? Q2: Y/Z? Q3: Confirm → Execute           |
+
+---
+
+## Progressive Disclosure
+
+Think of information architecture as cognitive load management:
+
+| Tier       | Content                            | Tokens        |
+| ---------- | ---------------------------------- | ------------- |
+| **Tier 1** | YAML metadata (What-When-Not)      | ~100          |
+| **Tier 2** | Core workflows, mission, patterns  | 1.5k-2k words |
+| **Tier 3** | Deep patterns, API specs, examples | Unlimited     |
+
+**Principle:** Keep Tier 2 lean. Move detailed content to references/.
+
+### Reference File Structure
+
+**Tier 2 (navigation only):**
+
+```
+| If you are...           | Read...                               |
+| ----------------------- | ------------------------------------- |
+| Creating commands       | references/executable-examples.md     |
+| Configuring frontmatter | references/frontmatter-reference.md   |
+```
+
+**Tier 3 (content only):**
+
+```markdown
+# Reference Title
+
+[Content only - no meta-instructions about when to read]
+```
 
 ---
 
 ## Recency Bias: The Final Token Rule
 
 <critical_constraint>
-**MANDATORY: All constraint-related content must be at the very bottom of files.**
+**Place all constraint-related content at the very bottom of files.**
 
-**File Structure (Bottom = Highest Priority):**
+Models attend more strongly to recent tokens during generation.
+</critical_constraint>
 
-1. Header (Identity/Trigger)
-2. Body (Patterns, Examples, Data)
-3. **Footer (Constraints & Rules)** ← Place non-negotiable rules here
+**File Structure:**
+
+1. Header (identity, mission, trigger)
+2. Body (patterns, examples, data)
+3. **Footer (constraints)** ← Highest priority
 
 **What belongs in the footer:**
 
-- `<critical_constraint>` - Non-negotiable rules (MUST, NEVER, MANDATORY)
+- `<critical_constraint>` - Non-negotiable rules
 - `<trigger>` - When this component applies
 - `<success_criteria>` - How to verify completion
-- Any content that must not be missed or forgotten
-
-**Why this matters:**
-
-- During generation, the last tokens in context are "freshest" in attention
-- Critical rules buried in the middle get "Lost in the Middle"
-- This is NOT aesthetic - it's cognitive architecture for reliability
-- Human readers also scan bottom first for constraints
-  </critical_constraint>
-
-### Footer Template
-
-```markdown
----
-
-## Constraints & Rules
-
-<trigger>When [specific condition]</trigger>
-
-<success_criteria>
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-      </success_criteria>
-
-<critical_constraint>
-MANDATORY: [Critical Rule 1]
-MANDATORY: [Critical Rule 2]
-No exceptions. No "looks complete" rationalization.
-</critical_constraint>
-```
-
-**All constraint-related content belongs at the very bottom.**
 
 ---
 
-## When to Use Each Layer
-
-| Use Case            | Layer             | Tag Example                                                       |
-| ------------------- | ----------------- | ----------------------------------------------------------------- |
-| Mission/Objective   | Control (XML)     | `<mission_control>Create portable skill</mission_control>`        |
-| Critical rules      | Control (XML)     | `<critical_constraint>NEVER expose secrets</critical_constraint>` |
-| Pattern definitions | Control (XML)     | `<pattern name="progressive_disclosure">`                         |
-| State transitions   | Interaction (XML) | `<state_transition>thinking → execution</state_transition>`       |
-| Reasoning sandbox   | Interaction (XML) | `<thinking>[analysis]</thinking>`                                 |
-| Instructions        | Data (Markdown)   | `- Prefer interfaces over types`                                  |
-| Examples            | Data (Markdown)   | `## Example\ninterface User {...}`                                |
-| Lists               | Data (Markdown)   | `- Item 1\n- Item 2`                                              |
-| Tables              | Data (Markdown)   | `\| Header \|...`                                                 |
-
----
-
-## Mandatory Structure for Components
-
-**Layer 1: Control Plane**
-
-- `<mission_control>` - Define objective and success criteria
-- `<trigger>` - Define when this component applies
-- Use XML tags for metadata and critical sections
-
-**Layer 2: Data Plane**
-
-- Use Markdown inside XML tags for content
-- Keep prose in Markdown for flow
-- Code examples in Markdown code blocks
-
-**Layer 3: Interaction Plane**
-
-- `<interaction_schema>` - Define state flow for reasoning tasks
-- Use `<thinking>` for analysis sandbox
-- Use state transitions to signal cognitive shifts
-
-**Footer: Recency Bias**
-
-- Place `<critical_constraint>` blocks at very bottom
-- These are the final tokens - highest priority during generation
-
----
-
-## UHP-Compliant Component Template
+## Component Template
 
 ```markdown
 # Component Name
 
 <mission_control>
-<objective>[What this component achieves]</objective>
-<success_criteria>[How to verify success]</success_criteria>
+<objective>[What this achieves]</objective>
+<success_criteria>[How to verify]</success_criteria>
 </mission_control>
 
-<trigger>When [specific condition]</trigger>
+<trigger>When [condition]</trigger>
 
 ## Core Content
 
-<pattern name="pattern_name">
-  <principle>[Explanation of principle]</principle>
-  <instructions>
-    - Step 1
-    - Step 2
-    - Step 3
-  </instructions>
-  <example type="positive">
-    ## Good Example
-    [Concise example in Markdown]
-  </example>
-</pattern>
+[Patterns, examples, explanations in Markdown]
 
 ## Reasoning Process
 
 <interaction_schema>
-thinking → analysis → planning → execution → output
+thinking → planning → execution → output
 </interaction_schema>
 
 <thinking>
-[Task analysis and approach selection here]
+[Analysis sandbox]
 </thinking>
 
 <execution_plan>
-[Concrete steps to execute]
+[Concrete steps]
 </execution_plan>
 
 ---
@@ -319,379 +268,61 @@ thinking → analysis → planning → execution → output
 <critical_constraint>
 MANDATORY: [Non-negotiable rule 1]
 MANDATORY: [Non-negotiable rule 2]
-No exceptions. No "looks complete" rationalization.
+No exceptions.
 </critical_constraint>
 ```
 
 ---
 
-## Core Implementation Patterns
-
-Generic patterns applicable across all components. Component-specific patterns live in their respective meta-skills.
-
-### Progressive Disclosure
-
-<pattern name="progressive_disclosure">
-  <principle>Reveal complexity progressively. Core content for most users; details for specific cases.</principle>
-
-  <recognition>
-    Question: "Is this information required for the standard 80% use case?"
-  </recognition>
-
-  <instructions>
-    - Keep in main content: Core content used 80% of the time
-    - Move to references/: Specific case content used 20% of the time
-  </instructions>
-
-  <example type="positive">
-    MANDATORY READ: references/advanced.md for edge cases
-  </example>
-
-  <example type="negative">
-    [Pastes 500 lines of reference content directly in main document]
-  </example>
-</pattern>
-
-### Self-Containment
-
-<pattern name="self_containment">
-  <principle>Components should work without depending on external files.</principle>
-
-  <recognition>
-    Question: "Would this component work in a project with zero rules dependencies?"
-  </recognition>
-
-  <instructions>
-    - Include everything needed directly
-    - Don't reference external files or directories
-    - Bundle philosophy with component
-  </instructions>
-
-  <implementation>
-    See component-specific meta-skills for self-containment patterns.
-  </implementation>
-</pattern>
-
-### Clear Examples
-
-<pattern name="clear_examples">
-  <principle>Show, don't just tell. Users recognize patterns faster than they generate them from scratch.</principle>
-
-  <recognition>
-    Question: "Can users copy this example and use it immediately?"
-  </recognition>
-
-  <instructions>
-    - Include concrete examples that users can copy
-    - Show both positive and negative examples when helpful
-    - Use real code, not pseudocode
-  </instructions>
-</pattern>
-
-### Degrees of Freedom
-
-<pattern name="degrees_of_freedom">
-  <principle>Match specificity to how fragile the task is. Multiple valid approaches → high freedom. Fragile operations → low freedom.</principle>
-
-  <recognition>
-    Question: "What breaks if Claude chooses differently?" The more that breaks, the lower the freedom.
-  </recognition>
-
-  <instructions>
-    - High freedom: Multiple valid approaches exist
-    - Medium freedom: Some guidance needed
-    - Low freedom: Fragile or error-prone operations
-  </instructions>
-
-  <implementation>
-    See component-specific meta-skills for freedom level guidance.
-  </implementation>
-</pattern>
-
----
-
-## Content Organization
-
-### Single Source of Truth
-
-**Each concept should be documented once:**
-
-- Component-specific patterns → component's meta-skill
-- Generic patterns → this file
-
-**Question**: Is this concept already documented elsewhere? Cross-reference instead of duplicating.
-
-### Reference Files
-
-**Keep references clean:**
-
-Tier 2 (SKILL.md) - Navigation:
-
-```markdown
-| If you are...           | Read...                               |
-| ----------------------- | ------------------------------------- |
-| Creating commands       | `references/executable-examples.md`   |
-| Configuring frontmatter | `references/frontmatter-reference.md` |
-```
-
-Tier 3 (reference file):
-
-```markdown
-# Reference Title
-
-[Content only - no meta-instructions about when to read]
-```
-
-**Question**: Does this reference explain why to read it? Remove meta-instructions.
-
----
-
-## The Rooter Pattern: Complete Capability Packages
-
-**The Rooter Pattern is the ultimate expression of High Trust** - you're treating the AI like a Senior Partner who needs a well-organized library, not a Script Interpreter who needs linear commands.
-
-<pattern name="rooter_architecture">
-  <principle>
-    Provide a "Map" (Router) instead of a "Script" (Linear Instructions).
-    This empowers the Agent to select the specific expertise needed for the task.
-  </principle>
-
-  <philosophy>
-    **Rooter = Cognitive Load Management**
-
-    When you provide a rigid 50-step linear list, you treat the AI like a "Script Interpreter" (Low Trust).
-    When you provide a Rooter Pattern, you treat the AI like a "Senior Partner" who needs a well-organized library.
-
-    **Rationale**: "We route to keep your context window pristine. A clean context = a smarter Agent."
-
-  </philosophy>
-
-  <workflow>
-    1. **INTAKE**: Ask 1-3 batched questions to narrow intent (L'Entonnoir)
-    2. **ROUTE**: Load the specific Workflow file based on user response
-    3. **EXECUTE**: Apply expert patterns from the Reference tier
-  </workflow>
-
-  <implementation>
-    See `/toolkit:rooter` command for creating complete capability packages.
-  </implementation>
-</pattern>
-
-### Rooter Archetype Structure
-
-A complete Rooter package contains multiple entry points:
-
-| Component      | Purpose                        | When Used                    |
-| -------------- | ------------------------------ | ---------------------------- |
-| **Command**    | Quick intent invocation        | User knows what they want    |
-| **Skill**      | Comprehensive domain knowledge | Deep understanding needed    |
-| **Workflows**  | Guided step-by-step processes  | User needs hand-holding      |
-| **References** | Expert patterns and examples   | AI needs technical specifics |
-| **Examples**   | Working demonstrations         | Concrete validation needed   |
-
-### Why Rooter is High Trust
-
-1. **Freedom Preserved**: The AI decides _how_ to write code, solve bugs, implement features
-2. **Clarity Maximized**: You're not giving "instructions" - you're providing "Domain Expertise" organized to respect context window
-3. **Cognitive Load Managed**: Progressive disclosure keeps context window clean = smarter Agent
-
-### Genetic Code Injection
-
-Rooter components bundle their own philosophy for portability:
-
-- **Condensed principles** in metadata section
-- **Success Criteria** for self-validation
-- **No external dependencies** - works in isolation
-
-This "genetic code" ensures components survive being moved to any environment.
-
----
-
-## L'Entonnoir Pattern: User Interaction Protocol
-
-**Core Principle: L'Entonnoir (The Funnel) - Iterative Narrowing Through Intelligent Batching**
-
-**Core principle**: Use multiple AskUserQuestion rounds to iteratively narrow the problem space. Each round batches 1-4 relevant questions based on current investigation. After each response, investigate further before the next round.
-
-### The Funnel Flow
-
-```
-┌─────────────────────────────────────────────────────┐
-│              ITERATIVE FUNNELING PATTERN            │
-│                                                     │
-│  Investigate → AskUserQuestion (batch Q1-Q3)        │
-│       ↓                                            │
-│  Analyze response → Narrow investigation            │
-│       ↓                                            │
-│  AskUserQuestion (batch Q4-Q5 based on previous)    │
-│       ↓                                            │
-│  Analyze response → Final investigation             │
-│       ↓                                            │
-│  AskUserQuestion (final confirmation Q6)            │
-│       ↓                                            │
-│  Execute                                            │
-└─────────────────────────────────────────────────────┘
-```
-
-### Recognition Over Generation
-
-Users recognize faster than they generate. Structure questions in each round for recognition.
-
-**Recognition Question**: "Would the user need to think to answer this, or can they just recognize/validate?"
-
-**Batching Principle**: Each AskUserQuestion call should batch 1-4 questions that:
-
-- Share the same investigation context
-- Are related to each other
-- Can be answered together without additional context
-
-### Intelligent Batching Per Round
-
-**DO batch together:**
-
-- Questions that share the same context/investigation phase
-- Questions where earlier answers inform later options
-- Questions about the same topic/decision area
-- 2-4 questions max per AskUserQuestion call
-
-**DON'T batch together:**
-
-- Unrelated topics (database vs UI vs deployment)
-- Questions that require separate investigation phases
-- More than 4 questions in one call (overwhelming)
-
-### Interleaving Investigation and Questions
-
-After each AskUserQuestion response:
-
-1. **Analyze answers** - What did the user tell us?
-2. **Narrow investigation** - Use answers to focus next investigation
-3. **Run targeted diagnostics** - Check specific things based on answers
-4. **Determine next questions** - What else do we need to know?
-5. **Ask again** - Batch next set of questions (1-4)
-6. **Repeat** - Until ready to execute
-
-### Question Structure Patterns
-
-**Pattern 1: Broad → Specific → Action**
-
-Round 1: Broad categorization
-Round 2: Specific identification
-Round 3: Action confirmation
-Execute
-
-**Pattern 2: Dependency Chain**
-
-Round 1: "Q1: Language? Q2: Framework?"
-Round 2: [Investigate based on language/framework] "Q3: Which [framework] library?"
-Round 3: [Investigate library options] "Q4: Which version?"
-Execute
-
-**Pattern 3: Elimination**
-
-Round 1: "Q1: Is it X, Y, or Z?"
-Round 2: [Eliminate X based on investigation] "Q2: Is it Y or Z?"
-Round 3: [Eliminate Y] "Q3: Confirm Z?"
-Execute
-
-### Anti-Patterns
-
-**Anti-Pattern 1: Single-Question obsession**
-
-Wrong: Asking one question per round-trip when 2-4 related questions exist
-
-Right: Batch related questions
-
-**Anti-Pattern 2: Over-batching**
-
-Wrong: 5+ questions or unrelated topics
-Right: 2-4 related questions per round
-
-**Anti-Pattern 3: No Investigation Between Rounds**
-
-Wrong: Ask → Ask → Ask without investigating
-Right: Investigate → Ask → Investigate → Ask
-
-### Context-Specific Patterns
-
-**Debugging: Funneling to Root Cause**
-Round 1: Symptom categorization
-Round 2: Component identification
-Round 3: Root cause confirmation
-Round 4: Fix approach selection
-Execute
-
-**Feature Implementation: Requirements Gathering**
-Round 1: Feature scope and priority
-Round 2: Technical decisions (batch related)
-Round 3: Edge cases and constraints
-Round 4: Implementation approach
-Execute
-
-**Setup/Configuration: Layered Decisions**
-Round 1: High-level architecture
-Round 2: Specific technologies (batch by layer)
-Round 3: Configuration values
-Round 4: Confirmation
-Execute
-
----
-
-## Verification Checklist
-
-Before finalizing any component, verify:
-
-- [ ] **Header**: Has `<mission_control>` and `<trigger>` tags
-- [ ] **Middle**: Bulk content in Markdown (Data Plane) inside XML
-- [ ] **Footer**: `<critical_constraint>` at very bottom (Recency Bias)
-- [ ] **State**: `<interaction_schema>` defined for reasoning tasks
-- [ ] **Tags**: Using "Strong Tags" for Control Plane
-- [ ] **Transitions**: `</thinking>` Hard Stop used before execution
-
----
-
-## Linting Delegation
+## Self-Containment: The Portability Invariant
 
 <critical_constraint>
-MANDATORY: Code formatting and style are enforced by linters, not documentation.
+**Every component MUST work with zero .claude/rules dependencies.**
+
+Components carry their own "genetic code" for context: fork isolation.
 </critical_constraint>
 
-- **TypeScript/JavaScript**: Use project linter (ruff, eslint, biome)
-- **Shell scripts**: Use shellcheck
-- **Python**: Use ruff
-- **Markdown**: Use project linter (markdownlint, textlint)
+**Recognition Question:** "Would this component work in a project with zero rules?"
 
-The hybrid format rules in this file cover **structure** (XML/Markdown separation), not code style. Code style is delegated to appropriate linters.
+- Include everything needed directly
+- Don't reference external files or directories
+- Bundle condensed philosophy with component
 
 ---
 
-## Summary
+## Summary: The Architecture Map
 
-**The L'Entonnoir Protocol:**
+| Concept                    | Role         | Description                                      |
+| -------------------------- | ------------ | ------------------------------------------------ |
+| **UHP**                    | Format       | XML for control, Markdown for data               |
+| **Rooter**                 | Organization | Complete packages with multiple entry points     |
+| **L'Entonnoir**            | Interaction  | Iterative funneling through intelligent batching |
+| **Progressive Disclosure** | Distribution | Tier 1 → Tier 2 → Tier 3                         |
+| **Recency Bias**           | Priority     | Constraints at bottom of files                   |
 
-1. **Investigate** - Gather information
-2. **Ask** - Batch 1-4 relevant questions based on investigation
-3. **Analyze** - Use answers to narrow investigation scope
-4. **Repeat** - Investigate → Ask until ready to execute
-5. **Execute** - Complete the task
+## The Deprecation Protocol
 
-**Key distinctions:**
+<critical_constraint>
+**When a component is retired, it must be archived, not just deleted.**
+</critical_constraint>
 
-- **Multiple rounds encouraged** - Funnel toward execution efficiently
-- **Batch intelligently per round** - Group related questions (1-4 max)
-- **Interleave investigation** - Investigate between rounds, not just before first round
-- **Recognition over generation** - Users select from options, don't generate from scratch
+### The Attic Pattern
 
-**Remember**: L'entonnoir (the funnel) - each round narrows the problem space through intelligent questioning and investigation.
+1. **Use trash**: `trash component.md` (files go to OS trash, recoverable)
+2. **Tag Formatting**: If keeping file, add `<deprecated>REASON</deprecated>` at top
+3. **Update References**: Remove link from `CLAUDE.md` and indexes
+4. **Clean Dependencies**: Remove unused dependencies it introduced
+
+**Why**: Conserves history while cleaning the context window.
 
 ---
 
 <critical_constraint>
-MANDATORY: Batch 1-4 related questions per AskUserQuestion call
-MANDATORY: Investigate between rounds to narrow scope
-MANDATORY: Use answers from previous rounds to inform next investigation
-MANDATORY: Each round should funnel toward execution
-MANDATORY: Critical constraints at bottom of files (recency bias)
 MANDATORY: Use XML for control, Markdown for data
-No exceptions. Efficient funneling through iterative narrowing.
+MANDATORY: Place critical constraints at bottom of files
+MANDATORY: Batch 1-4 related questions per AskUserQuestion
+MANDATORY: Investigate between rounds to narrow scope
+MANDATORY: Keep Tier 2 lean, Tier 3 deep
+MANDATORY: Every component MUST be self-contained
+No exceptions. Architecture is the Map, not the Script.
 </critical_constraint>

@@ -1,6 +1,6 @@
 ---
 name: create-meta-prompts
-description: "Generate meta-prompts when creating optimized prompts for Claude-to-Claude pipelines or multi-stage workflows. Not for simple single-turn prompts or manual messaging."
+description: "Generate meta-prompts for Claude-to-Claude pipelines and multi-stage workflows. Use when creating optimized prompts for complex workflows. Not for simple single-turn prompts or manual messaging."
 ---
 
 ##

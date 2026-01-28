@@ -8,8 +8,8 @@ This workflow details the process of auditing skills for quality, portability, a
 
 Load reference documentation:
 
-1. **skill-development/SKILL.md** (overview)
-2. **skill-development/references/** (all references)
+1. **invocable-development/SKILL.md** (overview)
+2. **invocable-development/references/** (all references)
 3. **Understand evaluation framework**
 
 ### Evaluation Framework
@@ -165,7 +165,7 @@ Verify portability invariant:
 **Common issues:**
 
 - References to .claude/rules/ files
-- "See skill-development for details"
+- "See invocable-development for details"
 - External dependencies not documented
 
 ### Step 7: Autonomy

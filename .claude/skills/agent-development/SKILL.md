@@ -1,6 +1,6 @@
 ---
 name: agent-development
-description: "Create autonomous agents when you need an isolated subprocess with its own context and philosophy for distributed execution. Not for simple logic reuse or human-orchestrated workflows."
+description: "Create, validate, and audit autonomous agents with isolated subprocess and independent context. Use when building agent systems or reviewing agent quality. Not for simple logic reuse or human-orchestrated workflows."
 ---
 
 # Agent Development
@@ -8,7 +8,14 @@ description: "Create autonomous agents when you need an isolated subprocess with
 <mission_control>
 <objective>Create autonomous agents with isolated context and self-contained philosophy</objective>
 <success_criteria>Generated agent includes valid frontmatter, clear triggers, and bundled behavioral guidance</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load agent-development references BEFORE creating agents:
+
+- Agent structure → references/agent-structure.md
+- Philosophy bundle pattern → references/philosophy-bundle.md
+- Agent validation → references/validation.md
+  </standards_gate>
+  </mission_control>
 
 <interaction_schema>
 design → template_generation → philosophy_bundle → validation → output</interaction_schema>
@@ -16,10 +23,6 @@ design → template_generation → philosophy_bundle → validation → output</
 Agents are specialized autonomous subprocesses that execute tasks independently with isolated context. Unlike skills (which are invoked within the same conversation), agents run in separate processes with their own conversation context.
 
 **Core principle**: Agents must be autonomous, isolated, and carry their own philosophy for self-guided execution.
-
-<interaction_schema>
-design → template_generation → philosophy_bundle → validation → output
-</interaction_schema>
 
 <pattern name="agent_templates">
 <principle>Strict templates ensure generated agents have valid frontmatter and complete structure.</principle>
@@ -150,8 +153,6 @@ team_name: { { TEAM_CONTEXT | optional } }
 </communication>
 </autonomy_protocol>
 </system_prompt_builder>
-
----
 
 ---
 

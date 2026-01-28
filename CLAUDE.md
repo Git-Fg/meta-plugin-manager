@@ -82,8 +82,9 @@ This project demonstrates the **Knowledge-Factory architecture**:
 ### Factory Layer (Execution)
 
 - **Toolkit Commands**: Intent-based orchestration with context inference
-  - `/toolkit:command:*` - Command creation, audit, meta-critic
-  - `/toolkit:skill:*` - Skill creation, audit, meta-critic
+  - `/toolkit:build:*` - Create commands, skills, packages
+  - `/toolkit:audit:*` - Validate commands, skills
+  - `/toolkit:critique:*` - Meta-critic review for commands, skills
 - Apply architectural patterns via `invocable-development` skill
 - Bundle condensed philosophy into outputs
 
@@ -110,27 +111,27 @@ The toolkit provides command-based interfaces for creating and validating invoca
 | **Commands** | Single `.md` file                                              | `commands/build/fix.md` → `/build:fix` | Intent/state definition, folder nesting |
 | **Skills**   | Folder with `SKILL.md` + optional `workflows/` + `references/` | Flat: `skills/tdd-workflow/`           | Domain logic, progressive disclosure    |
 
-### Command Operations
+### Build Commands
 
-| Command                       | Purpose                       | Autonomy                   |
-| ----------------------------- | ----------------------------- | -------------------------- |
-| `/toolkit:command:create`     | Create one-file commands      | High (0-2 questions)       |
-| `/toolkit:command:audit`      | Audit commands for compliance | High (auto-detects target) |
-| `/toolkit:command:metacritic` | Three-way meta-critic review  | High (analyzes context)    |
+| Command                  | Purpose                                                             | Autonomy             |
+| ------------------------ | ------------------------------------------------------------------- | -------------------- |
+| `/toolkit:build:command` | Create one-file commands                                            | High (0-2 questions) |
+| `/toolkit:build:skill`   | Create skills with workflows/ and references/                       | High (0-2 questions) |
+| `/toolkit:build:package` | Create complete packages (command + skill + workflows + references) | High (0-3 questions) |
 
-### Skill Operations
+### Audit Commands
 
-| Command                     | Purpose                                       | Autonomy                   |
-| --------------------------- | --------------------------------------------- | -------------------------- |
-| `/toolkit:skill:create`     | Create skills with workflows/ and references/ | High (0-2 questions)       |
-| `/toolkit:skill:audit`      | Audit skills for compliance                   | High (auto-detects target) |
-| `/toolkit:skill:metacritic` | Three-way meta-critic review                  | High (analyzes context)    |
+| Command                  | Purpose                       | Autonomy                   |
+| ------------------------ | ----------------------------- | -------------------------- |
+| `/toolkit:audit:command` | Audit commands for compliance | High (auto-detects target) |
+| `/toolkit:audit:skill`   | Audit skills for compliance   | High (auto-detects target) |
 
-### Rooter Operations (Complete Packages)
+### Critique Commands
 
-| Command           | Purpose                                                             | Autonomy             |
-| ----------------- | ------------------------------------------------------------------- | -------------------- |
-| `/toolkit:rooter` | Create complete packages (command + skill + workflows + references) | High (0-3 questions) |
+| Command                     | Purpose                      | Autonomy                |
+| --------------------------- | ---------------------------- | ----------------------- |
+| `/toolkit:critique:command` | Three-way meta-critic review | High (analyzes context) |
+| `/toolkit:critique:skill`   | Three-way meta-critic review | High (analyzes context) |
 
 **Rooter Archetype**: A complete capability package with multiple entry points:
 
@@ -176,6 +177,11 @@ See `invocable-development/references/command-orchestration.md` for complete pat
 ```
 Need to maintain project health?
 │
+├─ Self-maintenance → Use /ops namespace
+│  ├─ /ops:rooter - Router for all ops commands
+│  ├─ /ops:extract - Extract patterns from conversation
+│  ├─ /ops:drift - Detect and fix context drift
+│  └─ /ops:reflect - Review session for improvements
 ├─ Update rules → Check .claude/rules/ for consistency
 ├─ Audit quality → Use meta-critic skill
 ├─ Fix autonomy issues → Review architecture.md (L'Entonnoir pattern)
@@ -187,13 +193,13 @@ Need to maintain project health?
 ```
 Need to build a portable component?
 │
-├─ Complete package → /toolkit:rooter
-├─ Create a command → /toolkit:command:create
-├─ Create a skill → /toolkit:skill:create
-├─ Audit a command → /toolkit:command:audit
-├─ Audit a skill → /toolkit:skill:audit
-├─ Meta-critic review (command) → /toolkit:command:metacritic
-├─ Meta-critic review (skill) → /toolkit:skill:metacritic
+├─ Complete package → /toolkit:build:package
+├─ Create a command → /toolkit:build:command
+├─ Create a skill → /toolkit:build:skill
+├─ Audit a command → /toolkit:audit:command
+├─ Audit a skill → /toolkit:audit:skill
+├─ Critique (command) → /toolkit:critique:command
+├─ Critique (skill) → /toolkit:critique:skill
 ├─ Create agent → agent-development
 ├─ Add hook → hook-development
 ├─ Add MCP server → mcp-development
@@ -217,11 +223,11 @@ Need to build a portable component?
 
 ### Toolkit Commands
 
-| **Category** | **Commands**                                                                        |
-| ------------ | ----------------------------------------------------------------------------------- |
-| **Commands** | `/toolkit:command:create` `/toolkit:command:audit` `/toolkit:command:metacritic`    |
-| **Skills**   | `/toolkit:skill:create` `/toolkit:skill:audit` `/toolkit:skill:metacritic`          |
-| **Rooter**   | `/toolkit:rooter` - Complete packages with command + skill + workflows + references |
+| **Category** | **Commands**                                                             |
+| ------------ | ------------------------------------------------------------------------ |
+| **Build**    | `/toolkit:build:command` `/toolkit:build:skill` `/toolkit:build:package` |
+| **Audit**    | `/toolkit:audit:command` `/toolkit:audit:skill`                          |
+| **Critique** | `/toolkit:critique:command` `/toolkit:critique:skill`                    |
 
 ### Planning Commands
 
@@ -308,10 +314,14 @@ See `.claude/rules/architecture.md` for complete UHP reference (3-layer architec
 
 ## Session Commands
 
-- `/reflect` - Review behavior, identify improvement opportunities
 - `/handoff` - Create session handoff document
-- `/whats-next` - Analyze conversation for continuation
 - `/plan` - Enter plan mode for complex tasks
+
+**Self-Maintenance Commands (ops namespace):**
+
+- `/ops:reflect` - Review conversation for improvements
+- `/ops:extract` - Extract reusable patterns
+- `/ops:drift` - Detect context drift
 
 ---
 

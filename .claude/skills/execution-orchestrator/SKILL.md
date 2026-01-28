@@ -1,6 +1,6 @@
 ---
 name: execution-orchestrator
-description: "Execute implementation plans with intelligent routing between execution modes when implementing tasks from a plan with checkpoints. Not for ad-hoc execution without a plan."
+description: "Execute implementation plans with intelligent routing between execution modes. Use when implementing tasks from a plan with checkpoints. Not for ad-hoc execution without a plan."
 ---
 
 # Execution Orchestrator
@@ -8,7 +8,14 @@ description: "Execute implementation plans with intelligent routing between exec
 <mission_control>
 <objective>Execute implementation plans with intelligent routing between execution modes based on checkpoint types and quality requirements</objective>
 <success_criteria>Tasks completed in appropriate mode with correct checkpoint handling and verification</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load execution-orchestrator references BEFORE routing to execution modes:
+
+- Execution modes → references/modes.md
+- Checkpoint handling → references/checkpoints.md
+- Quality requirements → references/quality.md
+  </standards_gate>
+  </mission_control>
 
 <trigger>When implementing tasks from a plan and need to choose execution strategy.
 Not for: Ad-hoc execution without a plan, single isolated tasks without planning context.</trigger>
@@ -333,6 +340,20 @@ Review loops until approval (don't accept "close enough")
 
 ## Integration with Other Components
 
+<routing_table>
+Explicit routing for skill orchestration.
+
+| When You Need To...                | Use This Skill/Command                 | Routing Command                           |
+| ---------------------------------- | -------------------------------------- | ----------------------------------------- |
+| Create a plan with checkpoints     | `writing-plans` skill                  | `Skill("writing-plans")`                  |
+| Execute a plan                     | `/plan:execute` command                | Invoke via `/plan:execute <path>`         |
+| Run full autonomous plan execution | `/plan:execute-all` command            | Invoke via `/plan:execute-all`            |
+| Run quality review (REVIEWED mode) | `meta-critic` skill                    | `Skill("meta-critic")`                    |
+| Final PR review                    | `pr-reviewer` skill                    | `Skill("pr-reviewer")`                    |
+| Commit changes after execution     | `finishing-a-development-branch` skill | `Skill("finishing-a-development-branch")` |
+
+</routing_table>
+
 ### With Planning Skills
 
 ```
@@ -344,8 +365,8 @@ Review loops until approval (don't accept "close enough")
 
 ```
 [execution-orchestrator with REVIEWED mode uses:]
-- meta-critic for quality review
-- pr-reviewer for final review
+- meta-critic for quality review → Skill("meta-critic")
+- pr-reviewer for final review → Skill("pr-reviewer")
 ```
 
 ### With Git Workflow

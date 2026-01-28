@@ -1,6 +1,6 @@
 ---
 name: memory-persistence
-description: "Session lifecycle hooks for cross-platform context persistence when maintaining state across sessions, creating handoff documents, or enabling session continuity. Not for in-memory variables or temporary state."
+description: "Provide session lifecycle hooks for cross-platform context persistence. Use when maintaining state across sessions or creating handoff documents. Not for in-memory variables or temporary state."
 ---
 
 # Memory Persistence

@@ -1,12 +1,19 @@
 ---
 name: hook-development
-description: "Create event-driven hooks when you need to intercept events, enforce security patterns, or automate interventions. Not for manual actions or passive knowledge."
+description: "Create, validate, and audit event-driven hooks for intercepting events, enforcing security patterns, and automating interventions. Use when building or reviewing hooks and event handlers. Not for manual actions or passive knowledge."
 ---
 
 <mission_control>
 <objective>Create event-driven hooks that intercept operations and enforce security patterns</objective>
 <success_criteria>Generated hook has valid matcher, action type, and timeout configuration</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load hook-development references BEFORE creating hooks:
+
+- Security patterns → references/patterns.md
+- Quality guidelines → references/quality.md
+- Advanced techniques → references/advanced.md
+  </standards_gate>
+  </mission_control>
 
 <interaction_schema>
 event_analysis → matcher_design → action_definition → security_review → output</interaction_schema>

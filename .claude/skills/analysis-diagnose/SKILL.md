@@ -1,6 +1,6 @@
 ---
 name: analysis-diagnose
-description: "Perform systematic root cause investigation when you encounter bugs, test failures, or unexpected behavior. Not for trivial or obvious fixes, creative experimentation, or learning new systems."
+description: "Perform systematic root cause investigation. Use when you encounter bugs, test failures, or unexpected behavior. Not for trivial or obvious fixes, creative experimentation, or learning new systems."
 ---
 
 # Systematic Analysis & Diagnosis
@@ -422,12 +422,12 @@ STOP and return to Phase 1.
 
 [Full stack trace]
 
-````
+```
 
 ### Test Code
 ```javascript
 [Relevant test code]
-````
+```
 
 ### Implementation
 

@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: "Conduct discovery interviews when gathering requirements, clarifying vague ideas, or creating detailed specifications. Not for execution or simple partial updates."
+description: "Conduct discovery interviews to gather requirements, clarify vague ideas, and create detailed specifications. Use when gathering requirements or clarifying vague ideas. Not for execution or simple partial updates."
 user-invocable: true
 ---
 

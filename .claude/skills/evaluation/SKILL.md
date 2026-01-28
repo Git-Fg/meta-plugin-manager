@@ -1,6 +1,6 @@
 ---
 name: evaluation
-description: "Evaluate agent systems when you need to build quality gates, measure component quality, or implement LLM-as-judge. Not for simple unit testing or binary pass/fail checks without nuance."
+description: "Evaluate agent systems with quality gates and LLM-as-judge. Use when you need to measure component quality or implement quality gates. Not for simple unit testing or binary pass/fail checks without nuance."
 ---
 
 # Evaluation Methods for Agent Systems
@@ -351,19 +351,23 @@ recommendations:
 
 ## References
 
-**Research**:
+<routing_table>
+Skills referenced for related evaluation capabilities.
+
+| When You Need To...                  | Use This Skill       | Routing Command               |
+| ------------------------------------ | -------------------- | ----------------------------- |
+| Implement progressive disclosure     | `filesystem-context` | `Skill("filesystem-context")` |
+| Validate component quality           | `meta-critic`        | `Skill("meta-critic")`        |
+| Build evaluation rubrics and scoring | (this skill)         | (current context)             |
+
+**Research References**:
 
 - BrowseComp evaluation on performance drivers
 - Eugene Yan on LLM-evaluators
 - Position bias in pairwise comparison
 
-**Related Skills**:
-
-- `context-fundamentals` - Progressive disclosure for efficiency
-- `filesystem-context` - Context management patterns
-- `meta-critic` - Quality validation framework
-
 **Key Principle**: Evaluation should be outcome-focused, multi-dimensional, and continuously validated. Judge whether components achieve right outcomes while following reasonable processes.
+</routing_table>
 
 ---
 

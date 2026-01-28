@@ -1,6 +1,6 @@
 ---
 name: premortem
-description: "Identify failure modes before they occur when reviewing plans, designs, or PRs to catch risks early. Not for post-incident analysis or debugging active issues."
+description: "Identify failure modes before they occur. Use when reviewing plans, designs, or PRs to catch risks early. Not for post-incident analysis or debugging active issues."
 user-invocable: true
 ---
 

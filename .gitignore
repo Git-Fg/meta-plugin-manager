@@ -27,3 +27,5 @@ tests/sandbox-*/
 tests/phase_*/
 tests/.archived_old_sandboxes/
 .worktrees/
+
+.mcp.json

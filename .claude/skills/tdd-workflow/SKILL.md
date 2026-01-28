@@ -101,7 +101,7 @@ expect(result).toBe('success');
 expect(attempts).toBe(3);
 });
 
-````
+```
 Clear name, tests real behavior, one thing
 </Good>
 
@@ -115,7 +115,7 @@ test('retry works', async () => {
   await retryOperation(mock);
   expect(mock).toHaveBeenCalledTimes(3);
 });
-````
+```
 
 Vague name, tests mock not code
 </Bad>
@@ -514,3 +514,11 @@ MANDATORY: Run tests after EVERY code change
 MANDATORY: Never skip RED or GREEN phases
 No exceptions. TDD discipline catches bugs before commit.
 </critical_constraint>
+
+```
+
+```
+
+```
+
+```

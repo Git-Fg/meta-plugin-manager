@@ -1,6 +1,6 @@
 ---
 name: mcp-development
-description: "Create portable MCP servers when you need to provide external tools, resources, or prompts to Claude via standard protocol. Not for internal logic reuse or simple scripts."
+description: "Create, validate, and audit MCP servers for Claude integration. Use when building MCP servers, tools, resources, or prompts. Includes stdio/http transport, tool schemas, authentication, and validation frameworks. Not for manual tool configuration or non-MCP integrations."
 ---
 
 # MCP Development
@@ -8,7 +8,14 @@ description: "Create portable MCP servers when you need to provide external tool
 <mission_control>
 <objective>Create portable MCP servers with strict tool schema definitions and clear transport logic</objective>
 <success_criteria>Generated MCP server has valid JSON Schema for tools and proper transport configuration</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load mcp-development references BEFORE creating MCP servers:
+
+- Tool development → references/tool-development.md
+- Transport mechanisms → references/transports.md
+- Authentication → references/authentication.md
+  </standards_gate>
+  </mission_control>
 
 <interaction_schema>
 design → tool_schema_definition → transport_logic → validation → output</interaction_schema>
@@ -16,10 +23,6 @@ design → tool_schema_definition → transport_logic → validation → output<
 MCP (Model Context Protocol) servers provide structured integration between Claude and external systems. They define tools, resources, and prompts that Claude can access through standardized protocols.
 
 **Core principle**: MCP servers must be portable, self-configuring, and provide clear tool definitions for Claude interaction.
-
-<interaction_schema>
-design → tool_schema_definition → transport_logic → validation → output
-</interaction_schema>
 
 ---
 
@@ -178,49 +181,63 @@ MCP servers provide:
 
 ## Core Structure
 
-### Server Configuration
+### Server Configuration (McpServer)
+
+<critical_constraint>
+**MANDATORY: Use `McpServer` from `@modelcontextprotocol/sdk/server/mcp.js` (NOT legacy `Server`)**
+</critical_constraint>
 
 ```typescript
-{
-  "name": "mcp-server-name",
-  "version": "1.0.0",
-  "description": "Server description",
-  "transport": {
-    "type": "stdio" | "http"
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({
+  name: "mcp-server-name",
+  version: "1.0.0",
+});
+
+// Tool registration with Zod
+server.tool(
+  "tool-name",
+  "Tool description",
+  {
+    param: z.string().describe("Parameter description"),
   },
-  "capabilities": {
-    "tools": {},
-    "resources": {},
-    "prompts": {}
-  }
-}
+  async ({ param }) => {
+    // Implementation
+    return { content: [{ type: "text", text: result }] };
+  },
+);
+
+// Transport connection
+const transport = new StdioServerTransport();
+await server.connect(transport);
 ```
 
-### Tool Definition
+### Validation Framework
 
-```typescript
-{
-  "name": "tool-name",
-  "description": "What this tool does",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "param": {
-        "type": "string",
-        "description": "Parameter description"
-      }
-    }
-  }
+**MANDATORY: Verify logic with a programmatic test script (Inspector is flaky).**
+
+```javascript
+// test.mjs
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+
+// Import your server code here or mock it
+// ...
+
+// Validate registration
+const tools = server._registeredTools; // Access internal registry
+console.log("Tools found:", tools.length);
+
+if (tools.some((t) => t.name === "tool-name")) {
+  console.log("✅ Tool registered");
+} else {
+  console.error("❌ Tool missing");
+  process.exit(1);
 }
 ```
-
-### MCP Body
-
-- **Transport setup**: How Claude connects
-- **Tool definitions**: Available capabilities
-- **Resource schemas**: Data structures
-- **Error handling**: Protocol compliance
-- **Portability config**: Environment adaptation
 
 ---
 

@@ -3,7 +3,7 @@ description: Specialized agent for evaluating skills against best practices with
 name: skill-auditor
 skill:
   - meta-critic
-  - skill-development
+  - invocable-development
   - deviation-rules
   - file-search
 ---
@@ -35,7 +35,7 @@ Invoke this agent when:
 
 ## Audit Scope
 
-Use loaded skills (skill-development, meta-critic) to validate:
+Use loaded skills (invocable-development, meta-critic) to validate:
 
 ### 1. Structure
 
@@ -101,7 +101,7 @@ Use loaded skills (skill-development, meta-critic) to validate:
 ## Audit Process
 
 1. **Load the skill** - Read SKILL.md and references/
-2. **Evaluate against standards** - Use skill-development quality frameworks
+2. **Evaluate against standards** - Use invocable-development quality frameworks
 3. **Apply meta-critic** - Three-way comparison (claims vs capability vs standards)
 4. **Categorize findings** - Critical vs Recommendations vs Quick Fixes
 5. **Generate report** - Structured output with autonomy estimate

@@ -170,6 +170,54 @@ Test the skill:
 
 ---
 
+## Phase 6: Genetic Injection
+
+Inject condensed Seed System principles for context: fork isolation:
+
+### Why This Matters
+
+Forked subagents lose access to `.claude/rules/`. The Genetic Code ensures they retain core philosophy even in isolation.
+
+### Injection Process
+
+1. **Load template**: Read `genetic-code-template.md`
+2. **Inject section**: Add before final `<critical_constraint>` in SKILL.md
+3. **Verify**: Confirm component works with zero .claude/rules dependencies
+
+### Template to Inject
+
+```markdown
+## Genetic Code
+
+This component carries essential Seed System principles for context: fork isolation:
+
+<critical_constraint>
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+
+MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+
+MANDATORY: Description MUST use What-When-Not format in third person
+
+MANDATORY: No component references another component by name in description
+
+MANDATORY: Progressive disclosure - references/ for detailed content
+
+MANDATORY: Use XML for control, Markdown for data
+
+No exceptions. Portability invariant must be maintained.
+</critical_constraint>
+```
+
+### Verification
+
+After injection:
+
+- [ ] Genetic Code section present before final constraint
+- [ ] Component survives portability test (zero .claude/rules)
+- [ ] Core principles are preserved (not just style rules)
+
+---
+
 ## Success Criteria
 
 - Skill created with proper UHP structure
@@ -177,3 +225,4 @@ Test the skill:
 - Progressive disclosure in place
 - Autonomy target met (80-95%)
 - Description follows What-When-Not format
+- Genetic code injected for fork isolation

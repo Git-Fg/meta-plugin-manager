@@ -1,386 +1,241 @@
 # Principles: The Pilot's Code
 
-**The "Why," the "Tone," and the "Degrees of Freedom"**
+**The "Why" behind every rule, the "Tone" of every interaction, and the "Freedom" granted to the Pilot.**
 
-Think of this as the philosophical foundation that guides every decision. Understanding principles enables intelligent adaptation; recipes only work for specific situations.
-
----
-
-## The Trust Mandate
-
-**Assume the Agent is expert-level. Do not micromanage the "how" for common tasks. Provide the "Why" (Rationale) and the "Goal" (Success Criteria).**
-
-### Pilot & Map Philosophy
-
-- **Architecture (Map)** = Where information lives
-- **Intelligence (Pilot)** = How to get to the goal
-
-We provide the Map (well-organized information), but the Agent remains the Pilot (deciding how to navigate).
-
-### High Freedom vs Low Freedom
-
-| **High Freedom**           | **Low Freedom (Constraints)** |
-| -------------------------- | ----------------------------- |
-| Logic, code implementation | Security boundaries           |
-| Problem-solving approaches | Portability Invariant         |
-| Architecture decisions     | File Structure conventions    |
-| Tool selection             | Destructive operations        |
-
-**Principle**: Start with High Freedom. Only constrain when something truly breaks.
+Think of this as a Senior Architect leaving guidance for a Senior Engineer. These principles enable intelligent adaptation—they are not recipes for specific situations.
 
 ---
 
----
+## The High Trust Mandate
 
-## Core Philosophy
+<mission_control>
+<objective>Provide a Map, not a Script. Empower the Pilot to navigate using architectural guidance.</objective>
+<success_criteria>Claude acts as a Senior Partner who uses rules as boundaries, not step-by-step instructions.</success_criteria>
+</mission_control>
 
-**Teaching > Prescribing**: Philosophy enables intelligent adaptation. Process prescriptions create brittle systems.
+### Map vs Script Philosophy
 
-**Trust > Control**: Claude is smart. Provide principles, not recipes.
+**The Script (Low Trust):**
 
-**Less > More**: Context is expensive. Every token must earn its place.
+- "First run `mkdir`. Then run `touch`. Then edit the file."
+- Assumes the agent cannot manage basic operations
+- Brittle—breaks when context shifts
 
----
+**The Map (High Trust):**
 
-## Context Window as Public Good
+- "Here is the directory structure, quality standards, and where patterns live."
+- Respects the agent's capability to execute
+- Flexible—adapts to context
 
-The context window is a shared resource. Everything loaded competes for space: system prompt, conversation history, skill metadata, other skills, and the actual user request.
-
-Think of it like a shared refrigerator - everything you put in takes space others could use. Be a good roommate.
-
-**Principle**: Challenge every piece of information. "Does Claude really need this?" and "Does this justify its token cost?"
-
-**Application**:
-
-- Prefer concise examples over verbose explanations
-- Remove Claude-obvious content (what training already covers)
-- Keep descriptions concise with exact trigger phrases
-- Keep SKILL.md focused and lean (~1,500-2,000 words)
-- Move detailed content to references/
-
-**Recognition**: If you're explaining something Claude already knows from training, delete it.
+**Core Principle:** The Agent is a Senior Partner, not a Script Interpreter. Provide the destination and boundaries; let the Pilot navigate the route.
 
 ---
 
-## Cognitive Load Distribution
+## The Pilot & Map Framework
 
-**Think Akinator, not consultant.** The AI does systematic thinking internally; the user only recognizes.
+| Concept          | Role      | Description                                               |
+| ---------------- | --------- | --------------------------------------------------------- |
+| **Architecture** | The Map   | Where information lives (structure, patterns, invariants) |
+| **Intelligence** | The Pilot | How to navigate (problem-solving, adaptation, execution)  |
 
-**Principle**: Heavy cognition happens inside the AI. Only crafted questions emerge externally.
+**We provide the Map.** The Agent remains the Pilot.
 
-**What this means**:
+### What Belongs in the Map
 
-- AI internally: brainstorming, framework application, systematic elimination
-- User sees: only the next clever question, based on internal synthesis
-- User's job: recognize the correct option, not generate from scratch
+- **Invariants**: What the output _must_ always be (e.g., "Always use TDD," "Portability invariant")
+- **Boundaries**: Where freedom ends (security, safety, portability)
+- **Libraries**: Where deep knowledge lives (references/ folder)
+- **Rationale**: Why these rules exist (so the Pilot can adapt to edge cases)
 
-**Recognition**: Are you showing internal thinking process? Hide it. Only the question should be visible.
+### What Belongs to the Pilot
 
----
-
-## The Delta Standard
-
-> **Good Customization = Expert Knowledge − What Claude Does By Default**
-
-Only provide information that has a "knowledge delta" - the gap between default Claude behavior and what's needed for this specific project.
-
-**Positive Delta** (keep these):
-
-- **Best practices** - Not just what's possible, but what's RECOMMENDED
-- **Modern patterns** - Evolving conventions (React 19, Next.js 15, etc.)
-- **Explicit conventions** - Ensuring consistency across sessions
-- **Rationale** - Teaching WHY patterns are preferred, not just WHAT
-- **Project-specific decisions** - Architecture, tech stack choices
-- **Domain expertise** - Specialized knowledge not in general training
-- **Anti-patterns** - What to avoid, not just what to do
-- **Non-obvious trade-offs** - When to use X vs Y (and why)
-
-**Zero/Negative Delta** (remove these):
-
-- **Basic definitions** - "What is a function", "What is TypeScript"
-- **How-to tutorials** - "How to write a for loop", "How to use npm"
-- **Standard library docs** - "What Array.map does"
-- **Things Claude does by default** - Obvious operations that require no guidance
-
-**Recognition questions**:
-
-1. "Does this teach BEST PRACTICE, not just possibility?" → Keep
-2. "Does this explain WHY, not just WHAT?" → Keep
-3. "Is this a MODERN pattern Claude might not default to?" → Keep
-4. "Is this just defining basic concepts?" → Delete
-5. "Would Claude do this by default without being told?" → Delete
+- **Implementation details**: How to execute specific commands
+- **Tool selection**: Which tool fits the task
+- **Approach**: How to structure the solution
+- **Adaptation**: How to handle edge cases not anticipated
 
 ---
 
-## Local Project Autonomy
-
-Project-specific configuration belongs in the project, not in global settings or external systems.
-
-**Principle**: Start with local project configuration. Expand scope only when needed.
-
-**Hierarchy** (from most local to most global):
-
-1. **Project directory** (`.claude/`): Default for project-specific skills
-2. **Project local overrides** (`.claude/settings.local.json`): Personal customization
-3. **User-wide settings** (`~/.claude/settings.json`): Cross-project standards
-4. **Legacy global hooks** (`.claude/hooks.json`): Deprecated, avoid
-
-**Recognition**: If configuration applies only to this project, keep it in `.claude/`. If it's a personal preference, use `settings.local.json`. If it's a universal standard, consider user-wide settings.
-
----
-
-## The 45% XML Tax Principle
+## Invariants: The Boundaries of Freedom
 
 <critical_constraint>
-**The XML Tax: Every Tag Costs Tokens**
+**Define Invariants, Not Instructions.**
 
-XML tags consume tokens but provide semantic anchoring. Calculate before using:
-
-**Pay the Tax (Use XML) When:**
-
-- Content needs semantic anchoring (rules, constraints, patterns)
-- High-stakes instructions that must be visible (critical constraints)
-- State transitions requiring clear boundaries (thinking, execution)
-- Recognition triggers that need attention (anti-pattern recognition)
-
-**Avoid the Tax (Use Markdown) When:**
-
-- Bulk data content (examples, code snippets, logs)
-- Informational prose (descriptions, explanations)
-- Data structures (tables, lists, diagrams)
-
-**The Calculation:**
-
-- Inefficient: `<item>skills/</item><item>commands/</item>` (30 tokens for 6 items)
-- Efficient: `<instructions>- skills/\n- commands/</instructions>` (18 tokens for same content)
-
-**Rule of Thumb:** If it's "Data" → Markdown. If it's "Instruction" → XML.
+Tell the Agent what the output must always be. Trust it to determine how to get there.
 </critical_constraint>
 
----
+### The Freedom Spectrum
 
-## Recency Bias: The Final Token Rule
+| Invariants (Fixed)                       | Pilot Territory (Flexible)    |
+| ---------------------------------------- | ----------------------------- |
+| Portability (zero external dependencies) | Logic and code implementation |
+| Security boundaries                      | Problem-solving approaches    |
+| Quality standards                        | Architecture decisions        |
+| Destructive operation safeguards         | Tool selection                |
+| Progressive disclosure structure         | Implementation details        |
+
+**Principle:** Start with maximum freedom. Only constrain when something truly breaks.
+
+## The Skill-First Doctrine
 
 <critical_constraint>
-**Models Exhibit Recency Bias - Recent Tokens Have Higher Activation**
+**ALWAYS check for a skill before implementing.**
+</critical_constraint>
 
-During generation, the last tokens in context are "freshest" in the model's attention mechanism.
+**The Protocol:**
 
-**File Structure (Bottom = Highest Priority):**
+1. **Search**: `ls .claude/skills`
+2. **Read**: `view_file .claude/skills/SKILL/SKILL.md`
+3. **Execute**: Follow the skill's instructions exactly
 
-1. Header (Identity/Trigger/Mission Control)
-2. Body (Patterns, Examples, Data)
-3. **Footer (Absolute Constraints)** ← Place non-negotiable rules here
-
-**Practical Application:**
-
-- `<critical_constraint>` blocks MUST be at very bottom of files
-- These are the final tokens - highest priority during generation
-- This is NOT aesthetic - it's cognitive architecture
-
-**Why This Matters:**
-
-- When a model generates content, it attends more strongly to recent tokens
-- Placing critical rules at the bottom ensures they're "top of mind"
-- Rules buried in the middle get "Lost in the Middle" of long contexts
-  </critical_constraint>
+**Why**: Skills contain the "Genetic Code" - the condensed wisdom of previous sessions. Ignoring them leads to regression.
 
 ---
 
-## Voice: Imperative but Natural
+## Deprecation Awareness
 
-### The Standard: Instructional Imperative
+<critical_constraint>
+**ALWAYS check for library deprecations before implementation.**
+</critical_constraint>
 
-**Use imperative voice (bare infinitive) for all skill/command/agent content.**
+**The Protocol:**
 
-**Examples:**
+1. **Check**: Run `npm view package time` or check docs
+2. **Verify**: If using standard libraries, check for `@deprecated` tags
+3. **Modernize**: Prefer the stable, modern alternative over the legacy easy path
+
+**Why**: Legacy code drifts. Modern code stays relevant longer.
+
+---
+
+## The Why Matters More Than the What
+
+When writing rules, explain the **rationale**—the Agent can then adapt that logic to situations you didn't anticipate.
+
+**Low Trust (What only):**
+
+- "Use third-person in descriptions."
+
+**High Trust (Why included):**
+
+- "Use third-person in descriptions to ensure the auto-discovery engine matches user intent reliably."
+
+**Result:** The Agent doesn't just follow the rule—it understands the principle and can apply it to new scenarios.
+
+---
+
+## Voice: Commander's Intent
+
+### The Infinitive Voice
+
+**Use the imperative/infinitive form (bare infinitive):**
 
 ```
 ✅ Correct:
-- "Follow these steps in order, skipping only when clearly not applicable."
+- "Validate inputs before processing."
 - "Create the skill directory and SKILL.md file."
-- "Use third-person in description."
-- "Remember that the skill is for another Claude instance to use."
-- "Include specific trigger phrases."
+- "Use third-person in descriptions."
+- "Carry genetic code for context: fork isolation."
 
 ❌ Incorrect:
-- "You should follow these steps..."
+- "You should validate inputs..."
 - "Let's create the skill directory..."
 - "The skill is for another Claude instance..."
-- "You should include specific trigger phrases..."
 ```
 
-**Why imperative works:**
+**Why:** The infinitive form becomes a direct extension of the Agent's internal logic, reducing "persona friction."
 
-- Clear, direct instructions
-- Reduces ambiguity
-- Professional tone
-- Efficient (fewer tokens)
+### Natural Teaching Language
 
-### But Make It Natural (Not Robotic)
+Balance imperative with explanation:
 
-**Conversational = Natural teaching language, not robotic commands**
+- "Remember that..." (context preservation)
+- "Think of this as..." (analogy for understanding)
+- "Consider that..." (invitation to apply judgment)
+- Tables and examples (pattern recognition)
 
-**Natural language includes:**
+### Avoid Second Person
 
-- Explanations of WHY
-- Context and rationale
-- Teaching moments
-- "Remember that..." / "Think of this as..." / "Consider that..."
-- Examples and tables
-
-### Recognition Test
-
-**Ask yourself:**
-
-- "Am I giving clear instructions?" (should be imperative)
-- "Am I explaining or teaching?" (can be conversational)
-- "Would a senior engineer understand this?" (natural language)
-- "Is this robotic or natural?" (should be natural)
+- "You" creates distance between the Agent and the instruction
+- The instruction should feel like the Agent's own reasoning
 
 ---
 
-## Voice Strength: When to Be Gentle vs Strong
+## Voice Strength: Proportional to Consequences
 
-Voice strength is not about freedom—it's about **criticality**. Use strength proportional to consequences.
+Voice strength reflects **criticality**, not control. Use strength proportional to what breaks if ignored.
 
-### The Criticality Spectrum
+| Strength     | When to Use                   | Markers                   | Example                         |
+| ------------ | ----------------------------- | ------------------------- | ------------------------------- |
+| **Gentle**   | Best practices, suggestions   | Consider, prefer, might   | "Consider running in tmux"      |
+| **Standard** | Default patterns, guidance    | Create, use, follow       | "Create the skill directory"    |
+| **Strong**   | Quality gates, invariants     | ALWAYS, NEVER, must       | "ALWAYS validate before save"   |
+| **Critical** | Security, safety, destructive | MANDATORY, CRITICAL, STOP | "STOP: Security issue detected" |
 
-| Strength     | When to Use                                | Keywords                              | Example                         |
-| ------------ | ------------------------------------------ | ------------------------------------- | ------------------------------- |
-| **Gentle**   | Best practices, suggestions, exploratory   | Consider, prefer, might, could        | "Consider running in tmux"      |
-| **Standard** | Default instructions, recommended patterns | Create, implement, use, follow        | "Create the skill directory"    |
-| **Strong**   | Quality gates, workflow enforcement        | ALWAYS, NEVER, must, BLOCKED          | "ALWAYS write tests first"      |
-| **Critical** | Security, safety, destructive operations   | MANDATORY, CRITICAL, STOP IMMEDIATELY | "STOP: Security issue detected" |
-
-### When to Use Strong Language
+### When Strong Language Is Appropriate
 
 **Use ALWAYS/NEVER for:**
 
-- **Security requirements**: "NEVER expose secrets in logs"
-- **Safety-critical operations**: "ALWAYS validate user input"
-- **Non-negotiable workflows**: "NEVER skip the RED phase in TDD"
-- **Hard rules**: "No console.log statements in production"
+- Security requirements: "NEVER expose secrets in logs"
+- Portability invariant: "ALWAYS carry genetic code for context: fork"
+- Quality gates: "ALWAYS verify before claiming completion"
 
 **Use MANDATORY/CRITICAL for:**
 
-- **Destructive operations**: "CRITICAL: Back up database before migration"
-- **Process gates**: "MANDATORY: Tests must pass before deployment"
-- **Blocking conditions**: "BLOCKED: Fix security issues before continuing"
+- Destructive operations: "CRITICAL: Back up before migration"
+- Process gates: "MANDATORY: Pass all checks before merge"
+- Non-negotiables: "MANDATORY: Zero external dependencies"
 
 **Use Consider/Prefer for:**
 
-- **Architectural suggestions**: "Consider using immutable data structures"
-- **Tool choices**: "Prefer pnpm over npm for this project"
-- **Pattern alternatives**: "You might try this structure instead"
+- Architectural suggestions: "Consider immutable data structures"
+- Tool preferences: "Prefer pnpm over npm for this project"
 
-### Recognition Questions
+### Recognition Question
 
-**Before using strong language, ask:**
+"Does ignoring this cause real harm, or just a different approach?"
 
-- "What are the consequences if this is ignored?" (severe → strong)
-- "Is this a true non-negotiable or just a best practice?" (non-negotiable → strong)
-- "Am I compensating for known agent laziness?" (yes → strong is appropriate)
-- "Could Claude figure this out but might skip it?" (yes → standard/imperative)
-
-**The Trust Calibration:**
-
-High trust does not mean weak language. Trust means:
-
-- **Use strong language for true non-negotiables** (security, safety, critical workflows)
-- **Use gentle language for creative/exploratory work** (architecture, design, alternatives)
-- **Use standard imperative for everything else**
-
-Strong language is not insulting when properly applied—it's clarity about what truly matters.
+- Real harm → Strong language
+- Different approach → Standard/gentle language
 
 ---
 
 ## Degrees of Freedom: Default to Highest Freedom
 
-### The Default: High Freedom
+**Default to HIGH FREEDOM unless a clear constraint exists.**
 
-**Consider starting with HIGH FREEDOM unless a clear constraint exists.**
+| Freedom    | When to Use               | Example                                    |
+| ---------- | ------------------------- | ------------------------------------------ |
+| **High**   | Multiple valid approaches | "Consider using immutable data structures" |
+| **Medium** | Some guidance needed      | "Use this pattern, adapting as needed"     |
+| **Low**    | Fragile/error-prone       | "Execute steps 1-3 precisely"              |
 
 **Reduce freedom when:**
 
 - Operations are destructive (irreversible)
 - Safety-critical systems
 - External system requirements
-- Error consequences are severe
-- Workflow sequence is mandatory (e.g., TDD: red → green → refactor)
+- Workflow sequence is mandatory (e.g., TDD phases)
 
-**Default pattern:**
-
-- Provide principles and context
-- Trust Claude's intelligence
-- Let Claude determine approach
-- Multiple valid ways to execute
-
-**Reduce when justified:**
-
-- Operations are fragile or error-prone
-- Consistency is critical (formatting, naming conventions)
-- Irreversible consequences (deletion, deployment)
-- External system sequences required (API call orders, database migrations)
-- **Workflow enforcement** (TDD phases, code review processes)
-
-### Freedom vs Voice Strength: Independent but Related
-
-These are **independent choices** that work together:
-
-| Freedom Level | Voice Strength | Example                                      | Context                               |
-| ------------- | -------------- | -------------------------------------------- | ------------------------------------- |
-| High          | Gentle         | "Consider immutable data structures"         | Architectural suggestion              |
-| High          | Standard       | "Create the skill directory"                 | Clear instruction, flexibility in how |
-| High          | Strong         | "ALWAYS validate before deployment"          | Critical safety gate                  |
-| Medium        | Standard       | "Use this pattern, adapting as needed"       | Guided implementation                 |
-| Medium        | Strong         | "NEVER mutate state outside reducer"         | Non-negotiable rule                   |
-| Low           | Standard       | "Follow steps 1-3 in order"                  | Sequential workflow                   |
-| Low           | Strong         | "MANDATORY: Complete RED phase before GREEN" | Workflow enforcement                  |
-
-**Key insight**: Low freedom almost always uses strong voice. High freedom can use any voice strength depending on criticality.
-
-### Recognition Questions
-
-**Ask:**
-
-- "What breaks if Claude chooses differently?" (more breaks = lower freedom)
-- "Is this fragile or flexible?" (fragile = lower freedom)
-- "Why can't Claude figure this out?" (answer this honestly)
-
-### Why High Freedom Default?
-
-```
-Why good: High-level guidance trusts Claude to handle implementation details
-
-Why bad: Prescriptive commands insult intelligence and waste tokens.
-```
-
-Trust Claude's intelligence. Start with principles, not prescriptions.
+**Recognition Question:** "What breaks if Claude chooses differently?" — More breaks = lower freedom.
 
 ---
 
-## The Matrix: Voice × Freedom × Strength
+## The Voice Matrix: Three Independent Choices
 
-All three dimensions work together:
+Voice, Strength, and Freedom are independent dimensions:
 
-| Freedom | Voice Strength | Pattern                | Example                                           |
-| ------- | -------------- | ---------------------- | ------------------------------------------------- |
-| High    | Gentle         | Exploratory            | "Consider serverless for scalability"             |
-| High    | Standard       | Clear instruction      | "Create unit tests for all public methods"        |
-| High    | Strong         | Critical gate          | "ALWAYS sanitize user input"                      |
-| Medium  | Standard       | Guided implementation  | "Use the factory pattern, adapting to your needs" |
-| Medium  | Strong         | Non-negotiable pattern | "NEVER use async void in C#"                      |
-| Low     | Standard       | Sequential workflow    | "Run tests, then fix failures, then commit"       |
-| Low     | Strong         | Enforced sequence      | "MANDATORY: RED → GREEN → REFACTOR (never skip)"  |
+| Freedom | Strength | Pattern           | Example                                           |
+| ------- | -------- | ----------------- | ------------------------------------------------- |
+| High    | Gentle   | Exploratory       | "Consider serverless for scalability"             |
+| High    | Standard | Clear instruction | "Create unit tests for all public methods"        |
+| High    | Strong   | Critical gate     | "ALWAYS validate user input"                      |
+| Medium  | Standard | Guided            | "Use the factory pattern, adapting to your needs" |
+| Medium  | Strong   | Non-negotiable    | "NEVER use async void in C#"                      |
+| Low     | Standard | Sequential        | "Run tests, then fix failures, then commit"       |
+| Low     | Strong   | Enforced          | "MANDATORY: RED → GREEN → REFACTOR"               |
 
-**Three independent choices:**
-
-1. **Freedom**: How much flexibility Claude has (high = flexibility, low = prescribed)
-2. **Voice**: How we write (imperative = clear, natural = teaching)
-3. **Strength**: How strongly we enforce (gentle → strong → critical)
-
-**Key insight**: You can have high freedom (flexible approach) with strong voice (critical requirement). Example: "ALWAYS validate user input using your preferred validation library."
+**Key insight:** High freedom can use any strength. Low freedom almost always uses strong voice.
 
 ---
 
@@ -388,375 +243,241 @@ All three dimensions work together:
 
 ### Mistake 1: Starting with Low Freedom
 
-**❌ Too prescriptive from the start:**
+**Wrong:** "Execute step 1. Execute step 2. Execute step 3."
 
-```
-Execute step 1. Execute step 2. Execute step 3.
-Use mkdir -p command.
-Run touch command.
-```
-
-**✅ Better (default to high freedom):**
-
-```
-Follow these steps in order. Trust Claude to handle implementation details.
-```
+**Better:** "Follow these steps in order. Trust Claude to handle implementation details."
 
 ### Mistake 2: Robotic Imperative
 
-**❌ Too robotic:**
+**Wrong:** "Execute step 1. Execute step 2."
 
-```
-Execute step 1. Execute step 2. Execute step 3.
-```
-
-**✅ Better (natural imperative):**
-
-```
-Follow these steps in order. Remember to adapt based on context.
-```
+**Better:** "Follow these steps in order. Remember to adapt based on context."
 
 ### Mistake 3: Over-Constraining
 
 **Problem:** Using low freedom when high freedom would work
-**Solution:** Ask "What actually breaks if Claude chooses differently?"
 
 ### Mistake 4: Not Teaching
 
-**❌ Just commands:**
+**Wrong:** Just commands without explanation
 
-```
-Create skill directory.
-Update SKILL.md.
-Validate structure.
-```
-
-**✅ Better (teaching + imperative):**
-
-```
-Create the skill directory and SKILL.md file.
-
-Remember that the skill is for another Claude instance to use. Focus on procedural knowledge and domain-specific details that would help another Claude instance execute tasks more effectively.
-```
+**Better:** "Create the skill directory. Remember that the skill is for another Claude instance."
 
 ### Mistake 5: Avoiding Strong Language When Needed
 
-**❌ Too gentle for critical requirements:**
+**Wrong:** Too gentle for critical requirements
 
-```
-It would be good if tests passed before deployment.
-You might want to avoid exposing secrets.
-```
-
-**✅ Appropriate strength:**
-
-```
-MANDATORY: Tests MUST pass before deployment.
-NEVER expose secrets in logs or error messages.
-```
-
-**Why**: Strong language for true non-negotiables is clarity, not insult. Agents may skip critical steps without explicit enforcement.
+**Right:** "MANDATORY: Tests MUST pass before deployment."
 
 ### Mistake 6: Using Strong Language for Preferences
 
-**❌ Over-strong for suggestions:**
+**Wrong:** "ALWAYS use your favorite editor."
 
-```
-ALWAYS use VS Code.
-NEVER use tabs for indentation.
-```
+**Better:** "Prefer your favorite editor for this project."
 
-**✅ Appropriate strength:**
+### Mistake 7: Skipping References
 
-```
-Prefer VS Code for this project (has required extensions).
-Use spaces for indentation (team convention).
-```
+**Wrong:** Not reading mandatory references
 
-**Why**: Reserve ALWAYS/NEVER for actual requirements, not preferences.
-
----
-
-## Compensation Patterns: When Strong Language Prevents Failure
-
-**Strong language compensates for known agent behaviors.** Claude is smart but sometimes skips critical steps, especially when:
-
-1. **Optimizing for speed** - May skip validation or error handling
-2. **Missing context** - May not know why something is critical
-3. **Pattern matching** - May apply familiar patterns inappropriately
-
-### When to Use Compensation
-
-**Use strong language to compensate when:**
-
-| Situation                   | Compensation Pattern | Example                                                 |
-| --------------------------- | -------------------- | ------------------------------------------------------- |
-| Agent skips validation      | ALWAYS/NEVER         | "ALWAYS validate before save"                           |
-| Agent omits error handling  | MANDATORY            | "MANDATORY: Handle all exceptions"                      |
-| Agent chooses wrong pattern | NEVER                | "NEVER use async void in C#"                            |
-| Agent ignores critical step | CRITICAL             | "CRITICAL: Database must be backed up first"            |
-| Agent skips references      | MUST READ            | "MUST READ: frontmatter-reference.md before proceeding" |
-
-### Hook-Based Compensation
-
-For behaviors that agents consistently skip, use hooks to enforce:
-
-```json
-// Block operations that require specific context
-{
-  "matcher": "tool == \"Bash\" && tool_input.command matches \"npm run dev\"",
-  "hooks": [
-    {
-      "command": "BLOCKED: Dev server must run in tmux for log access. Use: tmux new -s dev"
-    }
-  ]
-}
-```
-
-**When to use hooks vs language:**
-
-- **Language**: Preferred first line (teaching + enforcement)
-- **Hooks**: For persistent failures or critical safety issues
-
-### Recognition Test
-
-**Before adding strong language or hooks, ask:**
-
-- "Have I observed agents skipping this consistently?" (yes → compensate)
-- "Is this a true non-negotiable or my preference?" (non-negotiable → compensate)
-- "Would teaching + standard imperative suffice?" (maybe → try gentle first, strengthen if needed)
-
-**Compensation is not distrust—it's adaptation to observed behavior patterns.**
+**Right:** "MANDATORY READ: references/frontmatter-reference.md before adding frontmatter"
 
 ---
 
 ## Reference Enforcement: Soft vs Hard vs Critical
 
-References range from helpful context to mandatory prerequisites. Agents will be lazy and try to skip reading—use stronger language to compensate.
+**Agents will skip reading. Use escalating strength:**
 
-### Soft References (Suggested)
+| Level        | Pattern                               | When to Use                    |
+| ------------ | ------------------------------------- | ------------------------------ |
+| **Soft**     | "See X for details"                   | Nice-to-have context           |
+| **Hard**     | "MUST READ: X before Y"               | Critical for specific workflow |
+| **Critical** | "MANDATORY READ BEFORE ANYTHING ELSE" | Universal requirement          |
 
-**Use when**: Reference provides helpful context but task can proceed without it.
-
-```
-For additional patterns, see references/advanced-techniques.md
-Related skills: tdd-workflow, code-review
-```
-
-### Hard References (Mandatory - Workflow Specific)
-
-**Use when**: Reference must be read for a specific task/workflow. Skipping causes failures in that context.
-
-```
-MANDATORY TO READ WHEN: Configuring frontmatter
-Read references/frontmatter-reference.md BEFORE adding frontmatter.
-
-Invalid frontmatter causes silent failures—your skill simply won't load.
-```
-
-### Critical References (Mandatory - Core Knowledge)
-
-**Use when**: Reference contains core knowledge required for ANY use of the skill/command/agent. Skipping guarantees failure or poor quality.
+**Anti-laziness pattern:**
 
 ```
 MANDATORY READ BEFORE ANYTHING ELSE: references/executable-examples.md
-READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
+READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM.
 
-This file contains working examples of every pattern. Without reading it, you will not understand how to construct valid commands.
-```
-
-### Agent Laziness Compensation
-
-**Agents will actively avoid reading references.** They will:
-
-- Try to infer from context (often incorrectly)
-- Skim instead of reading completely
-- Skip examples and jump to implementation
-- Reference files without absorbing patterns
-
-**Use escalating strength to overcome this:**
-
-| Level    | Pattern                                  | When to Use       | Example                                                       |
-| -------- | ---------------------------------------- | ----------------- | ------------------------------------------------------------- |
-| Soft     | "See X for details"                      | Nice-to-have      | "For advanced patterns, see references/advanced.md"           |
-| Standard | "Read X before Y"                        | Workflow-specific | "Read validation.md before configuring forms"                 |
-| Strong   | "MUST READ: X before Y"                  | Critical for task | "MUST READ: frontmatter.md before adding frontmatter"         |
-| Critical | "MANDATORY READ BEFORE ANYTHING ELSE"    | Core knowledge    | "MANDATORY READ BEFORE ANYTHING ELSE: executable-examples.md" |
-| Extreme  | "READ COMPLETELY. DO NOT SKIP. NO TAIL." | Observed skipping | "READ COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL."         |
-
-### Pattern for Critical References
-
-**Structure:**
-
-```
-MANDATORY READ BEFORE ANYTHING ELSE: [reference-file]
-READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL.
-
-[Why this is non-negotiable - what breaks without it]
-
-This reference contains:
-- [Pattern 1] - [why it matters]
-- [Pattern 2] - [why it matters]
-
-You cannot effectively use this skill without understanding these patterns.
+This reference contains working examples of every pattern.
 ```
 
 ### When to Use Each Level
 
-**Ask yourself:**
-
-1. **Can the task succeed without this reference?**
+1. **Can the task succeed without this?**
    - Yes → Soft reference
    - No → Continue to 2
 
-2. **Is this needed for ALL uses or just specific tasks?**
-   - All uses → Critical reference (MANDATORY READ BEFORE ANYTHING ELSE)
-   - Specific tasks → Mandatory reference (MANDATORY TO READ WHEN)
-
-3. **Have I observed agents skipping this?**
-   - Yes → Add "READ COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL."
-   - No → Standard mandatory language
+2. **All uses or specific tasks?**
+   - All uses → Critical reference
+   - Specific tasks → Hard reference
 
 ---
 
-## The Thinking Protocol
+## Compensation Patterns
 
-**Principle**: Generation without reasoning is hallucination.
+Strong language compensates for known agent behaviors:
 
-**Standard Reasoning Flow:**
+| Situation                   | Compensation | Example                            |
+| --------------------------- | ------------ | ---------------------------------- |
+| Agent skips validation      | ALWAYS/NEVER | "ALWAYS validate before save"      |
+| Agent omits error handling  | MANDATORY    | "MANDATORY: Handle all exceptions" |
+| Agent chooses wrong pattern | NEVER        | "NEVER use async void in C#"       |
+| Agent skips critical step   | CRITICAL     | "CRITICAL: Back up first"          |
+| Agent skips references      | MUST READ    | "MUST READ: frontmatter.md"        |
 
-1. `<thinking>` - Analyze constraints, identify approaches, weigh trade-offs
-2. `</thinking>` - **Hard Stop** - State transition signal
-3. `<execution_plan>` - Outline concrete steps
-4. Output generation
-
-**Why `</thinking>` as Hard Stop:**
-
-- The closing tag signals "analysis complete, proceed to execution"
-- Prevents "analysis paralysis" - infinite refinement loops
-- Creates clear boundary between reasoning and action
-- Models can "latch onto" the tag as a state trigger
-
-**Example:**
-
-```xml
-<thinking>
-Task: Implement authentication
-Constraints: Portable, zero external deps
-Approaches: JWT (too heavy), Pattern-based (appropriate)
-Selected: Pattern-based validation
-</thinking>
-
-<execution_plan>
-- Validate triggers within skill
-- Use environment variables for secrets
-- Provide clear error messages
-</execution_plan>
-```
-
-**Why this matters**:
-
-- Triggers "Deep Thinking" states in Sonnet 4.5 and GLM-4.7
-- Prevents premature implementation without understanding
-- Creates audit trail of reasoning
-- Reduces "looks complete" rationalization
+**Recognition:** "Have I observed agents skipping this consistently?"
 
 ---
 
-## State Management: Cognitive Flow Over Tone
+## The Delta Standard: What Claude Already Knows
 
-For complex reasoning tasks, managing cognitive state is critical. Use XML tags to signal state transitions.
+> **Good Component = Expert Knowledge − What Claude Already Knows**
 
-**State vs Tone:**
+Only document the knowledge delta—what Claude wouldn't already have.
 
-- Tone = How we write (imperative, natural, conversational)
-- State = Where we are in the reasoning process (thinking → planning → acting)
+### Positive Delta (Keep)
 
-For complex tasks, state management matters more than tone perfection.
+- Best practices (not just possibilities)
+- Modern conventions Claude might not default to
+- Explicit project-specific decisions
+- Domain expertise not in general training
+- Non-obvious trade-offs (why X over Y)
+- Anti-patterns (what to avoid)
 
-### The State Transition Matrix
+### Zero/Negative Delta (Remove)
 
-| State         | Purpose                           | Tag                    | Exit Signal               |
-| ------------- | --------------------------------- | ---------------------- | ------------------------- |
-| **Analysis**  | Explore options, weigh trade-offs | `<thinking>`           | `</thinking>` (Hard Stop) |
-| **Planning**  | Define concrete steps             | `<execution_plan>`     | `</execution_plan>`       |
-| **Diagnosis** | Root cause analysis               | `<diagnostic_matrix>`  | `</diagnostic_matrix>`    |
-| **Action**    | Execute steps                     | (none - direct output) | N/A                       |
-
-### When to Use State Management
-
-**Use for:**
-
-- Complex reasoning tasks (diagnosis, architecture, troubleshooting)
-- Multi-step decision processes
-- Tasks requiring trade-off analysis
-- Problems with multiple valid approaches
-
-**Skip for:**
-
-- Simple, straightforward tasks
-- Single-action commands
-- Well-defined, linear processes
+- Basic programming concepts
+- Standard library documentation
+- Generic tutorials
+- Claude-obvious operations
 
 ### Recognition Questions
 
-**Before adding state management, ask:**
-
-- "Does this task involve multiple decisions?" (yes → use state management)
-- "Are there trade-offs to analyze?" (yes → use `<thinking>`)
-- "Could analysis paralysis occur?" (yes → enforce Hard Stop)
-- "Is this a simple execution?" (yes → skip state management)
+1. "Does this teach best practice, not just possibility?" → Keep
+2. "Does this explain why, not just what?" → Keep
+3. "Would Claude know this from training?" → Delete
+4. "Is this a basic concept or project-specific?" → Keep only project-specific
 
 ---
 
-## Summary
+## Progressive Disclosure: Respect the Context Window
 
-### Voice (How We Write)
+Think of the Map as having layers. Not every piece of information belongs in the main file.
 
-- **Use imperative form** for instructions (bare infinitive)
-- **Make it natural** with teaching language ("Remember that...", "Think of this as...")
-- **Avoid robotic commands** - explain WHY alongside HOW
+| Layer      | Content                            | Tokens        |
+| ---------- | ---------------------------------- | ------------- |
+| **Tier 1** | YAML metadata (What-When-Not)      | ~100          |
+| **Tier 2** | Core workflows, mission, patterns  | 1.5k-2k words |
+| **Tier 3** | Deep patterns, API specs, examples | Unlimited     |
 
-### Voice Strength (How Strongly We Enforce)
+**Principle:** Keep Tier 2 lean. Move detailed content to references/.
 
-- **Gentle** (consider, prefer): Best practices, suggestions, exploratory work
-- **Standard** (create, implement): Default instructions, recommended patterns
-- **Strong** (ALWAYS, NEVER, must): Quality gates, workflow enforcement, non-negotiables
-- **Critical** (MANDATORY, CRITICAL, STOP): Security, safety, destructive operations
+### How to Progressive Disclose
 
-### Freedom (How Specific We Are)
+- Tier 2: Core concepts, main workflows, key patterns
+- Tier 3: Edge cases, API references, worked examples
+- Navigation: "For X, see references/Y.md"
 
-- **DEFAULT: High freedom** - Trust Claude's intelligence
-- **Reduce when justified**: Destructive operations, safety-critical, fragile processes, workflow enforcement
-- **Ask**: "What breaks if Claude chooses differently?"
+---
 
-### Compensation (When Agents Need Guidance)
+## Recency Bias: The Final Token Rule
 
-- Strong language compensates for observed agent behaviors (skipping validation, omitting error handling)
-- Hooks for persistent failures or critical safety issues
-- Compensation is adaptation, not distrust
+<critical_constraint>
+**Place all constraint-related content at the very bottom of files.**
 
-### References (Soft vs Hard vs Critical)
+Models attend more strongly to recent tokens during generation.
+</critical_constraint>
 
-- **Soft**: "For additional patterns, see..." - optional, supplemental
-- **Mandatory (workflow)**: "MANDATORY TO READ WHEN [condition]" - required for specific tasks
-- **Critical (core knowledge)**: "MANDATORY READ BEFORE ANYTHING ELSE" - universal requirement, foundational
-- **Anti-laziness**: "READ COMPLETELY. DO NOT SKIP. DO NOT SKIM. NO TAIL." - when agents are observed skipping
+**File Structure:**
 
-### Three Independent Choices
+1. Header (identity, mission, trigger)
+2. Body (patterns, examples, explanations)
+3. Footer (constraints, invariants, non-negotiables)
 
-1. **Voice**: Imperative but natural (how we write)
-2. **Strength**: Gentle → Standard → Strong → Critical (how strongly we enforce)
-3. **Freedom**: High → Medium → Low (how specific we are)
+**Why:** The final tokens are "freshest" in the model's attention. Critical rules buried in the middle get "Lost in the Middle."
 
-**Together**: "ALWAYS validate user input" (strong voice, high freedom) vs "Execute steps 1-3 precisely" (standard voice, low freedom) vs "MANDATORY: Complete RED phase before GREEN" (critical voice, low freedom)
+---
+
+## The Genetic Code: Self-Contained Philosophy
+
+Every component must carry its own "genetic code"—condensed principles that allow it to work in isolation.
+
+<critical_constraint>
+**Portability Invariant: Zero External Dependencies**
+
+Every component MUST work in a project with ZERO `.claude/rules/` access.
+</critical_constraint>
+
+### What Genetic Code Contains
+
+- Core invariants (portability, quality standards)
+- Critical constraints (security, safety)
+- Behavioral rules for context: fork isolation
+- Recognition questions for self-validation
+
+### Where Genetic Code Lives
+
+- **Skills**: In the SKILL.md footer, before final `<critical_constraint>`
+- **Commands**: In the command body, injected during creation via template
+- **Referenced**: Point to `invocable-development/references/genetic-code-template.md`
+
+---
+
+## Natural Language Guidance: Examples
+
+### Low Trust (Scripting)
+
+```
+1. Run `mkdir -p skill-name`
+2. Run `touch skill-name/SKILL.md`
+3. Add frontmatter with name and description
+4. Write the content
+5. Save the file
+```
+
+### High Trust (Commander's Intent)
+
+```
+Create a self-contained skill in the skills/ directory.
+
+Key invariants:
+- Zero external dependencies (carries its own genetic code)
+- Progressive disclosure (core in SKILL.md, details in references/)
+- UHP structure (XML for control, Markdown for data)
+
+For pattern library, see references/advanced-techniques.md.
+```
+
+### Why High Trust Works
+
+1. **Respects intelligence**: Assumes the Agent can handle filesystem operations
+2. **Defines boundaries**: Provides the invariants without scripting the execution
+3. **Points to resources**: Respects context window by offloading details to references
+4. **Enables adaptation**: The Agent can handle edge cases not explicitly covered
+
+---
+
+## Summary: The Pilot's Code
+
+| Principle                  | Application                                                    |
+| -------------------------- | -------------------------------------------------------------- |
+| **Map, not Script**        | Provide boundaries and invariants; trust the Pilot to navigate |
+| **Explain the Why**        | Rationale enables adaptation to edge cases                     |
+| **Infinitive Voice**       | "Validate," "Create," "Carry"—not "You should"                 |
+| **Natural Teaching**       | "Remember that...", "Think of this as..."                      |
+| **Progressive Disclosure** | Tier 2 lean, Tier 3 deep                                       |
+| **Recency Bias**           | Constraints at bottom of files                                 |
+| **Genetic Code**           | Every component carries its own philosophy                     |
 
 ---
 
 <critical_constraint>
-MANDATORY: High freedom is the default - reduce only when justified
-MANDATORY: Strong language for true non-negotiables, not preferences
-MANDATORY: Critical constraints at bottom of files (recency bias)
-MANDATORY: Trust intelligence - these are principles, not prescriptions
-No exceptions. Principles enable intelligent adaptation.
+MANDATORY: Provide Map, not Script—trust the Pilot's intelligence
+MANDATORY: Explain the Why—enable adaptation to edge cases
+MANDATORY: Use infiniitive voice—reduce persona friction
+MANDATORY: Carry genetic code—ensure portability in isolation
+MANDATORY: Place constraints at bottom—exploit recency bias
+MANDATORY: Start with high freedom—constrain only when justified
+No exceptions. Principles enable intelligent adaptation; recipes create brittleness.
 </critical_constraint>

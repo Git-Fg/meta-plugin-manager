@@ -1,6 +1,6 @@
 ---
 name: invocable-development
-description: "Create portable invocable components (commands and skills) for reusable capabilities. Use when building components that AI or users can invoke contextually."
+description: "Create, validate, and audit portable invocable components (commands and skills) for reusable capabilities. Use when building, auditing, or reviewing component quality. Not for agents, hooks, or MCP servers."
 ---
 
 # Invocable Development
@@ -8,7 +8,14 @@ description: "Create portable invocable components (commands and skills) for reu
 <mission_control>
 <objective>Create portable, self-contained invocable components that work in isolation without external dependencies</objective>
 <success_criteria>Component created with valid frontmatter, clear description, and appropriate organization for complexity level</success_criteria>
-</mission_control>
+<standards_gate>
+MANDATORY: Load invocable-development references BEFORE creating components:
+
+- Frontmatter patterns → references/frontmatter-reference.md
+- Progressive disclosure → references/progressive-disclosure.md
+- Quality framework → references/quality-framework.md
+  </standards_gate>
+  </mission_control>
 
 <trigger>When creating commands or skills. Not for: agents, hooks, or MCP servers (use agent-development, hook-development, mcp-development).</trigger>
 
@@ -82,30 +89,31 @@ commands/
 ```
 commands/
 └── toolkit/
-    ├── skill/
-    │   ├── create.md    → /toolkit:skill:create
-    │   ├── audit.md     → /toolkit:skill:audit
-    │   └── metacritic.md → /toolkit:skill:metacritic
-    ├── command/
-    │   ├── create.md    → /toolkit:command:create
-    │   ├── audit.md     → /toolkit:command:audit
-    │   └── metacritic.md → /toolkit:command:metacritic
-    └── rooter.md        → /toolkit:rooter
+    ├── build/
+    │   ├── command.md    → /toolkit:build:command
+    │   ├── skill.md      → /toolkit:build:skill
+    │   └── package.md    → /toolkit:build:package
+    ├── audit/
+    │   ├── command.md    → /toolkit:audit:command
+    │   └── skill.md      → /toolkit:audit:skill
+    └── critique/
+        ├── command.md    → /toolkit:critique:command
+        └── skill.md      → /toolkit:critique:skill
 ```
 
 **Router Pattern Characteristics:**
 
-- **3-level structure**: `commands/namespace/group/operation.md`
-- **Invokes as**: `/namespace:group:operation`
-- **Purpose**: Group related operations under a logical namespace
+- **3-level structure**: `commands/namespace/action/component.md`
+- **Invokes as**: `/namespace:action:component`
+- **Purpose**: Group related operations by action type
 - **Each command**: Still a single file with self-contained logic
 - **Not a skill**: No `SKILL.md`, `workflows/`, or `references/` folders
 
 **When to use Router Pattern:**
 
 - Multiple related operations that share a common namespace
-- Toolkit-style organization (e.g., `/toolkit:skill:*`, `/toolkit:command:*`)
-- Hierarchical categorization provides value
+- Toolkit-style organization (e.g., `/toolkit:build:*`, `/toolkit:audit:*`)
+- Action-based categorization provides value
 - You want to group operations without creating a skill
 
 **Key distinction**: Router commands are still single-file commands. The folder structure is purely organizational - no "router skill" coordinates them.
@@ -123,13 +131,15 @@ skill-name/
 ├── references/        # Optional: detailed documentation
 │   ├── topic-1.md
 │   └── topic-2.md
-├── examples/          # Optional: working demonstrations
-│   └── example.md
-└── scripts/           # Optional: automation scripts
-    └── script.sh
+├── templates/         # Optional: reusable output structures
+│   └── template.md
+├── scripts/           # Optional: executable automation scripts
+│   └── script.sh
+└── examples/          # Optional: working demonstrations
+    └── example.md
 ```
 
-**Folder structure** enables progressive disclosure - main content in SKILL.md, details in references/.
+**Folder structure** enables progressive disclosure - main content in SKILL.md, details in references/, reusable structures in templates/, automation in scripts/.
 
 ---
 
@@ -158,12 +168,33 @@ description: "What it does. Use when [trigger condition]."
 ---
 ```
 
-**Description guidelines:**
+### Description Guidelines
 
-- Third person
+- Third person (never "I can" or "You can")
 - What-When-Not format
 - No references to other commands/skills by name
 - Clear and actionable
+
+### Name Validation Rules
+
+- Maximum 64 characters
+- Lowercase letters, numbers, hyphens only
+- No XML tags
+- Reserved words: "anthropic", "claude" are forbidden
+- Must match directory name exactly
+
+### Naming Conventions
+
+Use verb-noun convention:
+
+| Pattern     | Purpose                    | Examples                               |
+| ----------- | -------------------------- | -------------------------------------- |
+| `create-*`  | Building/authoring tools   | `create-agent-skills`, `create-hooks`  |
+| `manage-*`  | Managing external services | `manage-facebook-ads`, `manage-stripe` |
+| `setup-*`   | Configuration/integration  | `setup-stripe-payments`, `setup-meta`  |
+| `analyze-*` | Analysis and inspection    | `analyze-diagnose`, `analyze-security` |
+
+**Avoid**: Vague names (`helper`, `utils`), generic (`documents`, `data`), reserved words (`anthropic-helper`, `claude-tools`).
 
 ---
 
@@ -224,6 +255,53 @@ No exceptions.
 - Clear examples (working, not pseudo-code)
 - Single source of truth
 
+### Templates Folder
+
+Templates are reusable output structures in `templates/` that Claude copies and fills:
+
+```
+skill-name/
+└── templates/
+    ├── plan-template.md
+    ├── spec-template.md
+    └── report-template.md
+```
+
+Use templates when output should have consistent structure. Template syntax uses `{{placeholder}}`:
+
+```markdown
+# {{PROJECT_NAME}} Implementation Plan
+
+## Overview
+
+{{1-2 sentence summary}}
+
+## Goals
+
+- {{Primary goal}}
+```
+
+### Scripts Folder
+
+Scripts are executable code in `scripts/` that Claude runs as-is:
+
+```
+skill-name/
+└── scripts/
+    ├── deploy.sh
+    └── validate.py
+```
+
+Well-structured scripts include:
+
+- Clear purpose comment at top
+- Input validation
+- Error handling
+- Idempotent operations
+- `set -euo pipefail` for bash
+
+**Security**: Never embed secrets; use environment variables.
+
 ---
 
 ## Command Orchestration Pattern (Optional)
@@ -249,14 +327,15 @@ See `references/command-orchestration.md` for complete pattern documentation.
 
 ### Toolkit Commands
 
-| If you need...               | Command                       |
-| ---------------------------- | ----------------------------- |
-| Create a command             | `/toolkit:command:create`     |
-| Create a skill               | `/toolkit:skill:create`       |
-| Audit a command              | `/toolkit:command:audit`      |
-| Audit a skill                | `/toolkit:skill:audit`        |
-| Meta-critic review (command) | `/toolkit:command:metacritic` |
-| Meta-critic review (skill)   | `/toolkit:skill:metacritic`   |
+| If you need...     | Command                     |
+| ------------------ | --------------------------- |
+| Create a command   | `/toolkit:build:command`    |
+| Create a skill     | `/toolkit:build:skill`      |
+| Create a package   | `/toolkit:build:package`    |
+| Audit a command    | `/toolkit:audit:command`    |
+| Audit a skill      | `/toolkit:audit:skill`      |
+| Critique (command) | `/toolkit:critique:command` |
+| Critique (skill)   | `/toolkit:critique:skill`   |
 
 ### References
 
@@ -272,6 +351,8 @@ See `references/command-orchestration.md` for complete pattern documentation.
 | Anti-patterns                 | `references/anti-patterns.md`          |
 | Quality framework             | `references/quality-framework.md`      |
 | Advanced execution            | `references/advanced-execution.md`     |
+| Skill creation workflow       | `references/workflows-create.md`       |
+| Skill audit workflow          | `references/workflows-audit.md`        |
 
 #### Command-Specific References
 

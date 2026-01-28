@@ -153,7 +153,7 @@ Skills require frontmatter with name and description.
 
 After:
 
-````markdown
+```markdown
 ## Frontmatter Format
 
 Skills require frontmatter with name and description.
@@ -166,7 +166,7 @@ name: my-skill
 description: "Brief description of what this skill does"
 ---
 ```
-````
+```
 
 **Example (incorrect):**
 
