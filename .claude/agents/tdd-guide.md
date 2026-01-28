@@ -69,10 +69,7 @@ describe("Semantic Search", () => {
 
 ### Step 3: Run Test (Verify it FAILS)
 
-```bash
-npm test
-# Test should fail - we haven't implemented yet
-```
+- `Bash: npm test` → Test should fail (we haven't implemented yet)
 
 ### Step 4: Write Minimal Implementation (GREEN)
 
@@ -88,10 +85,7 @@ export async function processData(input: { name: string; value: number }) {
 
 ### Step 5: Run Test (Verify it PASSES)
 
-```bash
-npm test
-# Test should now pass
-```
+- `Bash: npm test` → Test should now pass
 
 ### Step 6: Refactor (IMPROVE)
 
@@ -102,10 +96,7 @@ npm test
 
 ### Step 7: Verify Coverage
 
-```bash
-npm run test:coverage
-# Verify 80%+ coverage
-```
+- `Bash: npm run test:coverage` → Verify 80%+ coverage
 
 ## Test Types You Must Write
 
@@ -413,12 +404,8 @@ test("updates user", () => {
 
 ### Run Coverage
 
-```bash
-npm run test:coverage
-
-# View HTML report
-open coverage/lcov-report/index.html
-```
+- `Bash: npm run test:coverage` → Run coverage report
+- `Bash: open coverage/lcov-report/index.html` → View HTML report
 
 ### Coverage Thresholds
 
@@ -446,16 +433,9 @@ Required thresholds:
 
 ## Continuous Testing
 
-```bash
-# Watch mode during development
-npm test -- --watch
-
-# Run before commit (via git hook)
-npm test && npm run lint
-
-# CI/CD integration
-npm test -- --coverage --ci
-```
+- `Bash: npm test -- --watch` → Watch mode during development
+- `Bash: npm test && npm run lint` → Run before commit
+- `Bash: npm test -- --coverage --ci` → CI/CD integration
 
 ## Best Practices
 

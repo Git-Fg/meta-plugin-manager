@@ -45,34 +45,22 @@ Frame the exploration as questions to answer:
 
 Use Glob to find directory patterns:
 
-```bash
-# Find all directories at root level
-find . -maxdepth 1 -type d -not -path '.*' | sort
-
-# Find common directory patterns
-Glob patterns:
-- "src/**/*"
-- "lib/**/*"
-- "app/**/*"
-- "pkg/**/*"
-- "components/**/*"
-- "services/**/*"
-```
+- `Bash: find . -maxdepth 1 -type d -not -path '.*' | sort` → Find all directories at root level
+- `Glob: "src/**/*"` → Find src directory patterns
+- `Glob: "lib/**/*"` → Find lib directory patterns
+- `Glob: "app/**/*"` → Find app directory patterns
+- `Glob: "pkg/**/*"` → Find pkg directory patterns
+- `Glob: "components/**/*"` → Find components directory patterns
+- `Glob: "services/**/*"` → Find services directory patterns
 
 #### Identify File Types
 
-```bash
-# Count files by extension
-find . -type f -name "*.ts" -o -name "*.js" -o -name "*.py" | wc -l
-
-# Find configuration files
-Glob patterns:
-- "**/*.config.{js,ts,json,yaml,yml}"
-- "**/.{eslint,prettier,babel,tsconfig}.*"
-- "**/package.json"
-- "**/pyproject.toml"
-- "**/requirements.txt"
-```
+- `Bash: find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" \) | wc -l` → Count files by extension
+- `Glob: "**/*.config.{js,ts,json,yaml,yml}"` → Find configuration files
+- `Glob: "**/.{eslint,prettier,babel,tsconfig}.*"` → Find config dotfiles
+- `Glob: "**/package.json"` → Find package.json
+- `Glob: "**/pyproject.toml"` → Find Python config
+- `Glob: "**/requirements.txt"` → Find Python deps
 
 ### Step 3: Pattern Discovery
 
@@ -80,94 +68,56 @@ Glob patterns:
 
 Use Grep to discover patterns:
 
-```bash
-# Find interface definitions
-Grep pattern: "^interface\s+\w+"
-
-# Find class definitions
-Grep pattern: "^class\s+\w+"
-
-# Find function definitions
-Grep patterns:
-- "^function\s+\w+" (JavaScript)
-- "def\s+\w+\(" (Python)
-- "^const\s+\w+\s*=\s*\(" (Arrow functions)
-
-# Find imports/exports
-Grep patterns:
-- "^import\s+.*\s+from"
-- "^export\s+(default\s+)?\w+"
-- "from\s+['\"][^'\"]+['\"]"
-```
+- `Grep: "^interface\s+\w+"` → Find interface definitions
+- `Grep: "^class\s+\w+"` → Find class definitions
+- `Grep: "^function\s+\w+"` → Find JavaScript function definitions
+- `Grep: "def\s+\w+\("` → Find Python function definitions
+- `Grep: "^const\s+\w+\s*=\s*\("` → Find arrow function definitions
+- `Grep: "^import\s+.*\s+from"` → Find import statements
+- `Grep: "^export\s+(default\s+)?\w+"` → Find export statements
 
 #### Detect Architectural Patterns
 
-```bash
-# Find layer patterns
-Grep: "Controller|Service|Repository"
-Grep: "Model|View|Controller"
-Grep: "API|REST|GraphQL"
-
-# Find pattern usage
-Grep: "factory|adapter|observer|strategy"
-Grep: "middleware|hook|filter"
-```
+- `Grep: "Controller|Service|Repository"` → Find layer patterns
+- `Grep: "Model|View|Controller"` → Find MVC patterns
+- `Grep: "API|REST|GraphQL"` → Find API patterns
+- `Grep: "factory|adapter|observer|strategy"` → Find design patterns
+- `Grep: "middleware|hook|filter"` → Find middleware patterns
 
 ### Step 4: Specific Feature Location
 
 #### Find Implementation
 
-```bash
-# Find specific feature by keywords
-Grep pattern: "(feature_name|class_name|function_name)"
-
-# Find by multiple keywords
-Grep pattern: "keyword1.*keyword2|keyword2.*keyword1"
-
-# Find by file patterns
-Glob patterns:
-- "**/*test*.{ts,js,py}"
-- "**/*spec*.{ts,js,py}"
-- "**/*.{test,spec}.{ts,js,py}"
-```
+- `Grep: "(feature_name|class_name|function_name)"` → Find specific feature by keywords
+- `Grep: "keyword1.*keyword2|keyword2.*keyword1"` → Find by multiple keywords
+- `Glob: "**/*test*.{ts,js,py}"` → Find test files
+- `Glob: "**/*spec*.{ts,js,py}"` → Find spec files
+- `Glob: "**/*.{test,spec}.{ts,js,py}"` → Find test extension files
 
 ### Step 5: Convention Discovery
 
 #### Naming Conventions
 
-```bash
-# Detect file naming patterns
-Bash command: "ls -la src/ | head -20"
+- `Bash: ls -la src/ | head -20` → Detect file naming patterns
+
+**Detectable patterns:**
+
 - kebab-case: user-service.ts
 - camelCase: userService.ts
 - PascalCase: UserService.ts
 - snake_case: user_service.py
 
-# Detect naming patterns in code
-Grep patterns:
-- const \w+ = (camelCase)
-- function \w+ \(
-- class \w+
-```
-
 #### Code Organization
 
-```bash
-# Find test patterns
-Glob patterns:
-- "tests/**/*"
-- "__tests__/**/*"
-- "test/**/*"
-- "**/*.test.{ts,js,py}"
-- "**/*.spec.{ts,js,py}"
-
-# Find documentation patterns
-Glob patterns:
-- "**/*.md"
-- "**/README*"
-- "**/CHANGELOG*"
-- "**/docs/**/*"
-```
+- `Glob: "tests/**/*"` → Find test patterns
+- `Glob: "__tests__/**/*"` → Find Jest test patterns
+- `Glob: "test/**/*"` → Find test directory
+- `Glob: "**/*.test.{ts,js,py}"` → Find test files
+- `Glob: "**/*.spec.{ts,js,py}"` → Find spec files
+- `Glob: "**/*.md"` → Find markdown files
+- `Glob: "**/README*"` → Find README files
+- `Glob: "**/CHANGELOG*"` → Find changelog files
+- `Glob: "**/docs/**/*"` → Find docs directory
 
 ### Step 6: Architecture Mapping
 
@@ -287,18 +237,18 @@ Write findings to a structured report:
 - Use for finding files and directories
 - Combine with wildcards for patterns
 - Examples:
-  - `**/*.test.ts` - all test files
-  - `src/**/*` - all files in src
-  - `**/{component,service}/*` - component and service directories
+  - `Glob: "**/*.test.ts"` - all test files
+  - `Glob: "src/**/*"` - all files in src
+  - `Glob: "**/{component,service}/*"` - component and service directories
 
 ### Grep Usage
 - Use for finding patterns in code
 - Use `-n` for line numbers
 - Use `-A` and `-B` for context
 - Examples:
-  - `pattern: "^class\\s+\\w+"` - class definitions
-  - `pattern: "function\\s+\\w+\\("` - function definitions
-  - `pattern: "from\\s+['\\"][^'\\"]+['\\"]"` - imports
+  - `Grep: "^class\s+\w+"` - class definitions
+  - `Grep: "function\s+\w+\("` - function definitions
+  - `Grep: "from\s+['\"][^'\"]+['\"]"` - imports
 
 ### Read Usage
 - Use for examining specific files
@@ -309,8 +259,8 @@ Write findings to a structured report:
 - Use for running commands (ls, find, etc.)
 - Combine with Glob for discovery
 - Examples:
-  - `find . -type f -name "*.ts" | wc -l` - count TypeScript files
-  - `ls -la src/` - list src directory contents
+  - `Bash: find . -type f -name "*.ts" | wc -l` - count TypeScript files
+  - `Bash: ls -la src/` - list src directory contents
 
 ## Exploration Strategies
 
