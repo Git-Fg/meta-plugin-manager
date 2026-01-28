@@ -15,6 +15,7 @@ Testing commands ensures they work correctly, handle edge cases, and provide goo
 Commands with bash injection (`!` backtick syntax) or file references (`@` syntax) MUST be validated in simulated environment before deployment. These features can fail silently or produce unexpected results if not properly validated.
 
 **What to test:**
+
 - All bash injection commands using `!`\`syntax\``
 - All file references using `@`filename`
 - Edge cases with quoted arguments, empty strings, special characters
@@ -33,9 +34,11 @@ Test what happens with no arguments, empty quotes, and non-existent paths. Verif
 Ensure all branches of conditional logic work. Test with a directory, a file, and a non-existent path to verify fallback logic executes correctly.
 
 **Quick validation pattern:**
+
 ```bash
 bash -c 'bash-command-here' -- "test-argument"
 ```
+
 If the command executes without errors, it's ready for deployment. If errors occur, fix the logic and retest.
 
 **Quick validation patterns:**
@@ -57,6 +60,7 @@ Bash conditionals fail with syntax errors. A missing `fi` or incorrect bracket w
 **Validation checklist:**
 
 Execute these validations before committing:
+
 - Test bash commands directly in terminal for syntax errors
 - Verify behavior with empty, null, and special character arguments
 - Ensure file operations handle non-existent files gracefully
@@ -73,121 +77,85 @@ Bash tolerates many issues but cannot prevent logic errors. Test all command log
 ### Level 1: Syntax and Structure Validation
 
 **What to test:**
+
 - YAML frontmatter syntax
 - Markdown format
 - File location and naming
 
 **How to test:**
 
-```bash
-# Validate YAML frontmatter
-head -n 20 .claude/commands/my-command.md | grep -A 10 "^---"
+Use the `Grep` and `Read` tools for validation:
 
-# Check for closing frontmatter marker
-head -n 20 .claude/commands/my-command.md | grep -c "^---" # Should be 2
-
-# Verify file has .md extension
-ls .claude/commands/*.md
-
-# Check file is in correct location
-test -f .claude/commands/my-command.md && echo "Found" || echo "Missing"
+```
+Read: Read first 20 lines of .claude/commands/my-command.md
+Grep: Search for "^---" pattern with -A 10 context
 ```
 
 **Automated validation script:**
 
-```bash
-#!/bin/bash
-# validate-command.sh
+```markdown
+<!-- Use native tools instead of bash scripts -->
 
-COMMAND_FILE="$1"
+<!-- Validate YAML frontmatter -->
 
-if [ ! -f "$COMMAND_FILE" ]; then
-  echo "ERROR: File not found: $COMMAND_FILE"
-  exit 1
-fi
+Read first 20 lines → Grep for "^---" with -A 10
 
-# Check .md extension
-if [[ ! "$COMMAND_FILE" =~ \.md$ ]]; then
-  echo "ERROR: File must have .md extension"
-  exit 1
-fi
+<!-- Check for closing frontmatter marker -->
 
-# Validate YAML frontmatter if present
-if head -n 1 "$COMMAND_FILE" | grep -q "^---"; then
-  # Count frontmatter markers
-  MARKERS=$(head -n 50 "$COMMAND_FILE" | grep -c "^---")
-  if [ "$MARKERS" -ne 2 ]; then
-    echo "ERROR: Invalid YAML frontmatter (need exactly 2 '---' markers)"
-    exit 1
-  fi
-  echo "✓ YAML frontmatter syntax valid"
-fi
+Grep for "^---" with output_mode: count (should be 2)
 
-# Check for empty file
-if [ ! -s "$COMMAND_FILE" ]; then
-  echo "ERROR: File is empty"
-  exit 1
-fi
+<!-- Verify file has .md extension -->
 
-echo "✓ Command file structure valid"
+Glob: Find files matching .claude/commands/\*.md
+
+<!-- Check file is in correct location -->
+
+Use Read tool to verify file exists at .claude/commands/my-command.md
 ```
 
 ### Level 2: Frontmatter Field Validation
 
 **What to test:**
+
 - Field types correct
 - Values in valid ranges
 - Required fields present (if any)
 
-**Validation script:**
+**Validation with native tools:**
 
-```bash
-#!/bin/bash
-# validate-frontmatter.sh
+```markdown
+<!-- Extract YAML frontmatter -->
 
-COMMAND_FILE="$1"
+Read: Read file, extract content between "---" markers (first 50 lines)
 
-# Extract YAML frontmatter
-FRONTMATTER=$(sed -n '/^---$/,/^---$/p' "$COMMAND_FILE" | sed '1d;$d')
+<!-- Check 'model' field if present -->
 
-if [ -z "$FRONTMATTER" ]; then
-  echo "No frontmatter to validate"
-  exit 0
-fi
+Grep: Search for "^model:" pattern
+Verify value matches: sonnet, opus, or haiku
 
-# Check 'model' field if present
-if echo "$FRONTMATTER" | grep -q "^model:"; then
-  MODEL=$(echo "$FRONTMATTER" | grep "^model:" | cut -d: -f2 | tr -d ' ')
-  if ! echo "sonnet opus haiku" | grep -qw "$MODEL"; then
-    echo "ERROR: Invalid model '$MODEL' (must be sonnet, opus, or haiku)"
-    exit 1
-  fi
-  echo "✓ Model field valid: $MODEL"
-fi
+<!-- Check 'allowed-tools' field format -->
 
-# Check 'allowed-tools' field format
-if echo "$FRONTMATTER" | grep -q "^allowed-tools:"; then
-  echo "✓ allowed-tools field present"
-  # Could add more sophisticated validation here
-fi
+Grep: Search for "^allowed-tools:" pattern
 
-# Check 'description' length
-if echo "$FRONTMATTER" | grep -q "^description:"; then
-  DESC=$(echo "$FRONTMATTER" | grep "^description:" | cut -d: -f2-)
-  LENGTH=${#DESC}
-  if [ "$LENGTH" -gt 80 ]; then
-    echo "WARNING: Description length $LENGTH (recommend < 60 chars)"
-  else
-    echo "✓ Description length acceptable: $LENGTH chars"
-  fi
-fi
+<!-- Check 'description' length -->
 
-echo "✓ Frontmatter fields valid"
+Grep: Search for "^description:" pattern
+Count characters in value
+```
+
+**Example validation workflow:**
+
+```
+1. Read first 50 lines of command file
+2. Grep for "^model:" → extract value
+3. Grep for "^allowed-tools:" → verify format
+4. Grep for "^description:" → count length
 ```
 
 ### Level 3: Manual Command Invocation
 
 **What to test:**
+
 - Command appears in `/help`
 - Command executes without errors
 - Output is as expected
@@ -218,6 +186,7 @@ tail -f ~/.claude/debug-logs/latest
 ### Level 4: Argument Testing
 
 **What to test:**
+
 - Positional arguments work ($1, $2, etc.)
 - $ARGUMENTS captures all arguments
 - Missing arguments handled gracefully
@@ -225,14 +194,14 @@ tail -f ~/.claude/debug-logs/latest
 
 **Test matrix:**
 
-| Test Case | Command | Expected Result |
-|-----------|---------|-----------------|
-| No args | `/cmd` | Graceful handling or useful message |
-| One arg | `/cmd arg1` | $1 substituted correctly |
-| Two args | `/cmd arg1 arg2` | $1 and $2 substituted |
-| Extra args | `/cmd a b c d` | All captured or extras ignored appropriately |
-| Special chars | `/cmd "arg with spaces"` | Quotes handled correctly |
-| Empty arg | `/cmd ""` | Empty string handled |
+| Test Case     | Command                  | Expected Result                              |
+| ------------- | ------------------------ | -------------------------------------------- |
+| No args       | `/cmd`                   | Graceful handling or useful message          |
+| One arg       | `/cmd arg1`              | $1 substituted correctly                     |
+| Two args      | `/cmd arg1 arg2`         | $1 and $2 substituted                        |
+| Extra args    | `/cmd a b c d`           | All captured or extras ignored appropriately |
+| Special chars | `/cmd "arg with spaces"` | Quotes handled correctly                     |
+| Empty arg     | `/cmd ""`                | Empty string handled                         |
 
 **Test script:**
 
@@ -272,6 +241,7 @@ echo "  Manual test required"
 ### Level 5: File Reference Testing
 
 **What to test:**
+
 - @ syntax loads file contents
 - Non-existent files handled
 - Large files handled appropriately
@@ -308,6 +278,7 @@ rm /tmp/test-file*.txt /tmp/large-file.bin
 ### Level 6: Bash Execution Testing
 
 **What to test:**
+
 - !` commands execute correctly
 - Command output included in prompt
 - Command failures handled
@@ -353,6 +324,7 @@ EOF
 ### Level 7: Integration Testing
 
 **What to test:**
+
 - Commands work with other plugin components
 - Commands interact correctly with each other
 - State management works across invocations
@@ -507,10 +479,8 @@ jobs:
 
       - name: Check for TODOs
         run: |
-          if grep -r "TODO" .claude/commands/; then
-            echo "ERROR: TODOs found in commands"
-            exit 1
-          fi
+          Grep for "TODO" pattern in .claude/commands/ directory
+          If matches found, fail the check
 ```
 
 ## Edge Case Testing
@@ -518,12 +488,14 @@ jobs:
 ### Test Edge Cases
 
 **Empty arguments:**
+
 ```bash
 > /cmd ""
 > /cmd '' ''
 ```
 
 **Special characters:**
+
 ```bash
 > /cmd "arg with spaces"
 > /cmd arg-with-dashes
@@ -533,11 +505,13 @@ jobs:
 ```
 
 **Long arguments:**
+
 ```bash
 > /cmd $(python -c "print('a' * 10000)")
 ```
 
 **Unusual file paths:**
+
 ```bash
 > /cmd ./file
 > /cmd ../file
@@ -546,13 +520,16 @@ jobs:
 ```
 
 **Bash command edge cases:**
+
 ```markdown
 # Commands that might fail
+
 !`exit 1`
 !`false`
 !`command-that-does-not-exist`
 
 # Commands with special output
+
 !`echo ""`
 !`cat /dev/null`
 !`yes | head -n 1000000`
@@ -656,12 +633,14 @@ Recruit testers:
 Before releasing a command:
 
 ### Structure
+
 - [ ] File in correct location
 - [ ] Correct .md extension
 - [ ] Valid YAML frontmatter (if present)
 - [ ] Markdown syntax correct
 
 ### Functionality
+
 - [ ] Command appears in `/help`
 - [ ] Description is clear
 - [ ] Command executes without errors
@@ -670,6 +649,7 @@ Before releasing a command:
 - [ ] Bash execution works (if used)
 
 ### Edge Cases
+
 - [ ] Missing arguments handled
 - [ ] Invalid arguments detected
 - [ ] Non-existent files handled
@@ -677,12 +657,14 @@ Before releasing a command:
 - [ ] Long inputs handled
 
 ### Integration
+
 - [ ] Works with other commands
 - [ ] Works with hooks (if applicable)
 - [ ] Works with MCP (if applicable)
 - [ ] State management works
 
 ### Quality
+
 - [ ] Performance acceptable
 - [ ] No security issues
 - [ ] Error messages helpful
@@ -690,6 +672,7 @@ Before releasing a command:
 - [ ] Documentation complete
 
 ### Distribution
+
 - [ ] Tested by others
 - [ ] Feedback incorporated
 - [ ] README updated
@@ -719,8 +702,8 @@ claude --debug
 
 ```bash
 # Verify syntax
-grep '\$1' .claude/commands/my-command.md
-grep '\$ARGUMENTS' .claude/commands/my-command.md
+Grep for '\$1' in .claude/commands/my-command.md
+Grep for '\$ARGUMENTS' in .claude/commands/my-command.md
 
 # Test with simple command first
 echo "Test: \$1 and \$2" > .claude/commands/test-args.md
@@ -730,10 +713,10 @@ echo "Test: \$1 and \$2" > .claude/commands/test-args.md
 
 ```bash
 # Check allowed-tools
-grep "allowed-tools" .claude/commands/my-command.md
+Grep for "allowed-tools" in .claude/commands/my-command.md
 
 # Verify command syntax
-grep '!\`' .claude/commands/my-command.md
+Grep for '!\`' in .claude/commands/my-command.md
 
 # Test command manually
 date
@@ -744,7 +727,7 @@ echo "test"
 
 ```bash
 # Check @ syntax
-grep '@' .claude/commands/my-command.md
+Grep for '@' in .claude/commands/my-command.md
 
 # Verify file exists
 ls -la /path/to/referenced/file

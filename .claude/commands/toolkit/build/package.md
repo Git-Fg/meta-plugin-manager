@@ -73,8 +73,11 @@ When invoked, analyze conversation:
 If $ARGUMENTS empty:
 
 - Ask for component purpose using AskUserQuestion
+- Provide recognition-based options (2-4 choices, user selects no typing)
 - Determine complexity level
 - Identify required interaction modes
+
+**L'Entonnoir pattern:** Ask → User selects → Explore → Ask (narrower) → Execute
 
 If $ARGUMENTS present:
 
@@ -201,7 +204,7 @@ User Request
 │                    COMMAND (Entry Point)                   │
 │  - Quick intent invocation                                  │
 │  - Routes to appropriate workflow or skill                 │
-│  - User interaction via AskUserQuestion                    │
+│  - User interaction: AskUserQuestion with 2-4 options     │
 └─────────────────────────────────────────────────────────────┘
      │
      ├──→ Workflow 1 (Guided Process)
@@ -214,6 +217,8 @@ User Request
      │
      └──→ Skill (Direct Access)
 ```
+
+**L'Entonnoir pattern applied:** User selects from options (no typing), explore between rounds, narrow scope progressively.
 
 ---
 
@@ -241,4 +246,4 @@ No exceptions. Package is a complete capability, not a monolith.
 - Workflows provide guided processes
 - Examples demonstrate usage
 - Scripts automate correctly
-- High autonomy (0-3 AskUserQuestion rounds)
+- High autonomy (1-3 AskUserQuestion rounds with recognition-based options)

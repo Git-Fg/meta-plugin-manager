@@ -27,7 +27,7 @@ src/
 └── tools/
     ├── shared.ts      # Shared types, constants, cache, cost logic
     ├── gemini.ts      # Gemini-specific tools (3 tools)
-    └── perplexity.ts  # Perplexity-specific tools (4 tools)
+    └── perplexity.ts  # Perplexity-specific tools (3 tools)
 ```
 
 ## Tools
@@ -42,12 +42,11 @@ src/
 
 ### Perplexity Tools
 
-| Tool                           | Description                          | Cost Tier |
-| ------------------------------ | ------------------------------------ | --------- |
-| `ask_perplexity`               | Web-grounded text answers            | $$        |
-| `search_perplexity`            | Ranked web search results            | $$        |
-| `ask_perplexity_with_image`    | Visual analysis with web grounding   | $$        |
-| `ask_perplexity_with_document` | Document analysis with web grounding | $$        |
+| Tool                         | Description                                | Cost Tier |
+| ---------------------------- | ------------------------------------------ | --------- |
+| `ask_perplexity`             | Web-grounded text answers                  | $$        |
+| `search_perplexity`          | Ranked web search results                  | $$        |
+| `ask_perplexity_with_assets` | Image/document analysis with web grounding | $$        |
 
 ## Models
 
@@ -62,9 +61,7 @@ src/
 
 | Model                 | Input ($/1M) | Output ($/1M) | Use Case            |
 | --------------------- | ------------ | ------------- | ------------------- |
-| `sonar`               | $5.00        | $15.00        | Basic web search    |
 | `sonar-pro`           | $10.00       | $25.00        | Advanced web search |
-| `sonar-reasoning-pro` | $20.00       | $40.00        | Deep analysis       |
 | `sonar-deep-research` | $30.00       | $60.00        | Exhaustive reports  |
 
 ## Cost Tracking

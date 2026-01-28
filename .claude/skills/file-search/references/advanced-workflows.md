@@ -23,15 +23,17 @@ rg --json "pattern"
 ### Large Repository Navigation
 
 ```bash
-# Cache file list for repeated searches
-fd -t f > /tmp/filelist.txt
-rg -f /tmp/filelist.txt "pattern"
+# Use Glob tool for file discovery
+Glob: Find all files matching pattern
+
+# Use Grep tool for content search
+Grep: Search for "pattern" in matched files
 
 # Find recently modified with content
-fd --changed-within 1d -t f -x rg -l "TODO"
+Glob: Find files changed within 1 day → Grep for "TODO"
 
 # Scan by file size (avoid huge files)
-fd -t f -x 'du -h {}' | awk '$1 ~ /^[0-9]+K/ {print $2}' | xargs rg "pattern"
+Glob: Find files → Grep for "pattern" (Grep skips binary files automatically)
 ```
 
 ### Cross-Reference Analysis
@@ -61,6 +63,7 @@ find . -type f -newermt "2024-01-01" -name "*.js" | xargs rg "TODO"
 ### Emerging Alternatives
 
 **ugrep** - Modern C++ search with extended features:
+
 ```bash
 ug -r "pattern" --json
 ug -t py "pattern"
@@ -71,16 +74,19 @@ Note: ugrep still emerging; ripgrep remains standard for 2025-2026.
 ## Git Integration
 
 **Search in tracked files only:**
+
 ```bash
 rg "pattern" --glob '!{.git,node_modules}'
 ```
 
 **Find modified files:**
+
 ```bash
 fd -t f -x git status -s {} | rg "^ M"
 ```
 
 **Search Git history:**
+
 ```bash
 git log -S "pattern" --oneline    # Find when pattern was added
 git log -p --all -S "function"    # Full diff with changes
@@ -112,28 +118,34 @@ cdl() {
 ## Power Workflows
 
 **Find large files:**
+
 ```bash
-fd -t f -x du -h {} | sort -h | rg "\d{3}M|\dG"
+Glob: Find all files → Read stats for size analysis
 ```
 
-**Search and replace (dry-run):**
+**Search and replace (controlled):**
+
 ```bash
-rg "old" --files-with-matches | xargs sed -i.bak 's/old/new/g'
+Grep: Find files containing "old"
+Edit: Use replace_all: true for controlled replacements
 ```
 
 **Find recently modified files:**
+
 ```bash
-fd -t f -x stat -f "%Sm %N" -t "%Y-%m-%d" {} | sort -r | head -20
+Glob: Find files → sort by modification time
 ```
 
 **Search multiple patterns:**
+
 ```bash
-rg -e "TODO" -e "FIXME" -e "HACK"
+Grep: Use -e flag for multiple patterns: rg -e "TODO" -e "FIXME" -e "HACK"
 ```
 
 ## Project-Specific Patterns
 
 **Monorepo navigation:**
+
 ```bash
 # Find packages
 fd -t d -p "package" | fzf
@@ -143,6 +155,7 @@ fd -t d -p "package" | fzf | xargs -I {} rg "pattern" {}
 ```
 
 **Test file matching:**
+
 ```bash
 # Find test for source file
 fd "app.js" | xargs -I {} fd "{}.test.js"
@@ -151,14 +164,17 @@ fd "app.js" | xargs -I {} fd "{}.test.js"
 ## Environment-Specific
 
 **Tmux integration:**
+
 ```bash
 tmux list-sessions | fzf | xargs tmux switch-client -t
 tmux list-windows | fzf | xargs tmux select-window -t
 ```
 
-**Process management:**
+**Process management (for AI agents):**
+
 ```bash
-ps aux | fzf | awk '{print $2}' | xargs kill
+# Use LSP or native IDE tools for process-related operations
+# Do not use ps aux | fzf | xargs kill in automated workflows
 ```
 
 ## Performance Optimization
@@ -172,12 +188,14 @@ ps aux | fzf | awk '{print $2}' | xargs kill
 - **Regex compilation:** Literal strings (-F) avoid regex overhead
 
 **Parallel execution:**
+
 ```bash
 fd -t f | xargs -P 8 -I {} rg "pattern" {}
 rg --threads auto "pattern"
 ```
 
 **Cache expensive searches:**
+
 ```bash
 fd -t f > /tmp/filelist.txt
 rg "pattern" -f /tmp/filelist.txt
@@ -185,6 +203,7 @@ export FZF_DEFAULT_COMMAND='fd --type file --hidden'
 ```
 
 **MacBook Pro M1 Specific:**
+
 ```bash
 rg --version | grep -i neon
 rg --threads auto "pattern"
@@ -192,6 +211,7 @@ sysctl -n machdep.cpu.brand_string
 ```
 
 **Benchmark Results:**
+
 ```bash
 time rg "TODO" .
 time grep -r "TODO" .
@@ -204,6 +224,7 @@ time rg "Error" .
 ## Output Formatting
 
 **JSON output:**
+
 ```bash
 rg "pattern" --json | jq -r '.data.lines.text'
 rg "pattern" --color=always > results.txt

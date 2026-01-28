@@ -141,8 +141,8 @@ Comprehensive quality assurance through 6 sequential verification gates: build â
 
 **Commands by project type**:
 
-- Secrets: `git diff --cached | grep -iE '(password|secret|api_key|token)'\`
-- Console logs: `git diff --cached | grep -E 'console\.(log|debug|info|warn|error)'`
+- Secrets: Use `Grep` with `-iE` flag on git diff output
+- Console logs: Use `Grep` with `-E` flag on git diff output
 - Vulnerabilities: `npm audit`, `pip-audit`, `cargo audit`
 - File permissions: `find . -type f -perm /o+w`
 
@@ -159,19 +159,18 @@ Comprehensive quality assurance through 6 sequential verification gates: build â
 - No TODO/FIXME left in changes
 - Files are properly formatted
 
-**Commands**:
+**Commands** (using native tools):
 
-```bash
-# Check for commented-out code
-git diff --cached | grep -E '^\+.*//.*code|^\+.*#.*code'
+```markdown
+<!-- Check for commented-out code -->
+Grep: Search git diff for pattern with -E flag
 
-# Check for TODO/FIXME
-git diff --cached | grep -E '^\+.*TODO|^\+.*FIXME'
+<!-- Check for TODO/FIXME -->
+Grep: Search git diff for TODO/FIXME patterns
 
-# Verify formatting
-git diff --cached --name-only | xargs prettier --check 2>/dev/null || true
+<!-- Verify formatting -->
+Glob: Find changed files â†’ Run formatter check on each
 ```
-
 **Failure behavior**: Warning (doesn't block, but alerts)
 
 ## Sequential Enforcement

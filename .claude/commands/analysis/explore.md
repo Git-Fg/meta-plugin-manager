@@ -28,14 +28,26 @@ Explore and analyze a skill/command through guided questioning.
 
 ## The Approach
 
-**Work through this iteratively:**
+**L'Entonnoir pattern applied:**
 
-1. **Understand context** — What are we looking at and why does it matter?
-2. **Explore dimensions** — What aspects deserve attention?
-3. **Question assumptions** — What seems obvious but might not be?
-4. **Reach conclusions** — What should actually happen?
+```
+AskUserQuestion (batch of 2-4 options, recognition-based)
+     ↓
+User selects from options (no typing)
+     ↓
+Explore based on selection
+     ↓
+AskUserQuestion (narrower batch)
+     ↓
+Repeat until ready → Conclude
+```
 
-**Use AskUserQuestion** to guide exploration—batch 1-4 related questions per round, investigate between rounds based on answers, and let the dialogue shape the direction. Continue until clarity emerges naturally.
+**Core principles:**
+
+1. **Continuous exploration** — Investigate at ANY time, not just between rounds
+2. **Recognition-based questions** — User selects from 2-4 options, never types
+3. **Progressive narrowing** — Each round reduces uncertainty
+4. **Exit criteria** — Stop when clarity emerges
 
 ## Recognition Questions
 

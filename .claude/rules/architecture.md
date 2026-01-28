@@ -142,14 +142,34 @@ Users recognize faster than they generate. Structure questions for recognition, 
 ### The Funnel Flow
 
 ```
-Investigate → AskUserQuestion (batch 1-4 related questions)
+AskUserQuestion (batch of 2-4 options, recognition-based)
      ↓
-Analyze response → Narrow investigation
+User selects from options (no typing)
      ↓
-AskUserQuestion (next batch)
+Explore based on selection → AskUserQuestion (narrower batch)
      ↓
 Repeat until ready → Execute
 ```
+
+### Key Principles
+
+**Continuous Exploration:**
+
+- Investigate at ANY time - before first question, between questions, during questions
+- Don't wait for user response to explore context
+- Exploration informs the NEXT question, not waits for it
+
+**Actionable Questions:**
+
+- Every question offers 2-4 options (recognition-based)
+- User selects, never types free-form text
+- Options should narrow scope (funnel effect)
+
+**Efficient Funneling:**
+
+- Each round reduces uncertainty
+- Questions build on previous context
+- Exit to execution when scope is clear
 
 ### Batching Guidelines
 

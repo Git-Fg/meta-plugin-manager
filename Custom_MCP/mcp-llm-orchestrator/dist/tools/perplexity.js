@@ -115,17 +115,11 @@ export function registerPerplexityTools(server) {
     server.registerTool("ask_perplexity", {
         title: "Ask Perplexity",
         description: "Send a query to Perplexity AI for web-grounded answers with citations. " +
-            "Use sonar for simple queries, sonar-pro for advanced search, sonar-reasoning-pro for complex analysis, " +
-            "or sonar-deep-research for exhaustive research reports.",
+            "Use sonar-pro for advanced search, sonar-deep-research for exhaustive research reports.",
         inputSchema: {
             query: z.string().min(1).describe("The question or research query"),
             model: z
-                .enum([
-                MODELS.PERPLEXITY_SONAR,
-                MODELS.PERPLEXITY_SONAR_PRO,
-                MODELS.PERPLEXITY_SONAR_REASONING,
-                MODELS.PERPLEXITY_SONAR_DEEP,
-            ])
+                .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
                 .default(MODELS.PERPLEXITY_SONAR_PRO)
                 .describe("Perplexity model to use"),
             system_prompt: z
@@ -236,102 +230,54 @@ export function registerPerplexityTools(server) {
             ],
         };
     });
-    server.registerTool("ask_perplexity_with_image", {
-        title: "Ask Perplexity with Image",
-        description: "Send a query with image attachment to Perplexity Sonar for web-grounded visual analysis. " +
-            "Supports JPEG, PNG, GIF, WebP images via base64 or URL. " +
-            "Use sonar-pro for advanced visual reasoning.",
+    server.registerTool("ask_perplexity_with_assets", {
+        title: "Ask Perplexity with Assets",
+        description: "Send a query with image or document attachments to Perplexity Sonar for web-grounded multimodal analysis. " +
+            "Supports JPEG, PNG, GIF, WebP images and PDF, DOC, DOCX, TXT, RTF documents (max 50MB). " +
+            "Use sonar-deep-research for exhaustive multimodal reports.",
         inputSchema: {
-            query: z.string().min(1).describe("The question about the image"),
-            imageData: z.string().describe("Image as base64 or HTTP/HTTPS URL"),
-            mimeType: z
-                .enum(["image/jpeg", "image/png", "image/gif", "image/webp"])
-                .default("image/jpeg")
-                .describe("Image MIME type"),
+            query: z.string().min(1).describe("The question about the assets"),
             model: z
-                .enum([
-                MODELS.PERPLEXITY_SONAR,
-                MODELS.PERPLEXITY_SONAR_PRO,
-                MODELS.PERPLEXITY_SONAR_REASONING,
-                MODELS.PERPLEXITY_SONAR_DEEP,
-            ])
+                .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
                 .default(MODELS.PERPLEXITY_SONAR_PRO)
                 .describe("Perplexity model to use"),
             system_prompt: z
                 .string()
                 .optional()
                 .describe("Optional system prompt for context"),
-        },
-        outputSchema: {
-            answer: z.string().describe("The web-grounded visual analysis"),
-        },
-    }, async ({ query, imageData, mimeType, model, system_prompt }) => {
-        const isUrl = imageData.startsWith("http://") || imageData.startsWith("https://");
-        const cacheKey = getCacheKey("pplx-img", model, isUrl ? imageData : imageData.slice(0, 50), query);
-        const cached = responseCache.get(cacheKey);
-        if (cached) {
-            console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-            return { content: [{ type: "text", text: cached.response }] };
-        }
-        const result = await callPerplexity(query, model, system_prompt, [
-            { type: "image", mimeType, data: imageData },
-        ]);
-        const cost = calculateCost(model, result.usage.inputTokens, result.usage.outputTokens);
-        logCost(cost, false);
-        responseCache.set(cacheKey, {
-            response: result.response,
-            timestamp: Date.now(),
-        });
-        return { content: [{ type: "text", text: result.response }] };
-    });
-    server.registerTool("ask_perplexity_with_document", {
-        title: "Ask Perplexity with Document",
-        description: "Send a query with document attachment to Perplexity Sonar for document analysis. " +
-            "Supports PDF, DOC, DOCX, TXT, RTF files (max 50MB). " +
-            "Use for analyzing reports, papers, contracts, or other documents with web grounding.",
-        inputSchema: {
-            query: z.string().min(1).describe("The question about the document"),
-            documentData: z
-                .string()
-                .describe("Document as base64-encoded content or HTTP/HTTPS URL"),
-            mimeType: z
-                .enum([
-                "application/pdf",
-                "application/msword",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "text/plain",
-                "application/rtf",
-            ])
-                .describe("Document MIME type"),
-            model: z
-                .enum([
-                MODELS.PERPLEXITY_SONAR,
-                MODELS.PERPLEXITY_SONAR_PRO,
-                MODELS.PERPLEXITY_SONAR_REASONING,
-                MODELS.PERPLEXITY_SONAR_DEEP,
-            ])
-                .default(MODELS.PERPLEXITY_SONAR_PRO)
-                .describe("Perplexity model to use"),
-            system_prompt: z
-                .string()
+            assets: z
+                .array(z.object({
+                type: z.enum(["image", "document"]).describe("Asset type"),
+                mimeType: z.string().describe("MIME type of the asset"),
+                data: z
+                    .string()
+                    .describe("Asset as base64-encoded content or HTTP/HTTPS URL"),
+            }))
                 .optional()
-                .describe("Optional system prompt for context"),
+                .default([])
+                .describe("Array of image or document attachments"),
         },
         outputSchema: {
-            answer: z.string().describe("The web-grounded document analysis"),
+            answer: z.string().describe("The web-grounded multimodal analysis"),
         },
-    }, async ({ query, documentData, mimeType, model, system_prompt }) => {
-        const isUrl = documentData.startsWith("http://") ||
-            documentData.startsWith("https://");
-        const cacheKey = getCacheKey("pplx-doc", model, isUrl ? documentData : documentData.slice(0, 50), query);
+    }, async ({ query, model, system_prompt, assets }) => {
+        const assetKey = assets
+            ? assets
+                .map((a) => `${a.type}:${a.mimeType}:${a.data.slice(0, 50)}`)
+                .join("|")
+            : "";
+        const cacheKey = getCacheKey("pplx-assets", model, system_prompt, query, assetKey);
         const cached = responseCache.get(cacheKey);
         if (cached) {
             console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
             return { content: [{ type: "text", text: cached.response }] };
         }
-        const result = await callPerplexity(query, model, system_prompt, [
-            { type: "document", mimeType, data: documentData },
-        ]);
+        const attachments = assets?.map((a) => ({
+            type: a.type,
+            mimeType: a.mimeType,
+            data: a.data,
+        }));
+        const result = await callPerplexity(query, model, system_prompt, attachments);
         const cost = calculateCost(model, result.usage.inputTokens, result.usage.outputTokens);
         logCost(cost, false);
         responseCache.set(cacheKey, {

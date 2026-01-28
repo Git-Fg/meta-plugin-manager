@@ -125,12 +125,11 @@ Announce: "Using REVIEWED mode - fresh subagent per task with two-stage quality 
 
 ### Step 1: Analyze Checkpoint Types
 
-```bash
-# Detect checkpoint types in plan
-grep -n "type=\"checkpoint" PLAN.md
+Use the `Grep` tool to detect checkpoint types in the plan:
 
-# Extract checkpoint categories
-grep "type=\"checkpoint" PLAN.md | grep -o 'checkpoint:[^"]*' | sort | uniq
+```
+Grep: Search PLAN.md for pattern: type="checkpoint
+Output mode: content (shows line numbers)
 ```
 
 ### Step 2: Apply Decision Matrix
@@ -163,15 +162,11 @@ grep "type=\"checkpoint" PLAN.md | grep -o 'checkpoint:[^"]*' | sort | uniq
 
 Segment = tasks between checkpoints (or start→first checkpoint, last checkpoint→end)
 
-```bash
-# Find all checkpoints and their line numbers
-grep -n "type=\"checkpoint" PLAN.md
+Use the `Grep` tool to find all checkpoints and their line numbers:
 
-# Build segment map:
-# - Segment 1: Start → first checkpoint (tasks 1-X)
-# - Checkpoint 1: Location and type
-# - Segment 2: After checkpoint 1 → next checkpoint (tasks X+1 to Y)
-# - ...
+```
+Grep: Search PLAN.md for pattern: type="checkpoint
+Output mode: content (shows line numbers)
 ```
 
 ### Execute Segments

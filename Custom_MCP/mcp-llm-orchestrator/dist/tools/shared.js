@@ -3,17 +3,13 @@ import { LRUCache } from "lru-cache";
 export const MODELS = {
     GEMINI_FLASH: "gemini-3-flash-preview",
     GEMINI_PRO: "gemini-3-pro-preview",
-    PERPLEXITY_SONAR: "sonar",
     PERPLEXITY_SONAR_PRO: "sonar-pro",
-    PERPLEXITY_SONAR_REASONING: "sonar-reasoning-pro",
     PERPLEXITY_SONAR_DEEP: "sonar-deep-research",
 };
 export const COST_PER_MILLION = {
     "gemini-3-flash-preview": { input: 0.5, output: 3.0 },
     "gemini-3-pro-preview": { input: 2.0, output: 12.0 },
-    sonar: { input: 5.0, output: 15.0 },
     "sonar-pro": { input: 10.0, output: 25.0 },
-    "sonar-reasoning-pro": { input: 20.0, output: 40.0 },
     "sonar-deep-research": { input: 30.0, output: 60.0 },
 };
 export const EnvSchema = z.object({

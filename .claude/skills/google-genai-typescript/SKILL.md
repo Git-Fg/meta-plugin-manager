@@ -337,27 +337,91 @@ let operation = await ai.models.generateVideos({
 | Cloudflare Workers | Yes       |
 | Vercel Edge        | Yes       |
 
-## Official Documentation URLs
+## Relevance Heuristic
 
-Fetch from these URLs when verifying or in doubt:
+<freshness_gate>
+<purpose>Validate URL freshness before trusting documentation</purpose>
 
-| Purpose                 | URL                                                                      |
-| ----------------------- | ------------------------------------------------------------------------ |
-| SDK Repository          | https://github.com/googleapis/js-genai                                   |
-| SDK README              | https://github.com/googleapis/js-genai/blob/main/README.md               |
-| Codegen Instructions    | https://github.com/googleapis/js-genai/blob/main/codegen_instructions.md |
-| npm Package             | https://www.npmjs.com/package/@google/genai                              |
-| Generated API Reference | https://googleapis.github.io/js-genai/                                   |
-| Gemini API Quickstart   | https://ai.google.dev/gemini-api/docs/quickstart                         |
-| Gemini API Reference    | https://ai.google.dev/api                                                |
-| Vertex AI SDK Overview  | https://docs.cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview |
+<rule>
 
-**Verification workflow:**
+**Freshness Gate:** Before trusting any code snippets from a URL:
 
-1. Check npm for latest version before installation
-2. Fetch codegen_instructions.md for official patterns
-3. Consult API reference for type definitions
-4. Review Gemini API docs for model updates and capabilities
+1. Fetch the URL and check for last-updated metadata (Last-Modified header, date in content, or commit history)
+2. If content is > 6 months old, search for a more recent version before using the code
+3. Prefer npm package version checks and CHANGELOG over README URLs for SDK changes
+4. Document the freshness check result in the session
+
+</rule>
+
+<exception>
+
+Skip freshness check when:
+
+- Checking npm package version (timestamp IS the version)
+- Official SDK changelog confirms API stability
+- Versioned documentation URLs (e.g., /v1/, /2026/)
+
+</exception>
+
+<freshness_check>
+
+```bash
+# Check npm package version and date
+npm view @google/genai time
+
+# Check GitHub file last commit
+gh api repos/googleapis/js-genai/commits?path=README.md --jq '.[0].commit.author.date'
+```
+
+</freshness_check>
+
+</freshness_gate>
+
+**Protocol: Check Principles → Freshness Gate → Fetch Instance → Extract Delta → Dispose**
+
+Before fetching any URL:
+
+1. **Check Principles** - This skill covers installation, SDK usage, configuration, error handling, and best practices. The patterns here are stable.
+
+2. **Freshness Gate** - Verify URL is < 6 months old. If older:
+   - For SDK docs: Check npm view for package release date
+   - For README changes: Check GitHub commit history
+   - Search for updated version before trusting snippets
+
+3. **Fetch Instance Only When**:
+   - npm package shows new version with breaking changes
+   - SDK API signature differs from documented patterns
+   - New model names or capabilities not yet covered
+   - Vertex AI configuration has changed
+
+4. **Extract Delta** - Keep only what this skill doesn't cover:
+   - Version-specific migration notes
+   - New API methods not in examples
+   - Updated model pricing or limits
+   - Region-specific Vertex AI endpoints
+
+5. **Dispose Context** - Remove fetched content after extracting delta
+
+**NEVER copy documentation from URLs.** Instead: fetch the URL, identify current API syntax, apply directly to local files. Do not store documentation in the session.
+
+**When NOT to fetch:**
+
+- Basic SDK initialization (covered with examples)
+- Error handling patterns (covered in tables)
+- Streaming usage (covered with examples)
+- Configuration options (covered in interfaces)
+- Structured outputs (covered with examples)
+
+**Instance Resources** (fetch only when needed, after freshness gate):
+
+| Trigger              | URL                                                                      |
+| -------------------- | ------------------------------------------------------------------------ |
+| Version verification | https://www.npmjs.com/package/@google/genai                              |
+| SDK API changes      | https://github.com/googleapis/js-genai/blob/main/README.md               |
+| Model updates        | https://ai.google.dev/gemini-api/docs/quickstart                         |
+| Vertex AI config     | https://docs.cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview |
+
+**Workflow:** Freshness check → Verify npm version → Consult skill patterns → Fetch instance docs only if behavior differs → Extract delta → Dispose
 
 ---
 

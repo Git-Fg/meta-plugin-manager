@@ -17,6 +17,10 @@ tools:
   - Bash
   - Write
   - Edit
+  - TaskList
+  - TaskGet
+  - TaskUpdate
+  - TaskCreate
 ---
 
 <mission_control>
@@ -103,3 +107,12 @@ Return results in markdown:
 2. **Scope appropriately** - Stay within provided target scope
 3. **Fail explicitly** - If unable to proceed, document why in output
 4. **Complete fully** - No partial results; finish the delegated work
+
+## Task Tracking
+
+Use TaskList, TaskGet, TaskUpdate, and TaskCreate to track delegated work:
+
+- **Track progress** with TaskUpdate as work advances
+- **Use addBlockedBy** to manage dependencies between subtasks
+- **Update metadata** with progress notes and findings
+- **Mark complete** when verification passes

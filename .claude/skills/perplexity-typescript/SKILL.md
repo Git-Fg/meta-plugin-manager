@@ -267,26 +267,43 @@ Never hardcode API keys. Use environment variables or secret managers.
 
 TypeScript >= 4.9 required.
 
-## Official Documentation URLs
+## Relevance Heuristic
 
-Fetch from these URLs when verifying or in doubt:
+**Protocol: Check Principles → Fetch Instance → Extract Delta → Dispose**
 
-| Purpose                                 | URL                                                              |
-| --------------------------------------- | ---------------------------------------------------------------- |
-| SDK README (installation, quickstart)   | https://github.com/perplexityai/perplexity-node                  |
-| API Reference (all methods & types)     | https://github.com/perplexityai/perplexity-node/blob/main/api.md |
-| npm Package (latest version, changelog) | https://www.npmjs.com/package/@perplexity-ai/perplexity_ai       |
-| General API Docs (models, pricing)      | https://docs.perplexity.ai                                       |
-| SDK Quickstart Guide                    | https://docs.perplexity.ai/guides/perplexity-sdk                 |
-| Search Best Practices                   | https://docs.perplexity.ai/guides/search-best-practices          |
-| Search Filters Guide                    | https://docs.perplexity.ai/guides/search-api/filters             |
+Before fetching any URL:
 
-**Verification workflow:**
+1. **Check Principles** - This skill covers installation, API usage, error handling, and best practices. The patterns here are stable.
 
-1. Check npm for latest version before installation
-2. Fetch API reference for type definitions
-3. Consult search best practices for query optimization
-4. Review general docs for model updates and pricing
+2. **Fetch Instance Only When**:
+   - npm package shows new version with breaking changes
+   - SDK API signature differs from documented patterns
+   - Error code behavior has changed
+   - New model capabilities not yet covered
+
+3. **Extract Delta** - Keep only what this skill doesn't cover:
+   - Version-specific migration notes
+   - New API methods not in examples
+   - Updated rate limits or quotas
+
+4. **Dispose Context** - Remove fetched content after extracting delta
+
+**When NOT to fetch:**
+
+- General API concepts (covered in skill)
+- Basic usage patterns (covered with examples)
+- Error handling patterns (covered in tables)
+- Security best practices (covered in constraints)
+
+**Instance Resources** (fetch only when needed):
+
+| Trigger                | URL                                                              |
+| ---------------------- | ---------------------------------------------------------------- |
+| Version verification   | https://www.npmjs.com/package/@perplexity-ai/perplexity_ai       |
+| API signature changes  | https://github.com/perplexityai/perplexity-node/blob/main/api.md |
+| New model capabilities | https://docs.perplexity.ai                                       |
+
+**Workflow:** Verify npm version → Consult skill patterns → Fetch instance docs only if behavior differs → Extract delta → Dispose
 
 ## References
 

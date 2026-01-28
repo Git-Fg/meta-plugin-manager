@@ -337,6 +337,46 @@ Options:
 3. **Plan implementation** - Create a detailed implementation plan with tasks
 4. **Done for now** - Save the spec, implement later
 
+## L'Entonnoir: The Question Funnel
+
+**Apply the funnel pattern throughout discovery:**
+
+```
+AskUserQuestion (batch of 2-4 options, recognition-based)
+     ↓
+User selects from options (no typing)
+     ↓
+Explore based on selection (continuous investigation)
+     ↓
+AskUserQuestion (narrower batch)
+     ↓
+Repeat until ready → Move to next category
+```
+
+**Key principles:**
+
+1. **Continuous exploration** — Investigate at ANY time, not just between rounds
+2. **Recognition-based options** — User selects from 2-4 options, never types free-form
+3. **Progressive narrowing** — Each round reduces uncertainty
+4. **Actionable questions** — Options should be concrete with clear tradeoffs
+
+**Bad example:**
+
+```
+"What database do you want?" (user must generate answer)
+```
+
+**Good example:**
+
+```
+"What kind of data will you store?"
+Options:
+- "Simple key-value pairs" (fast, limited queries)
+- "Complex relational data" (ACID, joins, schema)
+- "Flexible documents" (JSON, schema-less)
+- "Research options" (I'll investigate tradeoffs)
+```
+
 ## AskUserQuestion Best Practices
 
 ### Question Phrasing

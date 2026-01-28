@@ -9,6 +9,7 @@ import {
   calculateCost,
   logCost,
   getCacheKey,
+  processAssetData,
 } from "./shared.js";
 
 const ai = new GoogleGenAI({ apiKey: env.GOOGLE_API_KEY });
@@ -128,8 +129,7 @@ export function registerGeminiTools(server: McpServer): void {
     {
       title: "Ask Gemini 3 Pro with web research",
       description:
-        "Query Gemini 3 Pro with Google Search grounding for up-to-date answers with web citations. " +
-        "Use disable_web_search=true to disable grounding for pure text responses.",
+        "Tool to query Gemini 3 Pro with Google Search grounding. Use when you need up-to-date answers with web citations. Constraint: use ask_gemini_flash for cost-efficient queries; use disable_web_search=true for pure text without grounding.",
       inputSchema: {
         query: z
           .string()
@@ -187,11 +187,9 @@ export function registerGeminiTools(server: McpServer): void {
   server.registerTool(
     "ask_gemini_flash",
     {
-      title: "Ask Gemini 3 Flash",
+      title: "Ask Gemini 3 Flash (Cost-Efficient)",
       description:
-        "Query Gemini 3 Flash for fast, efficient responses with Google Search grounding. " +
-        "Use disable_web_search=true for pure text responses without web grounding. " +
-        "Most cost-effective option ($0.50/$3 per 1M tokens).",
+        "Tool to query Gemini 3 Flash for fast, efficient responses with Google Search grounding. Use when you need cost-effective web-grounded answers. Constraint: use ask_gemini_pro for complex reasoning; use disable_web_search=true for pure text responses.",
       inputSchema: {
         query: z.string().min(1).describe("The question to answer"),
         system_prompt: z
@@ -250,9 +248,7 @@ export function registerGeminiTools(server: McpServer): void {
     {
       title: "Analyze Image, Video, Audio, or Document",
       description:
-        "Use Gemini to analyze images, videos, audio, or documents. " +
-        "Flash is recommended for cost efficiency. Pro is better for complex reasoning. " +
-        "Supports inline base64 data or File API URIs.",
+        "Tool to analyze images, videos, audio, or documents using Gemini. Use when you need multimodal analysis. Constraint: Flash for cost efficiency; Pro for complex reasoning; supports file paths (absolute/relative), URLs, and inline base64.",
       inputSchema: {
         prompt: z
           .string()
@@ -261,19 +257,22 @@ export function registerGeminiTools(server: McpServer): void {
         mediaType: z
           .enum(["image", "video", "audio", "document"])
           .describe("Type of media to analyze"),
-        mediaSource: z
-          .enum(["inline", "uri"])
-          .describe("inline for base64, uri for File API"),
         mimeType: z
           .string()
+          .optional()
           .describe(
-            "MIME type (e.g., image/jpeg, video/mp4, audio/wav, application/pdf)",
+            "MIME type (auto-detected from file extension if data is a file path)",
           ),
         data: z
           .string()
           .optional()
-          .describe("Base64-encoded media if mediaSource=inline"),
-        uri: z.string().optional().describe("File URI if mediaSource=uri"),
+          .describe(
+            "File path (e.g., /path/to/image.png or ./docs/document.pdf), URL (http:// or https://), or base64-encoded content",
+          ),
+        uri: z
+          .string()
+          .optional()
+          .describe("Alias for data parameter (legacy support)"),
         model: z
           .enum([MODELS.GEMINI_FLASH, MODELS.GEMINI_PRO])
           .default(MODELS.GEMINI_FLASH)
@@ -283,7 +282,12 @@ export function registerGeminiTools(server: McpServer): void {
         answer: z.string().describe("The analysis result from Gemini"),
       },
     },
-    async ({ prompt, mediaType, mediaSource, mimeType, data, uri, model }) => {
+    async ({ prompt, mediaType, mimeType, data, uri, model }) => {
+      const mediaData = data || uri;
+      if (!mediaData) {
+        throw new Error("Either data or uri parameter is required");
+      }
+
       const cacheKey = getCacheKey(
         "vision",
         model,
@@ -296,13 +300,16 @@ export function registerGeminiTools(server: McpServer): void {
         return { content: [{ type: "text", text: cached.response }] };
       }
 
+      const processed = await processAssetData(mediaData, mimeType);
+      const mediaSource: "inline" | "uri" = processed.isUrl ? "uri" : "inline";
+
       const result = await callGeminiMultimodal(
         prompt,
         mediaType,
         mediaSource,
-        mimeType,
-        data,
-        uri,
+        processed.mimeType,
+        processed.isUrl ? undefined : processed.data,
+        processed.isUrl ? processed.data : undefined,
         model,
       );
       const cost = calculateCost(

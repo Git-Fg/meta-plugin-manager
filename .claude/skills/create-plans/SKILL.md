@@ -16,7 +16,52 @@ MANDATORY: Load planning references BEFORE creating plans:
   </mission_control>
 
 <interaction_schema>
-explore → infer → ask_one → write_plan → confirm_execution</interaction_schema>
+explore → ask_one → explore_response → ask_again (if needed) → write_plan → confirm_execution</interaction_schema>
+
+## L'Entonnoir (The Funnel) - MANDATORY PROTOCOL
+
+**Iterative AskUserQuestion with exploration between each round:**
+
+```
+EXPLORE → ASK ONE → EXPLORE RESPONSE → NEW QUESTION (if needed) → ...
+     ↓          ↓           ↓                  ↓
+  [Read all]  [1 question] [Verify answer]  [Explore more]
+                                                      ↓
+                                              WHEN CLEAR: STOP
+                                                      ↓
+                                              WRITE PLAN
+```
+
+### Core Principles
+
+**1. Continuous Exploration**
+- Explore at ANY time - before first question, between questions, during questions
+- Do not wait for user response to explore context
+- Exploration informs the NEXT question, not waits for it
+
+**2. One Question at a Time**
+- Every question offers 2-4 options (recognition-based)
+- User selects, never types free-form text
+- Options narrow scope (funnel effect)
+
+**3. Efficient Funneling**
+- Each round reduces uncertainty
+- Questions build on previous context
+- Exit to execution when scope is clear
+
+### Question Flow
+
+1. **EXPLORE** - Read all files, analyze codebase, check git history
+2. **INFER** - Try to infer answers from exploration
+3. **ASK ONE** - Focused question with 2-4 recognition-based options
+4. **EXPLORE RESPONSE** - Use tools to verify user's answer
+5. **IF UNCLEAR** → Explore more → Ask next focused question
+6. **WHEN CLEAR** → STOP asking → WRITE PLAN
+7. **CONFIRM** - Single final question about invoking execution
+
+**Never scatter questions throughout workflow.** Ask once, funnel to answer, proceed.
+
+---
 
 # Create Plans
 

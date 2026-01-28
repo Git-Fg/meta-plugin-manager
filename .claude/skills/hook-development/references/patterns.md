@@ -76,6 +76,7 @@ Load project-specific context at session start:
 ```
 
 **Example script (.claude/scripts/load-context.sh):**
+
 ```bash
 #!/bin/bash
 cd "$CLAUDE_PROJECT_DIR" || exit 1
@@ -211,6 +212,7 @@ Run linters or formatters on file edits:
 ```
 
 **Example script (.claude/scripts/check-quality.sh):**
+
 ```bash
 #!/bin/bash
 input=$(cat)
@@ -312,6 +314,7 @@ file_path=$(echo "$input" | jq -r '.tool_input.file_path')
 ```
 
 **Activation:**
+
 ```bash
 # Enable the hook
 touch .enable-strict-validation
@@ -321,6 +324,7 @@ rm .enable-strict-validation
 ```
 
 **Use for:**
+
 - Temporary debugging hooks
 - Feature flags for development
 - Opt-in strict validation
@@ -362,6 +366,7 @@ fi
 ```
 
 **Configuration file (.claude/settings.local.json):**
+
 ```json
 {
   "strictMode": true,
@@ -371,6 +376,7 @@ fi
 ```
 
 **Use for:**
+
 - User-configurable hook behavior
 - Personal development preferences
 - Project-specific validation criteria
@@ -403,6 +409,7 @@ fi
 ```
 
 **Use for:**
+
 - Enhanced validation during active development
 - Pre-commit style checks
 - Branch-specific behavior
@@ -448,6 +455,7 @@ esac
 ```
 
 **Use for:**
+
 - Language-specific validation
 - Framework-aware checks
 - Custom build/test commands
@@ -489,6 +497,7 @@ exit 0
 ```
 
 **Protection targets:**
+
 - `../` traversal sequences
 - `/etc/` system configuration
 - `/usr/` system binaries
@@ -531,6 +540,7 @@ exit 0
 ```
 
 **Protected file types:**
+
 - Environment files (`.env*`)
 - Credential files (`credentials`, `secret`)
 - Private keys (`private_key`, `id_rsa`, `.pem`, `.key`)
@@ -573,6 +583,7 @@ exit 0
 ```
 
 **Intercepted commands:**
+
 - File deletion (`rm -rf`, `dd`)
 - Filesystem operations (`mkfs`)
 - Database operations (`drop`, `delete`, `truncate`)
@@ -582,26 +593,16 @@ exit 0
 
 Prevent sensitive data leakage in hook output:
 
-```bash
-#!/bin/bash
-set -euo pipefail
+```markdown
+<!-- For AI agents using native tools -->
 
-# Process output and redact sensitive patterns
-sanitize_output() {
-  local output="$1"
-  # Redact API keys
-  output=$(echo "$output" | sed 's/key=["'"'"'][^'"'"']*/key=***REJECTED***/g')
-  # Redact tokens
-  output=$(echo "$output" | sed 's/token=["'"'"'][^'"'"']*/token=***REJECTED***/g')
-  # Redact passwords
-  output=$(echo "$output" | sed 's/password=["'"'"'][^'"'"']*/password=***REJECTED***/g')
-  echo "$output"
-}
+Use the `Edit` tool with regex replacement for controlled sanitization:
+```
 
-# Use sanitized output in hooks
-result=$(some_command)
-sanitized=$(sanitize_output "$result")
-echo "$sanitized"
+Edit: Replace pattern key="[^"]\*" with key=**_REJECTED_**
+Edit: Replace pattern token="[^"]\*" with token=**_REJECTED_**
+Edit: Replace pattern password="[^"]\*" with password=**_REJECTED_**
+
 ```
 
 **Sanitization targets:**
@@ -609,6 +610,7 @@ echo "$sanitized"
 - Auth tokens (`token=...`)
 - Passwords (`password=...`)
 - Credential strings
+```
 
 ## Advanced Matcher Patterns
 
@@ -635,6 +637,7 @@ Use regex for sophisticated tool matching:
 ```
 
 **Matcher patterns:**
+
 - `mcp__.*` - All MCP tools
 - `mcp__github__.*` - GitHub MCP server tools only
 - `mcp__.*__delete.*` - All MCP deletion operations
@@ -663,6 +666,7 @@ Validate based on file extension via prompt hooks:
 ```
 
 **Target extensions:**
+
 - Shell scripts: `.sh`, `.bash`
 - Python: `.py`, `.pyw`
 - JavaScript: `.js`, `.mjs`
@@ -773,6 +777,7 @@ Put personal hooks in `.claude/settings.local.json` (gitignored):
 ### Hook Priority
 
 When both files define hooks for the same event:
+
 - All hooks run in parallel (no priority)
 - Design hooks for independence
 - Avoid duplicate functionality across files

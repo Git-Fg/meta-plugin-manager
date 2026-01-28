@@ -1,12 +1,12 @@
 ---
-description: "Perform three-way meta-critic review (Request vs Delivery vs Standards) for commands. Use when validating quality or detecting drift."
-argument-hint: [command-path or "auto" for conversation context]
+description: "Perform three-way meta-critic review (Request vs Delivery vs Standards) for any invocable component. Auto-detects target and loads meta-critic skill for quality validation and drift detection."
+argument-hint: [target-path or "auto" for conversation context]
 ---
 
-# Critique Command
+# Universal Critique
 
 <mission_control>
-<objective>Perform three-way meta-critic review for command quality validation and drift detection</objective>
+<objective>Perform three-way meta-critic review for quality validation and drift detection</objective>
 <success_criteria>Three-way comparison completed with specific findings, standards citations, and actionable recommendations</success_criteria>
 </mission_control>
 
@@ -14,27 +14,42 @@ argument-hint: [command-path or "auto" for conversation context]
 
 ### Auto-Detection Priority
 
-1. **Recent command creation or modification?**
-   - Detect recent .md operations in commands/
-   - Identify the command involved
+1. **Recent component creation or modification?**
+   - Detect recent .md or SKILL.md operations
+   - Identify the component involved
    - Auto-target for review
 
 2. **User providing feedback?**
    - Analyze conversation for dissatisfaction
    - "This doesn't feel right"
    - "Something's off"
+   - "Not what I asked for"
    - Trigger critique to diagnose
 
 3. **Explicit invocation?**
-   - $ARGUMENTS = path → Target that command
+   - $ARGUMENTS = path → Target that component
    - $ARGUMENTS = "auto" → Analyze conversation for context
    - $ARGUMENTS empty → Use recent work
 
+## Auto-Reference Router
+
+<router>
+<extension_detect>
+<rule>.md file in commands/ → Load `invocable-development` for standards comparison</rule>
+<rule>SKILL.md in skills/ → Load `meta-critic` skill and `invocable-development` for standards</rule>
+<rule>Unknown extension → Use meta-critic skill for three-way analysis</rule>
+</extension_detect>
+</router>
+
 ## Critique Workflow
 
-### Phase 1: Three-Way Analysis
+### Phase 1: Target and Reference Setup
 
-Load `meta-critic` skill via Skill tool.
+- Auto-detect target component
+- Route to appropriate references based on file extension
+- Load `meta-critic` skill for three-way comparison
+
+### Phase 2: Three-Way Analysis
 
 Meta-critic performs:
 
@@ -49,11 +64,11 @@ Meta-critic performs:
    - What deviations occurred?
 
 3. **Standards Comparison**
-   - Load `invocable-development` skill for standards
+   - Load invocable-development skill for standards
    - Compare delivery against standards
    - Identify gaps and violations
 
-### Phase 2: Findings Formulation
+### Phase 3: Findings Formulation
 
 Meta-critic generates structured report:
 
@@ -77,7 +92,7 @@ Meta-critic generates structured report:
 [Minor improvements or optimizations]
 ```
 
-### Phase 3: Resolution
+### Phase 4: Resolution
 
 - Present findings with severity classification
 - Offer to apply changes
@@ -104,20 +119,21 @@ Meta-critic generates structured report:
 **Auto-detect (after creation):**
 
 ```
-/toolkit:critique:command
-[Detects recent command, performs review]
+/toolkit:critique
+[Detects recent component, performs review]
 ```
 
 **Explicit path:**
 
 ```
-/toolkit:critique:command commands/build/fix.md
+/toolkit:critique commands/build/fix.md
+/toolkit:critique .claude/skills/my-skill
 ```
 
 **Context analysis:**
 
 ```
-/toolkit:critique:command auto
+/toolkit:critique auto
 [Analyzes conversation for what to review]
 ```
 
@@ -125,7 +141,7 @@ Meta-critic generates structured report:
 
 ```
 User: "This doesn't feel right"
-AI: [Suggests] /toolkit:critique:command
+AI: [Suggests] /toolkit:critique
 ```
 
 ## Success Criteria
@@ -136,9 +152,12 @@ AI: [Suggests] /toolkit:critique:command
 - Actionable recommendations formulated
 - User understands issues and next steps
 
+---
+
 <critical_constraint>
 MANDATORY: Load meta-critic skill for three-way comparison
 MANDATORY: Auto-detect context from conversation when possible
 MANDATORY: Cite specific standards from invocable-development
+MANDATORY: Route to appropriate references based on file extension
 No exceptions. Critique validates alignment between request, delivery, and standards.
 </critical_constraint>

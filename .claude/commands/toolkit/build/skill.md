@@ -36,8 +36,10 @@ When invoked, analyze conversation to determine:
 If $ARGUMENTS empty and no recent skill creation:
 
 - Ask for skill purpose using AskUserQuestion
-- Provide recognition-based options when possible
+- Provide 2-4 recognition-based options (user selects, no typing)
 - Prefer inference over generation
+
+**L'Entonnoir pattern:** Ask → User selects → Explore → Ask (narrower) → Execute
 
 If $ARGUMENTS present:
 
@@ -110,7 +112,7 @@ This component carries essential Seed System principles for context: fork isolat
 - SKILL.md includes UHP header/footer
 - Progressive disclosure in place
 - Portability invariant maintained
-- High autonomy (0-2 AskUserQuestion rounds)
+- High autonomy (1-2 AskUserQuestion rounds with recognition-based options)
 
 <critical_constraint>
 MANDATORY: Delegate structural guidance to invocable-development skill

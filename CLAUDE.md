@@ -121,17 +121,15 @@ The toolkit provides command-based interfaces for creating and validating invoca
 
 ### Audit Commands
 
-| Command                  | Purpose                       | Autonomy                   |
-| ------------------------ | ----------------------------- | -------------------------- |
-| `/toolkit:audit:command` | Audit commands for compliance | High (auto-detects target) |
-| `/toolkit:audit:skill`   | Audit skills for compliance   | High (auto-detects target) |
+| Command          | Purpose                                                                  | Autonomy                   |
+| ---------------- | ------------------------------------------------------------------------ | -------------------------- |
+| `/toolkit:audit` | Universal auditor - auto-detects target and routes to correct references | High (auto-detects target) |
 
 ### Critique Commands
 
-| Command                     | Purpose                      | Autonomy                |
-| --------------------------- | ---------------------------- | ----------------------- |
-| `/toolkit:critique:command` | Three-way meta-critic review | High (analyzes context) |
-| `/toolkit:critique:skill`   | Three-way meta-critic review | High (analyzes context) |
+| Command             | Purpose                                                     | Autonomy                |
+| ------------------- | ----------------------------------------------------------- | ----------------------- |
+| `/toolkit:critique` | Universal meta-critic - three-way review for all components | High (analyzes context) |
 
 **Rooter Archetype**: A complete capability package with multiple entry points:
 
@@ -196,10 +194,8 @@ Need to build a portable component?
 ├─ Complete package → /toolkit:build:package
 ├─ Create a command → /toolkit:build:command
 ├─ Create a skill → /toolkit:build:skill
-├─ Audit a command → /toolkit:audit:command
-├─ Audit a skill → /toolkit:audit:skill
-├─ Critique (command) → /toolkit:critique:command
-├─ Critique (skill) → /toolkit:critique:skill
+├─ Audit component → /toolkit:audit (auto-routes by extension)
+├─ Critique component → /toolkit:critique (auto-routes by extension)
 ├─ Create agent → agent-development
 ├─ Add hook → hook-development
 ├─ Add MCP server → mcp-development
@@ -282,6 +278,46 @@ The Seed System consolidates all guidance into three rule files:
 - What the component does (verb + object)
 - When to use it (use cases)
 - What it's NOT for (by behavior, not by referencing other components)
+
+---
+
+## Native Tool Pattern (CRITICAL)
+
+**Replace brittle bash scripts with native tool calls in skill instructions.**
+
+When documenting file operations, search, or text manipulation in skills, use native tools instead of complex bash commands:
+
+| Bash Pattern                | Replace With                    |
+| --------------------------- | ------------------------------- |
+| `grep -n "pattern" file`    | `Grep` tool                     |
+| `head -n N \| grep`         | `Read` with offset + `Grep`     |
+| `sed -n '/^---$/,/^---$/p'` | `Read` tool + parse             |
+| `echo "$VAR" \| grep -q`    | `Grep` with `-q` flag           |
+| `fd \| xargs rg`            | `Glob` + `Grep`                 |
+| `xargs sed -i`              | `Edit` with `replace_all: true` |
+
+**Why**: Native tools are more reliable, self-documenting, and work consistently across environments. Bash scripts with pipes are brittle and hard to maintain.
+
+**When**: Apply this pattern when documenting search, validation, or file manipulation patterns in skills and references.
+
+**Example**:
+
+```
+<!-- Instead of -->
+grep -n "type=\"checkpoint" PLAN.md
+
+<!-- Use -->
+Grep: Search PLAN.md for pattern type="checkpoint (shows line numbers)
+```
+
+**Files updated with this pattern**:
+
+- `execution-orchestrator/SKILL.md`
+- `invocable-development/references/testing-strategies.md`
+- `file-search/references/advanced-workflows.md`
+- `hook-development/references/patterns.md`
+- `invocable-development/references/plugin-features-reference.md`
+- `verification-loop/SKILL.md`
 
 ---
 

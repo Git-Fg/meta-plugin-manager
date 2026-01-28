@@ -3,9 +3,7 @@ import { LRUCache } from "lru-cache";
 export declare const MODELS: {
     readonly GEMINI_FLASH: "gemini-3-flash-preview";
     readonly GEMINI_PRO: "gemini-3-pro-preview";
-    readonly PERPLEXITY_SONAR: "sonar";
     readonly PERPLEXITY_SONAR_PRO: "sonar-pro";
-    readonly PERPLEXITY_SONAR_REASONING: "sonar-reasoning-pro";
     readonly PERPLEXITY_SONAR_DEEP: "sonar-deep-research";
 };
 export type ModelName = (typeof MODELS)[keyof typeof MODELS];
