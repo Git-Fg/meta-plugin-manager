@@ -1,7 +1,16 @@
 ---
-description: "Explore and analyze a skill/command through guided questioning. Use when: user mentions 'explore', 'analyze', 'guided questioning'; need to understand context before proceeding; uncovering assumptions and insights. Not for: quick direct answers, simple tool execution."
+description: "Explore and analyze a skill or command through guided questioning to understand context before proceeding and uncover assumptions. Not for quick direct answers or simple tool execution."
 argument-hint: [skill-or-command-path]
 ---
+
+<mission_control>
+<objective>Explore and analyze skill/command through guided questioning to understand context and assumptions</objective>
+<success_criteria>Clarity emerges through iterative questioning, user validates findings</success_criteria>
+</mission_control>
+
+<interaction_schema>
+understand_context → explore_dimensions → question_assumptions → reach_conclusions
+</interaction_schema>
 
 # Exploratory Analysis
 
@@ -26,7 +35,7 @@ Explore and analyze a skill/command through guided questioning.
 3. **Question assumptions** — What seems obvious but might not be?
 4. **Reach conclusions** — What should actually happen?
 
-**Use AskUserQuestion** to guide exploration—ask one question at a time, build on responses, and let the dialogue shape the direction. Continue until clarity emerges naturally.
+**Use AskUserQuestion** to guide exploration—batch 1-4 related questions per round, investigate between rounds based on answers, and let the dialogue shape the direction. Continue until clarity emerges naturally.
 
 ## Recognition Questions
 
@@ -51,6 +60,7 @@ Explore and analyze a skill/command through guided questioning.
 ## When to Stop Questioning
 
 **Stop when:**
+
 - Clear direction emerges without prompting
 - Same insight surfaces across multiple questions
 - Confidence expressed about path forward
@@ -63,3 +73,10 @@ Explore and analyze a skill/command through guided questioning.
 Begin by understanding what matters most about `$ARGUMENTS`, then explore from there. Trust the process—let questions lead where they need to go.
 
 **Key Question**: "What assumptions are we making that might not be true?" Ask this to uncover hidden context.
+
+<critical_constraint>
+MANDATORY: Use tools first, never ask blind
+MANDATORY: Ask recognition-based questions, not open-ended generation
+MANDATORY: Batch 1-4 related questions per AskUserQuestion call, investigate between rounds
+No exceptions. Guided exploration requires disciplined questioning.
+</critical_constraint>

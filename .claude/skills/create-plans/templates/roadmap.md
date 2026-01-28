@@ -1,6 +1,6 @@
 # Roadmap Template
 
-Copy and fill this structure for `.planning/ROADMAP.md`:
+Copy and fill this structure for `.claude/workspace/planning/ROADMAP.md`:
 
 ## Initial Roadmap (v1.0 Greenfield)
 

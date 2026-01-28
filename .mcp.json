@@ -19,6 +19,13 @@
         "/Users/felix/Documents/claude-plugins-custom/thecattoolkit_v3/Custom_MCP/simpleWebFetch/dist/server.js"
       ],
       "env": {}
+    },
+    "vscode-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote@next",
+        "http://localhost:3000/mcp"
+      ]
     }
   }
 }

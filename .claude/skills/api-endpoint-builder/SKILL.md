@@ -1,6 +1,6 @@
 ---
 name: api-endpoint-builder
-description: "Build REST API endpoints. Use when: Designing or implementing API routes with security best practices. Not for: Client-side fetching or non-API logic."
+description: "Build REST API endpoints when designing or implementing API routes with security best practices. Not for client-side fetching or non-API logic."
 context: fork
 agent: Plan
 allowed-tools: Read, Write, Edit, Bash
@@ -15,12 +15,14 @@ Build REST API endpoints following security and performance best practices.
 Execute this process for building API endpoints:
 
 ### 1. Plan the Endpoint
+
 - Determine HTTP method (GET, POST, PUT, DELETE)
 - Design path pattern following REST conventions
 - Identify required input validation
 - Define output format (JSON, status codes)
 
 ### 2. Validate Security
+
 - Input validation and sanitization
 - Authentication/authorization checks
 - Rate limiting considerations
@@ -28,6 +30,7 @@ Execute this process for building API endpoints:
 - XSS protection
 
 ### 3. Implement Structure
+
 - Create route handler file
 - Add middleware for validation
 - Implement error handling
@@ -35,12 +38,14 @@ Execute this process for building API endpoints:
 - Include logging
 
 ### 4. Add Tests
+
 - Unit tests for handler
 - Integration tests for route
 - Validation test cases
 - Error scenario tests
 
 ### 5. Verify Compliance
+
 - Check error codes follow conventions
 - Verify response format consistency
 - Validate security headers
@@ -58,33 +63,27 @@ export async function POST(request: NextRequest) {
 
     // 2. Check authentication
     const user = await authenticate(request);
-    if (!user || !hasPermission(user, 'create_user')) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (!user || !hasPermission(user, "create_user")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // 3. Create user
     const newUser = await createUser(validated);
 
     // 4. Return response
-    return NextResponse.json(
-      { user: sanitizeUser(newUser) },
-      { status: 201 }
-    );
+    return NextResponse.json({ user: sanitizeUser(newUser) }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
+        { error: "Invalid input", details: error.errors },
+        { status: 400 },
       );
     }
 
-    logger.error('Create user failed', { error, userId: user?.id });
+    logger.error("Create user failed", { error, userId: user?.id });
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -104,6 +103,18 @@ export async function POST(request: NextRequest) {
 ## Integration
 
 This skill integrates with:
+
 - `security` - Security patterns and validation
 - `backend-patterns` - Backend best practices
 - `tdd-workflow` - Testing requirements
+
+---
+
+<critical_constraint>
+MANDATORY: Always validate input using schema validation (Zod or similar)
+MANDATORY: Use parameterized queries to prevent SQL injection
+MANDATORY: Implement proper authentication/authorization checks
+MANDATORY: Return appropriate HTTP status codes (400, 401, 403, 500)
+MANDATORY: Log security events (authentication failures, errors)
+No exceptions. API security is non-negotiable.
+</critical_constraint>

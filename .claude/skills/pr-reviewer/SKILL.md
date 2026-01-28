@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: "Review pull requests. Use when: Analyzing PRs for spec compliance, security, performance, and code quality. Not for: Writing new code or initial development."
+description: "Review pull requests when analyzing PRs for spec compliance, security, performance, and code quality. Not for writing new code or initial development."
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob, Bash
@@ -8,9 +8,92 @@ allowed-tools: Read, Grep, Glob, Bash
 
 # PR Reviewer
 
+<mission_control>
+<objective>Review pull requests with systematic analysis before generating feedback</objective>
+<success_criteria>All findings categorized by severity with specific recommendations</success_criteria>
+</mission_control>
+
 Review pull request changes with comprehensive analysis including security, performance, code quality, and architecture.
 
-## Dynamic Context Injection
+<interaction_schema>
+inject_context → thinking_analysis → stage1_spec_compliance → stage2_quality_review → categorize_findings → output
+</interaction_schema>
+
+## Thinking Protocol: Analyze Before Speaking
+
+<thinking_protocol>
+<mandatory_trigger>
+Before generating ANY PR review feedback
+</mandatory_trigger>
+
+<process>
+1. **Open `<thinking>`** - Analysis sandbox
+2. **Analyze the diff** - What changed, why, impact
+3. **Check requirements** - Does implementation match spec?
+4. **Identify issues** - Security, performance, quality, architecture
+5. **Weigh severity** - Blocker vs nitpick
+6. **Close `</thinking>`** - Hard stop before output
+7. **Generate review** - Categorized findings with recommendations
+</process>
+</thinking_protocol>
+
+### Thinking Template
+
+```xml
+<thinking>
+<diff_analysis>
+- Files changed: [count and list]
+- Lines added/removed: [approximate]
+- Scope: [feature/bug/refactor/other]
+- Risk level: [high/medium/low]
+</diff_analysis>
+
+<requirement_check>
+- PR description states: [requirements]
+- Implementation provides: [what was actually done]
+- Gaps identified: [missing features, extra features]
+- Spec compliance: [COMPLIANT/NON_COMPLIANT]
+</requirement_check>
+
+<issue_scan>
+<security>
+- Injection vulnerabilities: [findings]
+- Auth/authz issues: [findings]
+- Secrets exposure: [findings]
+- Input validation: [findings]
+</security>
+
+<performance>
+- N+1 queries: [findings]
+- Algorithmic issues: [findings]
+- Missing indexes: [findings]
+- Caching opportunities: [findings]
+</performance>
+
+<quality>
+- Code duplication: [findings]
+- Naming issues: [findings]
+- Test coverage: [findings]
+- Complexity issues: [findings]
+</quality>
+
+<architecture>
+- Layer violations: [findings]
+- Dependency issues: [findings]
+- Error handling: [findings]
+- API design: [findings]
+</architecture>
+</issue_scan>
+
+<severity_assessment>
+- Blockers: [must-fix before merge]
+- Important: [should-fix before merge]
+- Nits: [nice-to-have improvements]
+</severity_assessment>
+</thinking>
+```
+
+---
 
 This skill uses dynamic context injection with `!`command"` syntax to gather live PR data before review:
 
@@ -115,41 +198,120 @@ Execute comprehensive review across four dimensions:
 
 ## Output Format
 
-Provide structured feedback:
+<finding_categorization>
+<purpose>Force findings into XML buckets for clear categorization and severity assessment</purpose>
+
+<security_issues>
+<issue severity="BLOCKER | HIGH | MEDIUM | LOW">
+<description>[What's wrong]</description>
+<file_path>[path/to/file]</file_path>
+<line_number>[number]</line_number>
+<recommendation>[Specific fix with code example if applicable]</recommendation>
+<cve_reference>[If applicable CVE or OWASP reference]</cve_reference>
+</issue>
+</security_issues>
+
+<performance_issues>
+<issue severity="BLOCKER | HIGH | MEDIUM | LOW">
+<description>[What's wrong]</description>
+<file_path>[path/to/file]</file_path>
+<line_number>[number]</line_number>
+<recommendation>[Specific fix with optimization strategy]</recommendation>
+<impact>[Performance impact: +Xms, -Y queries/sec]</impact>
+</issue>
+</performance_issues>
+
+<code_quality_issues>
+<issue severity="NIT | LOW | MEDIUM">
+<type>[duplication | naming | complexity | coverage | style]</type>
+<description>[What's wrong]</description>
+<file_path>[path/to/file]</file_path>
+<line_number>[number]</line_number>
+<recommendation>[Specific improvement]</recommendation>
+</issue>
+</code_quality_issues>
+
+<architecture_issues>
+<issue severity="BLOCKER | HIGH | MEDIUM">
+<type>[layer_violation | dependency | error_handling | api_design]</type>
+<description>[What's wrong]</description>
+<file_path>[path/to/file]</file_path>
+<line_number>[number]</line_number>
+<recommendation>[Specific architectural improvement]</recommendation>
+</issue>
+</architecture_issues>
+</finding_categorization>
+
+### Markdown Output Template
 
 ```markdown
-PR Review: [PR Title]
-Severity: HIGH | MEDIUM | LOW
+# PR Review: [PR Title]
 
-Security Issues:
+## Stage 1: Spec Compliance
 
-- [Issue] (severity)
-  File: [path]
-  Line: [number]
-  Recommendation: [specific fix]
+**Status**: ✅ PASS / ❌ FAIL
 
-Performance Issues:
+### Requirements Verification
 
-- [Issue] (severity)
-  File: [path]
-  Line: [number]
-  Recommendation: [specific fix]
+[Summary of spec compliance check]
 
-Code Quality Issues:
+### Gap Analysis
 
-- [Issue] (severity)
-  File: [path]
-  Line: [number]
-  Recommendation: [specific fix]
+- Missing: [list]
+- Extra: [list]
+- Ambiguous: [list]
 
-Architecture Issues:
+---
 
-- [Issue] (severity)
-  File: [path]
-  Line: [number]
-  Recommendation: [specific fix]
+## Stage 2: Code Quality Review
 
-Overall Assessment: PASS | NEEDS_CHANGES
+### Security Issues
+
+<security_issues count="0">
+
+<!-- No security issues found -->
+
+</security_issues>
+
+### Performance Issues
+
+<performance_issues count="0">
+
+<!-- No performance issues found -->
+
+</performance_issues>
+
+### Code Quality Issues
+
+<code_quality_issues count="2">
+<issue severity="NIT">
+<type>naming</type>
+<description>Variable name 'x' not descriptive</description>
+<file_path>src/auth.py</file_path>
+<line_number>42</line_number>
+<recommendation>Use descriptive name like 'user_id'</recommendation>
+</issue>
+</code_quality_issues>
+
+### Architecture Issues
+
+<architecture_issues count="0">
+
+<!-- No architecture issues found -->
+
+</architecture_issues>
+
+---
+
+## Overall Assessment
+
+**Result**: APPROVE | REQUEST_CHANGES
+
+**Summary**: [1-2 sentence summary]
+
+**Blockers**: [count] must be fixed before merge
+**Important**: [count] should be fixed before merge
+**Nits**: [count] optional improvements
 ```
 
 ## Review Loop Enforcement
@@ -240,3 +402,47 @@ This skill integrates with:
 - `coding-standards` - Code quality standards
 - `backend-patterns` - Architecture best practices
 - `tdd-workflow` - Testing requirements
+
+---
+
+## Absolute Constraints (Non-Negotiable)
+
+<critical_constraint>
+**MANDATORY: Complete `<thinking>` analysis BEFORE generating review output**
+
+- Analyze diff, requirements, and impact
+- Check security, performance, quality, architecture dimensions
+- Weigh severity before generating output
+- NEVER skip thinking phase, even for "simple" PRs
+
+**MANDATORY: Categorize findings into XML buckets**
+
+- Security issues → `<security_issues>`
+- Performance issues → `<performance_issues>`
+- Code quality issues → `<code_quality_issues>`
+- Architecture issues → `<architecture_issues>`
+- Each finding must have severity, description, location, recommendation
+
+**MANDATORY: Two-stage review process**
+
+- Stage 1: Spec compliance (requirements met?)
+- Stage 2: Code quality (security, performance, quality, architecture)
+- NEVER approve if Stage 1 fails (requirements not met)
+- NEVER approve with BLOCKER or HIGH severity issues open
+
+**MANDATORY: Verify fixes before approval**
+
+- If issues found, developer must fix
+- Re-review to verify fixes actually work
+- Repeat until all issues resolved
+- NEVER approve with open issues
+
+**MANDATORY: Never LGTM without analysis**
+
+- "Looks good to me" is forbidden without `<thinking>` analysis
+- Every PR deserves thorough review
+- Small PRs can have big bugs
+- No short-cuts, no exceptions
+
+**No exceptions. PR review is a gate, not a formality.**
+</critical_constraint>

@@ -1,7 +1,15 @@
 ---
 name: verification-loop
-description: "6-phase sequential verification system for quality assurance. Use when: Validating changes before commit, ensuring code quality, or running comprehensive checks. Not for: Quick smoke tests or single verification checks."
+description: "6-phase sequential verification system for quality assurance when validating changes before commit, ensuring code quality, or running comprehensive checks. Not for quick smoke tests or single verification checks."
 ---
+
+<mission_control>
+<objective>Execute 6-phase sequential verification (build → type → lint → test → security → diff) for quality assurance</objective>
+<success_criteria>All gates pass in sequence with actionable error messages on failure</success_criteria>
+</mission_control>
+
+<interaction_schema>
+build_gate → type_gate → lint_gate → test_gate → security_gate → diff_gate → outcome</interaction_schema>
 
 # Verification Loop System
 
@@ -255,16 +263,6 @@ The verification-loop enhances `verification-before-completion` with:
 
 **Integration**: Use verification-loop as the implementation of verification-before-completion for automated quality gates.
 
-### Ralph Orchestrator
-
-Ralph uses verification-loop for component validation:
-
-- **Test Designer hat**: Designs tests for component
-- **verification-loop**: Executes 6-phase gates to validate
-- **Two-stage review**: Spec compliance → Quality review
-
-**Integration**: Ralph's validation workflow includes verification-loop as the quality enforcement phase.
-
 ### TDD-Workflow
 
 The two systems complement each other:
@@ -301,3 +299,19 @@ Results are logged to `~/.claude/homunculus/verification-log.jsonl`:
 ## Key Principle
 
 Sequential enforcement ensures quality at each step. Fix issues in order: build → type → lint → test → security → diff.
+
+---
+
+<critical_constraint>
+MANDATORY: Gates must pass in order—stop immediately on failure
+
+MANDATORY: Each gate must provide actionable error messages
+
+MANDATORY: Tests must meet 80%+ coverage threshold
+
+MANDATORY: Security gate must check for secrets and console.log statements
+
+MANDATORY: Verification must complete in under 2 minutes
+
+No exceptions. Quality gates are non-negotiable—skipping any phase compromises the entire pipeline.
+</critical_constraint>

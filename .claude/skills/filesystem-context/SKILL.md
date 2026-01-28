@@ -1,9 +1,20 @@
 ---
 name: filesystem-context
-description: "Manage filesystem context. Use when: Offloading large context to files, persisting state between sessions, or reducing token usage. Not for: Small temporary data or in-memory variables."
+description: "Manage filesystem context when offloading large context to files, persisting state between sessions, or reducing token usage. Not for small temporary data or in-memory variables."
 ---
 
 # Filesystem-Based Context Engineering
+
+<mission_control>
+<objective>Manage filesystem context for unlimited capacity through dynamic discovery, offloading large context to files and persisting state between sessions</objective>
+<success_criteria>Context efficiently managed with write-once/read-selective patterns, reducing token usage while maintaining full data availability</success_criteria>
+</mission_control>
+
+<trigger>When offloading large context to files, persisting state between sessions, or reducing token usage. Not for: Small temporary data or in-memory variables.</trigger>
+
+<interaction_schema>
+WRITE_ONCE → READ_SELECTIVELY → DISCOVER_DYNAMICALLY
+</interaction_schema>
 
 The filesystem provides unlimited context capacity through dynamic discovery. Instead of stuffing everything into the context window, agents write once and read selectively, pulling relevant context on demand.
 
@@ -12,6 +23,7 @@ The filesystem provides unlimited context capacity through dynamic discovery. In
 **Problem**: Context windows are limited but tasks often require more information than fits
 
 **Solution**: Use filesystem as persistent layer where agents:
+
 1. Write once (large outputs, state, plans)
 2. Read selectively (targeted retrieval via search)
 3. Discover dynamically (find relevant files on-demand)
@@ -27,6 +39,7 @@ The filesystem provides unlimited context capacity through dynamic discovery. In
 **Solution**: Write large tool outputs to files instead of returning to context. Agent uses targeted retrieval to extract only relevant portions.
 
 **Implementation**:
+
 ```python
 def handle_tool_output(output: str, threshold: int = 2000) -> str:
     if len(output) < threshold:
@@ -42,11 +55,13 @@ def handle_tool_output(output: str, threshold: int = 2000) -> str:
 ```
 
 **Usage**:
+
 - Web search results → `scratch/web_search_20260126_143022.txt`
 - Database queries → `scratch/db_query_users_active.txt`
 - API responses → `scratch/api_response_20260126_143045.json`
 
 **Benefits**:
+
 - Reduces token accumulation over long conversations
 - Preserves full output for later reference
 - Enables targeted retrieval instead of carrying everything
@@ -59,6 +74,7 @@ def handle_tool_output(output: str, threshold: int = 2000) -> str:
 **Solution**: Write plans to filesystem. Agent can re-read plan anytime to re-orient.
 
 **Implementation**:
+
 ```yaml
 # scratch/current_plan.yaml
 objective: "Refactor authentication module"
@@ -81,11 +97,13 @@ progress:
 ```
 
 **Usage**:
+
 - Agent reads `scratch/current_plan.yaml` at start of each turn
 - Updates progress as work completes
 - Re-orients when context degrades
 
 **Benefits**:
+
 - Maintains objective visibility throughout long tasks
 - Survives context compaction
 - Enables "manipulating attention through recitation"
@@ -97,6 +115,7 @@ progress:
 **Solution**: Sub-agents write findings directly to filesystem. Coordinator reads files directly, bypassing intermediate passing.
 
 **Implementation**:
+
 ```
 workspace/
   agents/
@@ -111,11 +130,13 @@ workspace/
 ```
 
 **Usage**:
+
 - Research agent: `workspace/agents/research_agent/findings.md`
 - Code agent: `workspace/agents/code_agent/changes.md`
 - Coordinator: reads both, writes synthesis
 
 **Benefits**:
+
 - Preserves fidelity (no telephone game)
 - Reduces coordinator context accumulation
 - Enables asynchronous collaboration
@@ -128,8 +149,10 @@ workspace/
 **Solution**: Store skills as files. Include only skill names/brief descriptions in static context. Load relevant skill content when task requires it.
 
 **Implementation**:
+
 ```markdown
 Available skills (load with read_file when relevant):
+
 - database-optimization: Query tuning and indexing strategies
 - api-design: REST/GraphQL best practices
 - testing-strategies: Unit, integration, and e2e patterns
@@ -137,6 +160,7 @@ Available skills (load with read_file when relevant):
 ```
 
 **Usage**:
+
 ```python
 # Agent working on database task
 skill_content = read_file("skills/database-optimization/SKILL.md")
@@ -146,6 +170,7 @@ skill_content = read_file("skills/api-design/SKILL.md")
 ```
 
 **Benefits**:
+
 - Minimal static context
 - On-demand skill activation
 - No contradictory guidance
@@ -158,6 +183,7 @@ skill_content = read_file("skills/api-design/SKILL.md")
 **Solution**: Sync terminal output to files automatically. Agent greps for relevant sections without loading entire histories.
 
 **Implementation**:
+
 ```bash
 # Auto-sync terminal to file
 script -c "npm run dev" scratch/terminal.log
@@ -168,6 +194,7 @@ grep -A5 "failed" scratch/terminal.log
 ```
 
 **Benefits**:
+
 - Automatic log capture
 - Targeted error finding
 - No manual copy/paste
@@ -178,6 +205,7 @@ grep -A5 "failed" scratch/terminal.log
 ### Discovery Patterns
 
 **Find files by name**:
+
 ```bash
 Glob patterns:
 - "**/*.yaml" - All YAML files
@@ -187,6 +215,7 @@ Glob patterns:
 ```
 
 **Search file contents**:
+
 ```bash
 Grep patterns:
 - "TODO|FIXME|BUG" - Find action items
@@ -196,6 +225,7 @@ Grep patterns:
 ```
 
 **Targeted reading**:
+
 ```bash
 Read specific sections:
 - First 50 lines: `read_file(path, limit=50)`
@@ -206,17 +236,20 @@ Read specific sections:
 ### File Metadata Hints
 
 **File sizes suggest complexity**:
+
 - Small (<1KB): summaries, metadata
 - Medium (1-10KB): full outputs, reports
 - Large (>10KB): raw data, logs
 
 **Naming conventions**:
+
 - `YYYYMMDD_HHMMSS_*` - Timestamped files
 - `*_summary.*` - Summarized outputs
 - `*_raw.*` - Raw data
 - `current_*.*` - Current state
 
 **Timestamps**:
+
 - Newer files likely more relevant
 - Timestamps show activity patterns
 - Enable time-based filtering
@@ -226,12 +259,14 @@ Read specific sections:
 **Pattern**: All logs use JSONL (JSON Lines) format
 
 **Benefits**:
+
 - Agent-friendly parsing
 - History preservation
 - Pattern analysis capability
 - Never-delete integrity
 
 **Example**:
+
 ```jsonl
 {"timestamp": "2026-01-26T14:30:00Z", "type": "post", "content": "...", "status": "published"}
 {"timestamp": "2026-01-26T14:35:00Z", "type": "contact", "name": "Sarah", "updated": true}
@@ -239,6 +274,7 @@ Read specific sections:
 ```
 
 **Reading JSONL**:
+
 ```python
 # Read as list of dicts
 logs = [json.loads(line) for line in open('logs.jsonl')]
@@ -250,59 +286,6 @@ posts = [log for log in logs if log['type'] == 'post']
 recent = [log for log in logs if log['timestamp'] > '2026-01-26']
 ```
 
-## Ralph Integration
-
-### Validation Artifacts in Filesystem
-
-**Current Ralph**: Markdown reports in `ralph_validated/`
-
-**Enhanced Ralph**: Filesystem-based artifacts
-```
-ralph_validated/
-├── artifacts/
-│   └── .claude/
-│       └── skills/
-│           └── my-skill/
-│               └── SKILL.md
-├── evidence/
-│   ├── blueprint.yaml
-│   ├── test_spec.json
-│   └── raw_execution.log
-├── reports/
-│   ├── validation_report.json
-│   └── evaluation_scores.json
-└── context/
-    ├── loaded_files.jsonl
-    └── discovery_log.jsonl
-```
-
-**Benefits**:
-- Unlimited context for validation
-- Targeted retrieval of evidence
-- Natural progressive disclosure
-- Append-only audit trail
-
-### Dynamic Context Discovery
-
-**Ralph validation**:
-1. Load blueprint summary (Level 1)
-2. Load full blueprint if needed (Level 2)
-3. Search evidence files for specific patterns (Level 3)
-4. Retrieve relevant sections via targeted reads
-
-**Example**:
-```python
-# Find all test failures
-failures = grep("FAIL|ERROR", "evidence/raw_execution.log")
-
-# Read around failures
-for failure in failures:
-    context = read_file("evidence/raw_execution.log",
-                       offset=failure.line-10,
-                       limit=20)
-    analyze_failure(context)
-```
-
 ## Progressive Disclosure in Filesystem
 
 ### Level 1: Metadata
@@ -311,17 +294,18 @@ for failure in failures:
 # Component Index
 
 skills/my-skill/
-├── overview.yaml      # 200 tokens - auto-loaded
+├── overview.yaml # 200 tokens - auto-loaded
 ├── trigger_phrases.md # 100 tokens - auto-loaded
-└── references/        # On-demand
-    ├── examples/
-    └── patterns/
+└── references/ # On-demand
+├── examples/
+└── patterns/
 ```
 
 ### Level 2: Instructions
 
 ```markdown
 # Full Skill (1500 tokens)
+
 - Load when skill activated
 - Contains all instructions
 - Progressive disclosure enabled
@@ -331,6 +315,7 @@ skills/my-skill/
 
 ```markdown
 # References/ (As needed)
+
 - examples/ - Usage examples
 - patterns/ - Implementation patterns
 - scripts/ - Automation scripts
@@ -362,44 +347,6 @@ skills/my-skill/
 
 ## Example Workflow
 
-**Task**: Validate component with Ralph
-
-**Step 1**: Write large outputs to scratch
-```bash
-# Test results
-[Output written to scratch/test_results.json. Summary: 15 tests run, 14 passed, 1 failed]
-```
-
-**Step 2**: Update plan in structured format
-```yaml
-# scratch/current_plan.yaml
-status: validation_in_progress
-current_step: "Evaluate component quality"
-evidence:
-  test_results: "scratch/test_results.json"
-  blueprint: "evidence/blueprint.yaml"
-```
-
-**Step 3**: Use targeted retrieval
-```python
-# Find failures
-failures = grep("FAIL", "scratch/test_results.json")
-
-# Read specific test
-test_output = read_file("scratch/test_results.json",
-                       offset=failures[0].line,
-                       limit=10)
-
-# Analyze
-analyze_failure(test_output)
-```
-
-**Step 4**: Write structured validation report
-```jsonl
-{"timestamp": "2026-01-26T14:30:00Z", "type": "validation", "step": "evaluation", "result": "partial"}
-{"timestamp": "2026-01-26T14:35:00Z", "type": "validation", "step": "test_execution", "result": "failed", "details": "test_user_auth_failed"}
-```
-
 ## Guidelines
 
 1. **Write once, read selectively** - Don't return large outputs to context
@@ -414,8 +361,46 @@ analyze_failure(test_output)
 ## References
 
 **Related Skills**:
+
 - `context-fundamentals` - Progressive disclosure principles
 - `evaluation` - Multi-dimensional quality assessment
-- `filesystem-context` - Context management patterns
+- `iterative-retrieval` - Progressive refinement for targeted context discovery
+- `filesystem-context` - Context management patterns (this skill)
+
+**For Complex Discovery**:
+
+When basic search is insufficient, use **iterative-retrieval** for targeted context discovery:
+
+```
+# Basic search (grep/glob)
+grep("pattern", "**/*.ts")
+
+# Iterative retrieval with progressive refinement
+/search "authentication patterns in TypeScript"
+```
+
+**iterative-retrieval** enhances filesystem-context by:
+
+- **4-phase loop**: DISPATCH → EVALUATE → REFINE → LOOP
+- **Relevance scoring**: Identifies which files to read from filesystem
+- **Progressive refinement**: Discovers relevant files systematically
+- **Termination conditions**: Stops when sufficient high-relevance files found
+
+**Integration**:
+
+- Use iterative-retrieval to discover relevant files
+- Use filesystem-context to persist discovered files for selective retrieval
+- Combined: Discovery → Storage → Targeted retrieval
 
 **Key Principle**: Filesystem provides unlimited context capacity through dynamic discovery. Write once, read selectively, discover on-demand.
+
+---
+
+<critical_constraint>
+MANDATORY: Write large outputs to files, not to context
+MANDATORY: Use descriptive, timestamped filenames for traceability
+MANDATORY: Search before reading (find relevant sections first)
+MANDATORY: Use structured formats (YAML/JSONL) for machine-readability
+MANDATORY: Never return full large outputs to context (use references)
+No exceptions. Filesystem context enables unlimited capacity.
+</critical_constraint>

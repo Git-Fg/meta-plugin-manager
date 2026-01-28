@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: "Conduct discovery interviews. Use when: Gathering requirements, clarifying vague ideas, or creating detailed specifications. Not for: Execution or simple partial updates."
+description: "Conduct discovery interviews when gathering requirements, clarifying vague ideas, or creating detailed specifications. Not for execution or simple partial updates."
 user-invocable: true
 ---
 
@@ -13,7 +13,8 @@ Transform vague ideas into detailed, implementable specifications through deep, 
 **Don't ask obvious questions. Don't accept surface answers. Don't assume knowledge.**
 
 Your job is to:
-1. Deeply understand what the user *actually* wants (not what they say)
+
+1. Deeply understand what the user _actually_ wants (not what they say)
 2. Detect knowledge gaps and educate when needed
 3. Surface hidden assumptions and tradeoffs
 4. Research when uncertainty exists
@@ -26,11 +27,13 @@ Your job is to:
 Start broad. Understand the shape of the idea:
 
 Ask about:
+
 - "In one sentence, what problem are you trying to solve?"
 - "Who will use this? (End users, developers, internal team, etc.)"
 - "Is this a new thing or improving something existing?"
 
 Based on answers, determine the PROJECT TYPE:
+
 - **Backend service/API** → Focus: data, scaling, integrations
 - **Frontend/Web app** → Focus: UX, state, responsiveness
 - **CLI tool** → Focus: ergonomics, composability, output formats
@@ -51,6 +54,7 @@ Work through relevant categories IN ORDER. For each category:
 #### Category A: Problem & Goals
 
 Questions to explore:
+
 - What's the current pain point? How do people solve it today?
 - What does success look like? How will you measure it?
 - Who are the stakeholders beyond end users?
@@ -61,6 +65,7 @@ Questions to explore:
 #### Category B: User Experience & Journey
 
 Questions to explore:
+
 - Walk me through: a user opens this for the first time. What do they see? What do they do?
 - What's the core action? (The one thing users MUST be able to do)
 - What errors can happen? What should users see when things go wrong?
@@ -71,6 +76,7 @@ Questions to explore:
 #### Category C: Data & State
 
 Questions to explore:
+
 - What information needs to be stored? Temporarily or permanently?
 - Where does data come from? Where does it go?
 - Who owns the data? Are there privacy/compliance concerns?
@@ -81,6 +87,7 @@ Questions to explore:
 #### Category D: Technical Landscape
 
 Questions to explore:
+
 - What existing systems does this need to work with?
 - Are there technology constraints? (Language, framework, platform)
 - What's your deployment environment? (Cloud, on-prem, edge)
@@ -89,6 +96,7 @@ Questions to explore:
 **Knowledge gap signals**: User picks technologies without understanding tradeoffs (e.g., "real-time with REST", "mobile with React").
 
 **Research triggers**:
+
 - "I've heard X is good" → Research X vs alternatives
 - "We use Y but I'm not sure if..." → Research Y capabilities
 - Technology mismatch detected → Research correct approaches
@@ -96,6 +104,7 @@ Questions to explore:
 #### Category E: Scale & Performance
 
 Questions to explore:
+
 - How many users/requests do you expect? (Now vs. future)
 - What response times are acceptable?
 - What happens during traffic spikes?
@@ -106,6 +115,7 @@ Questions to explore:
 #### Category F: Integrations & Dependencies
 
 Questions to explore:
+
 - What external services does this need to talk to?
 - What APIs need to be consumed? Created?
 - Are there third-party dependencies? What's the fallback if they fail?
@@ -116,6 +126,7 @@ Questions to explore:
 #### Category G: Security & Access Control
 
 Questions to explore:
+
 - Who should be able to do what?
 - What data is sensitive? PII? Financial? Health?
 - Are there compliance requirements? (GDPR, HIPAA, SOC2)
@@ -126,6 +137,7 @@ Questions to explore:
 #### Category H: Deployment & Operations
 
 Questions to explore:
+
 - How will this be deployed? By whom?
 - What monitoring/alerting is needed?
 - How do you handle updates? Rollbacks?
@@ -140,16 +152,19 @@ When you detect uncertainty or knowledge gaps:
 Ask: "You mentioned wanting real-time updates. There are several approaches with different tradeoffs. Would you like me to research this before we continue?"
 
 Options:
+
 1. **Yes, research it** - I'll investigate options and explain the tradeoffs
 2. **No, I know what I want** - Skip research, I'll specify the approach
 3. **Tell me briefly** - Give me a quick overview without deep research
 
 **If user wants research:**
+
 1. Use WebSearch/WebFetch to gather relevant information
 2. Summarize findings in plain language
 3. Return with INFORMED follow-up questions
 
 Example research loop:
+
 ```
 User: "I want real-time updates"
 You: [Research WebSockets vs SSE vs Polling vs WebRTC]
@@ -169,11 +184,13 @@ When you discover conflicts or impossible requirements:
 Ask: "I noticed a potential conflict: You want [X] but also [Y]. These typically don't work together because [reason]. Which is more important?"
 
 Options:
+
 1. **Prioritize X** - What you lose: [Y capabilities]
 2. **Prioritize Y** - What you lose: [X capabilities]
 3. **Explore alternatives** - Research ways to get both
 
 Common conflicts to watch for:
+
 - "Simple AND feature-rich"
 - "Real-time AND cheap infrastructure"
 - "Highly secure AND frictionless UX"
@@ -234,56 +251,74 @@ Only after completeness check passes:
 # [Project Name] Specification
 
 ## Executive Summary
+
 [2-3 sentences: what, for whom, why]
 
 ## Problem Statement
+
 [The problem this solves, current pain points, why now]
 
 ## Success Criteria
+
 [Measurable outcomes that define success]
 
 ## User Personas
+
 [Who uses this, their technical level, their goals]
 
 ## User Journey
+
 [Step-by-step flow of the core experience]
 
 ## Functional Requirements
+
 ### Must Have (P0)
+
 - [Requirement with acceptance criteria]
 
 ### Should Have (P1)
+
 - [Requirement with acceptance criteria]
 
 ### Nice to Have (P2)
+
 - [Requirement with acceptance criteria]
 
 ## Technical Architecture
+
 ### Data Model
+
 [Key entities and relationships]
 
 ### System Components
+
 [Major components and their responsibilities]
 
 ### Integrations
+
 [External systems and how we connect]
 
 ### Security Model
+
 [Auth, authorization, data protection]
 
 ## Non-Functional Requirements
+
 - Performance: [specific metrics]
 - Scalability: [expected load]
 - Reliability: [uptime requirements]
 - Security: [compliance, encryption]
 
 ## Out of Scope
+
 [Explicitly what we're NOT building]
 
 ## Open Questions for Implementation
+
 [Technical details to resolve during implementation]
 
 ## Appendix: Research Findings
+
 [Summary of research conducted during discovery]
 ```
 
@@ -296,6 +331,7 @@ Spec created. How would you like to proceed?
 ```
 
 Options:
+
 1. **Start implementation now** - Begin implementing the spec
 2. **Review spec first** - Read the spec and come back when ready
 3. **Plan implementation** - Create a detailed implementation plan with tasks
@@ -304,11 +340,14 @@ Options:
 ## AskUserQuestion Best Practices
 
 ### Question Phrasing
+
 - **Bad**: "What database do you want?" (assumes they know databases)
 - **Good**: "What kind of data will you store, and how often will it be read vs written?"
 
 ### Option Design
+
 Always include options that acknowledge uncertainty:
+
 ```
 options: [
   {label: "Option A", description: "Clear choice with implications"},
@@ -322,15 +361,15 @@ options: [
 
 Watch for these signals:
 
-| Signal | What to do |
-|--------|------------|
-| "I think..." or "Maybe..." | Probe deeper, offer research |
-| "That sounds good" (to your suggestion) | Verify they understand implications |
-| "Just simple/basic X" | Challenge - define what simple means |
-| Technology buzzwords without context | Ask what they think it does |
-| Conflicting requirements | Surface the conflict explicitly |
-| "Whatever is standard" | Explain there's no universal standard |
-| Long pauses / short answers | They might be overwhelmed - simplify |
+| Signal                                  | What to do                            |
+| --------------------------------------- | ------------------------------------- |
+| "I think..." or "Maybe..."              | Probe deeper, offer research          |
+| "That sounds good" (to your suggestion) | Verify they understand implications   |
+| "Just simple/basic X"                   | Challenge - define what simple means  |
+| Technology buzzwords without context    | Ask what they think it does           |
+| Conflicting requirements                | Surface the conflict explicitly       |
+| "Whatever is standard"                  | Explain there's no universal standard |
+| Long pauses / short answers             | They might be overwhelmed - simplify  |
 
 ## Iteration Rules
 
@@ -344,17 +383,31 @@ Watch for these signals:
 ## Handling Different User Types
 
 ### Technical User
+
 - Can skip some education
 - Still probe for assumptions ("You mentioned Kubernetes - have you considered the operational complexity?")
 - Focus more on tradeoffs than explanations
 
 ### Non-Technical User
+
 - More education needed
 - Use analogies ("Think of an API like a waiter - it takes your order to the kitchen")
 - Offer more research options
 - Don't overwhelm with technical options
 
 ### User in a Hurry
+
 - Acknowledge time pressure
 - Prioritize: "If we only have 10 minutes, let's focus on [core UX and data model]"
 - Note what wasn't covered as risks
+
+---
+
+<critical_constraint>
+MANDATORY: Ask minimum 10-15 questions across categories for real projects
+MANDATORY: Include research loops for non-trivial projects
+MANDATORY: Always do completeness check before writing spec
+MANDATORY: Surface knowledge gaps and offer research options
+MANDATORY: Never accept solution descriptions instead of problem statements
+No exceptions. Discovery produces quality specs through thorough exploration.
+</critical_constraint>

@@ -1,6 +1,6 @@
-<overview>
+## Overview
+
 Guidelines for determining prompt complexity, tool usage, and optimization patterns.
-</overview>
 
 <complexity_assessment>
 
@@ -18,7 +18,6 @@ Single focused task, clear outcome:
 - Minimal context
 - Direct requirements
 - Simple verification
-</simple_prompts>
 
 <complex_prompts>
 Multi-step tasks, multiple considerations:
@@ -35,9 +34,6 @@ Multi-step tasks, multiple considerations:
 - Explicit implementation guidance
 - Comprehensive verification
 - Extended thinking triggers
-</complex_prompts>
-
-</complexity_assessment>
 
 <extended_thinking_triggers>
 
@@ -48,7 +44,6 @@ Use these phrases to activate deeper reasoning in complex prompts:
 - Security-sensitive implementations
 - Performance optimization tasks
 - Trade-off analysis
-</when_to_include>
 
 <trigger_phrases>
 ```
@@ -58,26 +53,23 @@ Use these phrases to activate deeper reasoning in complex prompts:
 "Explore various solutions before..."
 "Carefully evaluate trade-offs..."
 ```
-</trigger_phrases>
 
 <example_usage>
 ```xml
-<requirements>
+
+## Requirements
+
 Thoroughly analyze the authentication options and consider multiple
 approaches before selecting an implementation. Deeply consider the
 security implications of each choice.
-</requirements>
+
 ```
-</example_usage>
 
 <when_not_to_use>
 - Simple, straightforward tasks
 - Tasks with clear single approach
 - Following established patterns
 - Basic CRUD operations
-</when_not_to_use>
-
-</extended_thinking_triggers>
 
 <parallel_tool_calling>
 
@@ -88,18 +80,14 @@ For maximum efficiency, invoke all independent tool operations
 simultaneously rather than sequentially. Multiple file reads,
 searches, and API calls that don't depend on each other should
 run in parallel.
-</efficiency>
+
 ```
-</when_to_include>
 
 <applicable_scenarios>
 - Reading multiple files for context
 - Running multiple searches
 - Fetching from multiple sources
 - Creating multiple independent files
-</applicable_scenarios>
-
-</parallel_tool_calling>
 
 <context_loading>
 
@@ -108,18 +96,18 @@ run in parallel.
 - Following established patterns
 - Integrating with current systems
 - Building on research/plan outputs
-</when_to_load>
 
 <when_not_to_load>
 - Greenfield features
 - Standalone utilities
 - Pure research tasks
 - Standard patterns without customization
-</when_not_to_load>
 
 <loading_patterns>
 ```xml
-<context>
+
+## Context
+
 <!-- Chained artifacts -->
 Research: @.prompts/001-auth-research/auth-research.md
 Plan: @.prompts/002-auth-plan/auth-plan.md
@@ -130,11 +118,8 @@ Types to extend: @src/types/auth.ts
 
 <!-- Patterns to follow -->
 Similar feature: @src/features/payments/
-</context>
-```
-</loading_patterns>
 
-</context_loading>
+```
 
 <output_optimization>
 
@@ -143,14 +128,16 @@ For research and plan outputs that may be large:
 
 **Instruct incremental writing:**
 ```xml
-<process>
+
+## Process
+
 1. Create output file with XML skeleton
 2. Write each section as completed:
    - Finding 1 discovered → Append immediately
    - Finding 2 discovered → Append immediately
    - Code example found → Append immediately
 3. Finalize summary and metadata after all sections complete
-</process>
+
 ```
 
 **Why this matters:**
@@ -167,7 +154,6 @@ For research and plan outputs that may be large:
 **When NOT to use:**
 - Do prompts (code generation is different workflow)
 - Simple tasks with known small outputs
-</streaming_writes>
 
 <claude_to_claude>
 For Claude-to-Claude consumption:
@@ -176,30 +162,38 @@ For Claude-to-Claude consumption:
 ```xml
 <findings>
   <finding category="security">
-    <title>Token Storage</title>
-    <recommendation>httpOnly cookies</recommendation>
-    <rationale>Prevents XSS access</rationale>
-  </finding>
-</findings>
+    <title>Token Storage
+    <recommendation>httpOnly cookies
+    
+## Rationale
+
+Prevents XSS access
+  
+
 ```
 
 **Include metadata:**
 ```xml
 <metadata>
-  <confidence level="high">Verified in official docs</confidence>
-  <dependencies>Cookie parser middleware</dependencies>
-  <open_questions>SameSite policy for subdomains</open_questions>
-</metadata>
+  
+### high
+
+Verified in official docs
+  
+## Dependencies
+
+Cookie parser middleware
+  <open_questions>SameSite policy for subdomains
+
 ```
 
 **Be explicit about next steps:**
 ```xml
 <next_actions>
-  <action priority="high">Create planning prompt using these findings</action>
-  <action priority="medium">Validate rate limits in sandbox</action>
-</next_actions>
+  <action priority="high">Create planning prompt using these findings
+  <action priority="medium">Validate rate limits in sandbox
+
 ```
-</claude_to_claude>
 
 <human_consumption>
 For human consumption:
@@ -207,9 +201,6 @@ For human consumption:
 - Bullet points for scanning
 - Code examples with comments
 - Summary at top
-</human_consumption>
-
-</output_optimization>
 
 <prompt_depth_guidelines>
 
@@ -219,7 +210,6 @@ Simple Do prompts:
 - Basic objective, requirements, output, verification
 - No extended thinking
 - No parallel tool hints
-</minimal>
 
 <standard>
 Typical task prompts:
@@ -227,7 +217,6 @@ Typical task prompts:
 - Full objective with context
 - Clear requirements and implementation notes
 - Standard verification
-</standard>
 
 <comprehensive>
 Complex task prompts:
@@ -236,9 +225,6 @@ Complex task prompts:
 - Parallel tool calling hints
 - Multiple verification steps
 - Detailed success criteria
-</comprehensive>
-
-</prompt_depth_guidelines>
 
 <why_explanations>
 
@@ -246,72 +232,74 @@ Always explain why constraints matter:
 
 <bad_example>
 ```xml
-<requirements>
+
+## Requirements
+
 Never store tokens in localStorage.
-</requirements>
+
 ```
-</bad_example>
 
 <good_example>
 ```xml
-<requirements>
+
+## Requirements
+
 Never store tokens in localStorage - it's accessible to any
 JavaScript on the page, making it vulnerable to XSS attacks.
 Use httpOnly cookies instead.
-</requirements>
+
 ```
-</good_example>
 
 This helps the executing Claude make good decisions when facing edge cases.
-
-</why_explanations>
 
 <verification_patterns>
 
 <for_code>
 ```xml
-<verification>
+
+## Verification
+
 1. Run test suite: `npm test`
 2. Type check: `npx tsc --noEmit`
 3. Lint: `npm run lint`
 4. Manual test: [specific flow to test]
-</verification>
+
 ```
-</for_code>
 
 <for_documents>
 ```xml
-<verification>
+
+## Verification
+
 1. Validate structure: [check required sections]
 2. Verify links: [check internal references]
 3. Review completeness: [check against requirements]
-</verification>
+
 ```
-</for_documents>
 
 <for_research>
 ```xml
-<verification>
+
+## Verification
+
 1. Sources are current (2024-2025)
 2. All scope questions answered
 3. Metadata captures uncertainties
 4. Actionable recommendations included
-</verification>
+
 ```
-</for_research>
 
 <for_plans>
 ```xml
-<verification>
+
+## Verification
+
 1. Phases are sequential and logical
 2. Tasks are specific and actionable
 3. Dependencies are clear
 4. Metadata captures assumptions
-</verification>
-```
-</for_plans>
 
-</verification_patterns>
+```
 
 <chain_optimization>
 
@@ -321,7 +309,6 @@ Research prompts should:
 - Include code examples for implementation
 - Clearly mark confidence levels
 - List explicit next actions
-</research_prompts>
 
 <plan_prompts>
 Plan prompts should:
@@ -329,7 +316,6 @@ Plan prompts should:
 - Break phases into prompt-sized chunks
 - Include execution hints per phase
 - Capture dependencies between phases
-</plan_prompts>
 
 <do_prompts>
 Do prompts should:
@@ -337,6 +323,3 @@ Do prompts should:
 - Follow plan phases explicitly
 - Verify against research recommendations
 - Update plan status when done
-</do_prompts>
-
-</chain_optimization>

@@ -2,17 +2,22 @@
 name: run-prompt
 description: Delegate one or more prompts to fresh sub-task contexts with parallel or sequential execution
 argument-hint: <prompt-number(s)-or-name> [--parallel|--sequential]
-allowed-tools: [Read, Task, Bash(ls:*), Bash(mv:*), Bash(git:*)]
+allowed-tools: [Read, Task, Bash(find:*), Bash(ls:*), Bash(mv:*), Bash(git:*)]
 ---
+
+<mission_control>
+<objective>Execute prompts from .claude/workspace/prompts/ as delegated sub-tasks</objective>
+<success_criteria>All prompts executed, results captured, sub-task contexts created</success_criteria>
+</mission_control>
 
 <context>
 Git status: !`git status --short`
-Recent prompts: !`ls -t .claude/planning/prompts/*.md | head -5`
+Recent prompts: !`find .claude/workspace/prompts -name "*.md" -type f -printf '%T@ %p\n' | sort -rn | head -5 | cut -d' ' -f2-`
 </context>
 
 ## Objective
 
-Execute one or more prompts from `.claude/planning/prompts/` as delegated sub-tasks with fresh context. Supports single prompt execution, parallel execution of multiple independent prompts, and sequential execution of dependent prompts.
+Execute one or more prompts from `.claude/workspace/prompts/` as delegated sub-tasks with fresh context. Supports single prompt execution, parallel execution of multiple independent prompts, and sequential execution of dependent prompts.
 
 ## Input
 
@@ -51,9 +56,9 @@ Parse $ARGUMENTS to extract:
 
 For each prompt number/name:
 
-- If empty or "last": Find with `!ls -t .claude/planning/prompts/*.md | head -1`
-- If a number: Find file matching that zero-padded number (e.g., "5" matches "005-_.md", "42" matches "042-_.md")
-- If text: Find files containing that string in the filename
+- If empty or "last": Find with `!find .claude/workspace/prompts -name "*.md" -type f -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-`
+- If a number: Find file matching that zero-padded number in subdirectories (e.g., "5" matches "001-auth-research/005-PROMPT.md")
+- If text: Find files containing that string in the path (searches subdirectories recursively)
 
 **Matching Rules:**
 
@@ -68,7 +73,7 @@ For each prompt number/name:
 1. Read the complete contents of the prompt file
 2. Delegate as sub-task using Task tool with subagent_type="general-purpose"
 3. Wait for completion
-4. Archive prompt to `.claude/planning/prompts/completed/` with metadata
+4. Archive prompt to `.claude/workspace/prompts/completed/` with metadata
 5. Commit all work:
    - Stage files YOU modified with `git add [file]` (never `git add .`)
    - Determine appropriate commit type based on changes (fix|feat|refactor|style|docs|test|chore)
@@ -117,8 +122,8 @@ By delegating to a sub-task, the actual implementation work happens in fresh con
 
 ### Single Prompt Output
 
-✓ Executed: .claude/planning/prompts/005-implement-feature.md
-✓ Archived to: .claude/planning/prompts/completed/005-implement-feature.md
+✓ Executed: .claude/workspace/prompts/005-implement-feature.md
+✓ Archived to: .claude/workspace/prompts/completed/005-implement-feature.md
 
 **Results:**
 [Summary of what the sub-task accomplished]
@@ -127,11 +132,11 @@ By delegating to a sub-task, the actual implementation work happens in fresh con
 
 ✓ Executed in PARALLEL:
 
-- .claude/planning/prompts/005-implement-auth.md
-- .claude/planning/prompts/006-implement-api.md
-- .claude/planning/prompts/007-implement-ui.md
+- .claude/workspace/prompts/005-implement-auth.md
+- .claude/workspace/prompts/006-implement-api.md
+- .claude/workspace/prompts/007-implement-ui.md
 
-✓ All archived to .claude/planning/prompts/completed/
+✓ All archived to .claude/workspace/prompts/completed/
 
 **Results:**
 [Consolidated summary of all sub-task results]
@@ -140,11 +145,11 @@ By delegating to a sub-task, the actual implementation work happens in fresh con
 
 ✓ Executed SEQUENTIALLY:
 
-1. .claude/planning/prompts/005-setup-database.md → Success
-2. .claude/planning/prompts/006-create-migrations.md → Success
-3. .claude/planning/prompts/007-seed-data.md → Success
+1. .claude/workspace/prompts/005-setup-database.md → Success
+2. .claude/workspace/prompts/006-create-migrations.md → Success
+3. .claude/workspace/prompts/007-seed-data.md → Success
 
-✓ All archived to .claude/planning/prompts/completed/
+✓ All archived to .claude/workspace/prompts/completed/
 
 **Results:**
 [Consolidated summary showing progression through each step]
@@ -157,3 +162,13 @@ By delegating to a sub-task, the actual implementation work happens in fresh con
 - Archive prompts only after successful completion
 - If any prompt fails, stop sequential execution and report error
 - Provide clear, consolidated results for multiple prompt execution
+
+---
+
+<critical_constraint>
+MANDATORY: Parallel execution - all Task calls in single message
+MANDATORY: Sequential execution - wait for each completion before next
+MANDATORY: Archive prompts only after successful completion
+MANDATORY: Stop on first failure in sequential mode
+No exceptions. Sub-task execution must follow parallel/sequential constraints.
+</critical_constraint>

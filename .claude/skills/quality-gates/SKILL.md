@@ -1,13 +1,13 @@
 ---
 name: quality-gates
-description: "Enforce automated quality gates. Use when: Validating components, checking structure, or verifying portability. Not for: Manual reviews or skipping automated checks."
+description: "Enforce automated quality gates when validating components, checking structure, or verifying portability. Not for manual reviews or when skipping automated checks."
 ---
 
 # Quality Gates
 
 ## Overview
 
-Automated quality gate enforcement for Ralph validation and component creation. Ensures systematic quality validation through progressive disclosure verification, portability checks, and automated gates.
+Automated quality gate enforcement for component validation. Ensures systematic quality validation through progressive disclosure verification, portability checks, and automated gates.
 
 **Core principle:** Automated quality gates + systematic validation = consistent quality enforcement.
 
@@ -146,3 +146,13 @@ If you catch yourself about to say any of these, STOP and verify first:
 5. **Systematic validation** - Same checks every time
 
 Quality gates ensure consistent, automated quality enforcement for all components.
+
+---
+
+<critical_constraint>
+MANDATORY: Run verification commands, don't just claim completion
+MANDATORY: No exceptions for quality gates - partial is not enough
+MANDATORY: Show evidence (output) for every gate check
+MANDATORY: Stop on first failure, don't proceed with broken component
+No exceptions. Quality gates exist to prevent substandard work.
+</critical_constraint>

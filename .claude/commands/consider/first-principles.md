@@ -3,6 +3,11 @@ description: Break down to fundamentals and rebuild from base truths
 argument-hint: [problem or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply first principles thinking to strip assumptions and rebuild from fundamental truths</objective>
+<success_criteria>Hidden assumptions surfaced, base truths identified, new solution paths opened</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply first principles thinking to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -42,3 +47,9 @@ Without legacy assumptions, these options emerge...
 - Identifies irreducible base truths
 - Opens new solution paths not visible before
 - Avoids reasoning by analogy ("X worked for Y so...")
+
+<critical_constraint>
+MANDATORY: Challenge every assumption, even "obvious" ones
+MANDATORY: Identify truly irreducible base truths, not just intermediate steps
+MANDATORY: Avoid reasoning by analogy or convention
+No exceptions. First principles requires intellectual honesty about what we actually know.

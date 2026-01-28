@@ -1,6 +1,6 @@
-<overview>
+## Overview
+
 Contextual questions for intake, organized by purpose. Use AskUserQuestion tool with these templates.
-</overview>
 
 <universal_questions>
 
@@ -12,7 +12,6 @@ question: "What topic/feature is this for? (used for file naming)"
 # Let user provide via "Other" option
 # Enforce kebab-case (convert spaces to hyphens)
 ```
-</topic_identifier>
 
 <chain_reference>
 When existing research/plan files found:
@@ -25,9 +24,6 @@ options:
   - "None" - Start fresh without referencing existing files
 multiSelect: true
 ```
-</chain_reference>
-
-</universal_questions>
 
 <do_questions>
 
@@ -42,7 +38,6 @@ options:
   - "Design/spec" - Architecture, wireframes, specifications
   - "Configuration" - Config files, infrastructure setup
 ```
-</artifact_type>
 
 <scope_completeness>
 When level of polish unclear:
@@ -54,7 +49,6 @@ options:
   - "Working prototype" - Functional but rough edges acceptable
   - "Proof of concept" - Minimal viable demonstration
 ```
-</scope_completeness>
 
 <approach_patterns>
 When implementation approach unclear:
@@ -66,7 +60,6 @@ options:
   - "Best practices" - Modern, recommended approaches
   - "Specific requirement" - I have a constraint to specify
 ```
-</approach_patterns>
 
 <testing_requirements>
 When verification needs unclear:
@@ -78,7 +71,6 @@ options:
   - "Core functionality" - Key paths tested
   - "Manual verification" - No automated tests required
 ```
-</testing_requirements>
 
 <integration_points>
 For features that connect to existing code:
@@ -90,9 +82,6 @@ options:
   - "Extends existing" - Adds to current implementation
   - "Replaces existing" - Replaces current implementation
 ```
-</integration_points>
-
-</do_questions>
 
 <plan_questions>
 
@@ -106,7 +95,6 @@ options:
   - "Decision" - Weigh options, choose an approach
   - "Process" - Define workflow or methodology
 ```
-</plan_purpose>
 
 <plan_format>
 How to structure the output:
@@ -118,9 +106,9 @@ options:
   - "Checklist/tasks" - Actionable items to complete
   - "Decision framework" - Criteria, trade-offs, recommendation
 ```
-</plan_format>
 
-<constraints>
+## Constraints
+
 What limits the plan:
 ```yaml
 header: "Constraints"
@@ -131,7 +119,6 @@ options:
   - "Requirements" - Must-haves, compliance, standards
 multiSelect: true
 ```
-</constraints>
 
 <granularity>
 Level of detail needed:
@@ -143,9 +130,9 @@ options:
   - "Detailed tasks" - Specific actionable items
   - "Prompt-ready" - Each phase is one prompt to execute
 ```
-</granularity>
 
-<dependencies>
+## Dependencies
+
 What exists vs what needs creation:
 ```yaml
 header: "Dependencies"
@@ -155,9 +142,6 @@ options:
   - "Existing codebase" - Building on current code
   - "Research complete" - Findings ready to plan from
 ```
-</dependencies>
-
-</plan_questions>
 
 <research_questions>
 
@@ -171,7 +155,6 @@ options:
   - "Comprehensive" - Detailed exploration, multiple perspectives
   - "Exhaustive" - Everything available, edge cases included
 ```
-</research_depth>
 
 <source_priorities>
 Where to look:
@@ -184,7 +167,6 @@ options:
   - "Current/latest" - 2024-2025 sources, cutting edge
 multiSelect: true
 ```
-</source_priorities>
 
 <output_format>
 How to present findings:
@@ -196,7 +178,6 @@ options:
   - "Detailed analysis" - In-depth with examples and comparisons
   - "Reference document" - Organized for future lookup
 ```
-</output_format>
 
 <research_focus>
 When topic is broad:
@@ -208,7 +189,6 @@ options:
   - "How to use it" - Patterns, examples, best practices
   - "Trade-offs" - Pros/cons, alternatives, comparisons
 ```
-</research_focus>
 
 <evaluation_criteria>
 For comparison research:
@@ -222,9 +202,6 @@ options:
   - "Cost" - Pricing, resource usage, maintenance
 multiSelect: true
 ```
-</evaluation_criteria>
-
-</research_questions>
 
 <refine_questions>
 
@@ -238,7 +215,6 @@ options:
   - "{file2}" - In .prompts/{folder2}/
   # List existing research/plan outputs
 ```
-</target_selection>
 
 <feedback_type>
 What kind of improvement:
@@ -251,7 +227,6 @@ options:
   - "Correct errors" - Fix factual mistakes or outdated info
   - "Restructure" - Reorganize for clarity or usability
 ```
-</feedback_type>
 
 <specific_feedback>
 After type selected, gather details:
@@ -261,7 +236,6 @@ question: "What specifically should be improved?"
 # Let user provide via "Other" option
 # This is the core feedback that drives the refine prompt
 ```
-</specific_feedback>
 
 <preservation>
 What to keep:
@@ -274,9 +248,6 @@ options:
   - "Code examples" - Keep the implementation patterns
   - "Everything except feedback areas" - Only change what's specified
 ```
-</preservation>
-
-</refine_questions>
 
 <question_rules>
 - Only ask about genuine gaps - don't ask what's already stated
@@ -285,4 +256,3 @@ options:
 - Prefer options over free-text - when choices are knowable
 - User can always select "Other" - for custom input
 - Route by purpose - use purpose-specific questions after primary gate
-</question_rules>

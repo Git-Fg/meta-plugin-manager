@@ -4,6 +4,11 @@ description: Comprehensive security and quality review of uncommitted changes. U
 disable-model-invocation: true
 ---
 
+<mission_control>
+<objective>Perform comprehensive security and quality review of uncommitted changes</objective>
+<success_criteria>Review report with CRITICAL/HIGH/MEDIUM/LOW issues, file:line references, and block decision</success_criteria>
+</mission_control>
+
 # Code Review Command
 
 Comprehensive security and quality review of uncommitted changes before committing.
@@ -165,6 +170,7 @@ git diff HEAD -- [file] | grep -n "console\.log"
 ### 3. Categorize Issues
 
 Assign severity based on impact:
+
 - **CRITICAL**: Security vulnerabilities, exposure of secrets
 - **HIGH**: Maintainability blockers, anti-patterns
 - **MEDIUM**: Best practice violations, performance issues
@@ -173,6 +179,7 @@ Assign severity based on impact:
 ### 4. Generate Report
 
 Produce formatted report with:
+
 - Issue severity
 - File location and line numbers
 - Clear description of the problem
@@ -181,6 +188,7 @@ Produce formatted report with:
 ### 5. Block Decision
 
 **BLOCK commit if**:
+
 - ANY CRITICAL issues found
 - Multiple HIGH issues found
 - User requests block after review
@@ -188,6 +196,7 @@ Produce formatted report with:
 ## Integration
 
 This command integrates with:
+
 - `verify` - Run after code review for complete quality check
 - `coding-standards` - Reference for patterns and anti-patterns
 - `security-scan` - Additional security scanning if available
@@ -197,6 +206,17 @@ This command integrates with:
 This command does not interpret special arguments. Everything after `qa/code-review` is treated as additional context for the code review process.
 
 **Optional context you can provide**:
+
 - Scope ("only review backend changes")
 - Severity threshold ("only show critical and high issues")
 - Focus areas ("emphasize security")
+
+---
+
+<critical_constraint>
+MANDATORY: Block commit if CRITICAL security issues found
+MANDATORY: Block commit if multiple HIGH priority issues found
+MANDATORY: Provide file:line references for every issue
+MANDATORY: Never approve code with hardcoded credentials or secrets
+No exceptions. Security vulnerabilities must always be blocked.
+</critical_constraint>

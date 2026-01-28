@@ -1,11 +1,16 @@
 ---
 description: Create a new prompt that another Claude can execute
 argument-hint: [task description]
-allowed-tools: [Read, Write, Glob, SlashCommand, AskUserQuestion]
+allowed-tools: [Read, Write, Glob, Skill, AskUserQuestion]
 ---
 
+<mission_control>
+<objective>Create new prompt for Claude execution with XML structuring and best practices</objective>
+<success_criteria>Prompt saved to .claude/workspace/prompts/ with XML tags, validation passed</success_criteria>
+</mission_control>
+
 <context>
-Before generating prompts, use the Glob tool to check `.claude/planning/prompts/*.md` to:
+Before generating prompts, use the Glob tool to check `.claude/workspace/prompts/*.md` to:
 1. Determine if the prompts directory exists
 2. Find the highest numbered prompt to determine next sequence number
 </context>
@@ -28,16 +33,7 @@ Your goal is to create prompts that get things done accurately and efficiently.
 **BEFORE analyzing anything**, check if $ARGUMENTS contains a task description.
 
 IF $ARGUMENTS is empty or vague (user just ran `/create-prompt` without details):
-→ **IMMEDIATELY use AskUserQuestion** with:
-
-- header: "Task type"
-- question: "What kind of prompt do you need?"
-- options:
-  - "Coding task" - Build, fix, or refactor code
-  - "Analysis task" - Analyze code, data, or patterns
-  - "Research task" - Gather information or explore options
-
-After selection, ask: "Describe what you want to accomplish" (they select "Other" to provide free text).
+→ Ask user to identify task type with actionable options (coding, analysis, research), then request a description.
 
 IF $ARGUMENTS contains a task description:
 → Skip this handler. Proceed directly to adaptive_analysis.
@@ -61,54 +57,24 @@ Inference rules:
   </adaptive_analysis>
 
 <contextual_questioning>
-Generate 2-4 questions using AskUserQuestion based ONLY on genuine gaps.
+Generate questions based ONLY on genuine gaps in understanding. Present actionable options for selection.
 
 <question_templates>
 
 **For ambiguous scope** (e.g., "build a dashboard"):
-
-- header: "Dashboard type"
-- question: "What kind of dashboard is this?"
-- options:
-  - "Admin dashboard" - Internal tools, user management, system metrics
-  - "Analytics dashboard" - Data visualization, reports, business metrics
-  - "User-facing dashboard" - End-user features, personal data, settings
+Ask what type of dashboard with descriptive options.
 
 **For unclear target** (e.g., "fix the bug"):
-
-- header: "Bug location"
-- question: "Where does this bug occur?"
-- options:
-  - "Frontend/UI" - Visual issues, user interactions, rendering
-  - "Backend/API" - Server errors, data processing, endpoints
-  - "Database" - Queries, migrations, data integrity
+Ask where the bug occurs with location options.
 
 **For auth/security tasks**:
-
-- header: "Auth method"
-- question: "What authentication approach?"
-- options:
-  - "JWT tokens" - Stateless, API-friendly
-  - "Session-based" - Server-side sessions, traditional web
-  - "OAuth/SSO" - Third-party providers, enterprise
+Ask about authentication approach with method options.
 
 **For performance tasks**:
-
-- header: "Performance focus"
-- question: "What's the main performance concern?"
-- options:
-  - "Load time" - Initial render, bundle size, assets
-  - "Runtime" - Memory usage, CPU, rendering performance
-  - "Database" - Query optimization, indexing, caching
+Ask about the performance concern with focus areas.
 
 **For output/deliverable clarity**:
-
-- header: "Output purpose"
-- question: "What will this be used for?"
-- options:
-  - "Production code" - Ship to users, needs polish
-  - "Prototype/POC" - Quick validation, can be rough
-  - "Internal tooling" - Team use, moderate polish
+Ask what the prompt will be used for with purpose options.
 
 </question_templates>
 
@@ -123,19 +89,7 @@ Generate 2-4 questions using AskUserQuestion based ONLY on genuine gaps.
   </contextual_questioning>
 
 <decision_gate>
-After receiving answers, present decision gate using AskUserQuestion:
-
-- header: "Ready"
-- question: "I have enough context to create your prompt. Ready to proceed?"
-- options:
-  - "Proceed" - Create the prompt with current context
-  - "Ask more questions" - I have more details to clarify
-  - "Let me add context" - I want to provide additional information
-
-If "Ask more questions" → generate 2-4 NEW questions based on remaining gaps, then present gate again
-If "Let me add context" → receive additional context via "Other" option, then re-evaluate
-If "Proceed" → continue to generation step
-</decision_gate>
+After receiving answers, ask user for confirmation to proceed with actionable options: proceed with current context, ask more questions, or add more context.
 
 <finalization>
 After "Proceed" selected, state confirmation:
@@ -178,13 +132,13 @@ Create the prompt(s) and save to the prompts folder.
 **For single prompts:**
 
 - Generate one prompt file following the patterns below
-- Save as `.claude/planning/prompts/[number]-[name].md`
+- Save as `.claude/workspace/prompts/[number]-[name].md`
 
 **For multiple prompts:**
 
 - Determine how many prompts are needed (typically 2-4)
 - Generate each prompt with clear, focused objectives
-- Save sequentially: `.claude/planning/prompts/[N]-[name].md`, `.claude/planning/prompts/[N+1]-[name].md`, etc.
+- Save sequentially: `.claude/workspace/prompts/[N]-[name].md`, `.claude/workspace/prompts/[N+1]-[name].md`, etc.
 - Each prompt should be self-contained and executable independently
 
 **Prompt Construction Rules**
@@ -222,10 +176,10 @@ Conditionally Include (based on analysis):
 Output Format:
 
 1. Generate prompt content with XML structure
-2. Save to: `.claude/planning/prompts/[number]-[descriptive-name].md`
-   - Number format: 001, 002, 003, etc. (check existing files in .claude/planning/prompts/ to determine next number)
+2. Save to: `.claude/workspace/prompts/[number]-[descriptive-name].md`
+   - Number format: 001, 002, 003, etc. (check existing files in .claude/workspace/prompts/ to determine next number)
    - Name format: lowercase, hyphen-separated, max 5 words describing the task
-   - Example: `.claude/planning/prompts/001-implement-user-authentication.md`
+   - Example: `.claude/workspace/prompts/001-implement-user-authentication.md`
 3. File should contain ONLY the prompt, no explanations or metadata
 
 <prompt_patterns>
@@ -369,10 +323,10 @@ After saving the prompt(s), present this decision tree to the user:
 **Prompt(s) created successfully!**
 
 <single_prompt_scenario>
-If you created ONE prompt (e.g., `.claude/planning/prompts/005-implement-feature.md`):
+If you created ONE prompt (e.g., `.claude/workspace/prompts/005-implement-feature.md`):
 
 <presentation>
-✓ Saved prompt to .claude/planning/prompts/005-implement-feature.md
+✓ Saved prompt to .claude/workspace/prompts/005-implement-feature.md
 
 What's next?
 
@@ -385,7 +339,7 @@ Choose (1-4): \_
 </presentation>
 
 <action>
-If user chooses #1, invoke via SlashCommand tool: `/run-prompt 005`
+If user chooses #1, invoke via Skill tool: `/run-prompt 005`
 </action>
 </single_prompt_scenario>
 
@@ -394,9 +348,9 @@ If you created MULTIPLE prompts that CAN run in parallel (e.g., independent modu
 
 <presentation>
 ✓ Saved prompts:
-  - .claude/planning/prompts/005-implement-auth.md
-  - .claude/planning/prompts/006-implement-api.md
-  - .claude/planning/prompts/007-implement-ui.md
+  - .claude/workspace/prompts/005-implement-auth.md
+  - .claude/workspace/prompts/006-implement-api.md
+  - .claude/workspace/prompts/007-implement-ui.md
 
 Execution strategy: These prompts can run in PARALLEL (independent tasks, no shared files)
 
@@ -411,8 +365,8 @@ Choose (1-4): \_
 </presentation>
 
 <actions>
-If user chooses #1, invoke via SlashCommand tool: `/run-prompt 005 006 007 --parallel`
-If user chooses #2, invoke via SlashCommand tool: `/run-prompt 005 006 007 --sequential`
+If user chooses #1, invoke via Skill tool: `/run-prompt 005 006 007 --parallel`
+If user chooses #2, invoke via Skill tool: `/run-prompt 005 006 007 --sequential`
 </actions>
 </parallel_scenario>
 
@@ -421,9 +375,9 @@ If you created MULTIPLE prompts that MUST run sequentially (e.g., dependencies, 
 
 <presentation>
 ✓ Saved prompts:
-  - .claude/planning/prompts/005-setup-database.md
-  - .claude/planning/prompts/006-create-migrations.md
-  - .claude/planning/prompts/007-seed-data.md
+  - .claude/workspace/prompts/005-setup-database.md
+  - .claude/workspace/prompts/006-create-migrations.md
+  - .claude/workspace/prompts/007-seed-data.md
 
 Execution strategy: These prompts must run SEQUENTIALLY (dependencies: 005 → 006 → 007)
 
@@ -438,8 +392,8 @@ Choose (1-4): \_
 </presentation>
 
 <actions>
-If user chooses #1, invoke via SlashCommand tool: `/run-prompt 005 006 007 --sequential`
-If user chooses #2, invoke via SlashCommand tool: `/run-prompt 005`
+If user chooses #1, invoke via Skill tool: `/run-prompt 005 006 007 --sequential`
+If user chooses #2, invoke via Skill tool: `/run-prompt 005`
 </actions>
 </sequential_scenario>
 
@@ -454,22 +408,32 @@ If user chooses #2, invoke via SlashCommand tool: `/run-prompt 005`
 - User selected "Proceed" from decision gate
 - Appropriate depth, structure, and execution strategy determined
 - Prompt(s) generated with proper XML structure following patterns
-- Files saved to .claude/planning/prompts/[number]-[name].md with correct sequential numbering
+- Files saved to .claude/workspace/prompts/[number]-[name].md with correct sequential numbering
 - Decision tree presented to user based on single/parallel/sequential scenario
-- User choice executed (SlashCommand invoked if user selects run option)
+- User choice executed (Skill invoked if user selects run option)
   </success_criteria>
 
 <meta_instructions>
 
 - **Intake first**: Complete step_0_intake_gate before generating. Use AskUserQuestion for structured clarification.
 - **Decision gate loop**: Keep asking questions until user selects "Proceed"
-- Use Glob tool with `.claude/planning/prompts/*.md` to find existing prompts and determine next number in sequence
-- If .claude/planning/prompts/ doesn't exist, use Write tool to create the first prompt (Write will create parent directories)
+- Use Glob tool with `.claude/workspace/prompts/*.md` to find existing prompts and determine next number in sequence
+- If .claude/workspace/prompts/ doesn't exist, use Write tool to create the first prompt (Write will create parent directories)
 - Keep prompt filenames descriptive but concise
 - Adapt the XML structure to fit the task - not every tag is needed every time
 - Consider the user's working directory as the root for all relative paths
 - Each prompt file should contain ONLY the prompt content, no preamble or explanation
 - After saving, present the decision tree as inline text (not AskUserQuestion)
-- Use the SlashCommand tool to invoke /run-prompt when user makes their choice
+- Use the Skill tool to invoke /run-prompt when user makes their choice
   </meta_instructions>
 ```
+
+---
+
+<critical_constraint>
+MANDATORY: Complete intake gate before generating any prompts
+MANDATORY: Use AskUserQuestion for structured clarification
+MANDATORY: Determine sequential vs parallel execution before presenting options
+MANDATORY: Save prompts with sequential numbering (.claude/workspace/prompts/###-name.md)
+No exceptions. Prompt creation requires structured intake and clear execution strategy.
+</critical_constraint>

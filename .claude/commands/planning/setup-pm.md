@@ -1,8 +1,13 @@
 ---
 name: setup-pm
-description: Configure your preferred package manager (npm/pnpm/yarn/bun). Use when: setting up a new project, switching package managers, or standardizing team workflow.
+description: "Configure your preferred package manager when setting up a new project, switching package managers, or standardizing team workflow."
 disable-model-invocation: true
 ---
+
+<mission_control>
+<objective>Configure package manager preference through detection priority system</objective>
+<success_criteria>Package manager configured and verified through detection hierarchy</success_criteria>
+</mission_control>
 
 # Package Manager Setup Command
 
@@ -97,16 +102,17 @@ Create `~/.claude/package-manager.json`:
 
 ## Lock File Detection
 
-| Lock File | Package Manager |
-|-----------|-----------------|
-| `pnpm-lock.yaml` | pnpm |
-| `bun.lockb` | bun |
-| `yarn.lock` | yarn |
-| `package-lock.json` | npm |
+| Lock File           | Package Manager |
+| ------------------- | --------------- |
+| `pnpm-lock.yaml`    | pnpm            |
+| `bun.lockb`         | bun             |
+| `yarn.lock`         | yarn            |
+| `package-lock.json` | npm             |
 
 ## Integration
 
 This command integrates with:
+
 - `verify` - Ensure package manager consistency
 - `build-fix` - Use correct package manager for builds
 - `tdd-workflow` - Test commands use detected package manager
@@ -123,3 +129,8 @@ This command interprets special arguments to set configuration:
 ```
 
 **Available package managers**: npm, pnpm, yarn, bun
+
+<critical_constraint>
+MANDATORY: Follow detection priority (env var > project config > package.json > lock file > global > fallback)
+MANDATORY: Verify configuration after setting
+No exceptions. Package manager must be consistently detected across all tools.

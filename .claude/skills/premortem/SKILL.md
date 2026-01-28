@@ -1,10 +1,21 @@
 ---
 name: premortem
-description: "Identify failure modes before they occur. Use when: Reviewing plans, designs, or PRs to catch risks early. Not for: Post-incident analysis (use root-cause-analysis) or debugging active issues."
+description: "Identify failure modes before they occur when reviewing plans, designs, or PRs to catch risks early. Not for post-incident analysis or debugging active issues."
 user-invocable: true
 ---
 
 # Pre-Mortem
+
+<mission_control>
+<objective>Identify failure modes before they occur by systematically questioning plans, designs, and implementations with verified evidence requirements</objective>
+<success_criteria>Risks categorized (Tiger/Paper/Elephant) with specific verification evidence, HIGH severity risks addressed before proceeding</success_criteria>
+</mission_control>
+
+<trigger>When reviewing plans, designs, or PRs to catch risks early. Not for: Post-incident analysis or debugging active issues.</trigger>
+
+<interaction_schema>
+DETECT_CONTEXT → RUN_CHECKLIST → VERIFY_FINDINGS → PRESENT_RISKS → UPDATE_PLAN
+</interaction_schema>
 
 Identify failure modes before they occur by systematically questioning plans, designs, and implementations. Based on Gary Klein's technique, popularized by Shreyas Doshi (Stripe).
 
@@ -14,11 +25,11 @@ Identify failure modes before they occur by systematically questioning plans, de
 
 ## Risk Categories
 
-| Category | Symbol | Meaning |
-|----------|--------|---------|
-| **Tiger** | `[TIGER]` | Clear threat that will hurt us if not addressed |
-| **Paper Tiger** | `[PAPER]` | Looks threatening but probably fine |
-| **Elephant** | `[ELEPHANT]` | Thing nobody wants to talk about |
+| Category        | Symbol       | Meaning                                         |
+| --------------- | ------------ | ----------------------------------------------- |
+| **Tiger**       | `[TIGER]`    | Clear threat that will hurt us if not addressed |
+| **Paper Tiger** | `[PAPER]`    | Looks threatening but probably fine             |
+| **Elephant**    | `[ELEPHANT]` | Thing nobody wants to talk about                |
 
 ## CRITICAL: Verify Before Flagging
 
@@ -27,6 +38,7 @@ Identify failure modes before they occur by systematically questioning plans, de
 ### The False Positive Problem
 
 Common mistakes that create false tigers:
+
 - Seeing a hardcoded path without checking for `if exists():` fallback
 - Finding missing feature X without asking "is X in scope?"
 - Flagging code at line N without reading lines N±20 for context
@@ -39,7 +51,7 @@ Before flagging ANY tiger, verify:
 1. **Context read**: Did I read ±20 lines around the finding?
 2. **Fallback check**: Is there try/except, if exists(), or else branch?
 3. **Scope check**: Is this even in scope for this code?
-4. **Dev-only check**: Is this in __main__, tests/, or dev-only code?
+4. **Dev-only check**: Is this in **main**, tests/, or dev-only code?
 
 **If ANY verification check is "no" or "unknown", DO NOT flag as tiger.**
 
@@ -51,7 +63,7 @@ Every tiger MUST include:
 risk: "<description>"
 location: "file.py:42"
 severity: high|medium
-mitigation_checked: "<what was checked and NOT found>"  # REQUIRED
+mitigation_checked: "<what was checked and NOT found>" # REQUIRED
 ```
 
 If you cannot fill in `mitigation_checked` with specific evidence, it's not a verified tiger.
@@ -61,6 +73,7 @@ If you cannot fill in `mitigation_checked` with specific evidence, it's not a ve
 ### Step 1: Detect Context & Depth
 
 Auto-detect based on context:
+
 - **Plan creation** → Quick (localized scope)
 - **Before implementation** → Deep (global scope)
 - **PR review** → Quick (localized scope)
@@ -73,6 +86,7 @@ Auto-detect based on context:
 Run through these mentally, note any that apply:
 
 **Core Questions:**
+
 1. What's the single biggest thing that could go wrong?
 2. Any external dependencies that could fail?
 3. Is rollback possible if this breaks?
@@ -80,15 +94,16 @@ Run through these mentally, note any that apply:
 5. Unclear requirements that could cause rework?
 
 **Output Format:**
+
 ```yaml
 mode: quick
 context: "<plan/PR being analyzed>"
 
-potential_risks:  # Pass 1: Pattern-matching findings
+potential_risks: # Pass 1: Pattern-matching findings
   - "hardcoded path at line 42"
   - "missing error handling for X"
 
-tigers:  # Pass 2: After verification
+tigers: # Pass 2: After verification
   - risk: "<description>"
     location: "file.py:42"
     severity: high|medium
@@ -109,6 +124,7 @@ paper_tigers:
 Work through each category systematically:
 
 **Technical Risks:**
+
 - [ ] Scalability: Works at 10x/100x current load?
 - [ ] Dependencies: External services + fallbacks defined?
 - [ ] Data: Availability, consistency, migrations clear?
@@ -117,18 +133,21 @@ Work through each category systematically:
 - [ ] Error handling: All failure modes covered?
 
 **Integration Risks:**
+
 - [ ] Breaking changes identified?
 - [ ] Migration path defined?
 - [ ] Rollback strategy exists?
 - [ ] Feature flags needed?
 
 **Process Risks:**
+
 - [ ] Requirements clear and complete?
 - [ ] All stakeholder input gathered?
 - [ ] Tech debt being tracked?
 - [ ] Maintenance burden understood?
 
 **Testing Risks:**
+
 - [ ] Coverage gaps identified?
 - [ ] Integration test plan exists?
 - [ ] Load testing needed?
@@ -139,6 +158,7 @@ Work through each category systematically:
 **BLOCKING:** Present findings and require user decision on HIGH severity tigers.
 
 Build the question with these options:
+
 1. **Accept risks and proceed** - Acknowledged but not blocking
 2. **Add mitigations to plan** - Update plan with risk mitigations before proceeding
 3. **Research mitigation options** - Help find solutions for unknown mitigations
@@ -147,19 +167,24 @@ Build the question with these options:
 ### Step 4: Handle User Response
 
 #### If "Accept risks and proceed"
+
 Log acceptance for audit trail and continue to next workflow step.
 
 #### If "Add mitigations to plan"
+
 Update plan file with mitigations section, then re-run quick premortem to verify mitigations address risks.
 
 #### If "Research mitigation options"
+
 For each HIGH severity tiger:
+
 1. Internal: Use Read/Grep to find how codebase handled this before
 2. External: Use WebSearch for best practices
 3. Synthesize 2-4 options
 4. Present via AskUserQuestion
 
 #### If "Discuss specific risks"
+
 Ask which risk to discuss, then have conversation about that specific risk.
 
 ### Step 5: Update Plan (if mitigations added)
@@ -170,14 +195,17 @@ Append to the plan:
 ## Risk Mitigations (Pre-Mortem)
 
 ### Tigers Addressed:
+
 1. **{risk}** (severity: {severity})
    - Mitigation: {mitigation}
    - Added to phase: {phase_number}
 
 ### Accepted Risks:
+
 1. **{risk}** - Accepted because: {reason}
 
 ### Pre-Mortem Run:
+
 - Date: {timestamp}
 - Mode: {quick|deep}
 - Tigers: {count}
@@ -186,11 +214,11 @@ Append to the plan:
 
 ## Severity Thresholds
 
-| Severity | Blocking? | Action Required |
-|----------|-----------|-----------------|
-| HIGH | Yes | Must address or explicitly accept |
-| MEDIUM | No | Inform user, recommend addressing |
-| LOW | No | Note for awareness |
+| Severity | Blocking? | Action Required                   |
+| -------- | --------- | --------------------------------- |
+| HIGH     | Yes       | Must address or explicitly accept |
+| MEDIUM   | No        | Inform user, recommend addressing |
+| LOW      | No        | Note for awareness                |
 
 ## Example Session
 
@@ -222,6 +250,7 @@ PAPER TIGERS:
 ### In Planning Workflows
 
 After plan structure is approved:
+
 1. Run quick premortem
 2. If HIGH risks found, block until addressed
 3. If only MEDIUM/LOW, inform and proceed
@@ -229,12 +258,14 @@ After plan structure is approved:
 ### Before Implementation
 
 Run deep premortem on full plan:
+
 1. Block until all HIGH tigers addressed
 2. Update plan with mitigations
 
 ### In Code Review
 
 Run quick premortem on diff scope:
+
 1. Inform of any risks found
 2. Suggest mitigations if applicable
 
@@ -242,3 +273,14 @@ Run quick premortem on diff scope:
 
 - [Pre-Mortems by Shreyas Doshi](https://coda.io/@shreyas/pre-mortems)
 - [Gary Klein's Original Research](https://hbr.org/2007/09/performing-a-project-premortem)
+
+---
+
+<critical_constraint>
+MANDATORY: Verify every tiger with specific evidence before flagging
+MANDATORY: Use required YAML format with mitigation_checked field
+MANDATORY: Read ±20 lines around any finding for context
+MANDATORY: Block on HIGH severity risks until user addresses them
+MANDATORY: Never flag risks based on pattern-matching alone
+No exceptions. Unverified tigers waste time and undermine credibility.
+</critical_constraint>

@@ -178,8 +178,8 @@ Need to maintain project health?
 │
 ├─ Update rules → Check .claude/rules/ for consistency
 ├─ Audit quality → Use meta-critic skill
-├─ Fix autonomy issues → Review askuserquestion-best-practices.md
-└─ Validate structure → Check progressive disclosure tiers
+├─ Fix autonomy issues → Review architecture.md (L'Entonnoir pattern)
+└─ Validate structure → Check quality.md (anti-patterns)
 ```
 
 ### For Component Factory (Building Offspring)
@@ -239,15 +239,15 @@ Need to build a portable component?
 
 ---
 
-## Core Principles
+## The Three Rule Files
 
-See `.claude/rules/principles.md` for:
+The Seed System consolidates all guidance into three rule files:
 
-- **Context Window as Public Good** - Token economy principles
-- **Trust AI Intelligence** - What Claude already knows
-- **The Delta Standard** - Expert-only knowledge formula
-- **The 45% XML Tax** - When to use XML vs Markdown
-- **Recency Bias** - Footer constraints priority
+| File                | Focus               | Content                                                     |
+| ------------------- | ------------------- | ----------------------------------------------------------- |
+| **principles.md**   | The "Soul"          | The "Why," the "Tone," and the "Degrees of Freedom"         |
+| **architecture.md** | The "Skeleton"      | UHP (XML/MD), Progressive Disclosure, Interaction Protocols |
+| **quality.md**      | The "Immune System" | "Smell tests," anti-hallucination, verification loops       |
 
 ---
 
@@ -281,18 +281,12 @@ See `.claude/rules/principles.md` for:
 
 ## Writing Style
 
-See `.claude/rules/voice-and-freedom.md` for:
+See `.claude/rules/principles.md` for:
 
 - **Imperative Form** - How to write instructions
 - **Clear Examples** - Show, don't just tell
-- **Voice Strength** - Gentle → Strong → Critical
-- **Degrees of Freedom** - High/Medium/Low specificity
-
----
-
-## Voice & Degrees of Freedom
-
-See `.claude/rules/voice-and-freedom.md` for complete guide.
+- **Voice Strength** - Gentle → Standard → Strong → Critical
+- **Degrees of Freedom** - High → Medium → Low specificity
 
 ---
 
@@ -308,7 +302,7 @@ Keep SKILL.md focused and lean. Move detailed content to references/.
 
 ## Format: Unified Hybrid Protocol (UHP)
 
-See `.claude/rules/hybrid-format.md` for complete UHP reference (3-layer architecture, XML/Markdown usage, state management).
+See `.claude/rules/architecture.md` for complete UHP reference (3-layer architecture, XML/Markdown usage, state management).
 
 ---
 

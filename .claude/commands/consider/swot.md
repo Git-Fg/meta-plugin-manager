@@ -3,6 +3,11 @@ description: Map strengths, weaknesses, opportunities, and threats
 argument-hint: [subject or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply SWOT analysis to map internal strengths/weaknesses and external opportunities/threats</objective>
+<success_criteria>Factors correctly categorized, strategic moves developed, clear direction provided</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply SWOT analysis to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -48,7 +53,10 @@ Map internal factors (strengths/weaknesses) and external factors (opportunities/
 ## Success Criteria
 
 - Correctly categorizes internal vs. external factors
-- Factors are specific and actionable, not generic
-- Strategies connect multiple quadrants
-- Provides clear direction for action
-- Balances optimism with risk awareness
+
+<critical_constraint>
+MANDATORY: Distinguish internal (controlled) from external (uncontrolled) factors
+MANDATORY: Develop strategic moves for each quadrant combination
+MANDATORY: Provide actionable mitigation/capture strategies
+No exceptions. SWOT must lead to strategic clarity, not just categorization.
+</critical_constraint>

@@ -1,19 +1,22 @@
-<overview>
+## Overview
+
 This reference covers patterns for complex workflows, validation loops, and feedback cycles in skill authoring. All patterns use pure XML structure.
-</overview>
 
 <complex_workflows>
-<principle>
+
+### Principle
+
 Break complex operations into clear, sequential steps. For particularly complex workflows, provide a checklist.
-</principle>
 
 <pdf_forms_example>
 ```xml
-<objective>
-Fill PDF forms with validated data from JSON field mappings.
-</objective>
 
-<workflow>
+## Objective
+
+Fill PDF forms with validated data from JSON field mappings.
+
+## Workflow
+
 Copy this checklist and check off items as you complete them:
 
 ```
@@ -60,30 +63,30 @@ Run: `python scripts/verify_output.py output.pdf`
 
 If verification fails, return to Step 2.
 </step_5>
-</workflow>
-```
-</pdf_forms_example>
 
-<when_to_use>
+```
+
+## When to Use
+
 Use checklist pattern when:
 - Workflow has 5+ sequential steps
 - Steps must be completed in order
 - Progress tracking helps prevent errors
 - Easy resumption after interruption is valuable
-</when_to_use>
-</complex_workflows>
 
 <feedback_loops>
 <validate_fix_repeat_pattern>
-<principle>
+
+### Principle
+
 Run validator → fix errors → repeat. This pattern greatly improves output quality.
-</principle>
 
 <document_editing_example>
 ```xml
-<objective>
+
+## Objective
+
 Edit OOXML documents with XML validation at each step.
-</objective>
 
 <editing_process>
 <step_1>
@@ -112,36 +115,36 @@ Rebuild: `python ooxml/scripts/pack.py unpacked_dir/ output.docx`
 <step_6>
 Test the output document
 </step_6>
-</editing_process>
 
-<validation>
+## Validation
+
 Never skip validation. Catching errors early prevents corrupted output files.
-</validation>
+
 ```
-</document_editing_example>
 
 <why_it_works>
 - Catches errors early before changes are applied
 - Machine-verifiable with objective verification
 - Plan can be iterated without touching originals
 - Reduces total iteration cycles
-</why_it_works>
-</validate_fix_repeat_pattern>
 
 <plan_validate_execute_pattern>
-<principle>
+
+### Principle
+
 When Claude performs complex, open-ended tasks, create a plan in a structured format, validate it, then execute.
 
 Workflow: analyze → **create plan file** → **validate plan** → execute → verify
-</principle>
 
 <batch_update_example>
 ```xml
-<objective>
-Apply batch updates to spreadsheet with plan validation.
-</objective>
 
-<workflow>
+## Objective
+
+Apply batch updates to spreadsheet with plan validation.
+
+## Workflow
+
 <plan_phase>
 <step_1>
 Analyze the spreadsheet and requirements
@@ -150,7 +153,6 @@ Analyze the spreadsheet and requirements
 <step_2>
 Create `changes.json` with all planned updates
 </step_2>
-</plan_phase>
 
 <validation_phase>
 <step_3>
@@ -167,9 +169,9 @@ If validation fails:
 <step_5>
 Only proceed when validation passes
 </step_5>
-</validation_phase>
 
-<execution_phase>
+## Execution Phase
+
 <step_6>
 Apply changes: `python scripts/apply_changes.py changes.json`
 </step_6>
@@ -177,16 +179,14 @@ Apply changes: `python scripts/apply_changes.py changes.json`
 <step_7>
 Verify output
 </step_7>
-</execution_phase>
-</workflow>
 
-<success_criteria>
+## Success Criteria
+
 - Plan validation passes with zero errors
 - All changes applied successfully
 - Output verification confirms expected results
-</success_criteria>
+
 ```
-</batch_update_example>
 
 <implementation_tip>
 Make validation scripts verbose with specific error messages:
@@ -198,30 +198,30 @@ Make validation scripts verbose with specific error messages:
 "Invalid field"
 
 Specific errors help Claude fix issues without guessing.
-</implementation_tip>
 
-<when_to_use>
+## When to Use
+
 Use plan-validate-execute when:
 - Operations are complex and error-prone
 - Changes are irreversible or difficult to undo
 - Planning can be validated independently
 - Catching errors early saves significant time
-</when_to_use>
-</plan_validate_execute_pattern>
-</feedback_loops>
 
 <conditional_workflows>
-<principle>
+
+### Principle
+
 Guide Claude through decision points with clear branching logic.
-</principle>
 
 <document_modification_example>
 ```xml
-<objective>
-Modify DOCX files using appropriate method based on task type.
-</objective>
 
-<workflow>
+## Objective
+
+Modify DOCX files using appropriate method based on task type.
+
+## Workflow
+
 <decision_point_1>
 Determine the modification type:
 
@@ -230,48 +230,47 @@ Determine the modification type:
 </decision_point_1>
 
 <creation_workflow>
-<objective>Build documents from scratch</objective>
+
+## Objective
+
+Build documents from scratch
 
 <steps>
 1. Use docx-js library
 2. Build document from scratch
 3. Export to .docx format
-</steps>
-</creation_workflow>
 
 <editing_workflow>
-<objective>Modify existing documents</objective>
+
+## Objective
+
+Modify existing documents
 
 <steps>
 1. Unpack existing document
 2. Modify XML directly
 3. Validate after each change
 4. Repack when complete
-</steps>
-</editing_workflow>
-</workflow>
 
-<success_criteria>
+## Success Criteria
+
 - Correct workflow chosen based on task type
 - All steps in chosen workflow completed
 - Output file validated and verified
-</success_criteria>
-```
-</document_modification_example>
 
-<when_to_use>
+```
+
+## When to Use
+
 Use conditional workflows when:
 - Different task types require different approaches
 - Decision points are clear and well-defined
 - Workflows are mutually exclusive
 - Guiding Claude to correct path improves outcomes
-</when_to_use>
-</conditional_workflows>
 
 <validation_scripts>
 <principles>
 Validation scripts are force multipliers. They catch errors that Claude might miss and provide actionable feedback for fixing issues.
-</principles>
 
 <characteristics_of_good_validation>
 <verbose_errors>
@@ -280,15 +279,13 @@ Validation scripts are force multipliers. They catch errors that Claude might mi
 **Bad**: "Invalid field"
 
 Verbose errors help Claude fix issues in one iteration instead of multiple rounds of guessing.
-</verbose_errors>
 
 <specific_feedback>
-**Good**: "Line 47: Expected closing tag `</paragraph>` but found `</section>`"
+**Good**: "Line 47: Expected closing tag `` but found ``"
 
 **Bad**: "XML syntax error"
 
 Specific feedback pinpoints exact location and nature of the problem.
-</specific_feedback>
 
 <actionable_suggestions>
 **Good**: "Required field 'customer_name' is missing. Add: {\"customer_name\": \"value\"}"
@@ -296,7 +293,6 @@ Specific feedback pinpoints exact location and nature of the problem.
 **Bad**: "Missing required field"
 
 Actionable suggestions show Claude exactly what to fix.
-</actionable_suggestions>
 
 <available_options>
 When validation fails, show available valid options:
@@ -306,12 +302,12 @@ When validation fails, show available valid options:
 **Bad**: "Invalid status"
 
 Showing valid options eliminates guesswork.
-</available_options>
-</characteristics_of_good_validation>
 
 <implementation_pattern>
 ```xml
-<validation>
+
+## Validation
+
 After making changes, validate immediately:
 
 ```bash
@@ -326,31 +322,32 @@ If validation fails, fix errors before continuing. Validation errors include:
 - **Invalid value**: "Invalid status 'pending_review'. Valid statuses: active, paused, archived"
 
 Only proceed when validation passes with zero errors.
-</validation>
-```
-</implementation_pattern>
 
-<benefits>
+```
+
+## Benefits
+
 - Catches errors before they propagate
 - Reduces iteration cycles
 - Provides learning feedback
 - Makes debugging deterministic
 - Enables confident execution
-</benefits>
-</validation_scripts>
 
 <iterative_refinement>
-<principle>
+
+### Principle
+
 Many workflows benefit from iteration: generate → validate → refine → validate → finalize.
-</principle>
 
 <implementation_example>
 ```xml
-<objective>
-Generate reports with iterative quality improvement.
-</objective>
 
-<workflow>
+## Objective
+
+Generate reports with iterative quality improvement.
+
+## Workflow
+
 <iteration_1>
 **Generate initial draft**
 
@@ -384,33 +381,34 @@ Ensure all quality criteria met.
 
 Export to final format and deliver.
 </iteration_5>
-</workflow>
 
-<success_criteria>
+## Success Criteria
+
 - Final validation passes with zero errors
 - All quality criteria met
 - Report ready for delivery
-</success_criteria>
-```
-</implementation_example>
 
-<when_to_use>
+```
+
+## When to Use
+
 Use iterative refinement when:
 - Quality improves with multiple passes
 - Validation provides actionable feedback
 - Time permits iteration
 - Perfect output matters more than speed
-</when_to_use>
-</iterative_refinement>
 
 <checkpoint_pattern>
-<principle>
+
+### Principle
+
 For long workflows, add checkpoints where Claude can pause and verify progress before continuing.
-</principle>
 
 <implementation_example>
 ```xml
-<workflow>
+
+## Workflow
+
 <phase_1>
 **Data collection** (Steps 1-3)
 
@@ -440,7 +438,6 @@ Only continue if checkpoint passes.
 
 Proceed to delivery only if checkpoint passes.
 </phase_3>
-</workflow>
 
 <checkpoint_validation>
 At each checkpoint:
@@ -448,32 +445,32 @@ At each checkpoint:
 2. Review output for correctness
 3. Verify no errors or warnings
 4. Only proceed when validation passes
-</checkpoint_validation>
-```
-</implementation_example>
 
-<benefits>
+```
+
+## Benefits
+
 - Prevents cascading errors
 - Easier to diagnose issues
 - Clear progress indicators
 - Natural pause points for review
 - Reduces wasted work from early errors
-</benefits>
-</checkpoint_pattern>
 
 <error_recovery>
-<principle>
+
+### Principle
+
 Design workflows with clear error recovery paths. Claude should know what to do when things go wrong.
-</principle>
 
 <implementation_example>
 ```xml
-<workflow>
+
+## Workflow
+
 <normal_path>
 1. Process input file
 2. Validate output
 3. Save results
-</normal_path>
 
 <error_recovery>
 **If validation fails in step 2:**
@@ -487,24 +484,20 @@ Design workflows with clear error recovery paths. Claude should know what to do 
 - Check file permissions
 - Check file path validity
 - Retry save with corrected conditions
-</error_recovery>
 
 <escalation>
 **If error persists after 3 attempts:**
 - Document the error with full context
 - Save partial results if available
 - Report issue to user with diagnostic information
-</escalation>
-</workflow>
-```
-</implementation_example>
 
-<when_to_use>
+```
+
+## When to Use
+
 Include error recovery when:
 - Workflows interact with external systems
 - File operations could fail
 - Network calls could timeout
 - User input could be invalid
 - Errors are recoverable
-</when_to_use>
-</error_recovery>

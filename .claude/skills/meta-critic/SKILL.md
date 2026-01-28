@@ -1,6 +1,6 @@
 ---
 name: meta-critic
-description: "Audit conversation alignment. Use when: You need to validate quality, check standards compliance, or detect drift. Not for: Creating content, executing tasks, or simple status checks."
+description: "Audit conversation alignment when you need to validate quality, check standards compliance, or detect drift. Not for creating content, executing tasks, or simple status checks."
 user-invocable: true
 ---
 
@@ -12,13 +12,13 @@ Think of Meta-Critic as a **quality assurance inspector**—examining the alignm
 
 ## Quick Navigation
 
-| If you are auditing... | MANDATORY READ WHEN... | Meta-Skill |
-|-----------------------|------------------------|------------|
-| Skills | AUDITING SKILLS | `skill-development` |
-| Commands | AUDITING COMMANDS | `command-development` |
-| Agents | AUDITING AGENTS | `agent-development` |
-| Hooks | AUDITING HOOKS | `hook-development` |
-| MCPs | AUDITING MCP SERVERS | `mcp-development` |
+| If you are auditing... | MANDATORY READ WHEN... | Meta-Skill              |
+| ---------------------- | ---------------------- | ----------------------- |
+| Skills                 | AUDITING SKILLS        | `invocable-development` |
+| Commands               | AUDITING COMMANDS      | `invocable-development` |
+| Agents                 | AUDITING AGENTS        | `agent-development`     |
+| Hooks                  | AUDITING HOOKS         | `hook-development`      |
+| MCPs                   | AUDITING MCP SERVERS   | `mcp-development`       |
 
 **CRITICAL**: You MUST understand the meta-skill standards for the component type you're auditing. Without this, your audit will miss critical quality issues.
 
@@ -29,6 +29,7 @@ Think of Meta-Critic as a **quality assurance inspector**—examining the alignm
 **Execution Mode**: Manually invoked for quality validation.
 
 **Your job:**
+
 1. Autonomously investigate conversation history and execution outcomes
 2. Perform three-way comparison: Request vs Delivery vs Standards
 3. Intelligently determine which questions to ask and when
@@ -41,6 +42,7 @@ Think of Meta-Critic as a **quality assurance inspector**—examining the alignm
 Execute this iterative process:
 
 ### Phase 1: Autonomous Investigation
+
 1. **Scan Context**
    - Review conversation history
    - Examine user's request
@@ -58,7 +60,7 @@ Execute this iterative process:
 
 4. **Compare with Standards**
    - Check against applicable meta-skills
-   - skill-development, command-development
+   - invocable-development
    - hook-development, mcp-development, agent-development
 
 5. **Identify Gaps**
@@ -70,18 +72,22 @@ Execute this iterative process:
 ### Phase 2: Iterative Clarification
 
 **Ask questions when:**
+
 - Investigation reveals multiple interpretation possibilities
 - Need user perspective on priorities or severity
 - Want confirmation of issue classification
 
 **Ask when NOT needed:**
+
 - Investigation provides complete clarity
 - Standards violations are unambiguous
 - User explicitly requested autonomous audit
 
 **Question Strategy:**
-- Use AskUserQuestions tool
-- Ask one question at a time
+
+- Use AskUserQuestion tool
+- Batch 1-4 related questions per round
+- Investigate between rounds based on answers
 - Build on previous answers
 
 ### Phase 3: Feedback Formulation
@@ -89,28 +95,35 @@ Execute this iterative process:
 **Rule**: Recommendations must be SPECIFIC and ACTIONABLE.
 
 **Each recommendation must be:**
+
 - Specific file or section to modify
 - Actual text to insert or change
 - Reference to applicable meta-skill standard
 
 **Format:**
+
 ```markdown
 ## Meta-Critic Review
 
 ### Critical Issues (Blocking)
+
 [Specific issues with exact file locations and fixes]
 
 ### High Priority Issues
+
 [Specific issues with actionable recommendations]
 
 ### Medium Priority Issues
+
 [Specific issues with improvement suggestions]
 
 ### Low Priority Issues
+
 [Minor improvements or optimizations]
 ```
 
 **Contrast:**
+
 ```
 ✅ Good: "SKILL.md line 5: Change description to follow What-When-Not format"
 ❌ Bad: "Fix description"
@@ -138,20 +151,24 @@ Why good: Specific recommendations enable immediate action.
 ### Issue Classification
 
 **Critical (Blocking)**:
+
 - Security vulnerabilities
 - Complete misalignment
 - Missing core requirements
 
 **High Priority**:
+
 - Significant standards drift
 - Incomplete implementation
 - Quality issues affecting reliability
 
 **Medium Priority**:
+
 - Minor standard deviations
 - Documentation gaps
 
 **Low Priority**:
+
 - Cosmetic issues
 - Nice-to-have enhancements
 
@@ -171,13 +188,13 @@ Why good: Specific recommendations enable immediate action.
 
 ### Component Type → Meta-Skill Mapping
 
-| Component Type | Load This Skill | Reference |
-|----------------|-----------------|-----------|
-| Skills | `skill-development` | `references/quality-framework.md` |
-| Commands | `command-development` | `references/quality-framework.md` |
-| Agents | `agent-development` | Validation sections in SKILL.md |
-| Hooks | `hook-development` | Validation sections in SKILL.md |
-| MCPs | `mcp-development` | Validation sections in SKILL.md |
+| Component Type | Load This Skill         | Reference                         |
+| -------------- | ----------------------- | --------------------------------- |
+| Skills         | `invocable-development` | `references/quality-framework.md` |
+| Commands       | `invocable-development` | `references/quality-framework.md` |
+| Agents         | `agent-development`     | Validation sections in SKILL.md   |
+| Hooks          | `hook-development`      | Validation sections in SKILL.md   |
+| MCPs           | `mcp-development`       | Validation sections in SKILL.md   |
 
 **Rule**: Never hardcode validation rules. The meta-development skills are the single source of truth.
 
@@ -190,12 +207,14 @@ For quantitative validation and Success Criteria design, use Eval-Driven Develop
 **See**: `references/eval-driven-development.md`
 
 **EDD provides**:
+
 - **Code-based graders**: Deterministic checks (file exists, tests pass, build succeeds)
 - **Model-based graders**: Subjective quality assessment (code review, design)
 - **pass@k metrics**: Reliability measurement (pass@1, pass@3, pass@5)
 - **Regression detection**: Ensuring existing functionality preserved
 
 **When to use EDD**:
+
 - Component requires measurable quality gates
 - Success Criteria need objective verification
 - Tracking reliability over time
@@ -210,10 +229,12 @@ For quantitative validation and Success Criteria design, use Eval-Driven Develop
 **Delivered**: Skill created with fork context, scripts/scan_logs.py, but alert mechanism not implemented.
 
 **Meta-Critic Review**:
+
 ```markdown
 ### High Priority Issues
 
 **Missing Alert Implementation**
+
 - **File**: docker-log-scanner/SKILL.md
 - **Issue**: Alert mechanism mentioned in description but not implemented
 - **Fix**: Either remove "alert on critical errors" from description, OR add alert configuration and delivery mechanism
@@ -226,10 +247,12 @@ For quantitative validation and Success Criteria design, use Eval-Driven Develop
 **Delivered**: .mcp.json with exa MCP using stdio transport.
 
 **Meta-Critic Review**:
+
 ```markdown
 ### High Priority Issues
 
 **Suboptimal Transport Choice**
+
 - **File**: .mcp.json
 - **Issue**: stdio transport used for cloud service
 - **Standard**: knowledge-mcp specifies "Use streamable-http for cloud/production"
@@ -243,10 +266,12 @@ For quantitative validation and Success Criteria design, use Eval-Driven Develop
 **Delivered**: GraphQL endpoints instead (agent decided it was "more modern").
 
 **Meta-Critic Review**:
+
 ```markdown
 ### Critical Issues (Blocking)
 
 **Technology Mismatch**
+
 - **Issue**: GraphQL implemented when RESTful API was requested
 - **Root Cause**: Agent made architectural decision without consultation
 - **Required Action**: Rebuild as RESTful API per original request
@@ -254,3 +279,13 @@ For quantitative validation and Success Criteria design, use Eval-Driven Develop
 ```
 
 **Recognition:** "Does this audit reveal actionable insights?" → Check: 1) Specific file locations, 2) Reference to standards, 3) Clear severity classification.
+
+---
+
+<critical_constraint>
+MANDATORY: Compare three ways (Request vs Delivery vs Standards)
+MANDATORY: Provide specific file:line references for every issue
+MANDATORY: Reference applicable meta-development skills for validation
+MANDATORY: Classify issues by severity (Critical/High/Medium/Low)
+No exceptions. Meta-critic reviews must be specific, actionable, and standards-based.
+</critical_constraint>

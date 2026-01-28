@@ -1,26 +1,34 @@
 # Workflow: Execute Phase
 
-<purpose>
-Execute a phase prompt (PLAN.md) and create the outcome summary (SUMMARY.md).
-</purpose>
+<mission_control>
+<objective>Execute a phase prompt (PLAN.md) and create the outcome summary (SUMMARY.md)</objective>
+<success_criteria>All tasks from PLAN.md completed, SUMMARY.md created, ROADMAP.md updated</success_criteria>
+</mission_control>
 
-<process>
+<self_containment_rule>
+Skills should reference other skills by name (natural language), not file paths. File paths are brittle and may change. Use: "invoke the execution-orchestrator skill" not ".claude/skills/execution-orchestrator/SKILL.md".
+</self_containment_rule>
 
-<step name="identify_plan">
+## Process
+
+#### identify_plan
+
 Find the next plan to execute:
+
 - Check ROADMAP.md for "In progress" phase
 - Find plans in that phase directory
 - Identify first plan without corresponding SUMMARY
 
 ```bash
-cat .planning/ROADMAP.md
+cat .claude/workspace/planning/ROADMAP.md
 # Look for phase with "In progress" status
 # Then find plans in that phase
-ls .planning/phases/XX-name/*-PLAN.md 2>/dev/null | sort
-ls .planning/phases/XX-name/*-SUMMARY.md 2>/dev/null | sort
+ls .claude/workspace/planning/phases/XX-name/*-PLAN.md 2>/dev/null | sort
+ls .claude/workspace/planning/phases/XX-name/*-SUMMARY.md 2>/dev/null | sort
 ```
 
 **Logic:**
+
 - If `01-01-PLAN.md` exists but `01-01-SUMMARY.md` doesn't → execute 01-01
 - If `01-01-SUMMARY.md` exists but `01-02-SUMMARY.md` doesn't → execute 01-02
 - Pattern: Find first PLAN file without matching SUMMARY file
@@ -28,306 +36,106 @@ ls .planning/phases/XX-name/*-SUMMARY.md 2>/dev/null | sort
 Confirm with user if ambiguous.
 
 Present:
+
 ```
 Found plan to execute: {phase}-{plan}-PLAN.md
 [Plan X of Y for Phase Z]
 
 Proceed with execution?
 ```
-</step>
 
-<step name="parse_segments">
-**Intelligent segmentation: Parse plan into execution segments.**
+#### parse_segments
 
-Plans are divided into segments by checkpoints. Each segment is routed to optimal execution context (subagent or main).
+**Use execution-orchestrator skill for execution mode determination.**
 
-**1. Check for checkpoints:**
+The execution-orchestrator skill provides intelligent routing between:
+
+- **AUTONOMOUS**: Plan has no checkpoints (fully subagent execution)
+- **SEGMENTED**: Plan has only verify checkpoints (subagent + main for checkpoints)
+- **MAIN CONTEXT**: Plan has decision/action checkpoints (sequential execution)
+- **REVIEWED**: Quality gates required (fresh subagent + two-stage review)
+
+**For segment parsing (coordination between segments):**
+
+1. Check for checkpoints:
+
 ```bash
-# Find all checkpoints and their types
-grep -n "type=\"checkpoint" .planning/phases/XX-name/{phase}-{plan}-PLAN.md
+grep -n "type=\"checkpoint" .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md
 ```
 
-**2. Analyze execution strategy:**
+2. Build segment map (for aggregation purposes only):
+   - Segment 1: Start → first checkpoint (tasks 1-X)
+   - Checkpoint 1: Location and type
+   - Segment 2: After checkpoint 1 → next checkpoint
+   - ...
 
-**If NO checkpoints found:**
-- **Fully autonomous plan** - spawn single subagent for entire plan
-- Subagent gets fresh 200k context, executes all tasks, creates SUMMARY, commits
-- Main context: Just orchestration (~5% usage)
+3. Delegate execution to execution-orchestrator with the determined mode.
 
-**If checkpoints found, parse into segments:**
+**Execution-orchestrator will handle:**
 
-Segment = tasks between checkpoints (or start→first checkpoint, or last checkpoint→end)
+- Spawning subagents for autonomous segments
+- Managing checkpoint interactions
+- Two-stage reviews (if REVIEWED mode)
+- State management during execution
 
-**For each segment, determine routing:**
+**This workflow handles:**
 
-```
-Segment routing rules:
+- Identifying which plan to execute
+- Aggregating results from all segments
+- Creating SUMMARY.md
+- Updating ROADMAP.md
+- Committing changes
 
-IF segment has no prior checkpoint:
-  → SUBAGENT (first segment, nothing to depend on)
+**For execution logic, delegate to execution-orchestrator skill.**
 
-IF segment follows checkpoint:human-verify:
-  → SUBAGENT (verification is just confirmation, doesn't affect next work)
+The execution-orchestrator skill provides:
 
-IF segment follows checkpoint:decision OR checkpoint:human-action:
-  → MAIN CONTEXT (next tasks need the decision/result)
-```
+- Mode selection based on checkpoint types
+- Subagent spawning and management
+- Checkpoint protocol implementation
+- Two-stage review workflow
+- State management during execution
 
-**3. Execution pattern:**
+#### segment_execution
 
-**Pattern A: Fully autonomous (no checkpoints)**
-```
-Spawn subagent → execute all tasks → SUMMARY → commit → report back
-```
+**This step now delegates to execution-orchestrator skill.**
 
-**Pattern B: Segmented with verify-only checkpoints**
-```
-Segment 1 (tasks 1-3): Spawn subagent → execute → report back
-Checkpoint 4 (human-verify): Main context → you verify → continue
-Segment 2 (tasks 5-6): Spawn NEW subagent → execute → report back
-Checkpoint 7 (human-verify): Main context → you verify → continue
-Aggregate results → SUMMARY → commit
-```
+The execution-orchestrator skill handles:
 
-**Pattern C: Decision-dependent (must stay in main)**
-```
-Checkpoint 1 (decision): Main context → you decide → continue in main
-Tasks 2-5: Main context (need decision from checkpoint 1)
-No segmentation benefit - execute entirely in main
-```
+- Spawning subagents for autonomous segments
+- Managing checkpoint interactions in main context
+- Two-stage reviews (spec compliance + quality)
+- State tracking across segments
 
-**4. Why this works:**
+**Workflow responsibility after delegation:**
 
-**Segmentation benefits:**
-- Fresh context for each autonomous segment (0% start every time)
-- Main context only for checkpoints (~10-20% total)
-- Can handle 10+ task plans if properly segmented
-- Quality impossible to degrade in autonomous segments
+- Verify execution-orchestrator announces correct mode
+- Aggregate results from execution-orchestrator output
+- Proceed to create_summary step
 
-**When segmentation provides no benefit:**
-- Checkpoint is decision/human-action and following tasks depend on outcome
-- Better to execute sequentially in main than break flow
+#### load_prompt
 
-**5. Implementation:**
-
-**For fully autonomous plans:**
-```
-Use Task tool with subagent_type="general-purpose":
-
-Prompt: "Execute plan at .planning/phases/{phase}-{plan}-PLAN.md
-
-This is an autonomous plan (no checkpoints). Execute all tasks, create SUMMARY.md in phase directory, commit with message following plan's commit guidance.
-
-Follow all deviation rules and authentication gate protocols from the plan.
-
-When complete, report: plan name, tasks completed, SUMMARY path, commit hash."
-```
-
-**For segmented plans (has verify-only checkpoints):**
-```
-Execute segment-by-segment:
-
-For each autonomous segment:
-  Spawn subagent with prompt: "Execute tasks [X-Y] from plan at .planning/phases/{phase}-{plan}-PLAN.md. Read the plan for full context and deviation rules. Do NOT create SUMMARY or commit - just execute these tasks and report results."
-
-  Wait for subagent completion
-
-For each checkpoint:
-  Execute in main context
-  Wait for user interaction
-  Continue to next segment
-
-After all segments complete:
-  Aggregate all results
-  Create SUMMARY.md
-  Commit with all changes
-```
-
-**For decision-dependent plans:**
-```
-Execute in main context (standard flow below)
-No subagent routing
-Quality maintained through small scope (2-3 tasks per plan)
-```
-
-See step name="segment_execution" for detailed segment execution loop.
-</step>
-
-<step name="segment_execution">
-**Detailed segment execution loop for segmented plans.**
-
-**This step applies ONLY to segmented plans (Pattern B: has checkpoints, but they're verify-only).**
-
-For Pattern A (fully autonomous) and Pattern C (decision-dependent), skip this step.
-
-**Execution flow:**
-
-```
-1. Parse plan to identify segments:
-   - Read plan file
-   - Find checkpoint locations: grep -n "type=\"checkpoint" PLAN.md
-   - Identify checkpoint types: grep "type=\"checkpoint" PLAN.md | grep -o 'checkpoint:[^"]*'
-   - Build segment map:
-     * Segment 1: Start → first checkpoint (tasks 1-X)
-     * Checkpoint 1: Type and location
-     * Segment 2: After checkpoint 1 → next checkpoint (tasks X+1 to Y)
-     * Checkpoint 2: Type and location
-     * ... continue for all segments
-
-2. For each segment in order:
-
-   A. Determine routing (apply rules from parse_segments):
-      - No prior checkpoint? → Subagent
-      - Prior checkpoint was human-verify? → Subagent
-      - Prior checkpoint was decision/human-action? → Main context
-
-   B. If routing = Subagent:
-      ```
-      Spawn Task tool with subagent_type="general-purpose":
-
-      Prompt: "Execute tasks [task numbers/names] from plan at [plan path].
-
-      **Context:**
-      - Read the full plan for objective, context files, and deviation rules
-      - You are executing a SEGMENT of this plan (not the full plan)
-      - Other segments will be executed separately
-
-      **Your responsibilities:**
-      - Execute only the tasks assigned to you
-      - Follow all deviation rules and authentication gate protocols
-      - Track deviations for later Summary
-      - DO NOT create SUMMARY.md (will be created after all segments complete)
-      - DO NOT commit (will be done after all segments complete)
-
-      **Report back:**
-      - Tasks completed
-      - Files created/modified
-      - Deviations encountered
-      - Any issues or blockers"
-
-      Wait for subagent to complete
-      Capture results (files changed, deviations, etc.)
-      ```
-
-   C. If routing = Main context:
-      Execute tasks in main using standard execution flow (step name="execute")
-      Track results locally
-
-   D. After segment completes (whether subagent or main):
-      Continue to next checkpoint/segment
-
-3. After ALL segments complete:
-
-   A. Aggregate results from all segments:
-      - Collect files created/modified from all segments
-      - Collect deviations from all segments
-      - Collect decisions from all checkpoints
-      - Merge into complete picture
-
-   B. Create SUMMARY.md:
-      - Use aggregated results
-      - Document all work from all segments
-      - Include deviations from all segments
-      - Note which segments were subagented
-
-   C. Commit:
-      - Stage all files from all segments
-      - Stage SUMMARY.md
-      - Commit with message following plan guidance
-      - Include note about segmented execution if relevant
-
-   D. Report completion
-
-**Example execution trace:**
-
-```
-Plan: 01-02-PLAN.md (8 tasks, 2 verify checkpoints)
-
-Parsing segments...
-- Segment 1: Tasks 1-3 (autonomous)
-- Checkpoint 4: human-verify
-- Segment 2: Tasks 5-6 (autonomous)
-- Checkpoint 7: human-verify
-- Segment 3: Task 8 (autonomous)
-
-Routing analysis:
-- Segment 1: No prior checkpoint → SUBAGENT ✓
-- Checkpoint 4: Verify only → MAIN (required)
-- Segment 2: After verify → SUBAGENT ✓
-- Checkpoint 7: Verify only → MAIN (required)
-- Segment 3: After verify → SUBAGENT ✓
-
-Execution:
-[1] Spawning subagent for tasks 1-3...
-    → Subagent completes: 3 files modified, 0 deviations
-[2] Executing checkpoint 4 (human-verify)...
-    ════════════════════════════════════════
-    CHECKPOINT: Verification Required
-    Task 4 of 8: Verify database schema
-    I built: User and Session tables with relations
-    How to verify: Check src/db/schema.ts for correct types
-    ════════════════════════════════════════
-    User: "approved"
-[3] Spawning subagent for tasks 5-6...
-    → Subagent completes: 2 files modified, 1 deviation (added error handling)
-[4] Executing checkpoint 7 (human-verify)...
-    User: "approved"
-[5] Spawning subagent for task 8...
-    → Subagent completes: 1 file modified, 0 deviations
-
-Aggregating results...
-- Total files: 6 modified
-- Total deviations: 1
-- Segmented execution: 3 subagents, 2 checkpoints
-
-Creating SUMMARY.md...
-Committing...
-✓ Complete
-```
-
-**Benefits of this pattern:**
-- Main context usage: ~20% (just orchestration + checkpoints)
-- Subagent 1: Fresh 0-30% (tasks 1-3)
-- Subagent 2: Fresh 0-30% (tasks 5-6)
-- Subagent 3: Fresh 0-20% (task 8)
-- All autonomous work: Peak quality
-- Can handle large plans with many tasks if properly segmented
-
-**When NOT to use segmentation:**
-- Plan has decision/human-action checkpoints that affect following tasks
-- Following tasks depend on checkpoint outcome
-- Better to execute in main sequentially in those cases
-</step>
-
-<step name="load_prompt">
 Read the plan prompt:
+
 ```bash
-cat .planning/phases/XX-name/{phase}-{plan}-PLAN.md
+cat .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md
 ```
 
 This IS the execution instructions. Follow it exactly.
-</step>
 
-<step name="previous_phase_check">
+#### previous_phase_check
+
 Before executing, check if previous phase had issues:
 
 ```bash
 # Find previous phase summary
-ls .planning/phases/*/SUMMARY.md 2>/dev/null | sort -r | head -2 | tail -1
+ls .claude/workspace/planning/phases/*/SUMMARY.md 2>/dev/null | sort -r | head -2 | tail -1
 ```
 
-If previous phase SUMMARY.md has "Issues Encountered" != "None" or "Next Phase Readiness" mentions blockers:
+If previous phase SUMMARY.md has issues or blockers, ask user how to proceed: proceed anyway, address first, or review previous summary.
 
-Use AskUserQuestion:
-- header: "Previous Issues"
-- question: "Previous phase had unresolved items: [summary]. How to proceed?"
-- options:
-  - "Proceed anyway" - Issues won't block this phase
-  - "Address first" - Let's resolve before continuing
-  - "Review previous" - Show me the full summary
-</step>
+#### execute
 
-<step name="execute">
 Execute each task in the prompt. **Deviations are normal** - handle them automatically using embedded rules below.
 
 1. Read the @context files listed in the prompt
@@ -351,12 +159,19 @@ Execute each task in the prompt. **Deviations are normal** - handle them automat
    - Verify if possible (check files, env vars, etc.)
    - Only after user confirmation: continue to next task
 
-3. Run overall verification checks from `<verification>` section
-4. Confirm all success criteria from `<success_criteria>` section met
-5. Document all deviations in Summary (automatic - see deviation_documentation below)
-</step>
+3. Run overall verification checks from `
+
+## Verification
+
+`section
+4. Confirm all success criteria from`
+
+## Success Criteria
+
+` section met 5. Document all deviations in Summary (automatic - see deviation_documentation below)
 
 <authentication_gates>
+
 ## Handling Authentication Errors During Execution
 
 **When you encounter authentication errors during `type="auto"` task execution:**
@@ -364,6 +179,7 @@ Execute each task in the prompt. **Deviations are normal** - handle them automat
 This is NOT a failure. Authentication gates are expected and normal. Handle them dynamically:
 
 **Authentication error indicators:**
+
 - CLI returns: "Error: Not authenticated", "Not logged in", "Unauthorized", "401", "403"
 - API returns: "Authentication required", "Invalid API key", "Missing credentials"
 - Command fails with: "Please run {tool} login" or "Set {ENV_VAR} environment variable"
@@ -487,6 +303,7 @@ These are normal gates, not errors.
 ```
 
 **Key principles:**
+
 - Authentication gates are NOT failures or bugs
 - They're expected interaction points during first-time setup
 - Handle them gracefully and continue automation after unblocked
@@ -494,11 +311,11 @@ These are normal gates, not errors.
 - Document them as normal flow, separate from deviations
 
 See references/cli-automation.md "Authentication Gates" section for complete examples.
-</authentication_gates>
 
-<step name="execute">
+#### execute
 
 <deviation_rules>
+
 ## Automatic Deviation Handling
 
 **While executing tasks, you WILL discover work not in the plan.** This is normal.
@@ -514,6 +331,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 **Action:** Fix immediately, track for Summary
 
 **Examples:**
+
 - Wrong SQL query returning incorrect data
 - Logic errors (inverted condition, off-by-one, infinite loop)
 - Type errors, null pointer exceptions, undefined references
@@ -523,6 +341,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 - Memory leaks, resource leaks
 
 **Process:**
+
 1. Fix the bug inline
 2. Add/update tests to prevent regression
 3. Verify fix works
@@ -540,6 +359,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 **Action:** Add immediately, track for Summary
 
 **Examples:**
+
 - Missing error handling (no try/catch, unhandled promise rejections)
 - No input validation (accepts malicious data, type coercion issues)
 - Missing null/undefined checks (crashes on edge cases)
@@ -551,6 +371,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 - No logging for errors (can't debug production)
 
 **Process:**
+
 1. Add the missing functionality inline
 2. Add tests for the new functionality
 3. Verify it works
@@ -569,6 +390,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 **Action:** Fix immediately to unblock, track for Summary
 
 **Examples:**
+
 - Missing dependency (package not installed, import fails)
 - Wrong types blocking compilation
 - Broken import paths (file moved, wrong relative path)
@@ -579,6 +401,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 - Circular dependency blocking module resolution
 
 **Process:**
+
 1. Fix the blocking issue
 2. Verify task can now proceed
 3. Continue task
@@ -595,6 +418,7 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 **Action:** STOP, present to user, wait for decision
 
 **Examples:**
+
 - Adding new database table (not just column)
 - Major schema changes (changing primary key, splitting tables)
 - Introducing new service layer or architectural pattern
@@ -605,8 +429,10 @@ Apply these rules automatically. Track all deviations for Summary documentation.
 - Adding new deployment environment
 
 **Process:**
+
 1. STOP current task
 2. Present clearly:
+
 ```
 ⚠️ Architectural Decision Needed
 
@@ -619,6 +445,7 @@ Alternatives: [other approaches, or "none apparent"]
 
 Proceed with proposed change? (yes / different approach / defer)
 ```
+
 3. WAIT for user response
 4. If approved: implement, track as `[Rule 4 - Architectural] [description]`
 5. If different approach: discuss and implement
@@ -632,9 +459,10 @@ Proceed with proposed change? (yes / different approach / defer)
 
 **Trigger:** Improvement that would enhance code but isn't essential now
 
-**Action:** Add to .planning/ISSUES.md automatically, continue task
+**Action:** Add to .claude/workspace/planning/ISSUES.md automatically, continue task
 
 **Examples:**
+
 - Performance optimization (works correctly, just slower than ideal)
 - Code refactoring (works, but could be cleaner/DRY-er)
 - Better naming (works, but variables could be clearer)
@@ -645,12 +473,14 @@ Proceed with proposed change? (yes / different approach / defer)
 - Accessibility enhancements beyond minimum
 
 **Process:**
-1. Create .planning/ISSUES.md if doesn't exist (use template)
+
+1. Create .claude/workspace/planning/ISSUES.md if doesn't exist (use template)
 2. Add entry with ISS-XXX number (auto-increment)
 3. Brief notification: `📋 Logged enhancement: [brief] (ISS-XXX)`
 4. Continue task without implementing
 
 **Template for ISSUES.md:**
+
 ```markdown
 # Project Issues Log
 
@@ -659,6 +489,7 @@ Enhancements discovered during execution. Not critical - address in future phase
 ## Open Enhancements
 
 ### ISS-001: [Brief description]
+
 - **Discovered:** Phase [X] Plan [Y] Task [Z] (YYYY-MM-DD)
 - **Type:** [Performance / Refactoring / UX / Testing / Documentation / Accessibility]
 - **Description:** [What could be improved and why it would help]
@@ -683,6 +514,7 @@ Enhancements discovered during execution. Not critical - address in future phase
 4. **If genuinely unsure which rule** → Apply Rule 4 (ask user)
 
 **Edge case guidance:**
+
 - "This validation is missing" → Rule 2 (critical for security)
 - "This validation could be better" → Rule 5 (enhancement)
 - "This crashes on null" → Rule 1 (bug)
@@ -691,18 +523,19 @@ Enhancements discovered during execution. Not critical - address in future phase
 - "Need to add column" → Rule 1 or 2 (depends: fixing bug or adding critical field)
 
 **When in doubt:** Ask yourself "Does this affect correctness, security, or ability to complete task?"
+
 - YES → Rules 1-3 (fix automatically)
 - NO → Rule 5 (log it)
 - MAYBE → Rule 4 (ask user)
 
-</deviation_rules>
-
 <deviation_documentation>
+
 ## Documenting Deviations in Summary
 
 After all tasks complete, Summary MUST include deviations section.
 
 **If no deviations:**
+
 ```markdown
 ## Deviations from Plan
 
@@ -710,12 +543,14 @@ None - plan executed exactly as written.
 ```
 
 **If deviations occurred:**
+
 ```markdown
 ## Deviations from Plan
 
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed case-sensitive email uniqueness constraint**
+
 - **Found during:** Task 4 (Follow/unfollow API implementation)
 - **Issue:** User.email unique constraint was case-sensitive - Test@example.com and test@example.com were both allowed, causing duplicate accounts
 - **Fix:** Changed to `CREATE UNIQUE INDEX users_email_unique ON users (LOWER(email))`
@@ -724,6 +559,7 @@ None - plan executed exactly as written.
 - **Commit:** abc123f
 
 **2. [Rule 2 - Missing Critical] Added JWT expiry validation to auth middleware**
+
 - **Found during:** Task 3 (Protected route implementation)
 - **Issue:** Auth middleware wasn't checking token expiry - expired tokens were being accepted
 - **Fix:** Added exp claim validation in middleware, reject with 401 if expired
@@ -732,6 +568,7 @@ None - plan executed exactly as written.
 - **Commit:** def456g
 
 **3. [Rule 3 - Blocking] Fixed broken import path for UserService**
+
 - **Found during:** Task 5 (Profile endpoint)
 - **Issue:** Import path referenced old location (src/services/User.ts) but file was moved to src/services/users/UserService.ts in previous plan
 - **Fix:** Updated import path
@@ -740,6 +577,7 @@ None - plan executed exactly as written.
 - **Commit:** ghi789h
 
 **4. [Rule 4 - Architectural] Added Redis caching layer (APPROVED BY USER)**
+
 - **Found during:** Task 6 (Feed endpoint)
 - **Issue:** Feed queries hitting database on every request, causing 2-3 second response times under load
 - **Proposed:** Add Redis cache with 5-minute TTL for feed data
@@ -751,7 +589,8 @@ None - plan executed exactly as written.
 
 ### Deferred Enhancements
 
-Logged to .planning/ISSUES.md for future consideration:
+Logged to .claude/workspace/planning/ISSUES.md for future consideration:
+
 - ISS-001: Refactor UserService into smaller modules (discovered in Task 3)
 - ISS-002: Add connection pooling for Redis (discovered in Task 6)
 - ISS-003: Improve error messages for validation failures (discovered in Task 2)
@@ -763,20 +602,21 @@ Logged to .planning/ISSUES.md for future consideration:
 ```
 
 **This provides complete transparency:**
+
 - Every deviation documented
 - Why it was needed
 - What rule applied
 - What was done
 - User can see exactly what happened beyond the plan
 
-</deviation_documentation>
+#### checkpoint_protocol
 
-<step name="checkpoint_protocol">
 When encountering `type="checkpoint:*"`:
 
 **Critical: Claude automates everything with CLI/API before checkpoints.** Checkpoints are for verification and decisions, not manual work.
 
 **Display checkpoint clearly:**
+
 ```
 ════════════════════════════════════════
 CHECKPOINT: [Type]
@@ -791,6 +631,7 @@ Task [X] of [Y]: [Action/What-Built/Decision]
 ```
 
 **For checkpoint:human-verify (90% of checkpoints):**
+
 ```
 I automated: [what was automated - deployed, built, configured]
 
@@ -803,6 +644,7 @@ How to verify:
 ```
 
 **For checkpoint:decision (9% of checkpoints):**
+
 ```
 Decision needed: [decision]
 
@@ -821,6 +663,7 @@ Options:
 ```
 
 **For checkpoint:human-action (1% - rare, only for truly unavoidable manual steps):**
+
 ```
 I automated: [what Claude already did via CLI/API]
 
@@ -837,14 +680,15 @@ I'll verify after: [verification]
 **After displaying:** WAIT for user response. Do NOT hallucinate completion. Do NOT continue to next task.
 
 **After user responds:**
+
 - Run verification if specified (file exists, env var set, tests pass, etc.)
 - If verification passes or N/A: continue to next task
 - If verification fails: inform user, wait for resolution
 
 See references/checkpoints.md and references/cli-automation.md for complete checkpoint guidance.
-</step>
 
-<step name="verification_failure_gate">
+#### verification_failure_gate
+
 If any task verification fails:
 
 STOP. Do not continue to next task.
@@ -856,6 +700,7 @@ Expected: [verification criteria]
 Actual: [what happened]
 
 How to proceed?
+
 1. Retry - Try the task again
 2. Skip - Mark as incomplete, continue
 3. Stop - Pause execution, investigate"
@@ -863,68 +708,77 @@ How to proceed?
 Wait for user decision.
 
 If user chose "Skip", note it in SUMMARY.md under "Issues Encountered".
-</step>
 
-<step name="create_summary">
-Create `{phase}-{plan}-SUMMARY.md` as specified in the prompt's `<output>` section.
+#### create_summary
+
+Create `{phase}-{plan}-SUMMARY.md` as specified in the prompt's `
+
+## Output
+
+` section.
 Use templates/summary.md for structure.
 
-**File location:** `.planning/phases/XX-name/{phase}-{plan}-SUMMARY.md`
+**File location:** `.claude/workspace/planning/phases/XX-name/{phase}-{plan}-SUMMARY.md`
 
 **Title format:** `# Phase [X] Plan [Y]: [Name] Summary`
 
 The one-liner must be SUBSTANTIVE:
+
 - Good: "JWT auth with refresh rotation using jose library"
 - Bad: "Authentication implemented"
 
 **Next Step section:**
+
 - If more plans exist in this phase: "Ready for {phase}-{next-plan}-PLAN.md"
 - If this is the last plan: "Phase complete, ready for transition"
-</step>
 
-<step name="issues_review_gate">
+#### issues_review_gate
+
 Before proceeding, check SUMMARY.md content:
 
 If "Issues Encountered" is NOT "None":
-  Present inline:
-  "Phase complete, but issues were encountered:
-  - [Issue 1]
-  - [Issue 2]
+Present inline:
+"Phase complete, but issues were encountered:
 
-  Please review before proceeding. Acknowledged?"
+- [Issue 1]
+- [Issue 2]
 
-  Wait for acknowledgment.
+Please review before proceeding. Acknowledged?"
+
+Wait for acknowledgment.
 
 If "Next Phase Readiness" mentions blockers or concerns:
-  Present inline:
-  "Note for next phase:
-  [concerns from Next Phase Readiness]
+Present inline:
+"Note for next phase:
+[concerns from Next Phase Readiness]
 
-  Acknowledged?"
+Acknowledged?"
 
-  Wait for acknowledgment.
-</step>
+Wait for acknowledgment.
 
-<step name="update_roadmap">
+#### update_roadmap
+
 Update ROADMAP.md:
 
 **If more plans remain in this phase:**
+
 - Update plan count: "2/3 plans complete"
 - Keep phase status as "In progress"
 
 **If this was the last plan in the phase:**
+
 - Mark phase complete: status → "Complete"
 - Add completion date
 - Update plan count: "3/3 plans complete"
-</step>
 
-<step name="git_commit_plan">
+#### git_commit_plan
+
 Commit plan completion (PLAN + SUMMARY + code):
 
 ```bash
-git add .planning/phases/XX-name/{phase}-{plan}-PLAN.md
-git add .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
-git add .planning/ROADMAP.md
+git add .claude/workspace/planning/phases/XX-name/{phase}-{plan}-PLAN.md
+git add .claude/workspace/planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
+git add .claude/workspace/planning/ROADMAP.md
 git add src/  # or relevant code directories
 git commit -m "$(cat <<'EOF'
 feat({phase}-{plan}): [one-liner from SUMMARY.md]
@@ -939,16 +793,18 @@ EOF
 Confirm: "Committed: feat({phase}-{plan}): [what shipped]"
 
 **Commit scope pattern:**
+
 - `feat(01-01):` for phase 1 plan 1
 - `feat(02-03):` for phase 2 plan 3
 - Creates clear, chronological git history
-</step>
 
-<step name="offer_next">
+#### offer_next
+
 **If more plans in this phase:**
+
 ```
 Plan {phase}-{plan} complete.
-Summary: .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
+Summary: .claude/workspace/planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
 
 [X] of [Y] plans complete for Phase Z.
 
@@ -959,9 +815,10 @@ What's next?
 ```
 
 **If phase complete (last plan done):**
+
 ```
 Plan {phase}-{plan} complete.
-Summary: .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
+Summary: .claude/workspace/planning/phases/XX-name/{phase}-{plan}-SUMMARY.md
 
 Phase [Z]: [Name] COMPLETE - all [Y] plans finished.
 
@@ -970,13 +827,10 @@ What's next?
 2. Review phase accomplishments
 3. Done for now
 ```
-</step>
 
-</process>
+## Success Criteria
 
-<success_criteria>
 - All tasks from PLAN.md completed
 - All verifications pass
 - SUMMARY.md created with substantive content
 - ROADMAP.md updated
-</success_criteria>

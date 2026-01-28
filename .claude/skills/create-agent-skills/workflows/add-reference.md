@@ -1,12 +1,13 @@
 # Workflow: Add a Reference to Existing Skill
 
-<required_reading>
+## Required Reading
+
 **Read these reference files NOW:**
 1. references/recommended-structure.md
 2. references/skill-structure.md
-</required_reading>
 
-<process>
+## Process
+
 ## Step 1: Select the Skill
 
 ```bash
@@ -44,24 +45,26 @@ Create `references/{reference-name}.md`:
 
 Use semantic XML tags to structure the content:
 ```xml
-<overview>
-Brief description of what this reference covers
-</overview>
 
-<patterns>
+## Overview
+
+Brief description of what this reference covers
+
+## Patterns
+
 ## Common Patterns
 [Reusable patterns, examples, code snippets]
-</patterns>
 
-<guidelines>
+## Guidelines
+
 ## Guidelines
 [Best practices, rules, constraints]
-</guidelines>
 
-<examples>
+## Examples
+
 ## Examples
 [Concrete examples with explanation]
-</examples>
+
 ```
 
 ## Step 5: Update SKILL.md
@@ -76,7 +79,10 @@ Add the new reference to `<reference_index>`:
 For each workflow that should use this reference:
 
 1. Read the workflow file
-2. Add to its `<required_reading>` section
+2. Add to its `
+## Required Reading
+
+` section
 3. Verify the workflow still makes sense with this addition
 
 ## Step 7: Verify
@@ -85,12 +91,11 @@ For each workflow that should use this reference:
 - [ ] Reference is in SKILL.md reference_index
 - [ ] Relevant workflows have it in required_reading
 - [ ] No broken references
-</process>
 
-<success_criteria>
+## Success Criteria
+
 Reference addition is complete when:
 - [ ] Reference file created with useful content
 - [ ] Added to reference_index in SKILL.md
 - [ ] Relevant workflows updated to read it
 - [ ] Content is reusable (not workflow-specific)
-</success_criteria>

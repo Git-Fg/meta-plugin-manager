@@ -1,6 +1,6 @@
 ---
 name: ci-pipeline-manager
-description: "Manage CI pipelines. Use when: Testing pipeline error handling, recovery, or complex dependencies. Not for: Simple linear scripts or unit testing individual tasks."
+description: "Manage CI pipelines when testing pipeline error handling, recovery, or complex dependencies. Not for simple linear scripts or unit testing individual tasks."
 context: fork
 ---
 
@@ -12,18 +12,19 @@ Test TaskList error handling and recovery behavior with CI pipelines.
 
 <logic_flow>
 digraph Pipeline {
-    rankdir=LR;
-    node [shape=box];
-    Tests [label="1. run-tests"];
-    Build [label="2. build"];
-    Deploy [label="3. deploy"];
-    Cleanup [label="4. cleanup-on-failure" style=filled fillcolor=lightgrey];
+rankdir=LR;
+node [shape=box];
+Tests [label="1. run-tests"];
+Build [label="2. build"];
+Deploy [label="3. deploy"];
+Cleanup [label="4. cleanup-on-failure" style=filled fillcolor=lightgrey];
 
     Tests -> Build [label="Pass"];
     Build -> Deploy [label="Success"];
     Tests -> Cleanup [label="Fail"];
-    
+
     {rank=same; Tests; Cleanup}
+
 }
 </logic_flow>
 
@@ -90,3 +91,12 @@ Cleanup: PASS
 - Cleanup executed despite failure
 
 **Binary check:** "Proper error handling?" → Both criteria must pass.
+
+---
+
+<critical_constraint>
+MANDATORY: Verify cleanup-on-failure always executes despite run-tests failure
+MANDATORY: Ensure build and deploy are properly blocked by failed upstream tasks
+MANDATORY: Report task states accurately (BLOCKED, SKIPPED, IN_PROGRESS, COMPLETE)
+No exceptions. CI pipeline error handling must be deterministic.
+</critical_constraint>

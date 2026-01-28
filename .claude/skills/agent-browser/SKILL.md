@@ -1,6 +1,6 @@
 ---
 name: agent-browser
-description: "Automate browser interactions. Use when: You need to execute JS, submit forms, or test visual workflows. Not for: Static HTML scraping or simple API calls."
+description: "Automate browser interactions when you need to execute JavaScript, submit forms, or test visual workflows. Not for static HTML scraping or simple API calls."
 user-invocable: true
 ---
 
@@ -11,12 +11,14 @@ Browser automation for JavaScript-rendered content, form interactions, visual te
 ## When to Use
 
 **Use agent-browser when:**
+
 - Content requires JavaScript execution
 - Form submission and validation needed
 - Visual verification required
 - Multi-step workflows with state
 
 **Use fetch tools when:**
+
 - Static content retrieval
 - API calls
 - Documentation gathering
@@ -38,6 +40,7 @@ agent-browser close               # Close browser
 ## Essential Commands
 
 ### Navigation & Discovery
+
 ```bash
 agent-browser open <url>           # Navigate to URL
 agent-browser snapshot -i          # Get interactive elements (recommended)
@@ -45,6 +48,7 @@ agent-browser close                # Close browser
 ```
 
 ### Core Interactions
+
 ```bash
 agent-browser click @e1            # Click element
 agent-browser fill @e2 "text"      # Fill input
@@ -53,6 +57,7 @@ agent-browser screenshot path.png  # Capture screenshot
 ```
 
 ### State Management
+
 ```bash
 agent-browser state save auth.json     # Save session state
 agent-browser state load auth.json     # Load session state
@@ -63,6 +68,7 @@ agent-browser record stop              # Stop recording
 ## Examples
 
 ### Form Submission
+
 ```bash
 agent-browser open https://example.com/form
 agent-browser snapshot -i
@@ -77,6 +83,7 @@ agent-browser screenshot success.png
 ### Authentication with Saved State
 
 **Initial login and save:**
+
 ```bash
 agent-browser open https://app.example.com/login
 agent-browser snapshot -i
@@ -88,6 +95,7 @@ agent-browser state save auth.json
 ```
 
 **Subsequent sessions:**
+
 ```bash
 agent-browser state load auth.json
 agent-browser open https://app.example.com/dashboard
@@ -100,10 +108,22 @@ agent-browser open https://app.example.com/dashboard
 **Happy Path:** open → snapshot -i → interact with @refs → re-snapshot
 
 **Debugging:**
+
 - Add `--headed` flag to see browser
 - Use `console` command to check errors
 - Use `record start/stop` for visual debugging
 
 **State Management:**
+
 - Save/load sessions to avoid re-authentication
 - Record sessions for later review
+
+---
+
+<critical_constraint>
+MANDATORY: Take snapshot before interaction to enable diff comparison
+MANDATORY: Use isolated CDP endpoint for clean browser state
+MANDATORY: Save session to avoid re-authentication on restart
+MANDATORY: Verify actions through snapshot comparison
+No exceptions. Browser automation requires state tracking for verification.
+</critical_constraint>

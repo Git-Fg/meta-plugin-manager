@@ -1,8 +1,13 @@
 ---
 name: build-fix
-description: Incrementally fix TypeScript and build errors. Use when: build fails, TypeScript errors occur, or compilation issues. Fixes one error at a time with verification.
+description: "Incrementally fix TypeScript and build errors when build fails, TypeScript errors occur, or compilation issues arise. Fixes one error at a time with verification."
 disable-model-invocation: true
 ---
+
+<mission_control>
+<objective>Incrementally fix TypeScript and build errors one at a time with verification</objective>
+<success_criteria>Build errors resolved or isolated, summary of fixed/remaining/new errors provided</success_ccriteria>
+</mission_control>
 
 # Build Fix Command
 
@@ -34,6 +39,7 @@ Execute safe, incremental build error resolution:
 ## Build Detection
 
 Automatically detects build command:
+
 ```bash
 # Checks in order:
 npm run build 2>&1 | tail -20
@@ -62,23 +68,26 @@ Sorted by severity:
 
 For each error:
 
-```markdown
+````markdown
 ## Error: [File]:[Line]
 
 **Issue**: [Clear explanation of what's wrong]
 
 **Context** (5 lines before/after):
+
 ```typescript
 Line 40:  const value = parseInt(input)
 Line 41:  return value + 1
 Line 42:  // Error here
 Line 43:  return value.toString()
 ```
+````
 
 **Proposed Fix**:
 [Specific code change to fix the error]
 
 **Apply fix?** [Yes/No/Stop]
+
 ```
 
 ## Stop Conditions
@@ -92,8 +101,8 @@ Line 43:  return value.toString()
 ## Output Format
 
 ```
-BUILD FIX SUMMARY
-================
+
+# BUILD FIX SUMMARY
 
 Initial Errors: 12
 Fixed: 8
@@ -103,12 +112,15 @@ New Errors Introduced: 0
 STATUS: [IN PROGRESS / COMPLETE / BLOCKED]
 
 Remaining Errors:
+
 1. [File]:[Line] - [Error description]
 2. [File]:[Line] - [Error description]
 
 Recommendations:
+
 - [Optional improvement suggestions]
-```
+
+````
 
 ## Safety Guidelines
 
@@ -126,15 +138,17 @@ Recommendations:
 ```typescript
 // Error: Cannot find module '@/lib/utils'
 // Fix: Install missing package or correct import path
-```
+````
 
 ### Type Mismatches
+
 ```typescript
 // Error: Type 'string' is not assignable to type 'number'
 // Fix: Check variable types, add type conversion or fix type definition
 ```
 
 ### Property Access
+
 ```typescript
 // Error: Property 'data' does not exist on type 'Response'
 // Fix: Check API response structure, add type definition
@@ -143,6 +157,7 @@ Recommendations:
 ## Integration
 
 This command integrates with:
+
 - `qa/verify` - Run after fixing to ensure all quality gates pass
 - `coding-standards` - Reference for type safety patterns
 - `tdd-workflow` - Ensure tests still pass after fixes
@@ -150,3 +165,13 @@ This command integrates with:
 ## Arguments
 
 This command does not interpret special arguments. Everything after `build/fix` is treated as additional context for the build fixing process.
+
+---
+
+<critical_constraint>
+MANDATORY: Fix one error at a time - verify before proceeding
+MANDATORY: Stop if fix introduces 2+ new errors
+MANDATORY: Stop if same error persists after 3 attempts
+MANDATORY: Show error context (5 lines before/after) for each fix
+No exceptions. Incremental fixes prevent cascading failures.
+</critical_constraint>

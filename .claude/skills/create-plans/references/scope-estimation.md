@@ -76,7 +76,8 @@ Why this number?
 
 ## Signals to Split Into Multiple Plans
 
-<splitting_logic>
+## Splitting Logic
+
 digraph PlanScope {
     AnalyzeTask -> CountFiles;
     CountFiles -> Split [label="> 5 files"];
@@ -84,7 +85,6 @@ digraph PlanScope {
     CheckComplexity -> Split [label="Auth/Payment/Data"];
     CheckComplexity -> SinglePlan [label="Simple/CRUD"];
 }
-</splitting_logic>
 
 ## Splitting Strategies
 

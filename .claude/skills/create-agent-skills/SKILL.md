@@ -1,6 +1,6 @@
 ---
 name: create-agent-skills
-description: "Create and refine agent skills. Use when: You need to build new skills, improve existing ones, or understand skill structure. Not for: Using existing skills or running tasks."
+description: "Create and refine agent skills when you need to build new skills, improve existing ones, or understand skill structure. Not for using existing skills or running tasks."
 ---
 
 ## Essential Principles
@@ -59,14 +59,7 @@ SKILL.md under 500 lines. Split detailed content into reference files. Load only
 
 ### Intake
 
-What would you like to do?
-
-1. Create new skill
-2. Audit/modify existing skill
-3. Add component (workflow/reference/template/script)
-4. Get guidance
-
-**Wait for response before proceeding.**
+Present actionable options for what to do: create new skill, audit/modify existing, add component, or get guidance.
 
 ### Routing
 
@@ -205,3 +198,13 @@ A well-structured skill:
 - Keeps SKILL.md under 500 lines
 - Asks minimal clarifying questions only when truly needed
 - Has been tested with real usage
+
+---
+
+<critical_constraint>
+MANDATORY: Use pure XML structure in skill body
+MANDATORY: Keep SKILL.md under 500 lines (progressive disclosure)
+MANDATORY: Route directly based on user intent
+MANDATORY: Test skills with real usage before considering complete
+No exceptions. Skills must be self-contained and testable.
+</critical_constraint>

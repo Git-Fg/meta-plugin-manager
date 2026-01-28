@@ -1,6 +1,6 @@
 ---
 name: distributed-processor
-description: "Coordinate distributed processing. Use when: You need parallel execution, forked skills, or isolated work units. Not for: Sequential tasks or single-threaded workflows."
+description: "Coordinate distributed processing when you need parallel execution, forked skills, or isolated work units. Not for sequential tasks or single-threaded workflows."
 context: fork
 ---
 
@@ -11,6 +11,7 @@ Coordinate distributed data processing using TaskList with forked skills.
 ## Processing Architecture
 
 **Three-component system:**
+
 - **Coordinator** uses TaskList to track all processing tasks
 - **Region processors** are forked skills with complete isolation
 - **Results flow back** to coordinator for aggregation
@@ -67,3 +68,12 @@ Total: [combined statistics]
 - Results aggregation after completion
 
 **Binary check:** "Proper distributed processing?" → Both criteria must pass.
+
+---
+
+<critical_constraint>
+MANDATORY: Wait for all processors to complete before aggregation
+MANDATORY: Use TaskList to track all distributed tasks
+MANDATORY: Ensure forked skills have complete isolation
+No exceptions. Parallel execution requires proper coordination.
+</critical_constraint>

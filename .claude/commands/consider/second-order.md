@@ -3,6 +3,11 @@ description: Think through consequences of consequences
 argument-hint: [action or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply second-order thinking to trace causal chains beyond immediate effects</objective>
+<success_criteria>Chain traced to second/third order, delayed consequences identified, revised assessment provided</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply second-order thinking to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -48,4 +53,10 @@ After tracing the chain, this action [is/isn't] worth it because...
 - Identifies feedback loops and unintended consequences
 - Reveals delayed costs or benefits
 - Distinguishes actions that compound well from those that don't
-- Prevents "seemed like a good idea at the time" regret
+
+<critical_constraint>
+MANDATORY: Trace beyond first-order effects ("And then what?")
+MANDATORY: Identify delayed consequences that change calculus
+MANDATORY: Assess whether action is worth it after full chain analysis
+No exceptions. Second-order thinking reveals unintended consequences.
+</critical_constraint>

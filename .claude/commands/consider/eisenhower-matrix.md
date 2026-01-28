@@ -3,6 +3,11 @@ description: Apply Eisenhower matrix (urgent/important) to prioritize tasks or d
 argument-hint: [tasks or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply Eisenhower matrix to categorize tasks by urgent/important for clear prioritization</objective>
+<success_criteria>All items placed in correct quadrants with specific actions for each</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply the Eisenhower matrix to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -47,3 +52,9 @@ Single sentence on what to tackle right now.
 - Q3 items have delegation or minimization strategies
 - Q4 items explicitly marked as droppable
 - Reduces overwhelm by creating clear action hierarchy
+
+<critical_constraint>
+MANDATORY: Place every item in exactly one quadrant
+MANDATORY: Q1 items have specific immediate actions
+MANDATORY: Q4 items explicitly marked as droppable
+No exceptions. Eisenhower matrix must create clear action hierarchy.

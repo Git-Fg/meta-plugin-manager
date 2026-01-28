@@ -1,6 +1,6 @@
 ---
 name: claude-md-development
-description: "Manage CLAUDE.md documentation. Use when: Updating the seed system documentation or project overview. Not for: Creating specific skills or commands."
+description: "Manage CLAUDE.md documentation when updating the seed system documentation or project overview. Not for creating specific skills or commands."
 ---
 
 # Claude.md Development
@@ -35,7 +35,7 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 
 **Update required when:**
 
-- Adding new meta-skills (skill-development, command-development, etc.)
+- Adding new meta-skills (invocable-development, etc.)
 - Changing core architecture (Layer A/Layer B)
 - Modifying project structure or navigation
 - Adding new documentation directories
@@ -64,10 +64,10 @@ CLAUDE.md serves as the project's single source of truth for session behavior an
 
 **CLAUDE.md ↔ Meta-Skills**
 
-| CLAUDE.md Reference | Meta-Skill                                   | Sync Action                                    |
-| ------------------- | -------------------------------------------- | ---------------------------------------------- |
-| Component Guidance  | skill-development, command-development, etc. | Update links when meta-skill structure changes |
-| Quality Standards   | meta-critic                                  | Align Success Criteria descriptions            |
+| CLAUDE.md Reference | Meta-Skill                  | Sync Action                                    |
+| ------------------- | --------------------------- | ---------------------------------------------- |
+| Component Guidance  | invocable-development, etc. | Update links when meta-skill structure changes |
+| Quality Standards   | meta-critic                 | Align Success Criteria descriptions            |
 
 ---
 
@@ -153,8 +153,18 @@ For detailed guidance on creating portable components, consult the appropriate m
 
 ## Navigation
 
-For hybrid format standards (Markdown + XML), see: `.claude/rules/hybrid-format.md`
+For hybrid format standards (Markdown + XML), see the **hybrid-format rule**.
 
 For architectural philosophy, see: `docs/philosophy/deep-dives.md`
 
 For development workflows, see: `docs/workflows/development.md`
+
+---
+
+<critical_constraint>
+MANDATORY: Keep CLAUDE.md under 500 lines (use progressive disclosure)
+MANDATORY: Validate all links exist before committing changes
+MANDATORY: Sync meta-skill table when adding/removing meta-skills
+MANDATORY: Never include transient or TODO content
+No exceptions. CLAUDE.md is evergreen documentation, not a scratchpad.
+</critical_constraint>

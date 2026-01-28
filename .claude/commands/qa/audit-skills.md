@@ -1,6 +1,11 @@
 ---
-description: "Audit all skills in .claude/skills/ against best practices. Use when: user mentions 'audit skills', 'check best practices'; reviewing multiple skills; quality validation required. Not for: auditing single skills, reviewing code files."
+description: "Audit all skills in .claude/skills/ against best practices when user mentions 'audit skills' or 'check best practices'. Not for auditing single skills or reviewing code files."
 ---
+
+<mission_control>
+<objective>Audit all skills in .claude/skills/ against best practices</objective>
+<success_criteria>Prioritized improvement recommendations with file:line references by severity</success_criteria>
+</mission_control>
 
 # Skills Audit
 
@@ -11,6 +16,7 @@ Audit all skills in .claude/skills/ against best practices.
 **Sequential TaskList Workflow**: Process skills individually through full audit cycle before moving to next skill. Each task represents one complete skill audit with findings documented.
 
 **Task Lifecycle**: Create all tasks first, then execute sequentially:
+
 - Mark task in_progress
 - Read skill + frameworks
 - Compare
@@ -32,10 +38,10 @@ Audit all skills in .claude/skills/ against best practices.
 
 **Use these quality frameworks:**
 
-- `.claude/rules/principles.md` - Delta Standard, Progressive Disclosure, Trust AI
-- `.claude/rules/patterns.md` - Writing style, description patterns
-- `.claude/rules/anti-patterns.md` - Common mistakes
-- `.claude/skills/skill-development/references/quality-framework.md` - Quality dimensions
+- **principles rule** - Delta Standard, Progressive Disclosure, Trust AI
+- **patterns rule** - Writing style, description patterns
+- **anti-patterns rule** - Common mistakes
+- **skill-development quality-framework** - Quality dimensions
 
 **Key Dimensions:** structure, writing style, content delta, autonomy, discoverability
 
@@ -64,16 +70,19 @@ Audit all skills in .claude/skills/ against best practices.
 **Prioritized improvement recommendations grouped by severity:**
 
 **Critical (Blocking):**
+
 - Security vulnerabilities
 - Complete misalignment with standards
 - Missing core requirements
 
 **Warning (High Priority):**
+
 - Significant standards drift
 - Incomplete implementation
 - Quality issues affecting reliability
 
 **Suggestion (Medium Priority):**
+
 - Minor standard deviations
 - Documentation gaps
 - Nice-to-have enhancements
@@ -81,3 +90,13 @@ Audit all skills in .claude/skills/ against best practices.
 **Report findings grouped by severity with specific file:line references.**
 
 **Binary test:** "Does audit provide actionable recommendations?" → Must include specific file locations and reference frameworks.
+
+---
+
+<critical_constraint>
+MANDATORY: Process skills sequentially through full audit cycle
+MANDATORY: Provide file:line references for every finding
+MANDATORY: Group findings by severity (Critical/High/Medium/Low)
+MANDATORY: Reference quality frameworks (principles, patterns, anti-patterns)
+No exceptions. Audit must be comprehensive and actionable.
+</critical_constraint>

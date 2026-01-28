@@ -3,6 +3,11 @@ description: Find simplest explanation that fits all the facts
 argument-hint: [situation or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply Occam's Razor to find simplest explanation that fits all facts with fewest assumptions</objective>
+<success_criteria>All explanations enumerated, assumptions made explicit, unsupported assumptions eliminated</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply Occam's Razor to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -44,3 +49,9 @@ Among competing explanations, prefer the one with fewest assumptions. Simplest â
 - Distinguishes supported from unsupported assumptions
 - Doesn't oversimplify (must fit ALL facts)
 - Reduces complexity without losing explanatory power
+
+<critical_constraint>
+MANDATORY: Enumerate all plausible explanations
+MANDATORY: Make assumptions explicit and countable
+MANDATORY: Eliminate explanations requiring unsupported assumptions
+No exceptions. Simplest must still explain ALL observed facts.

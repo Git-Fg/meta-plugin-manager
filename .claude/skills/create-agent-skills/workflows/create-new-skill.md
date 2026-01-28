@@ -1,14 +1,15 @@
 # Workflow: Create a New Skill
 
-<required_reading>
+## Required Reading
+
 **Read these reference files NOW:**
 1. references/recommended-structure.md
 2. references/skill-structure.md
 3. references/core-principles.md
 4. references/use-xml-tags.md
-</required_reading>
 
-<process>
+## Process
+
 ## Step 1: Adaptive Requirements Gathering
 
 **If user provided context** (e.g., "build a skill for X"):
@@ -103,14 +104,26 @@ mkdir -p ~/.claude/skills/{skill-name}/scripts    # for reusable code
 
 **Simple skill:** Write complete skill file with:
 - YAML frontmatter (name, description)
-- `<objective>`
-- `<quick_start>`
+- `
+## Objective
+
+`
+- `
+## Quick Start
+
+`
 - Content sections with pure XML
-- `<success_criteria>`
+- `
+## Success Criteria
+
+`
 
 **Complex skill:** Write router with:
 - YAML frontmatter
-- `<essential_principles>` (inline, unavoidable)
+- `
+## Essential Principles
+
+` (inline, unavoidable)
 - `<intake>` (question to ask user)
 - `<routing>` (maps answers to workflows)
 - `<reference_index>` and `<workflows_index>`
@@ -119,17 +132,19 @@ mkdir -p ~/.claude/skills/{skill-name}/scripts    # for reusable code
 
 For each workflow:
 ```xml
-<required_reading>
+
+## Required Reading
+
 Which references to load for this workflow
-</required_reading>
 
-<process>
+## Process
+
 Step-by-step procedure
-</process>
 
-<success_criteria>
+## Success Criteria
+
 How to know this workflow is done
-</success_criteria>
+
 ```
 
 ## Step 7: Write References (if needed)
@@ -174,9 +189,9 @@ Invoke the skill and observe:
 - Does output match expectations?
 
 Iterate based on real usage, not assumptions.
-</process>
 
-<success_criteria>
+## Success Criteria
+
 Skill is complete when:
 - [ ] Requirements gathered with appropriate questions
 - [ ] API research done if external service involved
@@ -188,4 +203,3 @@ Skill is complete when:
 - [ ] References contain reusable domain knowledge
 - [ ] Slash command exists and works
 - [ ] Tested with real invocation
-</success_criteria>

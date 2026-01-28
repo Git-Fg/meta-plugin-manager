@@ -3,6 +3,11 @@ description: Apply Pareto's principle (80/20 rule) to analyze arguments or curre
 argument-hint: [topic or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply 80/20 rule to identify vital few factors driving majority of results</objective>
+<success_criteria>High-impact factors separated from low-impact, clear focus recommendations provided</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply Pareto's principle to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -40,3 +45,9 @@ Single sentence on where to focus effort for maximum results.
 - Explains why each vital factor matters
 - Gives clear direction on what to ignore or defer
 - Reduces decision fatigue by narrowing focus
+
+<critical_constraint>
+MANDATORY: Separate vital few from trivial many based on impact
+MANDATORY: Provide specific actionable recommendations for focus areas
+MANDATORY: Explain why each vital factor matters
+No exceptions. Pareto analysis must drive clear prioritization decisions.

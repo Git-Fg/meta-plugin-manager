@@ -1,8 +1,8 @@
-<overview>
+## Overview
+
 Prompt patterns for gathering information that will be consumed by planning or implementation prompts.
 
 Includes quality controls, verification mechanisms, and streaming writes to prevent research gaps and token limit failures.
-</overview>
 
 <prompt_template>
 ```xml
@@ -12,7 +12,6 @@ Before beginning research, verify today's date:
 
 Use this date when searching for "current" or "latest" information.
 Example: If today is 2025-11-22, search for "2025" not "2024".
-</session_initialization>
 
 <research_objective>
 Research {topic} to inform {subsequent use}.
@@ -20,18 +19,15 @@ Research {topic} to inform {subsequent use}.
 Purpose: {What decision/implementation this enables}
 Scope: {Boundaries of the research}
 Output: {topic}-research.md with structured findings
-</research_objective>
 
 <research_scope>
 <include>
 {What to investigate}
 {Specific questions to answer}
-</include>
 
 <exclude>
 {What's out of scope}
 {What to defer to later research}
-</exclude>
 
 <sources>
 {Priority sources with exact URLs for WebFetch}
@@ -44,8 +40,6 @@ Search queries for WebSearch:
 - "{topic} latest version"
 
 {Time constraints: prefer current sources - check today's date first}
-</sources>
-</research_scope>
 
 <verification_checklist>
 {If researching configuration/architecture with known components:}
@@ -64,7 +58,6 @@ Search queries for WebSearch:
 □ Check both current docs AND recent updates/changelogs
 □ Test multiple search queries to avoid missing information
 □ Check for environment/tool-specific variations
-</verification_checklist>
 
 <research_quality_assurance>
 Before completing research, perform these checks:
@@ -74,14 +67,12 @@ Before completing research, perform these checks:
 - [ ] Each access method/approach evaluated against ALL requirements
 - [ ] Official documentation cited for critical claims
 - [ ] Contradictory information resolved or flagged
-</completeness_check>
 
 <source_verification>
 - [ ] Primary claims backed by official/authoritative sources
 - [ ] Version numbers and dates included where relevant
 - [ ] Actual URLs provided (not just "search for X")
 - [ ] Distinguish verified facts from assumptions
-</source_verification>
 
 <blind_spots_review>
 Ask yourself: "What might I have missed?"
@@ -89,15 +80,12 @@ Ask yourself: "What might I have missed?"
 - [ ] Did I check for multiple environments/contexts (e.g., Desktop vs Code)?
 - [ ] Did I verify claims that seem definitive ("cannot", "only", "must")?
 - [ ] Did I look for recent changes or updates to documentation?
-</blind_spots_review>
 
 <critical_claims_audit>
 For any statement like "X is not possible" or "Y is the only way":
 - [ ] Is this verified by official documentation?
 - [ ] Have I checked for recent updates that might change this?
 - [ ] Are there alternative approaches I haven't considered?
-</critical_claims_audit>
-</research_quality_assurance>
 
 <output_structure>
 Save to: `.prompts/{num}-{topic}-research/{topic}-research.md`
@@ -106,71 +94,81 @@ Structure findings using this XML format:
 
 ```xml
 <research>
-  <summary>
-    {2-3 paragraph executive summary of key findings}
-  </summary>
+  
+## Summary
+
+{2-3 paragraph executive summary of key findings}
+  
 
   <findings>
     <finding category="{category}">
-      <title>{Finding title}</title>
-      <detail>{Detailed explanation}</detail>
-      <source>{Where this came from}</source>
-      <relevance>{Why this matters for the goal}</relevance>
-    </finding>
+      <title>{Finding title}
+      <detail>{Detailed explanation}
+      <source>{Where this came from}
+      <relevance>{Why this matters for the goal}
+    
     <!-- Additional findings -->
-  </findings>
+  
 
   <recommendations>
     <recommendation priority="high">
-      <action>{What to do}</action>
-      <rationale>{Why}</rationale>
-    </recommendation>
+      <action>{What to do}
+      
+## Rationale
+
+{Why}
+    
     <!-- Additional recommendations -->
-  </recommendations>
+  
 
   <code_examples>
     {Relevant code patterns, snippets, configurations}
-  </code_examples>
+  
 
   <metadata>
-    <confidence level="{high|medium|low}">
-      {Why this confidence level}
-    </confidence>
-    <dependencies>
-      {What's needed to act on this research}
-    </dependencies>
+    
+### {high|medium|low}
+
+{Why this confidence level}
+    
+    
+## Dependencies
+
+{What's needed to act on this research}
+    
     <open_questions>
       {What couldn't be determined}
-    </open_questions>
-    <assumptions>
-      {What was assumed}
-    </assumptions>
+    
+    
+## Assumptions
+
+{What was assumed}
+    
 
     <!-- ENHANCED: Research Quality Report -->
     <quality_report>
       <sources_consulted>
         {List URLs of official documentation and primary sources}
-      </sources_consulted>
+      
       <claims_verified>
         {Key findings verified with official sources}
-      </claims_verified>
+      
       <claims_assumed>
         {Findings based on inference or incomplete information}
-      </claims_assumed>
+      
       <contradictions_encountered>
         {Any conflicting information found and how resolved}
-      </contradictions_encountered>
+      
       <confidence_by_finding>
         {For critical findings, individual confidence levels}
         - Finding 1: High (official docs + multiple sources)
         - Finding 2: Medium (single source, unclear if current)
         - Finding 3: Low (inferred, requires hands-on verification)
-      </confidence_by_finding>
-    </quality_report>
-  </metadata>
-</research>
+      
+    
+  
+
 ```
-</output_structure>
 
 <pre_submission_checklist>
 Before submitting your research report, confirm:
@@ -196,9 +194,8 @@ Before submitting your research report, confirm:
 - [ ] SUMMARY.md created with substantive one-liner
 - [ ] Sources consulted listed with URLs
 - [ ] Next steps clearly identified
-</pre_submission_checklist>
+
 ```
-</output_structure>
 
 <incremental_output>
 **CRITICAL: Write findings incrementally to prevent token limit failures**
@@ -215,7 +212,8 @@ This ensures:
 - No estimation heuristics needed
 - Works for any research size
 
-<workflow>
+## Workflow
+
 Step 1 - Initialize structure:
 ```bash
 # Create file with skeleton
@@ -243,7 +241,6 @@ Step 4 - Finalize metadata:
 # After completing research
 Edit: Update <metadata> section with confidence, dependencies, etc.
 ```
-</workflow>
 
 <example_prompt_instruction>
 ```xml
@@ -253,12 +250,15 @@ Write findings incrementally to {topic}-research.md as you discover them:
 1. Create the file with this initial structure:
    ```xml
    <research>
-     <summary>[Will complete at end]</summary>
-     <findings></findings>
-     <recommendations></recommendations>
-     <code_examples></code_examples>
-     <metadata></metadata>
-   </research>
+     
+## Summary
+
+[Will complete at end]
+     <findings>
+     <recommendations>
+     <code_examples>
+     <metadata>
+   
    ```
 
 2. As you research each aspect, immediately append findings:
@@ -273,11 +273,11 @@ Write findings incrementally to {topic}-research.md as you discover them:
 
 This incremental approach ensures all work is saved even if execution
 hits token limits. Never generate the full output in memory first.
-</output_requirements>
-```
-</example_prompt_instruction>
 
-<benefits>
+```
+
+## Benefits
+
 **vs. Pre-execution estimation:**
 - No estimation errors (you don't predict, you just write)
 - No artificial modularization (agent decides natural breakpoints)
@@ -287,8 +287,6 @@ hits token limits. Never generate the full output in memory first.
 - Survives token limit failures (partial progress saved)
 - Lower memory usage (write as you go)
 - Natural checkpoint recovery (can continue from last finding)
-</benefits>
-</incremental_output>
 
 <summary_requirements>
 Create `.prompts/{num}-{topic}-research/SUMMARY.md`
@@ -296,9 +294,9 @@ Create `.prompts/{num}-{topic}-research/SUMMARY.md`
 Load template: [summary-template.md](summary-template.md)
 
 For research, emphasize key recommendation and decision readiness. Next step typically: Create plan.
-</summary_requirements>
 
-<success_criteria>
+## Success Criteria
+
 - All scope questions answered
 - All verification checklist items completed
 - Sources are current and authoritative
@@ -307,9 +305,8 @@ For research, emphasize key recommendation and decision readiness. Next step typ
 - Quality report distinguishes verified from assumed
 - SUMMARY.md created with substantive one-liner
 - Ready for planning/implementation to consume
-</success_criteria>
+
 ```
-</prompt_template>
 
 <key_principles>
 
@@ -317,24 +314,25 @@ For research, emphasize key recommendation and decision readiness. Next step typ
 The next Claude needs to quickly extract relevant information:
 ```xml
 <finding category="authentication">
-  <title>JWT vs Session Tokens</title>
+  <title>JWT vs Session Tokens
   <detail>
     JWTs are preferred for stateless APIs. Sessions better for
     traditional web apps with server-side rendering.
-  </detail>
-  <source>OWASP Authentication Cheatsheet 2024</source>
+  
+  <source>OWASP Authentication Cheatsheet 2024
   <relevance>
     Our API-first architecture points to JWT approach.
-  </relevance>
-</finding>
+  
+
 ```
-</structure_for_consumption>
 
 <include_code_examples>
 The implementation prompt needs patterns to follow:
 ```xml
 <code_examples>
-<example name="jwt-verification">
+
+## Example
+
 ```typescript
 import { jwtVerify } from 'jose';
 
@@ -345,31 +343,30 @@ const { payload } = await jwtVerify(
 );
 ```
 Source: jose library documentation
-</example>
-</code_examples>
+
 ```
-</include_code_examples>
 
 <explicit_confidence>
 Help the next Claude know what to trust:
 ```xml
 <metadata>
-  <confidence level="medium">
-    API documentation is comprehensive but lacks real-world
+  
+### medium
+
+API documentation is comprehensive but lacks real-world
     performance benchmarks. Rate limits are documented but
     actual behavior may differ under load.
-  </confidence>
+  
 
   <quality_report>
     <confidence_by_finding>
       - JWT library comparison: High (npm stats + security audits + active maintenance verified)
       - Performance benchmarks: Low (no official data, community reports vary)
       - Rate limits: Medium (documented but not tested)
-    </confidence_by_finding>
-  </quality_report>
-</metadata>
+    
+  
+
 ```
-</explicit_confidence>
 
 <enumerate_known_possibilities>
 When researching systems with known components, enumerate them explicitly:
@@ -380,13 +377,10 @@ When researching systems with known components, enumerate them explicitly:
 □ Project scope - Project-level configuration files
 □ Local scope - Project-specific user overrides
 □ Environment scope - Environment variable based
-</verification_checklist>
+
 ```
 
 This forces systematic coverage and prevents omissions.
-</enumerate_known_possibilities>
-
-</key_principles>
 
 <research_types>
 
@@ -400,7 +394,6 @@ Research JWT authentication libraries for Node.js.
 Purpose: Select library for auth implementation
 Scope: Security, performance, maintenance status
 Output: jwt-research.md
-</research_objective>
 
 <research_scope>
 <include>
@@ -410,12 +403,10 @@ Output: jwt-research.md
 - TypeScript support
 - Active maintenance
 - Community adoption
-</include>
 
 <exclude>
 - Implementation details (for planning phase)
 - Specific code architecture (for implementation)
-</exclude>
 
 <sources>
 Official documentation (use WebFetch):
@@ -427,8 +418,6 @@ Additional sources (use WebSearch):
 - "jose vs jsonwebtoken security {current_year}"
 - npm download stats
 - GitHub issues/security advisories
-</sources>
-</research_scope>
 
 <verification_checklist>
 □ Verify all major JWT libraries (jose, jsonwebtoken, passport-jwt)
@@ -436,9 +425,8 @@ Additional sources (use WebSearch):
 □ Review GitHub security advisories for each library
 □ Confirm TypeScript support with examples
 □ Document bundle sizes from bundlephobia or similar
-</verification_checklist>
+
 ```
-</technology_research>
 
 <best_practices_research>
 For understanding patterns and standards:
@@ -450,7 +438,6 @@ Research authentication security best practices.
 Purpose: Inform secure auth implementation
 Scope: Current standards, common vulnerabilities, mitigations
 Output: auth-security-research.md
-</research_objective>
 
 <research_scope>
 <include>
@@ -459,7 +446,6 @@ Output: auth-security-research.md
 - Common vulnerabilities (XSS, CSRF)
 - Secure cookie configuration
 - Password hashing standards
-</include>
 
 <sources>
 Official sources (use WebFetch):
@@ -469,17 +455,14 @@ Official sources (use WebFetch):
 Search sources (use WebSearch):
 - "OWASP authentication {current_year}"
 - "secure token storage best practices {current_year}"
-</sources>
-</research_scope>
 
 <verification_checklist>
 □ Verify OWASP top 10 authentication vulnerabilities
 □ Check latest OWASP cheatsheet publication date
 □ Confirm recommended hash algorithms (bcrypt, scrypt, Argon2)
 □ Document secure cookie flags (httpOnly, secure, sameSite)
-</verification_checklist>
+
 ```
-</best_practices_research>
 
 <api_service_research>
 For understanding external services:
@@ -491,7 +474,6 @@ Research Stripe API for payment integration.
 Purpose: Plan payment implementation
 Scope: Endpoints, authentication, webhooks, testing
 Output: stripe-research.md
-</research_objective>
 
 <research_scope>
 <include>
@@ -502,12 +484,10 @@ Output: stripe-research.md
 - Testing and sandbox environment
 - Error handling patterns
 - SDK availability
-</include>
 
 <exclude>
 - Pricing details
 - Account setup process
-</exclude>
 
 <sources>
 Official sources (use WebFetch):
@@ -518,8 +498,6 @@ Official sources (use WebFetch):
 Context7 MCP:
 - Use mcp__context7__resolve-library-id for Stripe
 - Use mcp__context7__get-library-docs for current patterns
-</sources>
-</research_scope>
 
 <verification_checklist>
 □ Verify current API version and deprecation timeline
@@ -527,9 +505,8 @@ Context7 MCP:
 □ Confirm sandbox environment capabilities
 □ Document rate limits from official docs
 □ Verify SDK availability for our stack
-</verification_checklist>
+
 ```
-</api_service_research>
 
 <comparison_research>
 For evaluating options:
@@ -541,7 +518,6 @@ Research database options for multi-tenant SaaS.
 Purpose: Inform database selection decision
 Scope: PostgreSQL, MongoDB, DynamoDB for our use case
 Output: database-research.md
-</research_objective>
 
 <research_scope>
 <include>
@@ -551,15 +527,12 @@ For each option:
 - Cost model
 - Operational complexity
 - Team expertise requirements
-</include>
 
 <evaluation_criteria>
 - Data isolation requirements
 - Expected query patterns
 - Scale projections
 - Team familiarity
-</evaluation_criteria>
-</research_scope>
 
 <verification_checklist>
 □ Verify all candidate databases (PostgreSQL, MongoDB, DynamoDB)
@@ -567,13 +540,11 @@ For each option:
 □ Compare scaling characteristics with authoritative benchmarks
 □ Check pricing calculators for cost model verification
 □ Assess team expertise honestly (survey if needed)
-</verification_checklist>
+
 ```
-</comparison_research>
 
-</research_types>
+## Metadata Guidelines
 
-<metadata_guidelines>
 Load: [metadata-guidelines.md](metadata-guidelines.md)
 
 **Enhanced guidance**:
@@ -582,7 +553,6 @@ Load: [metadata-guidelines.md](metadata-guidelines.md)
 - List all sources consulted with URLs for verification
 - Document contradictions encountered and how resolved
 - Be honest about limitations and gaps in research
-</metadata_guidelines>
 
 <tool_usage>
 
@@ -601,7 +571,6 @@ Search: "{topic} best practices {current_year}"
 Search: "{library} security vulnerabilities {current_year}"
 Search: "{topic} vs {alternative} comparison {current_year}"
 ```
-</web_search>
 
 <web_fetch>
 For specific documentation pages:
@@ -609,10 +578,8 @@ For specific documentation pages:
 Fetch official docs, API references, changelogs with exact URLs
 Prefer WebFetch over WebSearch for authoritative sources
 ```
-</web_fetch>
 
 Include tool usage hints in research prompts when specific sources are needed.
-</tool_usage>
 
 <pitfalls_reference>
 Before completing research, review common pitfalls:
@@ -623,4 +590,3 @@ Key patterns to avoid:
 - "Search for X" vagueness - provide exact URLs
 - Deprecated vs current confusion - check changelogs
 - Tool-specific variations - check each environment
-</pitfalls_reference>

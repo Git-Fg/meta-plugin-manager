@@ -7,6 +7,11 @@ allowed-tools:
   - Write
 ---
 
+<mission_control>
+<objective>Add todo item to TO-DOS.md with extracted context from conversation</objective>
+<success_criteria>Todo entry saved with Problem/Files/Solution pattern for future context</success_criteria>
+</mission_control>
+
 # Add Todo Item
 
 ## Context
@@ -54,3 +59,10 @@ allowed-tools:
 
 - **Create check-todos command** - Build companion command to list and select todos. **Problem:** Need workflow to review outstanding todos and load context for selected item. **Files:** `commands/check-todos.md` (new), `TO-DOS.md` (reads from). **Solution:** Parse markdown list, display numbered list, accept selection to load full context and remove item.
 ```
+
+<critical_constraint>
+MANDATORY: Extract Problem and Files fields with line numbers for future context
+MANDATORY: Ask user before adding duplicate todos
+MANDATORY: Include timestamp in todo heading for temporal context
+No exceptions. Todos must be self-contained for future Claude instances.
+</critical_constraint>

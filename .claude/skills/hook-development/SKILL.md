@@ -1,7 +1,15 @@
 ---
 name: hook-development
-description: "Create event-driven hooks. Use when: You need to intercept events, enforce security patterns, or automate interventions. Not for: User-triggered actions (use command-development) or passive knowledge."
+description: "Create event-driven hooks when you need to intercept events, enforce security patterns, or automate interventions. Not for manual actions or passive knowledge."
 ---
+
+<mission_control>
+<objective>Create event-driven hooks that intercept operations and enforce security patterns</objective>
+<success_criteria>Generated hook has valid matcher, action type, and timeout configuration</success_criteria>
+</mission_control>
+
+<interaction_schema>
+event_analysis → matcher_design → action_definition → security_review → output</interaction_schema>
 
 # Hook Development
 
@@ -136,3 +144,19 @@ Hooks provide:
 | Quality guidelines  | MANDATORY: `references/quality.md` |
 | Advanced techniques | `references/advanced.md`           |
 | Migration guide     | `references/migration.md`          |
+
+---
+
+<critical_constraint>
+MANDATORY: Hooks must have timeout values to prevent blocking operations
+
+MANDATORY: Use prompt hooks for destructive operations requiring user confirmation
+
+MANDATORY: Use command hooks only for clear blocking scenarios
+
+MANDATORY: Test matcher patterns thoroughly before deployment
+
+MANDATORY: Include escape hatches for emergency overrides
+
+No exceptions. Hooks are security mechanisms—they must be safe, timeout-protected, and non-blocking.
+</critical_constraint>

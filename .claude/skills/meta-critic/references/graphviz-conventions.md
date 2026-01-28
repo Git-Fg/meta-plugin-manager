@@ -10,13 +10,13 @@ GraphViz provides a standardized way to visualize workflows, decision trees, and
 
 Use standardized shapes to communicate meaning:
 
-| Shape | Meaning | Example |
-|-------|---------|---------|
-| **Diamond** | Questions/Decisions | "Tests pass?" |
-| **Box** | Actions/Processes | "Run test command" |
-| **Double Circle** | Start/End States | "Begin", "Complete" |
-| **Ellipse** | States/Conditions | "Failing test", "Clean code" |
-| **Octagon** | Critical/Warning | "STOP", "ERROR" |
+| Shape             | Meaning             | Example                      |
+| ----------------- | ------------------- | ---------------------------- |
+| **Diamond**       | Questions/Decisions | "Tests pass?"                |
+| **Box**           | Actions/Processes   | "Run test command"           |
+| **Double Circle** | Start/End States    | "Begin", "Complete"          |
+| **Ellipse**       | States/Conditions   | "Failing test", "Clean code" |
+| **Octagon**       | Critical/Warning    | "STOP", "ERROR"              |
 
 ### Example Usage
 
@@ -48,12 +48,12 @@ Always label edges to show conditions/paths:
 
 ### Common Label Patterns
 
-| Pattern | Usage | Example |
-|---------|-------|---------|
-| `[label="yes/no"]` | Binary decisions | "Is valid? yes/no" |
-| `[label="if X"]` | Conditional paths | "if error" |
-| `[label="otherwise"]` | Default path | "if no match" |
-| `[label="loop"]` | Cycle back | "back to start" |
+| Pattern               | Usage             | Example            |
+| --------------------- | ----------------- | ------------------ |
+| `[label="yes/no"]`    | Binary decisions  | "Is valid? yes/no" |
+| `[label="if X"]`      | Conditional paths | "if error"         |
+| `[label="otherwise"]` | Default path      | "if no match"      |
+| `[label="loop"]`      | Cycle back        | "back to start"    |
 
 ## Rank Direction
 
@@ -231,6 +231,7 @@ digraph two_stage {
 ### When to Use
 
 Include GraphViz diagrams for:
+
 - **Decision trees** (when to use a skill)
 - **Process flows** (step-by-step workflows)
 - **Two-stage reviews** (spec + quality)
@@ -239,6 +240,7 @@ Include GraphViz diagrams for:
 ### Documentation Standards
 
 **Every workflow diagram should include:**
+
 1. Clear title
 2. Meaningful node labels
 3. Labeled edges
@@ -247,7 +249,7 @@ Include GraphViz diagrams for:
 
 ### Example Integration
 
-```markdown
+````markdown
 ## When to Use
 
 ```dot
@@ -264,6 +266,8 @@ digraph decision {
     "Writing new code?" -> "Add tests to existing" [label="no"];
 }
 ```
+````
+
 ```
 
 ## Tools
@@ -291,14 +295,6 @@ Superpowers uses GraphViz extensively:
 - Subagent orchestration
 - Two-stage review process
 
-### Ralph Integration
-
-Ralph validation uses GraphViz for:
-- Two-stage review workflow
-- Hat coordination patterns
-- Validation gates
-- Review loops
-
 ## Summary
 
 **Key Conventions:**
@@ -317,3 +313,4 @@ Ralph validation uses GraphViz for:
 - Professional appearance
 
 Following these conventions ensures all meta-skills have consistent, readable process visualizations.
+```

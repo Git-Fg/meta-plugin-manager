@@ -3,6 +3,11 @@ description: Analyze what you give up by choosing this option
 argument-hint: [choice or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Analyze opportunity cost by comparing chosen option to best alternative use of resources</objective>
+<success_criteria>Hidden costs made explicit, all resource types accounted for, genuine value comparison provided</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply opportunity cost analysis to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -47,3 +52,9 @@ Choosing this means NOT doing [best alternative], which would have provided [val
 - Accounts for all resource types (not just money)
 - Reveals when "affordable" things are actually expensive
 - Enables genuine comparison of value
+
+<critical_constraint>
+MANDATORY: Compare to best alternative, not just any alternative
+MANDATORY: Account for all resource types (time, money, energy, attention)
+MANDATORY: Make hidden costs explicit
+No exceptions. Every yes is a no to something - make that explicit.

@@ -3,6 +3,15 @@ description: Drill to root cause by asking why repeatedly
 argument-hint: [problem or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply 5 Whys technique to drill from symptoms to actionable root cause</objective>
+<success_criteria>Root cause identified with specific intervention that prevents recurrence</success_criteria>
+</mission_control>
+
+<interaction_schema>
+problem_statement → why_1 → why_2 → why_3 → why_4 → why_5 → root_cause → intervention
+</interaction_schema>
+
 ## Objective
 
 Apply the 5 Whys technique to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -39,3 +48,10 @@ Keep asking "why" until you hit the root cause, not just symptoms.
 - Stops when hitting actionable root (not infinite regress)
 - Intervention addresses root, not surface
 - Prevents same problem from recurring
+
+<critical_constraint>
+MANDATORY: Each "why" must dig genuinely deeper, not just rephrase
+MANDATORY: Stop at actionable root, not infinite regress
+MANDATORY: Intervention must address root cause, not surface symptoms
+No exceptions. The goal is prevention, not symptom management.
+</critical_constraint>

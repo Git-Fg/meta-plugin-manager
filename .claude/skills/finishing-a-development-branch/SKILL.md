@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: "Finish development branches. Use when: Implementation is complete, tests pass, and you are ready to merge or create a PR. Not for: In-progress work or failed tests."
+description: "Finish development branches when implementation is complete, tests pass, and you are ready to merge or create a PR. Not for in-progress work or failed tests."
 ---
 
 # Finishing a Development Branch
@@ -25,6 +25,7 @@ npm test / cargo test / pytest / go test ./...
 ```
 
 **If tests fail:**
+
 ```
 Tests failing (<N> failures). Must fix before completing:
 
@@ -48,20 +49,7 @@ Or ask: "This branch split from main - is that correct?"
 
 ### Step 3: Present Options
 
-Present exactly these 4 options:
-
-```
-Implementation complete. What would you like to do?
-
-1. Merge back to <base-branch> locally
-2. Push and create a Pull Request
-3. Keep the branch as-is (I'll handle it later)
-4. Discard this work
-
-Which option?
-```
-
-**Don't add explanation** - keep options concise.
+Present actionable options for what to do with the completed branch.
 
 ### Step 4: Execute Choice
 
@@ -114,6 +102,7 @@ Report: "Keeping branch <name>. Worktree preserved at <path>."
 #### Option 4: Discard
 
 **Confirm first:**
+
 ```
 This will permanently delete:
 - Branch <name>
@@ -126,6 +115,7 @@ Type 'discard' to confirm.
 Wait for exact confirmation.
 
 If confirmed:
+
 ```bash
 git checkout <base-branch>
 git branch -D <feature-branch>
@@ -138,11 +128,13 @@ Then: Cleanup worktree (Step 5)
 **For Options 1, 2, 4:**
 
 Check if in worktree:
+
 ```bash
 git worktree list | grep $(git branch --show-current)
 ```
 
 If yes:
+
 ```bash
 git worktree remove <worktree-path>
 ```
@@ -151,40 +143,46 @@ git worktree remove <worktree-path>
 
 ## Quick Reference
 
-| Option | Merge | Push | Keep Worktree | Cleanup Branch |
-|--------|-------|------|---------------|----------------|
-| 1. Merge locally | ✓ | - | - | ✓ |
-| 2. Create PR | - | ✓ | ✓ | - |
-| 3. Keep as-is | - | - | ✓ | - |
-| 4. Discard | - | - | - | ✓ (force) |
+| Option           | Merge | Push | Keep Worktree | Cleanup Branch |
+| ---------------- | ----- | ---- | ------------- | -------------- |
+| 1. Merge locally | ✓     | -    | -             | ✓              |
+| 2. Create PR     | -     | ✓    | ✓             | -              |
+| 3. Keep as-is    | -     | -    | ✓             | -              |
+| 4. Discard       | -     | -    | -             | ✓ (force)      |
 
 ## Common Mistakes
 
 **Skipping test verification**
+
 - **Problem:** Merge broken code, create failing PR
 - **Fix:** Always verify tests before offering options
 
 **Open-ended questions**
+
 - **Problem:** "What should I do next?" → ambiguous
 - **Fix:** Present exactly 4 structured options
 
 **Automatic worktree cleanup**
+
 - **Problem:** Remove worktree when might need it (Option 2, 3)
 - **Fix:** Only cleanup for Options 1 and 4
 
 **No confirmation for discard**
+
 - **Problem:** Accidentally delete work
 - **Fix:** Require typed "discard" confirmation
 
 ## Red Flags
 
 **Never:**
+
 - Proceed with failing tests
 - Merge without verifying tests on result
 - Delete work without confirmation
 - Force-push without explicit request
 
 **Always:**
+
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
@@ -193,10 +191,12 @@ git worktree remove <worktree-path>
 ## Integration
 
 **Called by:**
+
 - **subagent-driven-development** (Step 7) - After all tasks complete
 - **executing-plans** (Step 5) - After all batches complete
 
 **Pairs with:**
+
 - **using-git-worktrees** - Cleans up worktree created by that skill
 
 ## Example Workflow
@@ -216,14 +216,7 @@ Result: main
 
 [Step 3: Present options]
 
-Implementation complete. What would you like to do?
-
-1. Merge back to main locally
-2. Push and create a Pull Request
-3. Keep the branch as-is (I'll handle it later)
-4. Discard this work
-
-Which option?
+Present actionable options for branch disposition. User selects option.
 
 User: 2
 
@@ -293,3 +286,13 @@ Worktree cleaned up.
 5. **Evidence-based** - Show test results before decisions
 
 This skill ensures development work is completed safely and systematically.
+
+---
+
+<critical_constraint>
+MANDATORY: Verify tests pass before presenting completion options
+MANDATORY: Get typed confirmation for destructive operations (discard)
+MANDATORY: Only cleanup worktrees for merge/discard options
+MANDATORY: Show test evidence before user decisions
+No exceptions. Never proceed with merge/PR when tests fail.
+</critical_constraint>

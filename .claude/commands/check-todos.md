@@ -6,6 +6,11 @@ allowed-tools:
   - Glob
 ---
 
+<mission_control>
+<objective>List outstanding todos and enable selection-based context loading</objective>
+<success_criteria>User selects todo, full context loaded, matching workflow identified</success_criteria>
+</mission_control>
+
 # Check Todos
 
 ## Instructions
@@ -54,3 +59,10 @@ Outstanding Todos:
 
 Reply with the number of the todo you'd like to work on.
 ```
+
+<critical_constraint>
+MANDATORY: Remove todo from file once user begins work on it
+MANDATORY: Read relevant files for selected todo before presenting options
+MANDATORY: Match todo domain to appropriate workflow/skill
+No exceptions. Todo workflow must maintain clean state and proper context loading.
+</critical_constraint>

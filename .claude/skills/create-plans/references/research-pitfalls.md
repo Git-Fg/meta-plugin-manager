@@ -18,7 +18,7 @@ This document catalogs research mistakes discovered in production use, providing
 □ Local scope - Project-specific user overrides
 □ Workspace scope - IDE/tool workspace settings
 □ Environment scope - Environment variables
-</verification_checklist>
+
 ```
 
 ### Pitfall 2: "Search for X" Vagueness
@@ -35,7 +35,7 @@ Official sources (use WebFetch):
 Search queries (use WebSearch):
 - "specific search query {current_year}"
 - "another specific query {current_year}"
-</sources>
+
 ```
 
 ### Pitfall 3: Deprecated vs Current Features
@@ -49,7 +49,7 @@ Search queries (use WebSearch):
 □ Review changelog/release notes for recent updates
 □ Verify version numbers and publication dates
 □ Cross-reference multiple authoritative sources
-</verification_checklist>
+
 ```
 
 ### Pitfall 4: Tool-Specific Variations
@@ -64,7 +64,7 @@ Search queries (use WebSearch):
 □ VS Code extension capabilities
 □ API/SDK capabilities
 Document which environment supports which features
-</verification_checklist>
+
 ```
 
 ### Pitfall 5: Confident Negative Claims Without Citations
@@ -79,7 +79,7 @@ For any "X is not possible" or "Y is the only way" statement:
 - [ ] Have I checked for recent updates that might change this?
 - [ ] Have I verified all possible approaches/mechanisms?
 - [ ] Am I confusing "I didn't find it" with "it doesn't exist"?
-</critical_claims_audit>
+
 ```
 
 ### Pitfall 6: Missing Enumeration
@@ -99,7 +99,7 @@ For each option above, document:
 - Existence (confirmed/not found/unclear)
 - Official source URL
 - Current status (active/deprecated/beta)
-</verification_checklist>
+
 ```
 
 ### Pitfall 7: Single-Source Verification
@@ -114,7 +114,7 @@ For critical claims, require multiple sources:
 - [ ] Release notes/changelog (for currency)
 - [ ] Additional authoritative source (for verification)
 - [ ] Contradiction check (ensure sources agree)
-</source_verification>
+
 ```
 
 ### Pitfall 8: Assumed Completeness
@@ -129,7 +129,7 @@ For each source consulted:
 - [ ] Source authority confirmed (official docs, not blogs)
 - [ ] Version relevance checked (matches current version)
 - [ ] Multiple search queries tried (not just one)
-</source_verification>
+
 ```
 
 ## Red Flags in Research Outputs

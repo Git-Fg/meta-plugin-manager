@@ -1,6 +1,6 @@
 ---
 name: tdd-workflow
-description: "Apply Test-Driven Development (TDD). Use when: Writing new features, fixing bugs, or refactoring. Not for: Prototyping, 'test-after' workflows, or skipping the Red-Green-Refactor cycle."
+description: "Apply Test-Driven Development (TDD) when writing new features, fixing bugs, or refactoring. Not for prototyping, 'test-after' workflows, or skipping the Red-Green-Refactor cycle."
 ---
 
 # Test-Driven Development Workflow
@@ -16,6 +16,7 @@ NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 Write code before the test? Delete it. Start over.
 
 **No exceptions:**
+
 - Don't keep it as "reference"
 - Don't "adapt" it while writing tests
 - Don't look at it
@@ -27,29 +28,29 @@ Implement fresh from tests. Period.
 
 ## Common Rationalizations
 
-| Rationalization (Stop) | Reality |
-|------------------------|---------|
-| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
-| "I'll test after" | Tests passing immediately prove nothing. |
-| "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
-| "Already manually tested" | Ad-hoc ≠ systematic. No record, can't re-run. |
-| "Deleting X hours is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
-| "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete. |
-| "Need to explore first" | Fine. Throw away exploration, start with TDD. |
-| "Test hard = design unclear" | Listen to test. Hard to test = hard to use. |
-| "TDD will slow me down" | TDD faster than debugging. Pragmatic = test-first. |
-| "Manual test faster" | Manual doesn't prove edge cases. You'll re-test every change. |
-| "Existing code has no tests" | You're improving it. Add tests for existing code. |
+| Rationalization (Stop)                 | Reality                                                                 |
+| -------------------------------------- | ----------------------------------------------------------------------- |
+| "Too simple to test"                   | Simple code breaks. Test takes 30 seconds.                              |
+| "I'll test after"                      | Tests passing immediately prove nothing.                                |
+| "Tests after achieve same goals"       | Tests-after = "what does this do?" Tests-first = "what should this do?" |
+| "Already manually tested"              | Ad-hoc ≠ systematic. No record, can't re-run.                           |
+| "Deleting X hours is wasteful"         | Sunk cost fallacy. Keeping unverified code is technical debt.           |
+| "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete.             |
+| "Need to explore first"                | Fine. Throw away exploration, start with TDD.                           |
+| "Test hard = design unclear"           | Listen to test. Hard to test = hard to use.                             |
+| "TDD will slow me down"                | TDD faster than debugging. Pragmatic = test-first.                      |
+| "Manual test faster"                   | Manual doesn't prove edge cases. You'll re-test every change.           |
+| "Existing code has no tests"           | You're improving it. Add tests for existing code.                       |
 
 ---
 
 ## Quick Navigation
 
-| If you need... | MANDATORY READ WHEN... | File |
-|---------------|------------------------|------|
-| Testing patterns | WRITING TESTS | `references/testing-patterns.md` |
-| Mock strategies | MOCKING EXTERNAL DEPS | `references/testing-patterns.md` |
-| Coverage verification | CHECKING COVERAGE | `references/testing-patterns.md` |
+| If you need...        | MANDATORY READ WHEN... | File                             |
+| --------------------- | ---------------------- | -------------------------------- |
+| Testing patterns      | WRITING TESTS          | `references/testing-patterns.md` |
+| Mock strategies       | MOCKING EXTERNAL DEPS  | `references/testing-patterns.md` |
+| Coverage verification | CHECKING COVERAGE      | `references/testing-patterns.md` |
 
 ---
 
@@ -66,14 +67,14 @@ Implement fresh from tests. Period.
 <logic_flow>
 <tdd_cycle>
 digraph TDD {
-    WriteTest -> RunTest;
-    RunTest -> WriteCode [label="Fail (Red)"];
-    RunTest -> RewriteTest [label="Pass (Bad Test)"];
-    WriteCode -> RunTest2;
-    RunTest2 -> Refactor [label="Pass (Green)"];
-    RunTest2 -> WriteCode [label="Fail"];
-    Refactor -> RunTest3;
-    RunTest3 -> Done [label="Pass"];
+WriteTest -> RunTest;
+RunTest -> WriteCode [label="Fail (Red)"];
+RunTest -> RewriteTest [label="Pass (Bad Test)"];
+WriteCode -> RunTest2;
+RunTest2 -> Refactor [label="Pass (Green)"];
+RunTest2 -> WriteCode [label="Fail"];
+Refactor -> RunTest3;
+RunTest3 -> Done [label="Pass"];
 }
 </tdd_cycle>
 </logic_flow>
@@ -94,12 +95,13 @@ test('retries failed operations 3 times', async () => {
     return 'success';
   };
 
-  const result = await retryOperation(operation);
+const result = await retryOperation(operation);
 
-  expect(result).toBe('success');
-  expect(attempts).toBe(3);
+expect(result).toBe('success');
+expect(attempts).toBe(3);
 });
-```
+
+````
 Clear name, tests real behavior, one thing
 </Good>
 
@@ -113,11 +115,13 @@ test('retry works', async () => {
   await retryOperation(mock);
   expect(mock).toHaveBeenCalledTimes(3);
 });
-```
+````
+
 Vague name, tests mock not code
 </Bad>
 
 **Requirements:**
+
 - One behavior
 - Clear name
 - Real code (no mocks unless unavoidable)
@@ -131,6 +135,7 @@ npm test path/to/test.test.ts
 ```
 
 Confirm:
+
 - Test fails (not errors)
 - Failure message is expected
 - Fails because feature missing (not typos)
@@ -186,6 +191,7 @@ npm test path/to/test.test.ts
 ```
 
 Confirm:
+
 - Test passes
 - Other tests still pass
 - Output pristine (no errors, warnings)
@@ -197,6 +203,7 @@ Confirm:
 ### REFACTOR - Clean Up
 
 After green only:
+
 - Remove duplication
 - Improve names
 - Extract helpers
@@ -210,6 +217,7 @@ Keep tests green. Don't add behavior.
 **"I'll write tests after to verify it works"**
 
 Tests written after code pass immediately. Passing immediately proves nothing:
+
 - Might test wrong thing
 - Might test implementation, not behavior
 - Might miss edge cases you forgot
@@ -220,6 +228,7 @@ Test-first forces you to see the test fail, proving it actually tests something.
 **"I already manually tested all the edge cases"**
 
 Manual testing is ad-hoc. You think you tested everything but:
+
 - No record of what you tested
 - Can't re-run when code changes
 - Easy to forget cases under pressure
@@ -230,6 +239,7 @@ Automated tests are systematic. They run the same way every time.
 **"Deleting X hours of work is wasteful"**
 
 Sunk cost fallacy. The time is already gone. Your choice now:
+
 - Delete and rewrite with TDD (X more hours, high confidence)
 - Keep it and add tests after (30 min, low confidence, likely bugs)
 
@@ -238,6 +248,7 @@ The "waste" is keeping code you can't trust. Working code without real tests is 
 **"TDD is dogmatic, being pragmatic means adapting"**
 
 TDD IS pragmatic:
+
 - Finds bugs before commit (faster than debugging after)
 - Prevents regressions (tests catch breaks immediately)
 - Documents behavior (tests show how to use code)
@@ -322,6 +333,7 @@ so that I can find relevant markets even without exact keywords.
 For each user journey, create comprehensive tests:
 
 **Test types to include**:
+
 - ✅ Happy path (expected success)
 - ✅ Edge cases (empty, null, boundary values)
 - ✅ Error scenarios (API failures, invalid input)
@@ -357,6 +369,7 @@ npm test
 ### Step 6: Refactor
 
 Improve code quality while keeping tests green:
+
 - Remove duplication
 - Improve naming
 - Optimize performance
@@ -380,6 +393,7 @@ npm run test:coverage
 **Purpose**: Test individual functions and components in isolation
 
 **When to use**:
+
 - Pure functions (no side effects)
 - Component logic (state, props)
 - Utilities and helpers
@@ -392,6 +406,7 @@ npm run test:coverage
 **Purpose**: Test how components work together
 
 **When to use**:
+
 - API endpoints with database
 - Service interactions
 - External API calls
@@ -404,6 +419,7 @@ npm run test:coverage
 **Purpose**: Test complete user workflows
 
 **When to use**:
+
 - Critical user flows (login, checkout)
 - Cross-component interactions
 - Browser automation
@@ -421,40 +437,44 @@ npm run test:coverage
 
 ```typescript
 // BAD: Tests internal state
-expect(component.state.count).toBe(5)
+expect(component.state.count).toBe(5);
 
 // GOOD: Tests user-visible behavior
-expect(screen.getByText('Count: 5')).toBeInTheDocument()
+expect(screen.getByText("Count: 5")).toBeInTheDocument();
 ```
 
 ### ❌ Brittle Selectors
 
 ```typescript
 // BAD: Breaks easily
-await page.click('.css-class-xyz')
+await page.click(".css-class-xyz");
 
 // GOOD: Semantic selectors
-await page.click('button:has-text("Submit")')
-await page.click('[data-testid="submit-button"]')
+await page.click('button:has-text("Submit")');
+await page.click('[data-testid="submit-button"]');
 ```
 
 ### ❌ Dependent Tests
 
 ```typescript
 // BAD: Tests depend on each other
-test('creates user', () => { /* ... */ })
-test('updates same user', () => { /* depends on previous */ })
+test("creates user", () => {
+  /* ... */
+});
+test("updates same user", () => {
+  /* depends on previous */
+});
 
 // GOOD: Each test is independent
-test('creates user', () => {
-  const user = createTestUser()
+test("creates user", () => {
+  const user = createTestUser();
   // Test logic
-})
+});
 
-test('updates user', () => {
-  const user = createTestUser()
+test("updates user", () => {
+  const user = createTestUser();
   // Update logic
-})
+});
 ```
 
 ---
@@ -477,8 +497,20 @@ Before considering work complete:
 ## Integration with Other Workflows
 
 This skill integrates with:
+
 - `verify` command - Comprehensive quality gates
 - `meta-critic` - Quality validation framework
 - `coding-standards` - Testing conventions
 
 **Recognition**: "Am I following RED→GREEN→REFACTOR?" → If you wrote code before tests, stop and rewrite.
+
+---
+
+<critical_constraint>
+MANDATORY: Write failing test BEFORE production code (RED phase)
+MANDATORY: Verify test fails before writing code
+MANDATORY: Write minimal code to pass test (GREEN phase)
+MANDATORY: Run tests after EVERY code change
+MANDATORY: Never skip RED or GREEN phases
+No exceptions. TDD discipline catches bugs before commit.
+</critical_constraint>

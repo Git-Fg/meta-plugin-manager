@@ -1,54 +1,62 @@
 # Workflow: Create Brief
 
-<required_reading>
-**Read these files NOW:**
-1. templates/brief.md
-</required_reading>
+## Required Reading
 
-<purpose>
+**Read these files NOW:**
+
+1. templates/brief.md
+
+## Purpose
+
 Create a project vision document that captures what we're building and why.
 This is the ONLY human-focused document - everything else is for Claude.
-</purpose>
 
-<process>
+## Process
 
-<step name="gather_vision">
-Ask the user (conversationally, not AskUserQuestion):
+#### EXPLORE
 
-1. **What are we building?** (one sentence)
-2. **Why does this need to exist?** (the problem it solves)
-3. **What does success look like?** (how we know it worked)
-4. **Any constraints?** (tech stack, timeline, budget, etc.)
+Analyze user's original request for implicit context:
 
-Keep it conversational. Don't ask all at once - let it flow naturally.
-</step>
+| What to Explore  | How                             | Goal                          |
+| ---------------- | ------------------------------- | ----------------------------- |
+| User request     | Analyze original message        | Extract implicit requirements |
+| Project name     | Infer from request or ask       | Naming the project            |
+| Tech stack       | Check request for stack hints   | Understanding constraints     |
+| Similar projects | Check git history if applicable | Avoid duplicates              |
 
-<step name="decision_gate">
-After gathering context:
+#### INFER
 
-Use AskUserQuestion:
-- header: "Ready"
-- question: "Ready to create the brief, or would you like me to ask more questions?"
-- options:
-  - "Create brief" - I have enough context
-  - "Ask more questions" - There are details to clarify
-  - "Let me add context" - I want to provide more information
+Try to infer from request:
 
-Loop until "Create brief" selected.
-</step>
+| Question      | Can Infer If...                   | Won't Ask If...      |
+| ------------- | --------------------------------- | -------------------- |
+| Project name  | Request mentions name             | Request is clear     |
+| What building | Request describes functionality   | Clearly stated       |
+| Why           | Request mentions problem/solution | Obvious from context |
+| Constraints   | Request mentions tech stack       | Explicitly stated    |
 
-<step name="create_structure">
+#### ASK ONE
+
+Only if context is unclear after EXPLORE + INFER, ask ONE focused question with numbered options the user can select.
+
+**Provide actionable propositions** - present inferred project context and let user confirm/adjust by selection, not typing.
+
+**If all inferred**: Proceed to write_brief without asking.
+
+#### create_structure
+
 Create the planning directory:
 
 ```bash
 mkdir -p .planning
 ```
-</step>
 
-<step name="write_brief">
+#### write_brief
+
 Use the template from `templates/brief.md`.
 
-Write to `.planning/BRIEF.md` with:
+Write to `.claude/workspace/planning/BRIEF.md` with:
+
 - Project name
 - One-line description
 - Problem statement (why this exists)
@@ -57,39 +65,37 @@ Write to `.planning/BRIEF.md` with:
 - Out of scope (what we're NOT building)
 
 **Keep it SHORT.** Under 50 lines. This is a reference, not a novel.
-</step>
 
-<step name="offer_next">
-After creating brief, present options:
+#### CONFIRM
+
+After creating brief:
 
 ```
-Brief created: .planning/BRIEF.md
+Brief created: .claude/workspace/planning/BRIEF.md
 
 NOTE: Brief is NOT committed yet. It will be committed with the roadmap as project initialization.
 
-What's next?
-1. Create roadmap now (recommended - commits brief + roadmap together)
-2. Review/edit brief
-3. Done for now (brief will remain uncommitted)
+Invoke /create-roadmap to create phases? (yes / review / later)
 ```
-</step>
 
-</process>
+## Anti-Patterns
 
-<anti_patterns>
 - Don't write a business plan
 - Don't include market analysis
 - Don't add stakeholder sections
 - Don't create executive summaries
 - Don't add timelines (that's roadmap's job)
+- Don't scatter questions throughout
 
 Keep it focused: What, Why, Success, Constraints.
-</anti_patterns>
 
-<success_criteria>
+## Success Criteria
+
 Brief is complete when:
-- [ ] `.planning/BRIEF.md` exists
+
+- [ ] EXPLORE + INFER attempted
+- [ ] 0 questions asked if all inferred (max 1 if needed)
+- [ ] `.claude/workspace/planning/BRIEF.md` exists
 - [ ] Contains: name, description, problem, success criteria
 - [ ] Under 50 lines
-- [ ] User knows what's next
-</success_criteria>
+- [ ] CONFIRM asked: "Invoke /create-roadmap?"

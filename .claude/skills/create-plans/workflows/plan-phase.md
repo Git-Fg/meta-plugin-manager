@@ -1,45 +1,42 @@
 # Workflow: Plan Phase
 
-<required_reading>
+## Required Reading
+
 **Read these files NOW:**
+
 1. templates/phase-prompt.md
 2. references/plan-format.md
 3. references/scope-estimation.md
 4. references/checkpoints.md
-5. Read `.planning/ROADMAP.md`
-6. Read `.planning/BRIEF.md`
 
-**If domain expertise should be loaded (determined by intake):**
-7. Read domain SKILL.md: `~/.claude/skills/expertise/[domain]/SKILL.md`
-8. Determine phase type from ROADMAP (UI, database, API, etc.)
-9. Read ONLY relevant references from domain's `<references_index>` section
-</required_reading>
+## Purpose
 
-<purpose>
 Create an executable phase prompt (PLAN.md). This is where we get specific:
 objective, context, tasks, verification, success criteria, and output specification.
 
 **Key insight:** PLAN.md IS the prompt that Claude executes. Not a document that
 gets transformed into a prompt.
-</purpose>
 
-<process>
+## Process
 
-<step name="identify_phase">
+#### identify_phase
+
 Check roadmap for phases:
+
 ```bash
-cat .planning/ROADMAP.md
-ls .planning/phases/
+cat .claude/workspace/planning/ROADMAP.md
+ls .claude/workspace/planning/phases/
 ```
 
-If multiple phases available, ask which one to plan.
-If obvious (first incomplete phase), proceed.
+**Infer** phase from ROADMAP - first incomplete phase is usually obvious.
+Only ask if multiple incomplete phases exist.
 
 Read any existing PLAN.md or FINDINGS.md in the phase directory.
-</step>
 
-<step name="check_research_needed">
+#### check_research_needed
+
 For this phase, assess:
+
 - Are there technology choices to make?
 - Are there unknowns about the approach?
 - Do we need to investigate APIs or libraries?
@@ -47,27 +44,47 @@ For this phase, assess:
 If yes: Route to workflows/research-phase.md first.
 Research produces FINDINGS.md, then return here.
 
-If no: Proceed with planning.
-</step>
+If no: Proceed with EXPLORE.
 
-<step name="gather_phase_context">
-For this specific phase, understand:
-- What's the phase goal? (from roadmap)
-- What exists already? (scan codebase if mid-project)
-- What dependencies are met? (previous phases complete?)
-- Any research findings? (FINDINGS.md)
+#### EXPLORE
 
-```bash
-# If mid-project, understand current state
-ls -la src/ 2>/dev/null
-cat package.json 2>/dev/null | head -20
-```
-</step>
+Perform maximum exploration BEFORE asking questions:
 
-<step name="break_into_tasks">
+| What to Explore    | How                                                     | Goal                                              |
+| ------------------ | ------------------------------------------------------- | ------------------------------------------------- |
+| Planning artifacts | Read BRIEF.md, ROADMAP.md, FINDINGS.md                  | Understand project vision, phases, any research   |
+| Existing code      | Glob src/, read key files, check package.json           | Identify tech stack, patterns, what's implemented |
+| Git history        | `git log --online -5`, `git diff HEAD~1`                | What was just done, current state                 |
+| Domain patterns    | Use loaded expertise (macos-apps, with-agent-sdk, etc.) | Standard approaches, conventions                  |
+| User request       | Analyze original request for implicit context           | Constraints, priorities, implicit requirements    |
+
+**Rule**: If answer exists in any file or can be reasonably inferred from patterns, DON'T ask.
+
+#### INFER
+
+Try to infer from exploration:
+
+| Question     | Can Infer If...                      | Won't Ask If...             |
+| ------------ | ------------------------------------ | --------------------------- |
+| Phase goal   | ROADMAP.md clearly describes         | ROADMAP exists and is clear |
+| What exists  | Codebase scan shows files            | Files are present and match |
+| Dependencies | Previous SUMMARY.md files            | Previous plans complete     |
+| Approach     | Domain expertise + codebase patterns | Convention established      |
+
+#### ASK ONE
+
+Only if context is unclear after EXPLORE + INFER, ask ONE focused question with numbered options the user can select.
+
+**Provide actionable propositions** - present the inferred context and let user confirm/adjust by selection, not typing. Include all context so user can validate understanding.
+
+**If all inferred**: Skip ASK ONE, proceed to WRITE.
+
+#### break_into_tasks
+
 Decompose the phase into tasks.
 
 Each task must have:
+
 - **Type**: auto, checkpoint:human-verify, checkpoint:decision (human-action rarely needed)
 - **Task name**: Clear, action-oriented
 - **Files**: Which files created/modified (for auto tasks)
@@ -76,6 +93,7 @@ Each task must have:
 - **Done**: Acceptance criteria
 
 **Identify checkpoints:**
+
 - Claude automated work needing visual/functional verification? → checkpoint:human-verify
 - Implementation choices to make? → checkpoint:decision
 - Truly unavoidable manual action (email link, 2FA)? → checkpoint:human-action (rare)
@@ -83,252 +101,188 @@ Each task must have:
 **Critical:** If external resource has CLI/API (Vercel, Stripe, Upstash, GitHub, etc.), use type="auto" to automate it. Only checkpoint for verification AFTER automation.
 
 See references/checkpoints.md and references/cli-automation.md for checkpoint structure and automation guidance.
-</step>
 
-<step name="estimate_scope">
+#### estimate_scope
+
 After breaking into tasks, assess scope against the **quality degradation curve**.
 
 **ALWAYS split if:**
-- >3 tasks total
+
+- > 3 tasks total
 - Multiple subsystems (DB + API + UI = separate plans)
-- >5 files modified in any single task
+- > 5 files modified in any single task
 - Complex domains (auth, payments, data modeling)
 
 **Aggressive atomicity principle:** Better to have 10 small, high-quality plans than 3 large, degraded plans.
 
 **If scope is appropriate (2-3 tasks, single subsystem, <5 files per task):**
-Proceed to confirm_breakdown for a single plan.
+Proceed to WRITE.
 
 **If scope is large (>3 tasks):**
 Split into multiple plans by:
+
 - Subsystem (01-01: Database, 01-02: API, 01-03: UI, 01-04: Frontend)
 - Dependency (01-01: Setup, 01-02: Core, 01-03: Features, 01-04: Testing)
 - Complexity (01-01: Layout, 01-02: Data fetch, 01-03: Visualization)
 - Autonomous vs Interactive (group auto tasks for subagent execution)
 
 **Each plan must be:**
+
 - 2-3 tasks maximum
 - ~50% context target (not 80%)
 - Independently committable
 
 **Autonomous plan optimization:**
+
 - Plans with NO checkpoints → will execute via subagent (fresh context)
 - Plans with checkpoints → execute in main context (user interaction required)
 - Try to group autonomous work together for maximum fresh contexts
 
 See references/scope-estimation.md for complete splitting guidance and quality degradation analysis.
-</step>
 
-<step name="confirm_breakdown">
-Present the breakdown inline:
+#### write_phase_prompt
 
-**If single plan (2-3 tasks):**
-```
-Here's the proposed breakdown for Phase [X]:
-
-### Tasks (single plan: {phase}-01-PLAN.md)
-1. [Task name] - [brief description] [type: auto/checkpoint]
-2. [Task name] - [brief description] [type: auto/checkpoint]
-[3. [Task name] - [brief description] [type: auto/checkpoint]] (optional 3rd task if small)
-
-Autonomous: [yes/no] (no checkpoints = subagent execution with fresh context)
-
-Does this breakdown look right? (yes / adjust / start over)
-```
-
-**If multiple plans (>3 tasks or multiple subsystems):**
-```
-Here's the proposed breakdown for Phase [X]:
-
-This phase requires 3 plans to maintain quality:
-
-### Plan 1: {phase}-01-PLAN.md - [Subsystem/Component Name]
-1. [Task name] - [brief description] [type]
-2. [Task name] - [brief description] [type]
-3. [Task name] - [brief description] [type]
-
-### Plan 2: {phase}-02-PLAN.md - [Subsystem/Component Name]
-1. [Task name] - [brief description] [type]
-2. [Task name] - [brief description] [type]
-
-### Plan 3: {phase}-03-PLAN.md - [Subsystem/Component Name]
-1. [Task name] - [brief description] [type]
-2. [Task name] - [brief description] [type]
-
-Each plan is independently executable and scoped to ~80% context.
-
-Does this breakdown look right? (yes / adjust / start over)
-```
-
-Wait for confirmation before proceeding.
-
-If "adjust": Ask what to change, revise, present again.
-If "start over": Return to gather_phase_context step.
-</step>
-
-<step name="approach_ambiguity">
-If multiple valid approaches exist for any task:
-
-Use AskUserQuestion:
-- header: "Approach"
-- question: "For [task], there are multiple valid approaches:"
-- options:
-  - "[Approach A]" - [tradeoff description]
-  - "[Approach B]" - [tradeoff description]
-  - "Decide for me" - Use your best judgment
-
-Only ask if genuinely ambiguous. Don't ask obvious choices.
-</step>
-
-<step name="decision_gate">
-After breakdown confirmed:
-
-Use AskUserQuestion:
-- header: "Ready"
-- question: "Ready to create the phase prompt, or would you like me to ask more questions?"
-- options:
-  - "Create phase prompt" - I have enough context
-  - "Ask more questions" - There are details to clarify
-  - "Let me add context" - I want to provide more information
-
-Loop until "Create phase prompt" selected.
-</step>
-
-<step name="write_phase_prompt">
 Use template from `templates/phase-prompt.md`.
 
 **If single plan:**
-Write to `.planning/phases/XX-name/{phase}-01-PLAN.md`
+Write to `.claude/workspace/planning/phases/XX-name/{phase}-01-PLAN.md`
 
 **If multiple plans:**
 Write multiple files:
-- `.planning/phases/XX-name/{phase}-01-PLAN.md`
-- `.planning/phases/XX-name/{phase}-02-PLAN.md`
-- `.planning/phases/XX-name/{phase}-03-PLAN.md`
+
+- `.claude/workspace/planning/phases/XX-name/{phase}-01-PLAN.md`
+- `.claude/workspace/planning/phases/XX-name/{phase}-02-PLAN.md`
+- `.claude/workspace/planning/phases/XX-name/{phase}-03-PLAN.md`
 
 Each file follows the template structure:
 
 ```markdown
 ---
 phase: XX-name
-plan: {plan-number}
+plan: { plan-number }
 type: execute
 domain: [if domain expertise loaded]
 ---
 
-<objective>
+## Objective
+
 [Plan-specific goal - what this plan accomplishes]
 
 Purpose: [Why this plan matters for the phase]
 Output: [What artifacts will be created by this plan]
-</objective>
 
-<execution_context>
+## Execution Context
+
 @~/.claude/skills/create-plans/workflows/execute-phase.md
 @~/.claude/skills/create-plans/templates/summary.md
 [If plan has ANY checkpoint tasks (type="checkpoint:*"), add:]
 @~/.claude/skills/create-plans/references/checkpoints.md
-</execution_context>
 
-<context>
-@.planning/BRIEF.md
-@.planning/ROADMAP.md
+## Context
+
+@.claude/workspace/planning/BRIEF.md
+@.claude/workspace/planning/ROADMAP.md
 [If research done:]
-@.planning/phases/XX-name/FINDINGS.md
+@.claude/workspace/planning/phases/XX-name/FINDINGS.md
 [If continuing from previous plan:]
-@.planning/phases/XX-name/{phase}-{prev}-SUMMARY.md
+@.claude/workspace/planning/phases/XX-name/{phase}-{prev}-SUMMARY.md
 [Relevant source files:]
 @src/path/to/relevant.ts
-</context>
 
-<tasks>
+## Tasks
+
 [Tasks in XML format with type attribute]
 [Mix of type="auto" and type="checkpoint:*" as needed]
-</tasks>
 
-<verification>
+## Verification
+
 [Overall plan verification checks]
-</verification>
 
-<success_criteria>
+## Success Criteria
+
 [Measurable completion criteria for this plan]
-</success_criteria>
 
-<output>
-After completion, create `.planning/phases/XX-name/{phase}-{plan}-SUMMARY.md`
+## Output
+
+After completion, create `.claude/workspace/planning/phases/XX-name/{phase}-{plan}-SUMMARY.md`
 [Include summary structure from template]
-</output>
 ```
 
 **For multi-plan phases:**
+
 - Each plan has focused scope (3-6 tasks)
 - Plans reference previous plan summaries in context
 - Last plan's success criteria includes "Phase X complete"
-</step>
 
-<step name="offer_next">
+#### CONFIRM
+
+Single final question about invoking execution:
+
 **If single plan:**
-```
-Phase plan created: .planning/phases/XX-name/{phase}-01-PLAN.md
-[X] tasks defined.
 
-What's next?
-1. Execute plan
-2. Review/adjust tasks
-3. Done for now
+```
+Plan created: .claude/workspace/planning/phases/XX-name/{phase}-01-PLAN.md
+
+- [x] 2 tasks (autonomous - no checkpoints)
+- [x] Scope: [scope summary]
+- [x] Verification: [verification summary]
+
+Invoke /run-plan to execute? (yes / review / later)
 ```
 
 **If multiple plans:**
+
 ```
-Phase plans created:
+Plans created:
 - {phase}-01-PLAN.md ([X] tasks) - [Subsystem name]
 - {phase}-02-PLAN.md ([X] tasks) - [Subsystem name]
 - {phase}-03-PLAN.md ([X] tasks) - [Subsystem name]
 
 Total: [X] tasks across [Y] focused plans.
+[X] autonomous (no checkpoints), [Y] interactive (checkpoints)
 
-What's next?
-1. Execute first plan ({phase}-01)
-2. Review/adjust tasks
-3. Done for now
+Invoke /run-plan for first plan? (yes / review / later)
 ```
-</step>
 
-</process>
+## Task Quality
 
-<task_quality>
 Good tasks:
+
 - "Add User model to Prisma schema with email, passwordHash, createdAt"
 - "Create POST /api/auth/login endpoint with bcrypt validation"
 - "Add protected route middleware checking JWT in cookies"
 
 Bad tasks:
+
 - "Set up authentication" (too vague)
 - "Make it secure" (not actionable)
 - "Handle edge cases" (which ones?)
 
 If you can't specify Files + Action + Verify + Done, the task is too vague.
-</task_quality>
 
-<anti_patterns>
+## Anti-Patterns
+
 - Don't add story points
 - Don't estimate hours
 - Don't assign to team members
 - Don't add acceptance criteria committees
 - Don't create sub-sub-sub tasks
+- Don't scatter questions throughout (always ASK ONE at beginning, then proceed)
 
 Tasks are instructions for Claude, not Jira tickets.
-</anti_patterns>
 
-<success_criteria>
+## Success Criteria
+
 Phase planning is complete when:
+
+- [ ] EXPLORE phase completed (all 5 exploration steps)
+- [ ] INFER attempted (0 questions if all inferred)
 - [ ] One or more PLAN files exist with XML structure ({phase}-{plan}-PLAN.md)
 - [ ] Each plan has: Objective, context, tasks, verification, success criteria, output
 - [ ] @context references included
-- [ ] Each plan has 3-6 tasks (scoped to ~80% context)
+- [ ] Each plan has 3-6 tasks (scoped to ~50% context)
 - [ ] Each task has: Type, Files (if auto), Action, Verify, Done
 - [ ] Checkpoints identified and properly structured
 - [ ] Tasks are specific enough for Claude to execute
 - [ ] If multiple plans: logical split by subsystem/dependency/complexity
-- [ ] User knows next steps
-</success_criteria>
+- [ ] CONFIRM asked: "Invoke /run-plan?"

@@ -2,6 +2,11 @@
 description: Analyze user requests and determine the optimal component type for their needs
 ---
 
+<mission_control>
+<objective>Analyze user requests to determine optimal component type (Command/Skill/Agent/Hook/MCP)</objective>
+<success_criteria>Component type identified with routing rationale and key indicators provided</success_criteria>
+</mission_control>
+
 # Component Analysis
 
 Analyze user requests to determine the most suitable component type.
@@ -20,6 +25,7 @@ Analyze user requests to determine the most suitable component type.
 ```
 
 **Example:**
+
 ```
 User: /component-architect:which I need a deploy command
 
@@ -33,6 +39,7 @@ User: /component-architect:which I need a deploy command
 ## Primary Indicators
 
 **If request contains:**
+
 - "button", "gate", "checkpoint", "confirm", "review" → **Command**
 - "reusable", "capability", "workflow", "process" → **Skill**
 - "independently", "autonomous", "background", "isolated" → **Agent**
@@ -59,24 +66,24 @@ User: /component-architect:which I need a deploy command
 
 <decision_tree>
 digraph SelectComponent {
-    Request -> Keywords;
-    Keywords -> Command [label="deploy, commit, audit"];
-    Keywords -> Agent [label="autonomous, loop, monitor"];
-    Keywords -> Hook [label="prevent, on-event"];
-    Keywords -> MCP [label="api, database"];
-    Keywords -> Skill [label="default / reusable logic"];
+Request -> Keywords;
+Keywords -> Command [label="deploy, commit, audit"];
+Keywords -> Agent [label="autonomous, loop, monitor"];
+Keywords -> Hook [label="prevent, on-event"];
+Keywords -> MCP [label="api, database"];
+Keywords -> Skill [label="default / reusable logic"];
 }
 </decision_tree>
 
 ## Component Type Mapping
 
-| Component Type | Development Skill | When to Use | What It Creates |
-|---------------|------------------|-------------|-----------------|
-| **Command** | `command-development` | User-invoked orchestrators, high-stakes operations, process gates | `/command` slash commands with human confirmation |
-| **Skill** | `skill-development` | Model-first capabilities, reusable workflows, domain knowledge | Context-activated skills for AI use |
-| **Agent** | `agent-development` | Isolated context, autonomous operation, background tasks | Independent agents with separate context |
-| **Hook** | `hook-development` | Event-driven automation, pre/post triggers, validation gates | Event hooks for automatic execution |
-| **MCP** | `mcp-development` | Service providers, API interfaces, tool providers | MCP servers for exposing capabilities |
+| Component Type | Development Skill       | When to Use                                                    | What It Creates                                        |
+| -------------- | ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
+| **Command**    | `invocable-development` | Workflow orchestration, explicit step sequences, process gates | `/command` slash commands with orchestration workflows |
+| **Skill**      | `invocable-development` | Model-first capabilities, reusable workflows, domain knowledge | Context-activated skills for AI use                    |
+| **Agent**      | `agent-development`     | Isolated context, autonomous operation, background tasks       | Independent agents with separate context               |
+| **Hook**       | `hook-development`      | Event-driven automation, pre/post triggers, validation gates   | Event hooks for automatic execution                    |
+| **MCP**        | `mcp-development`       | Service providers, API interfaces, tool providers              | MCP servers for exposing capabilities                  |
 
 ## Deep Verification Pattern
 
@@ -90,10 +97,11 @@ Then trust the skill's recommendation and proceed with orchestration.
 ```
 
 **Examples of when to verify deeply:**
-- Request mentions both "automatic" and "manual trigger" → Ask `skill-development` vs `command-development`
+
+- Request mentions both "automatic" and "manual trigger" → Consult `invocable-development` for architectural guidance
 - Complex workflow that could be Skill or Command → Verify with relevant skill
 - Unclear isolation requirements → Consult `agent-development`
-- Event-triggered but also user-invoked → Get guidance from `hook-development` or `command-development`
+- Event-triggered but also orchestration → Get guidance from `hook-development` or `invocable-development`
 
 ## Complex Cases
 
@@ -110,23 +118,33 @@ Return a structured analysis:
 ## Component Type: [Command/Skill/Agent/Hook/MCP]
 
 ## Rationale
+
 [Why this component type was chosen]
 
 ## Keywords Detected
+
 - [keyword 1]
 - [keyword 2]
 - [keyword 3]
 
 ## Next Step
+
 Use: `/component-architect:build [Component Type] [original request]`
 ```
 
 ## Trust AI Intelligence
 
 Trust the analysis framework:
+
 - **Comprehensive indicators**: Intent, scope, and trigger patterns
 - **Proven mapping**: Component type to development skill
 - **Flexible defaults**: Skill as fallback for ambiguous cases
 - **Deep verification**: Consult xxx-development skills when needed
 
 **Default to confidence**. Only escalate for verification when truly uncertain.
+
+<critical_constraint>
+MANDATORY: Map request to correct component type based on keywords
+MANDATORY: Provide routing rationale with detected indicators
+MANDATORY: Consult xxx-development skills for ambiguous cases
+No exceptions. Component type must match user intent.

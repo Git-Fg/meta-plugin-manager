@@ -20,13 +20,15 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
 
 **Structure:**
 ```xml
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>[What Claude automated and deployed/built]</what-built>
+
+### checkpoint:human-verify
+
+<what-built>[What Claude automated and deployed/built]</what-built>
   <how-to-verify>
     [Exact steps to test - URLs, commands, expected behavior]
   </how-to-verify>
   <resume-signal>[How to continue - "approved", "yes", or describe issues]</resume-signal>
-</task>
+
 ```
 
 **Key elements:**
@@ -36,16 +38,18 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
 
 **Example: Vercel Deployment**
 ```xml
-<task type="auto">
-  <name>Deploy to Vercel</name>
-  <files>.vercel/, vercel.json</files>
-  <action>Run `vercel --yes` to create project and deploy. Capture deployment URL from output.</action>
-  <verify>vercel ls shows deployment, curl {url} returns 200</verify>
-  <done>App deployed, URL captured</done>
-</task>
 
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>Deployed to Vercel at https://myapp-abc123.vercel.app</what-built>
+### auto
+
+<name>Deploy to Vercel
+  <files>.vercel/, vercel.json
+  <action>Run `vercel --yes` to create project and deploy. Capture deployment URL from output.
+  <verify>vercel ls shows deployment, curl {url} returns 200
+  <done>App deployed, URL captured
+
+### checkpoint:human-verify
+
+<what-built>Deployed to Vercel at https://myapp-abc123.vercel.app</what-built>
   <how-to-verify>
     Visit https://myapp-abc123.vercel.app and confirm:
     - Homepage loads without errors
@@ -53,21 +57,23 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
     - No console errors in browser DevTools
   </how-to-verify>
   <resume-signal>Type "approved" to continue, or describe issues to fix</resume-signal>
-</task>
+
 ```
 
 **Example: UI Component**
 ```xml
-<task type="auto">
-  <name>Build responsive dashboard layout</name>
-  <files>src/components/Dashboard.tsx, src/app/dashboard/page.tsx</files>
-  <action>Create dashboard with sidebar, header, and content area. Use Tailwind responsive classes for mobile.</action>
-  <verify>npm run build succeeds, no TypeScript errors</verify>
-  <done>Dashboard component builds without errors</done>
-</task>
 
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>Responsive dashboard layout at /dashboard</what-built>
+### auto
+
+<name>Build responsive dashboard layout
+  <files>src/components/Dashboard.tsx, src/app/dashboard/page.tsx
+  <action>Create dashboard with sidebar, header, and content area. Use Tailwind responsive classes for mobile.
+  <verify>npm run build succeeds, no TypeScript errors
+  <done>Dashboard component builds without errors
+
+### checkpoint:human-verify
+
+<what-built>Responsive dashboard layout at /dashboard</what-built>
   <how-to-verify>
     1. Run: npm run dev
     2. Visit: http://localhost:3000/dashboard
@@ -77,21 +83,23 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
     6. Check: No layout shift, no horizontal scroll
   </how-to-verify>
   <resume-signal>Type "approved" or describe layout issues</resume-signal>
-</task>
+
 ```
 
 **Example: Xcode Build**
 ```xml
-<task type="auto">
-  <name>Build macOS app with Xcode</name>
-  <files>App.xcodeproj, Sources/</files>
-  <action>Run `xcodebuild -project App.xcodeproj -scheme App build`. Check for compilation errors in output.</action>
-  <verify>Build output contains "BUILD SUCCEEDED", no errors</verify>
-  <done>App builds successfully</done>
-</task>
 
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>Built macOS app at DerivedData/Build/Products/Debug/App.app</what-built>
+### auto
+
+<name>Build macOS app with Xcode
+  <files>App.xcodeproj, Sources/
+  <action>Run `xcodebuild -project App.xcodeproj -scheme App build`. Check for compilation errors in output.
+  <verify>Build output contains "BUILD SUCCEEDED", no errors
+  <done>App builds successfully
+
+### checkpoint:human-verify
+
+<what-built>Built macOS app at DerivedData/Build/Products/Debug/App.app</what-built>
   <how-to-verify>
     Open App.app and test:
     - App launches without crashes
@@ -100,7 +108,7 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
     - No visual glitches or layout issues
   </how-to-verify>
   <resume-signal>Type "approved" or describe issues</resume-signal>
-</task>
+
 ```
 
 ### 2. `checkpoint:decision`
@@ -116,57 +124,114 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
 
 **Structure:**
 ```xml
-<task type="checkpoint:decision" gate="blocking">
-  <decision>[What's being decided]</decision>
-  <context>[Why this decision matters]</context>
-  <options>
-    <option id="option-a">
-      <name>[Option name]</name>
-      <pros>[Benefits]</pros>
-      <cons>[Tradeoffs]</cons>
-    </option>
-    <option id="option-b">
-      <name>[Option name]</name>
-      <pros>[Benefits]</pros>
-      <cons>[Tradeoffs]</cons>
-    </option>
-  </options>
+
+### checkpoint:decision
+
+<decision>[What's being decided]
+  
+## Context
+
+[Why this decision matters]
+  
+## Options
+
+##### option-a
+
+<name>[Option name]
+      
+## Pros
+
+[Benefits]
+      
+## Cons
+
+[Tradeoffs]
+    
+    
+##### option-b
+
+<name>[Option name]
+      
+## Pros
+
+[Benefits]
+      
+## Cons
+
+[Tradeoffs]
+    
+  
   <resume-signal>[How to indicate choice]</resume-signal>
-</task>
+
 ```
 
 **Key elements:**
 - `<decision>`: What's being decided
-- `<context>`: Why this matters
-- `<options>`: Each option with balanced pros/cons (not prescriptive)
+- `
+## Context
+
+`: Why this matters
+- `
+## Options
+
+`: Each option with balanced pros/cons (not prescriptive)
 - `<resume-signal>`: How to indicate choice
 
 **Example: Auth Provider Selection**
 ```xml
-<task type="checkpoint:decision" gate="blocking">
-  <decision>Select authentication provider</decision>
-  <context>
-    Need user authentication for the app. Three solid options with different tradeoffs.
-  </context>
-  <options>
-    <option id="supabase">
-      <name>Supabase Auth</name>
-      <pros>Built-in with Supabase DB we're using, generous free tier, row-level security integration</pros>
-      <cons>Less customizable UI, tied to Supabase ecosystem</cons>
-    </option>
-    <option id="clerk">
-      <name>Clerk</name>
-      <pros>Beautiful pre-built UI, best developer experience, excellent docs</pros>
-      <cons>Paid after 10k MAU, vendor lock-in</cons>
-    </option>
-    <option id="nextauth">
-      <name>NextAuth.js</name>
-      <pros>Free, self-hosted, maximum control, widely adopted</pros>
-      <cons>More setup work, you manage security updates, UI is DIY</cons>
-    </option>
-  </options>
+
+### checkpoint:decision
+
+<decision>Select authentication provider
+  
+## Context
+
+Need user authentication for the app. Three solid options with different tradeoffs.
+  
+  
+## Options
+
+##### supabase
+
+<name>Supabase Auth
+      
+## Pros
+
+Built-in with Supabase DB we're using, generous free tier, row-level security integration
+      
+## Cons
+
+Less customizable UI, tied to Supabase ecosystem
+    
+    
+##### clerk
+
+<name>Clerk
+      
+## Pros
+
+Beautiful pre-built UI, best developer experience, excellent docs
+      
+## Cons
+
+Paid after 10k MAU, vendor lock-in
+    
+    
+##### nextauth
+
+<name>NextAuth.js
+      
+## Pros
+
+Free, self-hosted, maximum control, widely adopted
+      
+## Cons
+
+More setup work, you manage security updates, UI is DIY
+    
+  
   <resume-signal>Select: supabase, clerk, or nextauth</resume-signal>
-</task>
+
 ```
 
 ### 3. `checkpoint:human-action` (Rare)
@@ -190,88 +255,108 @@ Plans execute autonomously. Checkpoints formalize the interaction points where h
 
 **Structure:**
 ```xml
-<task type="checkpoint:human-action" gate="blocking">
-  <action>[What human must do - Claude already did everything automatable]</action>
+
+### checkpoint:human-action
+
+<action>[What human must do - Claude already did everything automatable]
   <instructions>
     [What Claude already automated]
     [The ONE thing requiring human action]
-  </instructions>
-  <verification>[What Claude can check afterward]</verification>
+  
+  
+## Verification
+
+[What Claude can check afterward]
   <resume-signal>[How to continue]</resume-signal>
-</task>
+
 ```
 
 **Key principle:** Claude automates EVERYTHING possible first, only asks human for the truly unavoidable manual step.
 
 **Example: Email Verification**
 ```xml
-<task type="auto">
-  <name>Create SendGrid account via API</name>
-  <action>Use SendGrid API to create subuser account with provided email. Request verification email.</action>
-  <verify>API returns 201, account created</verify>
-  <done>Account created, verification email sent</done>
-</task>
 
-<task type="checkpoint:human-action" gate="blocking">
-  <action>Complete email verification for SendGrid account</action>
+### auto
+
+<name>Create SendGrid account via API
+  <action>Use SendGrid API to create subuser account with provided email. Request verification email.
+  <verify>API returns 201, account created
+  <done>Account created, verification email sent
+
+### checkpoint:human-action
+
+<action>Complete email verification for SendGrid account
   <instructions>
     I created the account and requested verification email.
     Check your inbox for SendGrid verification link and click it.
-  </instructions>
-  <verification>SendGrid API key works: curl test succeeds</verification>
+  
+  
+## Verification
+
+SendGrid API key works: curl test succeeds
   <resume-signal>Type "done" when email verified</resume-signal>
-</task>
+
 ```
 
 **Example: Credit Card 3D Secure**
 ```xml
-<task type="auto">
-  <name>Create Stripe payment intent</name>
-  <action>Use Stripe API to create payment intent for $99. Generate checkout URL.</action>
-  <verify>Stripe API returns payment intent ID and URL</verify>
-  <done>Payment intent created</done>
-</task>
 
-<task type="checkpoint:human-action" gate="blocking">
-  <action>Complete 3D Secure authentication</action>
+### auto
+
+<name>Create Stripe payment intent
+  <action>Use Stripe API to create payment intent for $99. Generate checkout URL.
+  <verify>Stripe API returns payment intent ID and URL
+  <done>Payment intent created
+
+### checkpoint:human-action
+
+<action>Complete 3D Secure authentication
   <instructions>
     I created the payment intent: https://checkout.stripe.com/pay/cs_test_abc123
     Visit that URL and complete the 3D Secure verification flow with your test card.
-  </instructions>
-  <verification>Stripe webhook receives payment_intent.succeeded event</verification>
+  
+  
+## Verification
+
+Stripe webhook receives payment_intent.succeeded event
   <resume-signal>Type "done" when payment completes</resume-signal>
-</task>
+
 ```
 
 **Example: Authentication Gate (Dynamic Checkpoint)**
 ```xml
-<task type="auto">
-  <name>Deploy to Vercel</name>
-  <files>.vercel/, vercel.json</files>
-  <action>Run `vercel --yes` to deploy</action>
-  <verify>vercel ls shows deployment, curl returns 200</verify>
-</task>
+
+### auto
+
+<name>Deploy to Vercel
+  <files>.vercel/, vercel.json
+  <action>Run `vercel --yes` to deploy
+  <verify>vercel ls shows deployment, curl returns 200
 
 <!-- If vercel returns "Error: Not authenticated", Claude creates checkpoint on the fly -->
 
-<task type="checkpoint:human-action" gate="blocking">
-  <action>Authenticate Vercel CLI so I can continue deployment</action>
+### checkpoint:human-action
+
+<action>Authenticate Vercel CLI so I can continue deployment
   <instructions>
     I tried to deploy but got authentication error.
     Run: vercel login
     This will open your browser - complete the authentication flow.
-  </instructions>
-  <verification>vercel whoami returns your account email</verification>
+  
+  
+## Verification
+
+vercel whoami returns your account email
   <resume-signal>Type "done" when authenticated</resume-signal>
-</task>
 
 <!-- After authentication, Claude retries the deployment -->
 
-<task type="auto">
-  <name>Retry Vercel deployment</name>
-  <action>Run `vercel --yes` (now authenticated)</action>
-  <verify>vercel ls shows deployment, curl returns 200</verify>
-</task>
+### auto
+
+<name>Retry Vercel deployment
+  <action>Run `vercel --yes` (now authenticated)
+  <verify>vercel ls shows deployment, curl returns 200
+
 ```
 
 **Key distinction:** Authentication gates are created dynamically when Claude encounters auth errors during automation. They're NOT pre-planned - Claude tries to automate first, only asks for credentials when blocked.
@@ -405,26 +490,29 @@ Bad placement:
 
 ```xml
 <!-- Claude automates everything -->
-<task type="auto">
-  <name>Deploy to Vercel</name>
-  <files>.vercel/, vercel.json, package.json</files>
+
+### auto
+
+<name>Deploy to Vercel
+  <files>.vercel/, vercel.json, package.json
   <action>
     1. Run `vercel --yes` to create project and deploy
     2. Capture deployment URL from output
     3. Set environment variables with `vercel env add`
     4. Trigger production deployment with `vercel --prod`
-  </action>
+  
   <verify>
     - vercel ls shows deployment
     - curl {url} returns 200
     - Environment variables set correctly
-  </verify>
-  <done>App deployed to production, URL captured</done>
-</task>
+  
+  <done>App deployed to production, URL captured
 
 <!-- Human verifies visual/functional correctness -->
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>Deployed to https://myapp.vercel.app</what-built>
+
+### checkpoint:human-verify
+
+<what-built>Deployed to https://myapp.vercel.app</what-built>
   <how-to-verify>
     Visit https://myapp.vercel.app and confirm:
     - Homepage loads correctly
@@ -433,29 +521,30 @@ Bad placement:
     - No console errors
   </how-to-verify>
   <resume-signal>Type "approved" or describe issues</resume-signal>
-</task>
+
 ```
 
 ### Example 2: Database Setup (Correct)
 
 ```xml
 <!-- Claude automates everything -->
-<task type="auto">
-  <name>Create Upstash Redis database</name>
-  <files>.env</files>
+
+### auto
+
+<name>Create Upstash Redis database
+  <files>.env
   <action>
     1. Run `upstash redis create myapp-cache --region us-east-1`
     2. Capture connection URL from output
     3. Write to .env: UPSTASH_REDIS_URL={url}
     4. Verify connection with test command
-  </action>
+  
   <verify>
     - upstash redis list shows database
     - .env contains UPSTASH_REDIS_URL
     - Test connection succeeds
-  </verify>
-  <done>Redis database created and configured</done>
-</task>
+  
+  <done>Redis database created and configured
 
 <!-- NO CHECKPOINT NEEDED - Claude automated everything and verified programmatically -->
 ```
@@ -464,32 +553,35 @@ Bad placement:
 
 ```xml
 <!-- Claude automates everything -->
-<task type="auto">
-  <name>Configure Stripe webhooks</name>
-  <files>.env, src/app/api/webhooks/route.ts</files>
+
+### auto
+
+<name>Configure Stripe webhooks
+  <files>.env, src/app/api/webhooks/route.ts
   <action>
     1. Use Stripe API to create webhook endpoint pointing to /api/webhooks
     2. Subscribe to events: payment_intent.succeeded, customer.subscription.updated
     3. Save webhook signing secret to .env
     4. Implement webhook handler in route.ts
-  </action>
+  
   <verify>
     - Stripe API returns webhook endpoint ID
     - .env contains STRIPE_WEBHOOK_SECRET
     - curl webhook endpoint returns 200
-  </verify>
-  <done>Stripe webhooks configured and handler implemented</done>
-</task>
+  
+  <done>Stripe webhooks configured and handler implemented
 
 <!-- Human verifies in Stripe dashboard -->
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>Stripe webhook configured via API</what-built>
+
+### checkpoint:human-verify
+
+<what-built>Stripe webhook configured via API</what-built>
   <how-to-verify>
     Visit Stripe Dashboard > Developers > Webhooks
     Confirm: Endpoint shows https://myapp.com/api/webhooks with correct events
   </how-to-verify>
   <resume-signal>Type "yes" if correct</resume-signal>
-</task>
+
 ```
 
 ## Anti-Patterns
@@ -497,17 +589,22 @@ Bad placement:
 ### ❌ BAD: Asking human to automate
 
 ```xml
-<task type="checkpoint:human-action" gate="blocking">
-  <action>Deploy to Vercel</action>
+
+### checkpoint:human-action
+
+<action>Deploy to Vercel
   <instructions>
     1. Visit vercel.com/new
     2. Import Git repository
     3. Click Deploy
     4. Copy deployment URL
-  </instructions>
-  <verification>Deployment exists</verification>
+  
+  
+## Verification
+
+Deployment exists
   <resume-signal>Paste URL</resume-signal>
-</task>
+
 ```
 
 **Why bad:** Vercel has a CLI. Claude should run `vercel --yes`.
@@ -515,28 +612,48 @@ Bad placement:
 ### ✅ GOOD: Claude automates, human verifies
 
 ```xml
-<task type="auto">
-  <name>Deploy to Vercel</name>
-  <action>Run `vercel --yes`. Capture URL.</action>
-  <verify>vercel ls shows deployment, curl returns 200</verify>
-</task>
 
-<task type="checkpoint:human-verify">
-  <what-built>Deployed to {url}</what-built>
+### auto
+
+<name>Deploy to Vercel
+  <action>Run `vercel --yes`. Capture URL.
+  <verify>vercel ls shows deployment, curl returns 200
+
+### checkpoint:human-verify
+
+<what-built>Deployed to {url}</what-built>
   <how-to-verify>Visit {url}, check homepage loads</how-to-verify>
   <resume-signal>Type "approved"</resume-signal>
-</task>
+
 ```
 
 ### ❌ BAD: Too many checkpoints
 
 ```xml
-<task type="auto">Create schema</task>
-<task type="checkpoint:human-verify">Check schema</task>
-<task type="auto">Create API route</task>
-<task type="checkpoint:human-verify">Check API</task>
-<task type="auto">Create UI form</task>
-<task type="checkpoint:human-verify">Check form</task>
+
+### auto
+
+Create schema
+
+### checkpoint:human-verify
+
+Check schema
+
+### auto
+
+Create API route
+
+### checkpoint:human-verify
+
+Check API
+
+### auto
+
+Create UI form
+
+### checkpoint:human-verify
+
+Check form
 ```
 
 **Why bad:** Verification fatigue. Combine into one checkpoint at end.
@@ -544,28 +661,40 @@ Bad placement:
 ### ✅ GOOD: Single verification checkpoint
 
 ```xml
-<task type="auto">Create schema</task>
-<task type="auto">Create API route</task>
-<task type="auto">Create UI form</task>
 
-<task type="checkpoint:human-verify">
-  <what-built>Complete auth flow (schema + API + UI)</what-built>
+### auto
+
+Create schema
+
+### auto
+
+Create API route
+
+### auto
+
+Create UI form
+
+### checkpoint:human-verify
+
+<what-built>Complete auth flow (schema + API + UI)</what-built>
   <how-to-verify>Test full flow: register, login, access protected page</how-to-verify>
   <resume-signal>Type "approved"</resume-signal>
-</task>
+
 ```
 
 ### ❌ BAD: Asking for automatable file operations
 
 ```xml
-<task type="checkpoint:human-action">
-  <action>Create .env file</action>
+
+### checkpoint:human-action
+
+<action>Create .env file
   <instructions>
     1. Create .env in project root
     2. Add: DATABASE_URL=...
     3. Add: STRIPE_KEY=...
-  </instructions>
-</task>
+  
+
 ```
 
 **Why bad:** Claude has Write tool. This should be `type="auto"`.

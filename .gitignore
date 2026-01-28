@@ -1,6 +1,9 @@
 # Scratchpad/working directories
 .cache/
 
+# Session transcripts (auto-generated, not versioned)
+.claude/transcripts/
+
 # Temporary files
 *.tmp
 *.temp
@@ -16,8 +19,8 @@
 .DS_Store
 Thumbs.db
 
-# Ralph sandbox architecture (NEW: fixed sandbox at .agent/sandbox/)
-.agent/sandbox/
+# Ralph sandbox architecture (consolidated at .claude/workspace/sandbox/)
+.claude/workspace/sandbox/
 
 # Ralph sandbox architecture (OLD: to be archived)
 tests/sandbox-*/

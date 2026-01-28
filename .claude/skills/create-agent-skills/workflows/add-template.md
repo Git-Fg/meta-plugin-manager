@@ -1,11 +1,12 @@
 # Workflow: Add a Template to a Skill
 
-<required_reading>
+## Required Reading
+
 **Read these reference files NOW:**
 1. references/using-templates.md
-</required_reading>
 
-<process>
+## Process
+
 ## Step 1: Identify the Skill
 
 Ask (if not already provided):
@@ -46,13 +47,15 @@ Create `templates/{template-name}.md` with:
 
 Find the workflow that produces this output. Add:
 ```xml
-<process>
+
+## Process
+
 ...
 N. Read `templates/{template-name}.md`
 N+1. Copy template structure
 N+2. Fill each placeholder based on gathered context
 ...
-</process>
+
 ```
 
 ## Step 7: Test
@@ -62,13 +65,12 @@ Invoke the skill workflow and verify:
 - All placeholders get filled appropriately
 - Output structure matches template
 - No placeholders left unfilled
-</process>
 
-<success_criteria>
+## Success Criteria
+
 Template is complete when:
 - [ ] templates/ directory exists
 - [ ] Template file has clear structure with placeholders
 - [ ] At least one workflow references the template
 - [ ] Workflow instructions explain when/how to use template
 - [ ] Tested with real invocation
-</success_criteria>

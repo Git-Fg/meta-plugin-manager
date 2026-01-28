@@ -1,38 +1,38 @@
 # Workflow: Create Handoff
 
-<required_reading>
+## Required Reading
+
 **Read these files NOW:**
 1. templates/continue-here.md
-</required_reading>
 
-<purpose>
+## Purpose
+
 Create a context handoff file when pausing work. This preserves full context
 so a fresh Claude session can pick up exactly where you left off.
 
 **Handoff is a parking lot, not a journal.** Create when leaving, delete when returning.
-</purpose>
 
 <when_to_create>
 - User says "pack it up", "stopping for now", "save my place"
 - Context window at 15% or below (offer to create)
 - Context window at 10% (auto-create)
 - Switching to different project
-</when_to_create>
 
-<process>
+## Process
 
-<step name="identify_location">
+#### identify_location
+
 Determine which phase we're in:
 
 ```bash
 # Find current phase (most recently modified PLAN.md)
-ls -lt .planning/phases/*/PLAN.md 2>/dev/null | head -1
+ls -lt .claude/workspace/planning/phases/*/PLAN.md 2>/dev/null | head -1
 ```
 
 Handoff goes in the current phase directory.
-</step>
 
-<step name="gather_context">
+#### gather_context
+
 Collect everything needed for seamless resumption:
 
 1. **Current position**: Which phase, which task
@@ -41,12 +41,12 @@ Collect everything needed for seamless resumption:
 4. **Decisions made**: Why things were done this way
 5. **Blockers/issues**: Anything stuck
 6. **Mental context**: The "vibe" - what you were thinking
-</step>
 
-<step name="write_handoff">
+#### write_handoff
+
 Use template from `templates/continue-here.md`.
 
-Write to `.planning/phases/XX-name/.continue-here.md`:
+Write to `.claude/workspace/planning/phases/XX-name/.continue-here.md`:
 
 ```yaml
 ---
@@ -59,13 +59,13 @@ last_updated: [ISO timestamp]
 ```
 
 Then markdown body with full context.
-</step>
 
-<step name="git_commit_wip">
+#### git_commit_wip
+
 Commit handoff as WIP:
 
 ```bash
-git add .planning/
+git add .claude/workspace/planning/
 git commit -m "$(cat <<'EOF'
 wip: [phase-name] paused at task [X]/[Y]
 
@@ -76,12 +76,12 @@ EOF
 ```
 
 Confirm: "Committed: wip: [phase] paused at task [X]/[Y]"
-</step>
 
-<step name="handoff_confirmation">
+#### handoff_confirmation
+
 Require acknowledgment:
 
-"Handoff created: .planning/phases/[XX]/.continue-here.md
+"Handoff created: .claude/workspace/planning/phases/[XX]/.continue-here.md
 
 Current state:
 - Phase: [XX-name]
@@ -94,9 +94,6 @@ To resume: Invoke this skill in a new session.
 Confirmed?"
 
 Wait for acknowledgment before ending.
-</step>
-
-</process>
 
 <context_trigger>
 **Auto-handoff at 10% context:**
@@ -109,7 +106,6 @@ When system warning shows ~20k tokens remaining:
 
 **Warning at 15%:**
 "Context getting low (~30k remaining). Create handoff now or push through?"
-</context_trigger>
 
 <handoff_lifecycle>
 ```
@@ -123,12 +119,11 @@ Phase complete    → Ensure no stale handoff exists
 ```
 
 Handoff is temporary. If it persists after resuming, it's stale.
-</handoff_lifecycle>
 
-<success_criteria>
+## Success Criteria
+
 Handoff is complete when:
 - [ ] .continue-here.md exists in current phase
 - [ ] YAML frontmatter has phase, task, status, timestamp
 - [ ] Body has: completed work, remaining work, decisions, context
 - [ ] User knows how to resume
-</success_criteria>

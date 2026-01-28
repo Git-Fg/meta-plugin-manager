@@ -3,6 +3,11 @@ description: Improve by removing rather than adding
 argument-hint: [situation or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply via negativa to identify what should be removed rather than added</objective>
+<success_criteria>Subtraction candidates identified, essential elements preserved, improved state described</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply via negativa to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -45,3 +50,9 @@ Instead of asking "What should I add?", ask "What should I remove?" Subtraction 
 - Creates space and simplicity
 - Reduces maintenance burden
 - Improves by doing less, not more
+
+<critical_constraint>
+MANDATORY: Identify genuine bloat vs. essential elements
+MANDATORY: Remove without breaking core function
+MANDATORY: Create space and simplicity through subtraction
+No exceptions. Improvement through addition is easier but via negativa is more elegant.

@@ -1,26 +1,27 @@
 # Workflow: Complete Milestone
 
-<required_reading>
+## Required Reading
+
 **Read these files NOW:**
 1. templates/milestone.md
-2. `.planning/ROADMAP.md`
-3. `.planning/BRIEF.md`
-</required_reading>
+2. `.claude/workspace/planning/ROADMAP.md`
+3. `.claude/workspace/planning/BRIEF.md`
 
-<purpose>
+## Purpose
+
 Mark a shipped version (v1.0, v1.1, v2.0) as complete. This creates a historical record in MILESTONES.md, updates BRIEF.md with current state, reorganizes ROADMAP.md with milestone groupings, and tags the release in git.
 
 This is the ritual that separates "development" from "shipped."
-</purpose>
 
-<process>
+## Process
 
-<step name="verify_readiness">
+#### verify_readiness
+
 Check if milestone is truly complete:
 
 ```bash
-cat .planning/ROADMAP.md
-ls .planning/phases/*/SUMMARY.md 2>/dev/null | wc -l
+cat .claude/workspace/planning/ROADMAP.md
+ls .claude/workspace/planning/phases/*/SUMMARY.md 2>/dev/null | wc -l
 ```
 
 **Questions to ask:**
@@ -49,9 +50,9 @@ Wait for confirmation.
 
 If "adjust scope": Ask which phases should be included.
 If "wait": Stop, user will return when ready.
-</step>
 
-<step name="gather_stats">
+#### gather_stats
+
 Calculate milestone statistics:
 
 ```bash
@@ -85,14 +86,14 @@ Milestone Stats:
 ```
 
 Confirm before proceeding.
-</step>
 
-<step name="extract_accomplishments">
+#### extract_accomplishments
+
 Read all phase SUMMARY.md files in milestone range:
 
 ```bash
-cat .planning/phases/01-*/01-*-SUMMARY.md
-cat .planning/phases/02-*/02-*-SUMMARY.md
+cat .claude/workspace/planning/phases/01-*/01-*-SUMMARY.md
+cat .claude/workspace/planning/phases/02-*/02-*-SUMMARY.md
 # ... for each phase in milestone
 ```
 
@@ -111,10 +112,10 @@ Does this capture the milestone? (yes / adjust)
 ```
 
 If "adjust": User can add/remove/edit accomplishments.
-</step>
 
-<step name="create_milestone_entry">
-Create or update `.planning/MILESTONES.md`.
+#### create_milestone_entry
+
+Create or update `.claude/workspace/planning/MILESTONES.md`.
 
 If file doesn't exist:
 ```markdown
@@ -151,10 +152,10 @@ Use template from `templates/milestone.md`:
 ```
 
 Confirm entry looks correct.
-</step>
 
-<step name="update_brief">
-Update `.planning/BRIEF.md` to reflect current state.
+#### update_brief
+
+Update `.claude/workspace/planning/BRIEF.md` to reflect current state.
 
 Add/update "Current State" section at top (after YAML if present):
 
@@ -185,25 +186,30 @@ Add/update "Current State" section at top (after YAML if present):
 
 ---
 
-<details>
-<summary>Original Vision (v1.0 - Archived for reference)</summary>
+## Details
+
+## Summary
+
+Original Vision (v1.0 - Archived for reference)
 
 [Move original brief content here]
 
-</details>
 ```
 
 **If this is v1.0 (first milestone):**
 Just add "Current State" section, no need to archive original vision yet.
 
 **If this is v1.1+:**
-Collapse previous version's content into `<details>` section.
+Collapse previous version's content into `
+## Details
+
+` section.
 
 Show diff, confirm changes.
-</step>
 
-<step name="reorganize_roadmap">
-Update `.planning/ROADMAP.md` to group completed milestone phases.
+#### reorganize_roadmap
+
+Update `.claude/workspace/planning/ROADMAP.md` to group completed milestone phases.
 
 Add milestone headers and collapse completed work:
 
@@ -218,15 +224,16 @@ Add milestone headers and collapse completed work:
 
 ## Phases
 
-<details>
-<summary>✅ v1.0 MVP (Phases 1-4) - SHIPPED YYYY-MM-DD</summary>
+## Details
+
+## Summary
+
+✅ v1.0 MVP (Phases 1-4) - SHIPPED YYYY-MM-DD
 
 - [x] Phase 1: Foundation (2/2 plans) - completed YYYY-MM-DD
 - [x] Phase 2: Authentication (2/2 plans) - completed YYYY-MM-DD
 - [x] Phase 3: Core Features (3/3 plans) - completed YYYY-MM-DD
 - [x] Phase 4: Polish (1/1 plan) - completed YYYY-MM-DD
-
-</details>
 
 ### 🚧 v[Next] [Name] (In Progress / Planned)
 
@@ -246,9 +253,9 @@ Add milestone headers and collapse completed work:
 ```
 
 Show diff, confirm changes.
-</step>
 
-<step name="git_tag">
+#### git_tag
+
 Create git tag for milestone:
 
 ```bash
@@ -262,7 +269,7 @@ Key accomplishments:
 - [Item 2]
 - [Item 3]
 
-See .planning/MILESTONES.md for full details.
+See .claude/workspace/planning/MILESTONES.md for full details.
 EOF
 )"
 ```
@@ -275,15 +282,15 @@ If yes:
 ```bash
 git push origin v[X.Y]
 ```
-</step>
 
-<step name="git_commit_milestone">
+#### git_commit_milestone
+
 Commit milestone completion (MILESTONES.md + BRIEF.md + ROADMAP.md updates):
 
 ```bash
-git add .planning/MILESTONES.md
-git add .planning/BRIEF.md
-git add .planning/ROADMAP.md
+git add .claude/workspace/planning/MILESTONES.md
+git add .claude/workspace/planning/BRIEF.md
+git add .claude/workspace/planning/ROADMAP.md
 git commit -m "$(cat <<'EOF'
 chore: milestone v[X.Y] [Name] shipped
 
@@ -296,9 +303,9 @@ EOF
 ```
 
 Confirm: "Committed: chore: milestone v[X.Y] shipped"
-</step>
 
-<step name="offer_next">
+#### offer_next
+
 ```
 ✅ Milestone v[X.Y] [Name] complete
 
@@ -306,7 +313,7 @@ Shipped:
 - [N] phases ([M] plans, [P] tasks)
 - [One sentence of what shipped]
 
-Summary: .planning/MILESTONES.md
+Summary: .claude/workspace/planning/MILESTONES.md
 Tag: v[X.Y]
 
 Next steps:
@@ -319,9 +326,6 @@ Wait for user decision.
 
 If "1": Route to workflows/plan-phase.md (but ask about milestone scope first)
 If "2": Route to workflows/archive-planning.md (to be created)
-</step>
-
-</process>
 
 <milestone_naming>
 **Version conventions:**
@@ -337,7 +341,6 @@ If "2": Route to workflows/archive-planning.md (to be created)
 - v2.0 iOS Launch
 
 Keep names short (1-2 words describing the focus).
-</milestone_naming>
 
 <what_qualifies>
 **Create milestones for:**
@@ -353,9 +356,9 @@ Keep names short (1-2 words describing the focus).
 
 If uncertain, ask: "Is this deployed/usable/shipped in some form?"
 If yes → milestone. If no → keep working.
-</what_qualifies>
 
-<success_criteria>
+## Success Criteria
+
 Milestone completion is successful when:
 - [ ] MILESTONES.md entry created with stats and accomplishments
 - [ ] BRIEF.md updated with current state
@@ -363,4 +366,3 @@ Milestone completion is successful when:
 - [ ] Git tag created (v[X.Y])
 - [ ] Milestone commit made
 - [ ] User knows next steps
-</success_criteria>

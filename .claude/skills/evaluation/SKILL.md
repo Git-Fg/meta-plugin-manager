@@ -1,9 +1,20 @@
 ---
 name: evaluation
-description: "Evaluate agent systems. Use when: You need to build quality gates, measure component quality, or implement LLM-as-judge. Not for: Simple unit testing or binary pass/fail checks without nuance."
+description: "Evaluate agent systems when you need to build quality gates, measure component quality, or implement LLM-as-judge. Not for simple unit testing or binary pass/fail checks without nuance."
 ---
 
 # Evaluation Methods for Agent Systems
+
+<mission_control>
+<objective>Build quality gates and measure component quality using outcome-focused evaluation that accounts for non-determinism and multiple valid paths</objective>
+<success_criteria>Multi-dimensional rubric implemented with weighted scoring, evidence requirements, and threshold-based quality gates</success_criteria>
+</mission_control>
+
+<trigger>When building quality gates, measuring component quality, or implementing LLM-as-judge. Not for: Simple unit testing or binary pass/fail checks without nuance.</trigger>
+
+<interaction_schema>
+DEFINE_RUBRIC → BUILD_TEST_SET → IMPLEMENT_EVALUATION → TRACK_METRICS
+</interaction_schema>
 
 Agent evaluation requires outcome-focused approaches that account for non-determinism and multiple valid paths. A robust framework enables continuous improvement, catches regressions, and validates that context engineering choices achieve intended effects.
 
@@ -13,27 +24,30 @@ Agent evaluation requires outcome-focused approaches that account for non-determ
 
 Research on BrowseComp evaluation (which tests browsing agents' ability to locate hard-to-find information) found three factors explain 95% of performance variance:
 
-| Factor | Variance Explained | Implication |
-|--------|-------------------|-------------|
-| Token usage | 80% | More tokens = better performance |
-| Number of tool calls | ~10% | More exploration helps |
-| Model choice | ~5% | Better models multiply efficiency |
+| Factor               | Variance Explained | Implication                       |
+| -------------------- | ------------------ | --------------------------------- |
+| Token usage          | 80%                | More tokens = better performance  |
+| Number of tool calls | ~10%               | More exploration helps            |
+| Model choice         | ~5%                | Better models multiply efficiency |
 
 **Critical Insight**: Model upgrades often provide larger gains than doubling token budgets. Claude Sonnet 4.5 > 2× tokens on previous Sonnet.
 
 ### Evaluation Challenges
 
 **Non-Determinism and Multiple Valid Paths**
+
 - Agents may take different valid paths to goals
 - Traditional evaluations checking specific steps fail
 - Solution: Outcome-focused evaluation judging results, not paths
 
 **Context-Dependent Failures**
+
 - Success on simple queries ≠ success on complex ones
 - Failures emerge only after extended interaction
 - Solution: Test across complexity levels, include extended interactions
 
 **Composite Quality Dimensions**
+
 - Agent quality is multi-dimensional
 - Includes: factual accuracy, completeness, coherence, tool efficiency
 - Solution: Multi-dimensional rubrics with appropriate weighting
@@ -43,6 +57,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 ### Multi-Dimensional Rubrics
 
 **Design Principles**:
+
 - Cover key quality dimensions
 - Use descriptive levels (excellent, good, fair, poor, failed)
 - Convert to numeric scores (0.0 to 1.0)
@@ -51,6 +66,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 **Core Dimensions**:
 
 **Factual Accuracy**
+
 - Claims match ground truth
 - 1.0: All facts correct, no hallucinations
 - 0.7: Mostly correct, minor inaccuracies
@@ -59,6 +75,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 - 0.0: Mostly false, major hallucinations
 
 **Completeness**
+
 - Output covers all requested aspects
 - 1.0: Addresses all requirements comprehensively
 - 0.7: Covers most requirements with minor gaps
@@ -67,6 +84,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 - 0.0: Fails to address core requirements
 
 **Portability** (Seed System Specific)
+
 - Component works without external dependencies
 - 1.0: Zero dependencies, self-contained, portable
 - 0.7: Minimal dependencies, mostly portable
@@ -75,6 +93,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 - 0.0: Tightly coupled, non-portable
 
 **Context Efficiency** (Seed System Specific)
+
 - Uses context optimally (progressive disclosure)
 - 1.0: Excellent use of progressive disclosure, minimal context
 - 0.7: Good context management, some optimization
@@ -83,6 +102,7 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 - 0.0: Wasteful context usage, bloats prompts
 
 **Tool Efficiency**
+
 - Uses appropriate tools reasonable number of times
 - 1.0: Optimal tool selection, minimal calls
 - 0.7: Good tool usage, slightly inefficient
@@ -95,11 +115,13 @@ Research on BrowseComp evaluation (which tests browsing agents' ability to locat
 **Individual Dimension Scores**: 0.0 to 1.0 for each dimension
 
 **Weighted Overall Score**:
+
 ```python
 overall_score = sum(score[dim] * weight[dim] for dim in dimensions)
 ```
 
 **Pass Threshold**: Set based on use case
+
 - Production components: ≥ 0.8
 - Development components: ≥ 0.7
 - Experimental: ≥ 0.6
@@ -107,12 +129,14 @@ overall_score = sum(score[dim] * weight[dim] for dim in dimensions)
 ### LLM-as-Judge Pattern
 
 **Direct Scoring**
+
 - Evaluate against weighted criteria with rubrics
 - Provide clear task description
 - Include agent output and ground truth (if available)
 - Request structured judgment with evidence
 
 **Prompt Template**:
+
 ```
 Task: [Description]
 Agent Output: [Output]
@@ -130,11 +154,13 @@ Pass/Fail: [Threshold-based]
 ```
 
 **Pairwise Comparison**
+
 - Compare two outputs with position bias mitigation
 - Automatically swap positions to reduce bias
 - Ask judge to choose better overall output
 
 **Position Swapping**:
+
 ```python
 def evaluate_pairwise(output_a, output_b):
     # First comparison: A vs B
@@ -152,12 +178,14 @@ def evaluate_pairwise(output_a, output_b):
 ### Test Set Design
 
 **Sample Selection**
+
 - Start small during development (dramatic impacts early)
 - Sample from real usage patterns
 - Add known edge cases
 - Ensure coverage across complexity levels
 
 **Complexity Stratification**
+
 - **Simple**: Single tool call, clear requirements
 - **Medium**: Multiple tool calls, some ambiguity
 - **Complex**: Many tool calls, significant ambiguity
@@ -166,11 +194,13 @@ def evaluate_pairwise(output_a, output_b):
 ### Context Engineering Evaluation
 
 **Testing Context Strategies**
+
 - Run with different context strategies on same test set
 - Compare quality scores, token usage, efficiency metrics
 - Validate progressive disclosure effectiveness
 
 **Degradation Testing**
+
 - Test at different context sizes
 - Identify performance cliffs
 - Establish safe operating limits
@@ -178,11 +208,13 @@ def evaluate_pairwise(output_a, output_b):
 ### Continuous Evaluation
 
 **Evaluation Pipeline**
+
 - Run automatically on component changes
 - Track results over time
 - Compare versions to identify improvements/regressions
 
 **Production Monitoring**
+
 - Sample interactions in production
 - Evaluate randomly
 - Set alerts for quality drops
@@ -234,48 +266,55 @@ def evaluate_component(component, test_set):
 ## Avoiding Evaluation Pitfalls
 
 ❌ **Overfitting to specific paths**
+
 - Evaluate outcomes, not specific steps
 
 ❌ **Ignoring edge cases**
+
 - Include diverse test scenarios
 
 ❌ **Single-metric obsession**
+
 - Use multi-dimensional rubrics
 
 ❌ **Neglecting context effects**
+
 - Test with realistic context sizes
 
 ❌ **Skipping human evaluation**
+
 - Automated evaluation misses subtle issues
 
-## Ralph Integration
-
-### Enhanced Validation Workflow
+## Enhanced Validation Workflow
 
 **Phase 1: Component Generation**
+
 - Generate component using meta-skills
 - Apply progressive disclosure principles
 - Optimize context usage
 
 **Phase 2: Multi-Dimensional Evaluation**
+
 - Run through evaluation framework
 - Score on all 5 dimensions
 - Calculate weighted overall score
 
 **Phase 3: Quality Gate**
+
 - Block if below threshold (e.g., 0.7)
 - Provide detailed feedback
 - Suggest improvements
 
 **Phase 4: Evidence Collection**
+
 - Store evaluation results
 - Track metrics over time
 - Enable regression detection
 
-### Example: Ralph Validation Report
+### Example: Validation Report
 
 ```yaml
-# Ralph Validation Report
+# Validation Report
 component: my-skill
 timestamp: 2026-01-26
 overall_score: 0.82
@@ -313,13 +352,26 @@ recommendations:
 ## References
 
 **Research**:
+
 - BrowseComp evaluation on performance drivers
 - Eugene Yan on LLM-evaluators
 - Position bias in pairwise comparison
 
 **Related Skills**:
+
 - `context-fundamentals` - Progressive disclosure for efficiency
 - `filesystem-context` - Context management patterns
 - `meta-critic` - Quality validation framework
 
 **Key Principle**: Evaluation should be outcome-focused, multi-dimensional, and continuously validated. Judge whether components achieve right outcomes while following reasonable processes.
+
+---
+
+<critical_constraint>
+MANDATORY: Judge outcomes, not specific paths (multiple valid routes)
+MANDATORY: Use multi-dimensional rubrics (not single metrics)
+MANDATORY: Require evidence for all scores
+MANDATORY: Implement position swapping for pairwise comparisons
+MANDATORY: Block below threshold (≥0.7 for production)
+No exceptions. Evaluation without evidence is opinion, not assessment.
+</critical_constraint>

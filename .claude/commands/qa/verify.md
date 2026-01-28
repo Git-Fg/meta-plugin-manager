@@ -4,6 +4,11 @@ description: Comprehensive verification workflow for quality gates. Use after co
 disable-model-invocation: true
 ---
 
+<mission_control>
+<objective>Execute 6-phase verification pipeline (build → type → lint → test → security → diff)</objective>
+<success_criteria>All quality gates pass, report generated with any failures identified</success_criteria>
+</mission_control>
+
 # Verify Command
 
 Comprehensive quality gate verification for completed work.
@@ -81,6 +86,7 @@ pytest --cov=. --cov-report=term-missing 2>&1 | tail -50
 **Target**: 80% minimum coverage.
 
 **Report**:
+
 - Total tests: X
 - Passed: X
 - Failed: X
@@ -118,6 +124,7 @@ git diff
 ```
 
 Review each changed file for:
+
 - Unintended changes
 - Missing error handling
 - Potential edge cases
@@ -153,6 +160,7 @@ Recommendations:
 For long sessions, run verification every 15 minutes or after major changes:
 
 **Checkpoint strategy**:
+
 - After completing each function
 - After finishing a component
 - Before moving to next task
@@ -171,6 +179,7 @@ Run `qa/verify` at each checkpoint.
 ## Related Skills
 
 This command integrates with:
+
 - `tdd-workflow` - TDD patterns for test-first development
 - `meta-critic` - Quality validation framework
 - `coding-standards` - Style and convention reference
@@ -180,6 +189,17 @@ This command integrates with:
 This command does not interpret special arguments. Everything after `qa/verify` is treated as additional context for the verification report.
 
 **Optional context you can provide**:
+
 - Focus areas ("focus on type errors")
 - Severity threshold ("only show critical issues")
 - Skip phases ("skip security scan")
+
+---
+
+<critical_constraint>
+MANDATORY: Execute all 6 phases in order - stop on first failure
+MANDATORY: Provide specific file:line references for all failures
+MANDATORY: Report coverage percentage - flag below 80%
+MANDATORY: Never skip security scan - secrets in code are catastrophic
+No exceptions. Verification must be comprehensive and honest.
+</critical_constraint>

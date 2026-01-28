@@ -1,25 +1,26 @@
 ---
 name: requesting-code-review
-description: "Request code reviews. Use when: Preparing code for review, verifying readiness, or integrating with Ralph's review process. Not for: Actual reviewing (use pr-reviewer) or incomplete work."
+description: "Request code reviews when preparing code for review or verifying readiness. Not for actual reviewing or incomplete work."
 ---
 
 # Requesting Code Review
 
 ## Overview
 
-Request code review with systematic preparation and clear integration with Ralph's two-stage review process. Ensures all code is reviewed through spec compliance and quality stages before merging.
+Request code review with systematic preparation. Ensures all code is reviewed through spec compliance and quality stages before merging.
 
 **Core principle:** Spec compliance first + quality review second = systematic code review.
 
 ## When to Use
 
 **Use when:**
+
 - Requesting code review for implementation
-- Integrating with Ralph's two-stage review
 - Preparing code for merge/PR
 - Ensuring systematic review process
 
 **Don't use when:**
+
 - Emergency fixes (use emergency workflow)
 - Trivial changes (use judgment)
 
@@ -28,6 +29,7 @@ Request code review with systematic preparation and clear integration with Ralph
 Before requesting review:
 
 ### Code Quality
+
 - [ ] All tests passing
 - [ ] Code follows existing patterns
 - [ ] No dead code or TODO comments
@@ -36,18 +38,21 @@ Before requesting review:
 - [ ] Consistent formatting
 
 ### Documentation
+
 - [ ] Code comments where needed
 - [ ] README updated if applicable
 - [ ] API documentation updated
 - [ ] CHANGELOG updated
 
 ### Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests passing
 - [ ] Edge cases covered
 - [ ] Error scenarios tested
 
 ### Self-Review
+
 - [ ] Reviewed own code first
 - [ ] Fixed obvious issues
 - [ ] Verified against requirements
@@ -60,12 +65,14 @@ Before requesting review:
 **Purpose:** Verify implementation matches requirements exactly.
 
 **Reviewer checks:**
+
 - [ ] All requirements implemented?
 - [ ] No extra features added?
 - [ ] Blueprint/spec followed?
 - [ ] Acceptance criteria met?
 
 **Report format:**
+
 ```
 ✅ Spec Compliant
 ```
@@ -84,6 +91,7 @@ OR
 **Purpose:** Verify implementation quality and maintainability.
 
 **Reviewer checks:**
+
 - [ ] Code quality standards met
 - [ ] Clear naming and structure
 - [ ] Proper error handling
@@ -92,6 +100,7 @@ OR
 - [ ] Seed System patterns followed
 
 **Report format:**
+
 ```
 Strengths:
 - [what was done well]
@@ -106,54 +115,20 @@ Assessment: Approved / Needs fixes
 
 ## Request Format
 
-### For Ralph Integration
-
-```markdown
-## Code Review Request
-
-**Component:** [Name]
-**Type:** [Skill/Command/Agent/Hook]
-**Files Changed:** [List]
-
-### Requirements
-[Link to blueprint/spec]
-
-### Implementation Summary
-[Brief description of what was built]
-
-### Testing
-- Unit tests: [N/N passing]
-- Integration tests: [N/N passing]
-- Coverage: [percentage]
-
-### Two-Stage Review
-
-**Stage 1: Spec Compliance**
-- [ ] Requirements verified
-- [ ] Blueprint followed
-- [ ] No extra work
-
-**Stage 2: Quality Review**
-- [ ] Code quality
-- [ ] Tests comprehensive
-- [ ] Documentation complete
-
-### Ready for Review
-Please review through both stages.
-```
-
 ### For Manual Review
 
 ```markdown
 ## Code Review Request
 
 **Changes:**
+
 - [File 1]: [Description]
 - [File 2]: [Description]
 
 **Purpose:** [Why these changes]
 
 **Testing:**
+
 - [Test results]
 - [How to verify]
 
@@ -168,6 +143,7 @@ Ready for review.
 ### For Spec Compliance Reviewers
 
 **DO:**
+
 - Verify requirements line by line
 - Check for missing features
 - Check for extra work
@@ -175,6 +151,7 @@ Ready for review.
 - Cite specific file:line references
 
 **DON'T:**
+
 - Review code quality (that's Stage 2)
 - Trust the implementation report
 - Assume requirements are met
@@ -183,6 +160,7 @@ Ready for review.
 ### For Quality Reviewers
 
 **DO:**
+
 - Check code quality and structure
 - Verify tests are comprehensive
 - Ensure documentation is complete
@@ -190,72 +168,11 @@ Ready for review.
 - Categorize issues by severity
 
 **DON'T:**
+
 - Review spec compliance (already done in Stage 1)
 - Accept "good enough" quality
 - Skip error handling checks
 - Ignore test coverage
-
-## Integration with Ralph
-
-### Ralph Two-Stage Review
-
-```yaml
-# Ralph blueprint
-review:
-  stages:
-    - name: spec_compliance
-      description: Verify blueprint compliance
-      reviewer: spec_reviewer
-      criteria: |
-        - All requirements met
-        - Blueprint followed exactly
-        - No extra features
-    - name: quality_review
-      description: Verify code quality
-      reviewer: quality_reviewer
-      criteria: |
-        - Code quality standards
-        - Test coverage
-        - Documentation complete
-```
-
-### Ralph Execution
-
-```typescript
-// Stage 1: Spec Compliance
-Task("Spec Compliance Review", {
-  prompt: `
-    Review spec compliance for [component]:
-
-    Requirements: [from blueprint]
-    Implementation: [files changed]
-
-    Verify:
-    - All requirements implemented?
-    - No extra features?
-    - Blueprint followed?
-
-    Report format: ✅ Pass or ❌ Issues with details
-  `
-})
-
-// Stage 2: Quality Review (only if Stage 1 passes)
-Task("Quality Review", {
-  prompt: `
-    Review code quality for [component]:
-
-    Spec compliance: ✅ Pass
-    Implementation: [files changed]
-
-    Check:
-    - Code quality standards
-    - Test coverage
-    - Documentation
-
-    Report format: Strengths, Issues (Critical/Important/Minor), Assessment
-  `
-})
-```
 
 ## Example Workflow
 
@@ -378,16 +295,19 @@ Please fix Critical and Important issues before merge.
 ### Spec Compliance Issues
 
 **Missing Requirements:**
+
 - Implementation doesn't include all features
 - Acceptance criteria not met
 - Edge cases not handled
 
 **Extra Work:**
+
 - Features not in requirements
 - Scope creep
 - "Nice to have" additions
 
 **Misunderstanding:**
+
 - Requirements interpreted incorrectly
 - Wrong approach taken
 - Blueprint not followed
@@ -395,18 +315,21 @@ Please fix Critical and Important issues before merge.
 ### Quality Issues
 
 **Code Quality:**
+
 - Poor naming conventions
 - Complex logic not simplified
 - No error handling
 - Inconsistent formatting
 
 **Testing:**
+
 - Low coverage
 - Missing edge cases
 - Brittle tests
 - No integration tests
 
 **Documentation:**
+
 - Unclear descriptions
 - Missing examples
 - No troubleshooting guide
@@ -415,12 +338,14 @@ Please fix Critical and Important issues before merge.
 ## Red Flags
 
 **Before Requesting Review:**
+
 - [ ] Tests not all passing
 - [ ] Self-review skipped
 - [ ] Requirements not verified
 - [ ] Documentation incomplete
 
 **During Review:**
+
 - [ ] Spec compliance not verified first
 - [ ] Quality reviewed before spec compliance
 - [ ] Issues ignored or deferred
@@ -432,13 +357,22 @@ Please fix Critical and Important issues before merge.
 2. **Systematic verification** - Checklists ensure nothing missed
 3. **Evidence-based** - Cite file:line references
 4. **Categorize issues** - Critical, Important, Minor
-5. **Integrate with Ralph** - Two-stage review process
 
 ## Quick Reference
 
-| Stage | Purpose | Checks |
-|-------|---------|--------|
+| Stage               | Purpose            | Checks                                     |
+| ------------------- | ------------------ | ------------------------------------------ |
 | **Spec Compliance** | Match requirements | All features, no extra, blueprint followed |
-| **Quality** | Code quality | Standards, tests, docs, patterns |
+| **Quality**         | Code quality       | Standards, tests, docs, patterns           |
 
 Requesting code review systematically ensures high-quality implementations through spec compliance and quality verification.
+
+---
+
+<critical_constraint>
+MANDATORY: Complete spec compliance review BEFORE quality review
+MANDATORY: Verify all tests pass before requesting review
+MANDATORY: Cite specific file:line references for issues
+MANDATORY: Categorize issues by severity (Critical/Important/Minor)
+No exceptions. Systematic review prevents merge of substandard code.
+</critical_constraint>

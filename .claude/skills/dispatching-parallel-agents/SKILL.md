@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: "Dispatch parallel agents. Use when: You have multiple independent problems (e.g. failing tests in different files) that can be solved concurrently. Not for: Sequential dependencies or shared state issues."
+description: "Dispatch parallel agents when you have multiple independent problems that can be solved concurrently, like failing tests in different files. Not for sequential dependencies or shared state issues."
 ---
 
 # Dispatching Parallel Agents
@@ -14,12 +14,14 @@ When you have multiple unrelated failures (different test files, different subsy
 ## When to Use
 
 **Use when:**
+
 - 3+ test files failing with different root causes
 - Multiple subsystems broken independently
 - Each problem can be understood without context from others
 - No shared state between investigations
 
 **Don't use when:**
+
 - Failures are related (fix one might fix others)
 - Need to understand full system state
 - Agents would interfere with each other
@@ -29,6 +31,7 @@ When you have multiple unrelated failures (different test files, different subsy
 ### 1. Identify Independent Domains
 
 Group failures by what's broken:
+
 - File A tests: Tool approval flow
 - File B tests: Batch completion behavior
 - File C tests: Abort functionality
@@ -38,6 +41,7 @@ Each domain is independent - fixing tool approval doesn't affect abort tests.
 ### 2. Create Focused Agent Tasks
 
 Each agent gets:
+
 - **Specific scope:** One test file or subsystem
 - **Clear goal:** Make these tests pass
 - **Constraints:** Don't change other code
@@ -47,15 +51,16 @@ Each agent gets:
 
 ```typescript
 // In Claude Code / AI environment
-Task("Fix agent-tool-abort.test.ts failures")
-Task("Fix batch-completion-behavior.test.ts failures")
-Task("Fix tool-approval-race-conditions.test.ts failures")
+Task("Fix agent-tool-abort.test.ts failures");
+Task("Fix batch-completion-behavior.test.ts failures");
+Task("Fix tool-approval-race-conditions.test.ts failures");
 // All three run concurrently
 ```
 
 ### 4. Review and Integrate
 
 When agents return:
+
 - Read each summary
 - Verify fixes don't conflict
 - Run full test suite
@@ -64,6 +69,7 @@ When agents return:
 ## Agent Prompt Structure
 
 Good agent prompts are:
+
 1. **Focused** - One clear problem domain
 2. **Self-contained** - All context needed to understand the problem
 3. **Specific about output** - What should the agent return?
@@ -117,6 +123,7 @@ Return: Summary of what you found and what you fixed.
 **Scenario:** 6 test failures across 3 files after major refactoring
 
 **Failures:**
+
 - agent-tool-abort.test.ts: 3 failures (timing issues)
 - batch-completion-behavior.test.ts: 2 failures (tools not executing)
 - tool-approval-race-conditions.test.ts: 1 failure (execution count = 0)
@@ -124,6 +131,7 @@ Return: Summary of what you found and what you fixed.
 **Decision:** Independent domains - abort logic separate from batch completion separate from race conditions
 
 **Dispatch:**
+
 ```
 Agent 1 → Fix agent-tool-abort.test.ts
 Agent 2 → Fix batch-completion-behavior.test.ts
@@ -131,6 +139,7 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 ```
 
 **Results:**
+
 - Agent 1: Replaced timeouts with event-based waiting
 - Agent 2: Fixed event structure bug (threadId in wrong place)
 - Agent 3: Added wait for async tool execution to complete
@@ -149,51 +158,11 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 ## Verification
 
 After agents return:
+
 1. **Review each summary** - Understand what changed
 2. **Check for conflicts** - Did agents edit same code?
 3. **Run full suite** - Verify all fixes work together
 4. **Spot check** - Agents can make systematic errors
-
-## Integration with Ralph
-
-### Ralph Parallel Validation
-
-Ralph can dispatch multiple validation agents in parallel:
-
-```yaml
-# Ralph blueprint for parallel validation
-validation:
-  parallel:
-    - name: spec_compliance
-      description: Verify blueprint compliance
-      files: ["blueprint.yaml", "requirements.md"]
-    - name: code_quality
-      description: Review code quality
-      files: ["src/**/*.py"]
-    - name: tests_coverage
-      description: Verify test coverage
-      files: ["tests/**/*.py"]
-```
-
-### Ralph Agent Dispatch
-
-```typescript
-// Dispatch parallel validation agents
-Task("Validate spec compliance", {
-  prompt: "Verify blueprint.yaml matches requirements...",
-  context: "spec_compliance"
-})
-
-Task("Review code quality", {
-  prompt: "Review code for quality issues...",
-  context: "code_quality"
-})
-
-Task("Verify test coverage", {
-  prompt: "Verify test coverage meets standards...",
-  context: "tests_coverage"
-})
-```
 
 ## Decision Tree
 
@@ -218,6 +187,7 @@ START: Multiple failures to investigate?
 ### Agent Prompt Checklist
 
 Before dispatching agents:
+
 - [ ] Clear problem domain identified
 - [ ] Specific scope defined (file, subsystem)
 - [ ] All context provided (error messages, test names)
@@ -228,6 +198,7 @@ Before dispatching agents:
 ### Integration Checklist
 
 After agents return:
+
 - [ ] All summaries reviewed
 - [ ] Fixes verified (no conflicts)
 - [ ] Full test suite run
@@ -237,6 +208,7 @@ After agents return:
 ## Real-World Impact
 
 From debugging sessions:
+
 - Multiple failures across different files
 - Agents dispatched in parallel
 - All investigations completed concurrently
@@ -253,3 +225,13 @@ From debugging sessions:
 5. **Run full suite** - Ensure all fixes work together
 
 Parallel agent dispatch transforms "3 hours of sequential work" into "1 hour of parallel work" by dividing and conquering independent problems.
+
+---
+
+<critical_constraint>
+MANDATORY: Verify independence before dispatching (no shared state)
+MANDATORY: Provide specific scope and clear goals to each agent
+MANDATORY: Review all agent summaries before integration
+MANDATORY: Run full test suite after integration
+No exceptions. Parallel execution requires proper isolation to avoid conflicts.
+</critical_constraint>

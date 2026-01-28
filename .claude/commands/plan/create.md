@@ -7,7 +7,7 @@ argument-hint: [project description or "auto" for context detection]
 
 <mission_control>
 <objective>Fully autonomous planning - detects state, creates brief/roadmap/phases/chunks as needed with minimal user input</objective>
-<success_criteria>Appropriate planning action taken with 0 questions (context clear) or 1 question (ambiguous)</success_criteria>
+<success_criteria>Appropriate planning action taken with 0 AskUserQuestion rounds (context clear) or 1 round (ambiguous)</success_criteria>
 </mission_control>
 
 ## Purpose
@@ -289,7 +289,7 @@ Incomplete phase             | Present next 1-3 tasks (chunk)     | 1 (execute/s
 Handoff exists               | Resume from handoff                | 1 (confirm/see full)
 ```
 
-**Maximum 1 question** after autonomous detection and action.
+**Maximum 1 AskUserQuestion round** after autonomous detection and action.
 
 ## Usage Examples
 
@@ -331,8 +331,8 @@ Working on these? (yes)
 
 ## Success Criteria
 
-- [ ] 0 questions when context fully inferable
-- [ ] 1 question max (confirmation/selection)
+- [ ] 0 AskUserQuestion rounds when context fully inferable
+- [ ] 1 AskUserQuestion round max (confirmation/selection)
 - [ ] No asking about state (detected autonomously)
 - [ ] Brief under 50 lines
 - [ ] Roadmap 3-6 phases
@@ -342,7 +342,7 @@ Working on these? (yes)
 <critical_constraint>
 MANDATORY: Detect all state autonomously before any user interaction
 
-MANDATORY: Maximum 1 question after autonomous action
+MANDATORY: Maximum 1 AskUserQuestion round after autonomous action
 
 MANDATORY: Chunk size 1-3 tasks maximum
 

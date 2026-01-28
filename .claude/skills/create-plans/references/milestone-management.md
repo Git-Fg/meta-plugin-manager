@@ -23,7 +23,7 @@ Milestones mark shipped versions. They solve the "what happens after v1.0?" prob
 
 **Planning structure:**
 ```
-.planning/
+.claude/workspace/planning/
 ├── BRIEF.md              # Original vision
 ├── ROADMAP.md            # Phases 1-4
 └── phases/
@@ -63,7 +63,7 @@ Milestones mark shipped versions. They solve the "what happens after v1.0?" prob
 
 **Planning structure:**
 ```
-.planning/
+.claude/workspace/planning/
 ├── BRIEF.md              # Updated with "Current State"
 ├── ROADMAP.md            # Phases 1-6 (grouped by milestone)
 ├── MILESTONES.md         # v1.0 entry
@@ -103,12 +103,14 @@ Milestones mark shipped versions. They solve the "what happens after v1.0?" prob
 
 ---
 
-<details>
-<summary>Original Vision (v1.0 - Archived)</summary>
+## Details
+
+## Summary
+
+Original Vision (v1.0 - Archived)
 
 [Original brief content]
 
-</details>
 ```
 
 **ROADMAP.md updated:**
@@ -122,15 +124,16 @@ Milestones mark shipped versions. They solve the "what happens after v1.0?" prob
 
 ## Phases
 
-<details>
-<summary>✅ v1.0 MVP (Phases 1-4) - SHIPPED 2025-11-25</summary>
+## Details
+
+## Summary
+
+✅ v1.0 MVP (Phases 1-4) - SHIPPED 2025-11-25
 
 - [x] Phase 1: Foundation
 - [x] Phase 2: Core Features
 - [x] Phase 3: Polish
 - [x] Phase 4: Launch
-
-</details>
 
 ### 🚧 v1.1 Hardening (In Progress)
 
@@ -143,25 +146,31 @@ Milestones mark shipped versions. They solve the "what happens after v1.0?" prob
 When planning Phase 5, the PLAN.md automatically gets context:
 
 ```markdown
-<context>
-@.planning/BRIEF.md                      # Knows: v1.0 shipped, codebase exists
-@.planning/MILESTONES.md                 # Knows: what v1.0 delivered
+
+## Context
+
+@.claude/workspace/planning/BRIEF.md                      # Knows: v1.0 shipped, codebase exists
+@.claude/workspace/planning/MILESTONES.md                 # Knows: what v1.0 delivered
 @AppName/NetworkManager.swift            # Existing code to improve
 @AppName/APIClient.swift                 # Existing code to fix
-</context>
 
-<tasks>
-<task type="auto">
-  <name>Add comprehensive error handling to NetworkManager</name>
-  <files>AppName/NetworkManager.swift</files>
-  <action>Existing NetworkManager has basic try/catch. Add: retry logic (3 attempts with exponential backoff), specific error types (NetworkError enum), user-friendly error messages. Maintain existing public API - internal improvements only.</action>
-  <verify>Build succeeds, existing tests pass, new error tests pass</verify>
-  <done>All network calls have retry logic, error messages are user-friendly</done>
-</task>
+## Tasks
+
+### auto
+
+<name>Add comprehensive error handling to NetworkManager
+  <files>AppName/NetworkManager.swift
+  <action>Existing NetworkManager has basic try/catch. Add: retry logic (3 attempts with exponential backoff), specific error types (NetworkError enum), user-friendly error messages. Maintain existing public API - internal improvements only.
+  <verify>Build succeeds, existing tests pass, new error tests pass
+  <done>All network calls have retry logic, error messages are user-friendly
+
 ```
 
 **Key difference from greenfield:**
-- PLAN references existing files in `<context>`
+- PLAN references existing files in `
+## Context
+
+`
 - Tasks say "update existing X" not "create X"
 - Verify includes "existing tests pass" (regression check)
 - Checkpoints may verify existing behavior still works
@@ -178,7 +187,7 @@ When planning Phase 5, the PLAN.md automatically gets context:
 
 **Planning structure:**
 ```
-.planning/
+.claude/workspace/planning/
 ├── BRIEF.md              # Updated for v2.0 vision
 ├── ROADMAP.md            # Phases 1-14 (grouped)
 ├── MILESTONES.md         # v1.0, v1.1 entries
@@ -205,15 +214,19 @@ When planning Phase 5, the PLAN.md automatically gets context:
 
 ## Phases
 
-<details>
-<summary>✅ v1.0 MVP (Phases 1-4)</summary>
-[Collapsed]
-</details>
+## Details
 
-<details>
-<summary>✅ v1.1 Hardening (Phases 5-6)</summary>
+## Summary
+
+✅ v1.0 MVP (Phases 1-4)
 [Collapsed]
-</details>
+
+## Details
+
+## Summary
+
+✅ v1.1 Hardening (Phases 5-6)
+[Collapsed]
 
 ### 🚧 v2.0 SwiftUI Redesign (In Progress)
 
@@ -243,7 +256,7 @@ When planning Phase 5, the PLAN.md automatically gets context:
 
 **Action:**
 ```
-.planning/
+.claude/workspace/planning/
 ├── archive/
 │   └── v1-macos/
 │       ├── BRIEF.md
@@ -274,7 +287,7 @@ When planning Phase 5, the PLAN.md automatically gets context:
 - Built: WeatherBar (weather app) ✓
 - Now building: TaskBar (task management app)
 
-**Action:** New project entirely, new `.planning/` directory
+**Action:** New project entirely, new `.claude/workspace/planning/` directory
 
 **Why:** Completely different product, no relationship.
 
@@ -363,49 +376,55 @@ Starting new work?
 
 ### Greenfield Plan (v1.0):
 ```markdown
-<objective>
+
+## Objective
+
 Create authentication system from scratch.
-</objective>
 
-<context>
-@.planning/BRIEF.md
-@.planning/ROADMAP.md
-</context>
+## Context
 
-<tasks>
-<task type="auto">
-  <name>Create User model</name>
-  <files>src/models/User.ts</files>
-  <action>Create User interface with id, email, passwordHash, createdAt fields. Export from models/index.</action>
-  <verify>TypeScript compiles, User type exported</verify>
-  <done>User model exists and is importable</done>
-</task>
+@.claude/workspace/planning/BRIEF.md
+@.claude/workspace/planning/ROADMAP.md
+
+## Tasks
+
+### auto
+
+<name>Create User model
+  <files>src/models/User.ts
+  <action>Create User interface with id, email, passwordHash, createdAt fields. Export from models/index.
+  <verify>TypeScript compiles, User type exported
+  <done>User model exists and is importable
+
 ```
 
 ### Brownfield Plan (v1.1):
 ```markdown
-<objective>
-Add MFA to existing authentication system.
-</objective>
 
-<context>
-@.planning/BRIEF.md              # Shows v1.0 shipped, auth exists
-@.planning/MILESTONES.md         # Shows what v1.0 delivered
+## Objective
+
+Add MFA to existing authentication system.
+
+## Context
+
+@.claude/workspace/planning/BRIEF.md              # Shows v1.0 shipped, auth exists
+@.claude/workspace/planning/MILESTONES.md         # Shows what v1.0 delivered
 @src/models/User.ts              # Existing User model
 @src/auth/AuthService.ts         # Existing auth logic
-</context>
 
-<tasks>
-<task type="auto">
-  <name>Add MFA fields to User model</name>
-  <files>src/models/User.ts</files>
-  <action>Add to existing User interface: mfaEnabled (boolean), mfaSecret (string | null), mfaBackupCodes (string[]). Maintain backward compatibility - all new fields optional or have defaults.</action>
-  <verify>TypeScript compiles, existing User usages still work</verify>
-  <done>User model has MFA fields, no breaking changes</done>
-</task>
+## Tasks
 
-<task type="checkpoint:human-verify" gate="blocking">
-  <what-built>MFA enrollment flow</what-built>
+### auto
+
+<name>Add MFA fields to User model
+  <files>src/models/User.ts
+  <action>Add to existing User interface: mfaEnabled (boolean), mfaSecret (string | null), mfaBackupCodes (string[]). Maintain backward compatibility - all new fields optional or have defaults.
+  <verify>TypeScript compiles, existing User usages still work
+  <done>User model has MFA fields, no breaking changes
+
+### checkpoint:human-verify
+
+<what-built>MFA enrollment flow</what-built>
   <how-to-verify>
     1. Run: npm run dev
     2. Login as existing user (test@example.com)
@@ -417,7 +436,7 @@ Add MFA to existing authentication system.
     8. Verify: existing users without MFA can still login (backward compat)
   </how-to-verify>
   <resume-signal>Type "approved" or describe issues</resume-signal>
-</task>
+
 ```
 
 **Key differences:**
@@ -486,7 +505,7 @@ Plans automatically become brownfield-aware because BRIEF says "this is what we 
 
 **Archive (rare):**
 - Only for separate codebases or different products
-- Move `.planning/` to `.planning/archive/v1-name/`
+- Move `.claude/workspace/planning/` to `.claude/workspace/planning/archive/v1-name/`
 - Start fresh with new BRIEF/ROADMAP
 - New planning references old in context
 

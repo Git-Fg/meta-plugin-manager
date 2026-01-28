@@ -1,6 +1,6 @@
-<overview>
+## Overview
+
 When building skills that make API calls requiring credentials (API keys, tokens, secrets), follow this protocol to prevent credentials from appearing in chat.
-</overview>
 
 <the_problem>
 Raw curl commands with environment variables expose credentials:
@@ -11,7 +11,6 @@ curl -H "Authorization: Bearer $API_KEY" https://api.example.com/data
 ```
 
 When Claude executes this, the full command with expanded `$API_KEY` appears in the conversation.
-</the_problem>
 
 <the_solution>
 Use `~/.claude/scripts/secure-api.sh` - a wrapper that loads credentials internally.
@@ -25,7 +24,6 @@ Use `~/.claude/scripts/secure-api.sh` - a wrapper that loads credentials interna
 ~/.claude/scripts/secure-api.sh facebook list-campaigns
 ~/.claude/scripts/secure-api.sh ghl search-contact "email@example.com"
 ```
-</for_supported_services>
 
 <adding_new_services>
 When building a new skill that requires API calls:
@@ -135,8 +133,6 @@ All API calls use profile syntax:
 
 **Profile persists for session:** Once selected, use same profile for subsequent operations unless user explicitly changes it.
 ```
-</adding_new_services>
-</the_solution>
 
 <pattern_guidelines>
 <simple_get_requests>
@@ -145,7 +141,6 @@ curl -s -G \
     -H "Authorization: Bearer $API_KEY" \
     "https://api.example.com/endpoint"
 ```
-</simple_get_requests>
 
 <post_with_json_body>
 ```bash
@@ -161,7 +156,6 @@ Usage:
 ```bash
 echo '{"name":"value"}' | ~/.claude/scripts/secure-api.sh service create-item
 ```
-</post_with_json_body>
 
 <post_with_form_data>
 ```bash
@@ -171,8 +165,6 @@ curl -s -X POST \
     -F "access_token=$API_TOKEN" \
     "https://api.example.com/endpoint"
 ```
-</post_with_form_data>
-</pattern_guidelines>
 
 <credential_storage>
 **Location:** `~/.claude/.env` (global for all skills, accessible from any directory)
@@ -194,18 +186,18 @@ set -a
 source ~/.claude/.env 2>/dev/null || { echo "Error: ~/.claude/.env not found" >&2; exit 1; }
 set +a
 ```
-</credential_storage>
 
-<best_practices>
+## Best Practices
+
 1. **Never use raw curl with `$VARIABLE` in skill examples** - always use the wrapper
 2. **Add all operations to the wrapper** - don't make users figure out curl syntax
 3. **Auto-create credential placeholders** - add empty fields to `~/.claude/.env` immediately when creating the skill
 4. **Keep credentials in `~/.claude/.env`** - one central location, works everywhere
 5. **Document each operation** - show examples in SKILL.md
 6. **Handle errors gracefully** - check for missing env vars, show helpful error messages
-</best_practices>
 
-<testing>
+## Testing
+
 Test the wrapper without exposing credentials:
 
 ```bash
@@ -223,4 +215,3 @@ ls -la ~/.claude/.env
 # Check specific variables (without showing values)
 grep -q "YOUR_API_KEY=" ~/.claude/.env && echo "API key configured" || echo "API key missing"
 ```
-</testing>

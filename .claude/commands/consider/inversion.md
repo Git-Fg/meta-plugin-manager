@@ -3,6 +3,11 @@ description: Solve problems backwards - what would guarantee failure?
 argument-hint: [goal or leave blank for current context]
 ---
 
+<mission_control>
+<objective>Apply inversion thinking to identify failure modes and build success through avoidance</objective>
+<success_criteria>Failure modes identified, avoidance strategies defined, clear boundaries established</success_criteria>
+</mission_control>
+
 ## Objective
 
 Apply inversion thinking to $ARGUMENTS (or the current discussion if no arguments provided).
@@ -45,3 +50,9 @@ By simply not doing [X, Y, Z], success becomes much more likely because...
 - Surfaces risks that optimistic planning misses
 - Creates clear "never do" boundaries
 - Shows path to success via negativa
+
+<critical_constraint>
+MANDATORY: Identify specific, realistic failure modes (not hypothetical)
+MANDATORY: Provide actionable avoidance strategies for each failure mode
+MANDATORY: Establish clear "never do" boundaries
+No exceptions. Inversion works by being thorough about what NOT to do.
