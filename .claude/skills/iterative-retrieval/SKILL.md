@@ -203,7 +203,7 @@ Subagents don't know what they need until they start searching:
 │  4. LOOP          ──► Repeat with refined criteria (max 3) │
 │         │                                                     │
 │         ▼                                                     │
-│    HIGH RELEVANCE FILES FOUND ✓                             │
+│    HIGH RELEVANCE FILES FOUND ✅                             │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```

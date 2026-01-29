@@ -11,8 +11,6 @@ user-invocable: true
 <success_criteria>After invocation: 1) Session transcript analyzed, 2) Root cause identified, 3) Relevant rule/SKILL.md updated, 4) Change documented with transparency</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Impact Meta-Learning
 
 **Principle 1: Session Review Fuels Continuous Improvement**
@@ -325,9 +323,7 @@ This component carries essential Seed System principles for context: fork isolat
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
-<trigger>When Claude detects user correction patterns or user explicitly requests reflection on mistakes</trigger>
-
-<success_criteria>
+## Success Criteria
 
 - [ ] Session transcript read and analyzed
 - [ ] Failure type classified using correction-patterns.md
@@ -336,7 +332,12 @@ This component carries essential Seed System principles for context: fork isolat
 - [ ] Patch applied using patch-strategies.md
 - [ ] Change verified (no regressions)
 - [ ] Transparency report generated
-      </success_criteria>
+
+## Trigger
+
+When Claude detects user correction patterns or user explicitly requests reflection on mistakes
+
+---
 
 <critical_constraint>
 All portable components MUST be self-contained (zero .claude/rules dependency).

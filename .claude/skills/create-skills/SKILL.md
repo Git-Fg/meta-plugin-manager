@@ -452,14 +452,14 @@ Before finalizing a skill:
 
 ### Mistake 1: Weak Trigger Description
 
-❌ **Bad:**
+❌ **Wrong:**
 ```yaml
 description: Provides guidance for working with hooks.
 ```
 
 **Why bad:** Vague, no specific trigger phrases, not third person
 
-✅ **Good:**
+✅ **Correct:**
 ```yaml
 description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events. Provides comprehensive hooks API guidance.
 ```
@@ -468,7 +468,7 @@ description: This skill should be used when the user asks to "create a hook", "a
 
 ### Mistake 2: Too Much in SKILL.md
 
-❌ **Bad:**
+❌ **Wrong:**
 ```
 skill-name/
 └── SKILL.md  (8,000 words - everything in one file)
@@ -476,7 +476,7 @@ skill-name/
 
 **Why bad:** Bloats context when skill loads, detailed content always loaded
 
-✅ **Good:**
+✅ **Correct:**
 ```
 skill-name/
 ├── SKILL.md  (1,800 words - core essentials)
@@ -489,7 +489,7 @@ skill-name/
 
 ### Mistake 3: Second Person Writing
 
-❌ **Bad:**
+❌ **Wrong:**
 ```markdown
 You should start by reading the configuration file.
 You need to validate the input.
@@ -498,7 +498,7 @@ You can use the grep tool to search.
 
 **Why bad:** Second person, not imperative form
 
-✅ **Good:**
+✅ **Correct:**
 ```markdown
 Start by reading the configuration file.
 Validate the input before processing.
@@ -509,7 +509,7 @@ Use the grep tool to search for patterns.
 
 ### Mistake 4: Missing Resource References
 
-❌ **Bad:**
+❌ **Wrong:**
 ```markdown
 # SKILL.md
 
@@ -520,7 +520,7 @@ Use the grep tool to search for patterns.
 
 **Why bad:** Claude doesn't know references exist
 
-✅ **Good:**
+✅ **Correct:**
 ```markdown
 # SKILL.md
 

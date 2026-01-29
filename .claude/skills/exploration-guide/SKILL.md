@@ -3,6 +3,11 @@ name: exploration-guide
 description: "Exploration philosophy, verification practice, and tool selection patterns. Use when exploring codebases, discovering patterns, or mapping architecture. Provides evidence-based conclusions and output standards. Not for execution - use native Explore agent with this guide for context."
 ---
 
+<mission_control>
+<objective>Enable evidence-based codebase exploration through systematic verification, tool selection heuristics, and structured reporting.</objective>
+<success_criteria>Exploration complete with verified patterns, documented evidence, and actionable findings</success_criteria>
+</mission_control>
+
 # Exploration Guide
 
 **Philosophy and patterns for systematic codebase exploration**
@@ -69,9 +74,9 @@ Use these markers to signal certainty:
 
 | Marker          | Meaning                                          |
 | --------------- | ------------------------------------------------ |
-| **✓ VERIFIED**  | Read the file, traced the logic. Safe to assert. |
+| **✅ VERIFIED**  | Read the file, traced the logic. Safe to assert. |
 | **? INFERRED**  | Based on grep/search. Needs verification.        |
-| **✗ UNCERTAIN** | Haven't checked. Must investigate.               |
+| **❌ UNCERTAIN** | Haven't checked. Must investigate.               |
 
 ### Anti-Hallucination Rules
 
@@ -294,4 +299,4 @@ This component carries essential Seed System principles for context fork isolati
 
 <critical_constraint>
 PHASE 1: Execute this phase first. Rename agents to guides before other changes.
-```
+</critical_constraint>

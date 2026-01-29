@@ -460,10 +460,10 @@ Referencing other skills by name:
 
 ```markdown
 ❌ Wrong:
-description: "...Use skill-authoring for creating skills and skill-iterate for auditing..."
+description: "...Use skill-authoring for creating skills and skill-refine for auditing..."
 
 ✅ Correct:
-description: "...Use when creating portable skills or auditing existing ones..."
+description: "...Use when creating portable skills or refining existing ones..."
 ```
 
 **Fix:** Describe behavior, don't reference skills by name.

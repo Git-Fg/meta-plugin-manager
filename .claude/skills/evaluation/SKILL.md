@@ -8,8 +8,6 @@ description: "Evaluate agent systems with quality gates and LLM-as-judge pattern
 <success_criteria>Quality gates passed, rubric scores documented, improvement recommendations provided</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Quality Evaluation Success
 
 ### 1. Multi-Dimensional Assessment Captures True Quality

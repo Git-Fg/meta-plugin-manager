@@ -129,6 +129,8 @@ Each finding MUST have:
 
 ## ANTI-PATTERN: Lazy Analysis
 
+!** **CRITICAL:** Vague findings = lazy analysis. BE SPECIFIC.
+
 ### Anti-Pattern: Vague Findings
 
 ```
@@ -140,8 +142,6 @@ Each finding MUST have:
 Root cause: Skill triggers too broad.
 Fix: Add 'Not for X' exclusion to description."
 ```
-
-**Strong language:** BE SPECIFIC. Vague findings = lazy analysis.
 
 ### Anti-Pattern: Symptom-Only Reports
 

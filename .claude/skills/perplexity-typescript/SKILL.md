@@ -10,10 +10,6 @@ description: "Integrate Perplexity AI APIs in TypeScript projects. Use when buil
 <success_criteria>Claude can create production-ready Perplexity integrations with proper error handling, streaming, and best practices</success_criteria>
 </mission_control>
 
-<trigger>When writing TypeScript code that integrates with Perplexity's Search, Chat Completions, Content, or Responses APIs</trigger>
-
-<Guiding_Principles>
-
 ## The Path to High-Quality Perplexity Integration Success
 
 ### 1. Environment-First Security
@@ -40,7 +36,7 @@ Specific, well-constructed queries yield relevant results. Multi-query searches 
 
 Warn/error levels in production reduce log volume. Debug logging reserved for troubleshooting prevents performance impact.
 
-</Guiding_Principles>
+---
 
 ## Quick Start
 
@@ -310,13 +306,11 @@ TypeScript >= 4.9 required.
 
 ## Dynamic Sourcing Protocol
 
-<fetch_protocol>
 **CONDITIONAL FETCH**: For API questions, fetch from:
 
 - https://docs.perplexity.ai (model capabilities, latest features)
 
 This skill contains Seed System-specific Perplexity integration patterns. Version-specific API details should be fetched when needed.
-</fetch_protocol>
 
 ---
 

@@ -68,9 +68,9 @@ The ONLY difference is structure/syntax for cognitive load management.
 | Skill                   | Description                                             |
 | :---------------------- | :------------------------------------------------------ |
 | `skill-authoring`       | Create portable skills with SKILL.md and references/    |
-| `skill-iterate`         | Audit, critique, and improve existing skills            |
+| `skill-refine`         | Analyze conversation to refine skills with evidence-based findings |
 | `command-authoring`     | Create single-file commands with @/! injection patterns |
-| `command-iterate`       | Audit and improve commands with dynamic injection       |
+| `command-refine`       | Analyze conversation to refine commands with injection patterns |
 | `agent-development`     | Create, validate, and audit autonomous agents           |
 | `hook-development`      | Create, validate, and audit event-driven hooks          |
 | `mcp-development`       | Create, test, and audit MCP servers and tools           |
@@ -175,8 +175,8 @@ MANDATORY: Produced components must work in a vacuum (Zero CLAUDE.md/.claude/rul
 | :------------ | :------------------ |
 | Skill         | `skill-authoring`   |
 | Command       | `command-authoring` |
-| Audit Skill   | `skill-iterate`     |
-| Audit Command | `command-iterate`   |
+| Audit Skill   | `skill-refine`     |
+| Audit Command | `command-refine`   |
 | Agent         | `agent-development` |
 | MCP Server    | `mcp-development`   |
 | Hook          | `hook-development`  |
@@ -350,9 +350,9 @@ Key findings from internal system review and their resolutions:
 **New Skills Created:**
 
 - `skill-authoring` - Create portable skills with SKILL.md + references/
-- `skill-iterate` - Audit and improve existing skills
+- `skill-refine` - Analyze conversation to refine skills
 - `command-authoring` - Create single-file commands with @/! injection
-- `command-iterate` - Audit commands with injection patterns
+- `command-refine` - Analyze conversation to refine commands
 
 ### Semantic Bridge Refactoring (2026-01-29)
 
@@ -463,7 +463,7 @@ Before EVERY action:
 CONTEXT FIRST. CHECK SKILL. EXECUTE.
 ```
 
-**Anti-Laziness Reference** (`.claude/skills/skill-iterate/SKILL.md` - search for "Anti-Laziness"):
+**Anti-Laziness Reference** (`.claude/skills/skill-refine/SKILL.md` - search for "Anti-Laziness"):
 
 Comprehensive reference with 8 sections:
 

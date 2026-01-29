@@ -9,29 +9,7 @@ user-invocable: true
 <success_criteria>Prompt refined to appropriate L-level with sufficient context and clear intent</success_criteria>
 </mission_control>
 
-# Prompt Refinement
-
-Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology.
-
----
-
-## Quick Start
-
-**If you need simple clarification:** Use L1 → One-sentence outcome statement
-
-**If you need context-rich refinement (most common):** Use L2 → Single paragraph with constraints woven in
-
-**If you need structured, complex guidance:** Use L3 → Bulleted Task/Constraints/Output format
-
-**If you need reusable patterns:** Use L4 → Template/framework format
-
-**Why:** Matching refinement level to task complexity ensures clarity without token waste. L2 serves 80% of cases—default to it, escalate only when justified.
-
----
-
 ## The Path to High-Quality Prompts
-
-<guiding_principles>
 
 ### 1. Match Complexity to Structure
 

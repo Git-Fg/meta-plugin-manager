@@ -10,24 +10,43 @@ Think of this as the quality guardrails that prevent common mistakes, hallucinat
 
 Execute independently (Trust). Provide evidence before claiming done (Verify).
 
-<guiding_principles>
-
 ## The Path to High-Quality Claims
 
-### 1. Trace, Don't Guess
+1. **Trace, Don't Guess** — Read the actual file, trace the logic. The difference between "I grepped" and "I traced" determines claim reliability.
 
-Read the actual file, trace the logic. The difference between "I grepped" and "I traced" determines claim reliability.
+2. **Evidence Before Assertion** — Verification is practice, not checkpoint. Before claiming done: read, trace, confirm.
 
-### 2. Evidence Before Assertion
+3. **Confidence Markers** — **✓ VERIFIED** (file read, logic traced), **?** INFERRED** (grep-based, needs verification), **✗ UNCERTAIN** (not checked, must investigate)
 
-Verification is practice, not checkpoint. Before claiming done: read, trace, confirm.
+### Emoji Attention Markers
 
-### 3. Confidence Markers
+Use emojis to leverage LLM attention mechanisms for critical content:
 
-- **✓ VERIFIED** — File read, logic traced
-- **? INFERRED** — Grep-based, needs verification
-- **✗ UNCERTAIN** — Not checked, must investigate
-  </guiding_principles>
+| Emoji | Meaning | Use For |
+| :---- | :------ | :------ |
+| **✅** | Correct/Verified | Patterns to follow, valid approaches |
+| **❌** | Incorrect/Anti-pattern | Patterns to avoid, common mistakes |
+
+#### Usage Patterns
+
+```
+✅ **Correct Pattern:**
+Do this → [specific action]
+
+❌ **Anti-Pattern:**
+Don't do this → [what happens if you do]
+```
+
+#### Why Emojis Work
+
+LLMs attend to special tokens and visual patterns. Emojis create distinct visual anchors that:
+
+- Draw attention to critical content
+- Create memorable associations
+- Enable quick scanning
+- Signal importance at a glance
+
+---
 
 ### What This Means
 
@@ -39,7 +58,7 @@ Avoid making these claims without evidence:
 
 Instead, build the habit of verification:
 
-- view_file the actual file, trace the logic, then confirm
+- Read the actual file, trace the logic, then confirm
 - Test the invocation, confirm it loads, fix issues, re-test
 - Check portability by confirming zero external dependencies
 
@@ -235,6 +254,41 @@ Before claiming completion, verify:
 - **Critical read block** — For non-negotiables
 - **Summary section** — Before long content
 - **Constraints footer** — At file bottom for recency
+
+---
+
+## Evidence-Based Findings Standard
+
+Meta-analysis skills (skill-refine, command-refine) MUST follow this format:
+
+| Element | Required Content |
+| :------ | :--------------- |
+| **Issue** | One-line description of the problem |
+| **Evidence** | Quote from conversation or @file (REQUIRED) |
+| **Root Cause** | WHY it happened, not just WHAT (REQUIRED) |
+| **Fix** | Specific change: file + section + edit (REQUIRED) |
+
+### Example
+
+```
+❌ Wrong:
+"The skill needs improvement"
+
+✅ Correct:
+**Issue:** Frontmatter missing 'Not for' exclusion
+**Evidence:** User said "No" when skill triggered for unrelated task
+**Root Cause:** Description triggers too broad, includes unintended use cases
+**Fix:** Add "Not for X" to description frontmatter at line 3
+```
+
+### Severity Language
+
+| Level | Signal | Language |
+| :---- | :----- | :------- |
+| **CRITICAL** | Safety, security, repeated failure | USE STRONG WORDS |
+| **HIGH** | Quality issue affecting many | Clear directive |
+| **MEDIUM** | Edge case or minor gap | Guidance |
+| **LOW** | Nice-to-have improvement | Consider |
 
 ---
 

@@ -8,8 +8,6 @@ description: "Generate meta-prompts for Claude-to-Claude pipelines and multi-sta
 <success_criteria>Prompt folder created in .claude/workspace/prompts/, SUMMARY.md generated, chain provenance maintained</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Quality Meta-Prompt Success
 
 Meta-prompts excel when they preserve context across prompt boundaries, maintain clear provenance, and enable human scanning of results. These principles guide successful Claude-to-Claude pipeline creation:
@@ -309,8 +307,8 @@ For chained prompts where each depends on previous output.
 Show progress during execution:
 
 ```
-Executing 1/3: 001-auth-research... ✓
-Executing 2/3: 002-auth-plan... ✓
+Executing 1/3: 001-auth-research... ✅
+Executing 2/3: 002-auth-plan... ✅
 Executing 3/3: 003-auth-implement... (running)
 ```
 
@@ -422,9 +420,9 @@ If validation fails:
 Stop the chain immediately:
 
 ```
-✗ Failed at 2/3: 002-auth-plan
+❌ Failed at 2/3: 002-auth-plan
 Completed:
-- 001-auth-research ✓ (archived)
+- 001-auth-research ✅ (archived)
 Failed:
 - 002-auth-plan: Output file not created
 Not started:
@@ -442,9 +440,9 @@ Continue others, report all results:
 
 ```
 Parallel execution completed with errors:
-✓ 001-api-research (archived)
-✗ 002-db-research: Validation failed - missing <confidence> tag
-✓ 003-ui-research (archived)
+✅ 001-api-research (archived)
+❌ 002-db-research: Validation failed - missing <confidence> tag
+✅ 003-ui-research (archived)
 What's next?
 1. Retry failed prompt (002)
 2. View error details
@@ -477,8 +475,8 @@ Output file stays in place (not moved).
 ###### Single Result
 
 ```
-✓ Executed: 001-auth-research
-✓ Created: .claude/workspace/prompts/001-auth-research/SUMMARY.md
+✅ Executed: 001-auth-research
+✅ Created: .claude/workspace/prompts/001-auth-research/SUMMARY.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Auth Research Summary
 **JWT with jose library and httpOnly cookies recommended**
@@ -513,7 +511,7 @@ Display the actual SUMMARY.md content inline so user sees findings without openi
 ###### Chain Result
 
 ```
-✓ Chain completed: auth workflow
+✅ Chain completed: auth workflow
 Results:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 001-auth-research

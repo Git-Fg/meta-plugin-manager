@@ -84,7 +84,7 @@ Use native tools to fulfill these patterns. Trust the System Prompt to select th
 | Instead of...           | Use This Evidence...                           |
 | ----------------------- | ---------------------------------------------- |
 | "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
-| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "The build should work" | `Build output: ✅ Built in 2.4s`                |
 | "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
 | "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
 | "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |
@@ -124,7 +124,7 @@ Replace assertions with evidence. The difference between claiming and proving:
 | Instead of...           | Use This Evidence...                           |
 | ----------------------- | ---------------------------------------------- |
 | "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
-| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "The build should work" | `Build output: ✅ Built in 2.4s`                |
 | "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
 | "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
 | "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |
@@ -291,7 +291,7 @@ This is not optional. This is how quality is proven.
 | Instead of...           | Use This Evidence...                           |
 | ----------------------- | ---------------------------------------------- |
 | "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
-| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "The build should work" | `Build output: ✅ Built in 2.4s`                |
 | "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
 | "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
 | "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |

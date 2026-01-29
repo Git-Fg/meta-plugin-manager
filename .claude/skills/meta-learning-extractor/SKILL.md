@@ -79,23 +79,21 @@ Apply edits according to the file type to maintain system integrity.
     **Resolution**: [What changed]
     ```
 
-## Interaction Schema
+## PATTERN: Interaction Schema
 
-<interaction_schema>
-READ_TRANSCRIPT → CLASSIFY_ERROR → SYNTHESIZE_PRINCIPLE → SELECT_TARGET → APPLY_PATCH → VERIFY_SYNTAX
-</interaction_schema>
+The meta-learning extraction follows this workflow:
 
-<thinking>
+1. READ_TRANSCRIPT → 2. CLASSIFY_ERROR → 3. SYNTHESIZE_PRINCIPLE → 4. SELECT_TARGET → 5. APPLY_PATCH → 6. VERIFY_SYNTAX
+
+## PATTERN: Thinking Process
+
+Before applying any fix, work through these questions:
+
 1. **Analyze**: What exactly did the user correct?
 2. **Trace**: Why did I make that mistake? (Missing rule? Bad instruction? Hallucination?)
 3. **Locate**: Which file governs this behavior?
 4. **Draft**: Create the specific text insertion/replacement.
 5. **Critique**: Will this break anything else? Is it too restrictive?
-</thinking>
-
-## Genetic Code / Critical Constraints
-
-<guiding_principles>
 
 ## The Path to High-Quality Rule Extraction
 
@@ -115,12 +113,10 @@ When adding constraints to Skills or Rules, place them at the BOTTOM of the file
 
 Hardcoded paths (e.g., `/Users/jdoe/`) break portability. Use relative paths or environment variables.
 
-</guiding_principles>
-
 <critical_constraint>
 **System Physics:**
 
 1. Zero external dependencies for portable components
 2. Rules generalize across contexts, not edge cases
 3. Historical preservation in CLAUDE.md
-   </critical_constraint>
+

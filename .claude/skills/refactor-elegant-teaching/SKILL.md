@@ -236,28 +236,20 @@ Understanding what code currently does matters more than any pattern. Dogma serv
 
 ## Core Philosophy
 
-<router>
-```mermaid
-flowchart TD
-    Start[Read code] --> Understand{Understand intent?}
-    Understand -->|No| Investigate[Read more context]
-    Investigate --> Understand
-    Understand -->|Yes| Identify{What obscures intent?}
+**Decision Flow:**
 
-    Identify -->|Bad names| Rename[Rename variables/functions]
-    Identify -->|Too long| Extract[Extract functions]
-    Identify -->|Nested| Flatten[Flatten nesting]
-    Identify -->|Duplicated| Deduplicate[Remove duplication]
+1. **Read code** → Understand intent?
+   - No → Read more context
+   - Yes → Continue
 
-    Rename --> Preserve[Preserve behavior]
-    Extract --> Preserve
-    Flatten --> Preserve
-    Deduplicate --> Preserve
+2. **Identify** → What obscures intent?
+   - Bad names → Rename variables/functions
+   - Too long → Extract functions
+   - Nested → Flatten nesting
+   - Duplicated → Remove duplication
 
-    Preserve --> Verify[Verify tests pass]
-    Verify --> Done[Done]
-
-</router>
+3. **Preserve** → Behavior must remain identical
+4. **Verify** → Tests pass
 
 **Remember**: Elegant code teaches. A reader should understand WHAT the code does, WHY it exists, and HOW it works—without needing additional explanation.
 

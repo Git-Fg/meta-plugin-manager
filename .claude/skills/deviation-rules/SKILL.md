@@ -8,8 +8,6 @@ description: "Handle unexpected work during execution by classifying deviations 
 <success_criteria>All deviations classified via trigger conditions, mechanistic rule application, 80-95% autonomy</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Autonomy Success
 
 Mechanistic deviation handling enables 80-95% autonomy because predictable responses to unexpected events build trust between pilot and agent.
@@ -39,7 +37,6 @@ When functionality is clearly essential and was simply overlooked, add it withou
 Valuable but non-critical improvements get logged for later consideration. This acknowledges good ideas without derailing current work. The pattern works because it respects the plan while capturing insights for future iterations.
 
 **Why this leads to success**: 80-95% autonomy emerges from clear rules for common situations. The agent handles routine deviations independently, consults only for true architectural decisions, and documents everything for transparency. The user gets high completion rates with full visibility into what changed and why.
-</guiding_principles>
 
 ## Workflow
 
@@ -183,7 +180,7 @@ function isArchitectureChange(issue: Issue): boolean {
 | Leaving out essential error handling | Be generous with Rule 2       |
 | "Not in the plan" as excuse          | If clearly overlooked, add it |
 
-## workflows
+## Workflows
 
 ### When Unexpected Work Appears
 
@@ -217,83 +214,83 @@ if (isArchitectureChange(deviation)) {
 }
 ```
 
-<deviation_logic>
-<trigger condition="bug">
-<test>
+## PATTERN: Deviation Logic
 
+When encountering unexpected work, apply these trigger-based rules:
+
+### Rule 1: Bug
+
+**Test conditions**:
 - Is this a logic error, syntax error, type error, security vulnerability, or performance issue?
 - Is the fix unambiguous (clear solution exists)?
 - Does the fix not change architecture?
-  </test>
-  <action>Auto-fix without asking</action>
-  <examples>
+
+**Action**: Auto-fix without asking
+
+**Examples**:
 - MD5 password hashing → Fix to bcrypt (security)
 - Missing semicolon → Add semicolon (syntax)
 - Unhandled exception → Add try/catch (logic)
-  </examples>
-  </trigger>
 
-<trigger condition="missing_critical">
-<test>
+### Rule 2: Missing Critical
+
+**Test conditions**:
 - Is this essential for functionality that was clearly overlooked?
 - Would not adding it make the implementation non-functional?
 - Is the solution straightforward and unambiguous?
-</test>
-<action>Add without asking</action>
-<examples>
+
+**Action**: Add without asking
+
+**Examples**:
 - No error handling for database → Add error middleware
 - Missing input validation → Add validation
 - No logging for debugging → Add logs
-</examples>
-</trigger>
 
-<trigger condition="blocker">
-<test>
+### Rule 3: Blocker
+
+**Test conditions**:
 - Does this block progress on planned work?
 - Is resolution necessary to continue?
 - Does solution not require architectural decision?
-</test>
-<action>Fix without asking</action>
-<examples>
+
+**Action**: Fix without asking
+
+**Examples**:
 - Missing dependency → Install dependency
 - Wrong environment variable → Set variable
 - File permission issue → Fix permissions
-</examples>
-</trigger>
 
-<trigger condition="architecture_change">
-<test>
+### Rule 4: Architecture Change
+
+**Test conditions**:
 - Does this change file/folder structure?
 - Does this add/remove major components?
 - Does this change data models or schemas?
 - Does this affect system architecture?
-</test>
-<action>STOP and ask user</action>
-<examples>
+
+**Action**: STOP and ask user
+
+**Examples**:
 - Need to add new service layer
 - Database schema change required
 - File restructure needed
-</examples>
-</trigger>
 
-<trigger condition="enhancement">
-<test>
+### Rule 5: Enhancement
+
+**Test conditions**:
 - Is this a nice-to-have improvement?
 - Would this be better logged for later?
 - Is this not essential for current task?
-</test>
-<action>Log for later, continue</action>
-<examples>
+
+**Action**: Log for later, continue
+
+**Examples**:
 - Code refactoring opportunity
 - Performance optimization
 - Documentation improvement
-</examples>
-</trigger>
-</deviation_logic>
 
-## Decision Flow
+## PATTERN: Decision Flow
 
-<decision_flow>
 When encountering unexpected work:
 
 1. **Classify**: What type of deviation is this?
@@ -311,7 +308,6 @@ When encountering unexpected work:
    - If enhancement: Log and continue
 
 3. **Report action**: Always explain what you did and why
-   </decision_flow>
 
 ---
 
@@ -412,7 +408,7 @@ All deviations are documented in `SUMMARY.md`:
 
 When encountering unexpected work:
 
-<router>
+```mermaid
 flowchart TD
     Start([Unexpected Work]) --> Type{Classify Type}
     Type -- Bug --> Rule1[Rule 1: Auto-Fix]
@@ -420,16 +416,16 @@ flowchart TD
     Type -- Blocker --> Rule3[Rule 3: Fix Blocker]
     Type -- Architectural --> Rule4[Rule 4: Ask User]
     Type -- Enhancement --> Rule5[Rule 5: Log It]
-    
+
     Rule1 --> Doc[Document in SUMMARY.md]
     Rule2 --> Doc
     Rule3 --> Doc
     Rule4 --> Wait[Wait for Decision]
     Rule5 --> Doc
-    
+
     Doc --> Continue[Continue Execution]
     Wait --> Continue
-</router>
+```
 
 1. **Classify the deviation type**
 
@@ -538,4 +534,4 @@ This component carries essential Seed System principles for context: fork isolat
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-  </critical_constraint>
+

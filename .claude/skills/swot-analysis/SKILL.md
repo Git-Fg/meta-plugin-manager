@@ -8,8 +8,6 @@ description: "Analyze Strengths, Weaknesses, Opportunities, and Threats for stra
 <success_criteria>All four quadrants populated, strategic insights derived, action items identified</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to Strategic Clarity
 
 ### 1. Four Dimensions Reveal Hidden Connections
@@ -35,7 +33,8 @@ Not all factors matter equally. Prioritize by impact and feasibility to focus on
 ### 6. Honest Assessment Enables Real Strategy
 
 Overoptimism about strengths or minimizing weaknesses produces fantasy, not strategy. Honest assessment of all four quadrants—especially weaknesses and threats—creates realistic strategic foundations. **Why**: Strategy based on false assumptions fails when reality intrudes.
-</guiding_principles>
+
+---
 
 # SWOT Analysis
 

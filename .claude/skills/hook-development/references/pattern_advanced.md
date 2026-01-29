@@ -510,17 +510,17 @@ exit 0
 # Test 1: Approve safe command
 result=$(echo '{"tool_input": {"command": "ls"}}' | bash .claude/scripts/validate-bash.sh)
 if [ $? -eq 0 ]; then
-  echo "✓ Test 1 passed"
+  echo "✅ Test 1 passed"
 else
-  echo "✗ Test 1 failed"
+  echo "❌ Test 1 failed"
 fi
 
 # Test 2: Block dangerous command
 result=$(echo '{"tool_input": {"command": "rm -rf /"}}' | bash .claude/scripts/validate-bash.sh)
 if [ $? -eq 2 ]; then
-  echo "✓ Test 2 passed"
+  echo "✅ Test 2 passed"
 else
-  echo "✗ Test 2 failed"
+  echo "❌ Test 2 failed"
 fi
 ```
 
@@ -543,9 +543,9 @@ cp .claude/scripts/* "$TEST_DIR/.claude/scripts/"
 # Test SessionStart hook
 echo '{}' | bash .claude/scripts/session-start.sh
 if [ -f "$TEST_DIR/.claude/state/session-initialized" ]; then
-  echo "✓ SessionStart hook works"
+  echo "✅ SessionStart hook works"
 else
-  echo "✗ SessionStart hook failed"
+  echo "❌ SessionStart hook failed"
 fi
 
 # Clean up

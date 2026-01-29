@@ -5,6 +5,16 @@
 <success_criteria>Commands have clear reference for @ and ! patterns; skills know to use semantic alternatives</success_criteria>
 </mission_control>
 
+## Navigation
+
+| If you need... | Read... |
+| :------------- | :------ |
+| @ pattern usage | ## @ Pattern: File Injection |
+| ! pattern usage | ## ! Pattern: Command Execution |
+| Wrapper pattern | ## <injected_content> Wrapper |
+| Command vs skill | ## The Three Boundaries |
+| Quick reference | ## Quick Reference |
+
 ## Overview
 
 Content injection (`@` and `!`) is a **command-only feature**. Skills must NOT use these patterns.

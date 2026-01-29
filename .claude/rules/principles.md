@@ -8,10 +8,7 @@ Think of this as a Senior Architect leaving guidance for a Senior Engineer. Thes
 
 ## The High Trust Mandate
 
-<mission_control>
-<objective>Provide a Map, not a Script. Empower the Pilot to navigate using architectural guidance.</objective>
-<success_criteria>Claude acts as a Senior Partner who uses rules as boundaries, not step-by-step instructions.</success_criteria>
-</mission_control>
+Provide a Map, not a Script. Empower the Pilot to navigate using architectural guidance.
 
 ### Map vs Script Philosophy
 
@@ -75,6 +72,11 @@ Think of this as a Senior Architect leaving guidance for a Senior Engineer. Thes
 ## The Skill-First Doctrine
 
 Skills contain accumulated wisdom from previous sessions. Before starting work, ask: Does a skill already exist for this pattern? The skill system preserves what sessions learn—invoke it before reinventing.
+
+| Meta-Analysis Skill | Purpose |
+| :------------------ | :------ |
+| `skill-refine` | Analyze conversation + files to refine skills with evidence-based findings |
+| `command-refine` | Analyze conversation + files to refine commands with injection patterns |
 
 **Recognition question:** "Would this knowledge already be documented in a skill?"
 

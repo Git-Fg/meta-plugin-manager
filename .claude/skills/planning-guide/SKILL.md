@@ -3,6 +3,11 @@ name: planning-guide
 description: "Planning philosophy, patterns, and practices for implementation planning. Use when planning features, architectural changes, or refactoring. Provides L'Entonnoir, 2-3 task rule, and verification practice. Not for execution - use native Plan agent with this guide for context."
 ---
 
+<mission_control>
+<objective>Create actionable implementation plans through L'Entonnoir, quality-first breakdown, and evidence-based verification.</objective>
+<success_criteria>Plan created with 2-3 tasks max, file:line evidence, and executable prompts</success_criteria>
+</mission_control>
+
 # Planning Guide
 
 **Philosophy and patterns for creating actionable implementation plans**
@@ -239,28 +244,6 @@ Trust native tools to fulfill these patterns. The System Prompt selects the corr
 - Documentation updates
 
 ---
-
-<guiding_principles>
-
-## The Path to High-Quality Planning Success
-
-### 1. Sequential Focus Through L'Entonnoir
-
-Focused questions with exploration between each round produce clearer scope than scattered questioning. Sequential focus maintains quality throughout the session.
-
-### 2. Quality Through Aggressive Atomicity
-
-Smaller, more numerous plans maintain peak quality. The 2-3 task rule recognizes that quality naturally degrades past the 50% context mark.
-
-### 3. Evidence-Based Verification
-
-Tracing actual code rather than assuming creates actionable plans. File:line evidence ensures implementation follows existing patterns.
-
-### 4. Sequential Rather Than Scattered
-
-Ask → Explore → Ask → Explore → STOP → Execute. This rhythm maintains focus and prevents quality drift.
-
-</guiding_principles>
 
 ## Genetic Code
 

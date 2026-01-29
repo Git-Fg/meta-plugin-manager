@@ -12,8 +12,6 @@ description: "Programmatic interface to Google's Jules API for asynchronous codi
 
 <trigger>When user mentions code review, refactoring, adding tests, bug fixes, or when code is pushed to remote branch</trigger>
 
-<guiding_principles>
-
 ## The Path to High-Impact Async Delegation
 
 ### 1. TDD First Ensures Correctness Before Implementation
@@ -512,8 +510,8 @@ uv run scripts/feed_feedback.py --author my-bot-name
 
 ## Dynamic Sourcing
 
-<fetch*protocol>
-**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For raw Jules API syntax (endpoints, request/response schemas):
+<fetch_protocol>
+**Syntax Source**: This skill focuses on *patterns* and *philosophy*. For raw Jules API syntax (endpoints, request/response schemas):
 
 1. **Fetch**: `https://developers.google.com/jules/api/reference/rest`
 2. **Extract**: The specific endpoint or schema you need
@@ -523,7 +521,7 @@ uv run scripts/feed_feedback.py --author my-bot-name
 
 - Changelog → `https://jules.google.com/docs/changelog/`
 - API key setup → `https://jules.google.com/settings#api`
-  </fetch_protocol>
+</fetch_protocol>
 
 ---
 

@@ -10,10 +10,6 @@ description: "Integrate Google GenAI SDK (@google/genai) for Gemini models in Ty
 <success_criteria>Claude can create production-ready Google GenAI integrations with proper error handling, streaming, multimodal support, and best practices</success_criteria>
 </mission_control>
 
-<trigger>When writing TypeScript code that integrates with Google's GenAI SDK for Gemini models, including Vertex AI support, multimodal capabilities, or agent workflows</trigger>
-
----
-
 ## The Path to High-Value Google GenAI Integrations
 
 ### 1. Start with the Right Client Foundation
@@ -416,11 +412,6 @@ let operation = await ai.models.generateVideos({
 
 ## Relevance Heuristic
 
-<freshness_gate>
-<purpose>Validate URL freshness before trusting documentation</purpose>
-
-<rule>
-
 **Freshness Gate:** Before trusting any code snippets from a URL:
 
 1. Fetch the URL and check for last-updated metadata (Last-Modified header, date in content, or commit history)
@@ -428,19 +419,13 @@ let operation = await ai.models.generateVideos({
 3. Prefer npm package version checks and CHANGELOG over README URLs for SDK changes
 4. Document the freshness check result in the session
 
-</rule>
-
-<exception>
-
-Skip freshness check when:
+**Skip freshness check when:**
 
 - Checking npm package version (timestamp IS the version)
 - Official SDK changelog confirms API stability
 - Versioned documentation URLs (e.g., /v1/, /2026/)
 
-</exception>
-
-<freshness_check>
+**Freshness Check Commands:**
 
 ```bash
 # Check npm package version and date
@@ -449,10 +434,6 @@ npm view @google/genai time
 # Check GitHub file last commit
 gh api repos/googleapis/js-genai/commits?path=README.md --jq '.[0].commit.author.date'
 ```
-
-</freshness_check>
-
-</freshness_gate>
 
 **Protocol: Check Principles → Freshness Gate → Fetch Instance → Extract Delta → Dispose**
 
@@ -504,8 +485,7 @@ Before fetching any URL:
 
 ## Dynamic Sourcing
 
-<fetch*protocol>
-**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For raw SDK syntax (installation, API methods, model config):
+**Syntax Source**: This skill focuses on *patterns* and *philosophy*. For raw SDK syntax (installation, API methods, model config):
 
 1. **Fetch**: `https://www.npmjs.com/package/@google/genai`
 2. **Extract**: The specific API methods or configuration you need
@@ -516,7 +496,6 @@ Before fetching any URL:
 - SDK API changes → `https://github.com/googleapis/js-genai/blob/main/README.md`
 - Model updates → `https://ai.google.dev/gemini-api/docs/quickstart`
 - Vertex AI config → `https://docs.cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview`
-  </fetch_protocol>
 
 ---
 

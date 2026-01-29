@@ -9,8 +9,6 @@ user-invocable: true
 <success_criteria>Browser opened, actions performed, results captured, browser closed properly</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to Reliable Browser Automation Success
 
 1. **Structured Workflow Enables Verification**: Following the open → snapshot → interact → re-snapshot → close sequence ensures every browser action is verifiable through state comparison. This approach catches issues early because you can compare before/after states systematically.
@@ -22,7 +20,6 @@ user-invocable: true
 4. **State Persistence Saves Time**: Saving browser state to files (`state save auth.json`) eliminates repetitive authentication flows. This enables faster iteration during development and more reliable testing by reusing authenticated sessions instead of re-login for every test run.
 
 5. **Screenshots Capture Debugging Evidence**: Taking screenshots at key points provides visual debugging evidence that survives the session. This makes troubleshooting easier because you can review what the browser actually displayed, rather than relying solely on text logs or DOM dumps.
-   </guiding_principles>
 
 ## Quick Start
 
@@ -141,10 +138,9 @@ agent-browser close
 
 ---
 
-## Command Reference
+## EDGE: Command Documentation
 
-<fetch_protocol>
-**Documentation Pattern**: Before using commands, fetch current syntax from:
+Before using commands, fetch current syntax from:
 
 - https://agent-browser.dev/commands (Core, Get info, Check state)
 - https://agent-browser.dev/selectors (Refs, CSS, Semantic locators)
@@ -156,7 +152,6 @@ agent-browser close
 2. Get info and state check commands
 3. Selector syntax (refs preferred)
 4. Session and profile commands
-   </fetch_protocol>
 
 ### Essential Commands
 
@@ -187,7 +182,6 @@ agent-browser record stop              # Stop recording
 | Multi-step workflows, error handling, SPA   | `examples/workflows.md`      |
 | Wait patterns, scoped snapshots, comparison | `examples/patterns.md`       |
 
-<fetch_protocol>
 **Example Pattern**: When you need example code for a specific use case, read the corresponding file from `examples/`:
 
 - **Forms**: Form filling, validation, submission patterns
@@ -195,7 +189,6 @@ agent-browser record stop              # Stop recording
 - **Extraction**: Screenshots, text/attribute extraction, scroll-and-load
 - **Workflows**: Multi-step processes, error recovery, pagination
 - **Patterns**: Utility patterns (wait, scoped snapshot, comparison, upload)
-  </fetch_protocol>
 
 ## Quick Reference
 

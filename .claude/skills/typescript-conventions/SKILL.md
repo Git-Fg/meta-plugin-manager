@@ -9,8 +9,6 @@ user-invocable: false
 <success_criteria>Type strictness enforced, explicit types used, consistent patterns applied</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Quality TypeScript Code
 
 ### 1. Type Safety Through Strictness
@@ -68,9 +66,7 @@ Typed error classes carry context through the call stack. When operations fail, 
 - Context in errors enables debugging
 - Error states become part of the type system
 
-</guiding_principles>
-
-# TypeScript Team Conventions
+## Quick Start
 
 TypeScript conventions that auto-apply when writing TypeScript code. These conventions ensure consistency, type safety, and maintainability across the codebase.
 
@@ -442,13 +438,11 @@ This skill integrates with:
 
 ## Dynamic Sourcing Protocol
 
-<fetch_protocol>
 **CONDITIONAL FETCH**: For TypeScript language questions, fetch from:
 
 - https://www.typescriptlang.org/docs/handbook/ (Type fundamentals)
 
 This skill contains Seed System-specific conventions (Result<T> pattern, immutability, naming conventions) that extend TypeScript fundamentals.
-</fetch_protocol>
 
 ---
 
