@@ -8,8 +8,6 @@ description: "Perform systematic root cause investigation through 4-phase proces
 <success_criteria>Root cause identified with evidence, hypothesis tested, solution with justification provided</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Quality Diagnoses
 
 1. **Evidence beats assumptions** — Systematic investigation gathers concrete proof before forming conclusions. Evidence-based diagnosis prevents chasing phantom causes and ensures fixes address actual problems rather than perceived symptoms.
@@ -23,8 +21,6 @@ description: "Perform systematic root cause investigation through 4-phase proces
 5. **Verification confirms understanding** — Testing hypotheses before implementing fixes validates comprehension of the problem. Verified fixes work correctly; untested fixes create technical debt and future issues.
 
 6. **Pressure resistance ensures quality** — Systematic investigation resists shortcuts during time constraints. Rushed fixes without root cause analysis create more problems than they solve, increasing total debugging time.
-
-</guiding_principles>
 
 ## Workflow
 

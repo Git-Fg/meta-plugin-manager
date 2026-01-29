@@ -320,6 +320,88 @@ Only after spec compliance passes:
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping Dimensional Analysis
+
+❌ **Wrong:**
+"Looks good to me" → No specific dimensions examined
+
+✅ **Correct:**
+Complete dimensional analysis: Spec → Security → Performance → Quality
+
+### Mistake 2: Missing Evidence
+
+❌ **Wrong:**
+"The code seems insecure" → No file:line reference
+
+✅ **Correct:**
+"Security vulnerability at `auth.ts:47`: No input validation. OWASP: Unvalidated input enables injection."
+
+### Mistake 3: Inconsistent Severity
+
+❌ **Wrong:**
+"Minor issue" marked as BLOCKER → BLOCKER feels arbitrary
+
+✅ **Correct:**
+BLOCKER = security/spec failure, HIGH = significant fix, MEDIUM = tech debt, NIT = style
+
+### Mistake 4: Reviewing Quality Before Spec
+
+❌ **Wrong:**
+Comment on code style when requirements are missing
+
+✅ **Correct:**
+Stage 1: Spec Compliance Gate first. Only proceed to Stage 2 if spec passes.
+
+---
+
+## Validation Checklist
+
+Before submitting or finalizing a review:
+
+**Dimensional Analysis:**
+- [ ] Spec: All requirements from PR description addressed
+- [ ] Security: Checked for injections, auth gaps, secrets
+- [ ] Performance: Checked for N+1, algorithmic issues
+- [ ] Quality: Checked for naming, duplication, complexity
+
+**Evidence Standards:**
+- [ ] Every finding has What/Where/Why/How table
+- [ ] Every issue has file:line reference
+- [ ] Every recommendation connected to principle
+
+**Severity Calibration:**
+- [ ] BLOCKER = security/spec failure
+- [ ] HIGH = significant issue with clear fix
+- [ ] MEDIUM = technical debt
+- [ ] NIT = style preference
+
+**Output Quality:**
+- [ ] Structured format with tables
+- [ ] Clear verdict (APPROVE/REQUEST_CHANGES/BLOCK)
+- [ ] Actionable recommendations
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Complete all 4 dimensions before finalizing review
+- Provide file:line evidence for every finding
+- Use What/Where/Why/How tables for clarity
+- Calibrate severity consistently
+- Run spec compliance gate before quality review
+
+❌ **DON'T:**
+- Skip dimensions for speed
+- Make claims without file references
+- Review quality before verifying spec compliance
+- Approve to avoid conflict
+- Use vague language ("seems", "probably")
+
+---
+
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:

@@ -229,7 +229,7 @@ Does this architecture look right?
 
 ## Design Document Examples
 
-Refer to `examples/` for validated design patterns:
+When you work on a design matching one from examples, you MUST read `examples/`:
 
 | Example File     | Shows...                                                                                 |
 | ---------------- | ---------------------------------------------------------------------------------------- |

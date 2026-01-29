@@ -3,6 +3,11 @@ name: engineering-lifecycle
 description: "Plan, implement, and verify software with TDD discipline and intelligent execution routing. Use when starting new work, following software development lifecycle, or ensuring quality gates. Includes TDD phases, execution routing, and verification protocols. Not for ad-hoc execution without a plan, emergency fixes, or exploratory work."
 ---
 
+<mission_control>
+<objective>Guide software development from planning through verification with TDD discipline and quality gates</objective>
+<success_criteria>All phases completed with evidence: plan created, TDD cycle followed, all 6 quality gates pass</success_criteria>
+</mission_control>
+
 # Engineering Lifecycle
 
 **Skill Location**: This file
@@ -50,26 +55,15 @@ description: "Plan, implement, and verify software with TDD discipline and intel
 
 ---
 
-<guiding_principles>
-
 ## The Path to High-Quality Engineering
 
-### 1. The TDD Discipline
+1. **The TDD Discipline** — Test-Driven Development catches bugs early, when they're cheapest to fix. RED→GREEN→REFACTOR creates a rhythm of verification that prevents technical debt.
 
-Test-Driven Development catches bugs early, when they're cheapest to fix. RED→GREEN→REFACTOR creates a rhythm of verification that prevents technical debt.
+2. **Plan Discipline** — Focused plans with 2-3 tasks maintain cognitive clarity. Scope creep destroys plans—new ideas go back to planning, not into current execution.
 
-### 2. Plan Discipline
+3. **Verification Discipline** — Quality gates prevent debt accumulation. Every skipped gate compounds technical debt. Verification is practice, not a checkpoint.
 
-Focused plans with 2-3 tasks maintain cognitive clarity. Scope creep destroys plans—new ideas go back to planning, not into current execution.
-
-### 3. Verification Discipline
-
-Quality gates prevent debt accumulation. Every skipped gate compounds technical debt. Verification is practice, not a checkpoint.
-
-### 4. Coverage Excellence
-
-80%+ coverage ensures maintainability and confidence in changes. Tests after = tests that don't catch regression.
-</guiding_principles>
+4. **Coverage Excellence** — 80%+ coverage ensures maintainability and confidence in changes. Tests after = tests that don't catch regression.
 
 ---
 
@@ -144,13 +138,6 @@ Brief description of the feature.
 | Low coverage     | <80% code coverage                  | Add more test cases          |
 | Type errors      | TypeScript compilation fails        | Fix type annotations         |
 | Gates failing    | BUILD/TYPE/LINT/TEST/SECURITY fails | Fix issues before proceeding |
-
-<mission_control>
-<objective>Plan, implement, and verify software with TDD discipline and intelligent execution routing</objective>
-<success_criteria>Every feature: 2-3 task plan, RED→GREEN→REFACTOR cycle, 80%+ coverage</success_criteria>
-</mission_control>
-
-<trigger>When starting a new feature, refactoring, or bug fix</trigger>
 
 ## Core Loop
 
@@ -407,6 +394,120 @@ If you haven't passed all 6 quality gates, completion cannot be claimed.
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping the Test Phase
+
+❌ **Wrong:**
+```typescript
+// Write production code first
+export function add(a, b) { return a + b; }
+```
+
+✅ **Correct:**
+```typescript
+// RED: Write failing test first
+describe("Calculator", () => {
+  it("adds two numbers", () => {
+    expect(add(10, 20)).toBe(30);
+  });
+});
+// Then implement production code
+```
+
+### Mistake 2: Writing Too Much Code in GREEN
+
+❌ **Wrong:**
+```typescript
+// GREEN: Adding validation, edge cases, features
+export function add(a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b)) {
+    throw new Error("Arguments must be finite numbers");
+  }
+  if (a < 0 || b < 0) { /* more logic */ }
+  return a + b;
+}
+```
+
+✅ **Correct:**
+```typescript
+// GREEN: Minimal code to pass the test
+export const add = (a, b) => a + b;
+
+// REFACTOR: Add validation afterward
+export function add(a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b)) {
+    throw new Error("Arguments must be finite numbers");
+  }
+  return a + b;
+}
+```
+
+### Mistake 3: Skipping Quality Gates
+
+❌ **Wrong:**
+"Tests pass, we're done" → Skip BUILD, TYPE, LINT, SECURITY, DIFF
+
+✅ **Correct:**
+Run all 6 phases: BUILD → TYPE → LINT → TEST → SECURITY → DIFF
+
+### Mistake 4: Large Plans (>3 tasks)
+
+❌ **Wrong:**
+"Plan has 10 tasks covering 5 features" → Context overflow, confusion
+
+✅ **Correct:**
+"Plan has 2-3 tasks for one feature" → Clear scope, focused execution
+
+---
+
+## Validation Checklist
+
+Before claiming feature completion:
+
+**Plan Quality:**
+- [ ] Plan has 2-3 tasks max
+- [ ] Tasks are atomic and independently verifiable
+- [ ] Each task has verification criteria
+
+**TDD Discipline:**
+- [ ] RED phase: Failing test written first
+- [ ] GREEN phase: Minimal code to pass
+- [ ] REFACTOR phase: Cleanup without changing behavior
+- [ ] Coverage target: 80%+ achieved
+
+**Quality Gates:**
+- [ ] BUILD: Compilation succeeds
+- [ ] TYPE: TypeScript compiles without errors
+- [ ] LINT: ESLint reports no issues
+- [ ] TEST: All tests pass
+- [ ] SECURITY: No vulnerabilities
+- [ ] DIFF: Changes are intentional
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Write failing tests before production code (RED)
+- Implement minimal code to pass tests (GREEN)
+- Refactor after tests pass
+- Keep plans to 2-3 tasks
+- Run all 6 quality gates
+- Aim for 80%+ test coverage
+- Verify evidence before claiming completion
+
+❌ **DON'T:**
+- Write production code before tests
+- Add features in GREEN phase
+- Skip quality gates
+- Create plans with >3 tasks
+- Skip TypeScript compilation check
+- Trust "build succeeded" for type safety
+- Push code without running gates
+
+---
+
 This component carries essential Seed System principles for context fork isolation:
 
 <critical_constraint>
@@ -416,8 +517,7 @@ This component carries essential Seed System principles for context fork isolati
 2. 80-95% autonomy target
 3. What-When-Not-Includes format
 4. Progressive disclosure structure
-   </critical_constraint>
-   </critical_constraint>
+</critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -426,29 +526,3 @@ This component carries essential Seed System principles for context fork isolati
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----
-
-<guiding_principles>
-
-## Engineering Quality Standards
-
-### Test-First Discipline
-
-Tests must exist before production code. TDD rhythm prevents regression and ensures design thinking happens before implementation.
-
-### Plan Focus
-
-Plans with 2-3 tasks maintain cognitive clarity. Context over 50% leads to decision fatigue and errors.
-
-### Quality Gates
-
-Run quality-standards after TDD cycle completes. Verification gates prevent debt accumulation and ensure maintainable code.
-</guiding_principles>
-
----
-
-<critical_constraint>
-**Tag Migration:**
-
-PHASE 3: Convert custom XML tags to Markdown headers. Keep standard tags (<mission_control>, <critical_constraint>, <trigger>).

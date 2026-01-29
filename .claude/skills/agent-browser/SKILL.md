@@ -182,7 +182,7 @@ agent-browser record stop              # Stop recording
 | Multi-step workflows, error handling, SPA   | `examples/workflows.md`      |
 | Wait patterns, scoped snapshots, comparison | `examples/patterns.md`       |
 
-**Example Pattern**: When you need example code for a specific use case, read the corresponding file from `examples/`:
+**Example Pattern**: When you work on a use case matching one from examples, you MUST read the corresponding file from `examples/`:
 
 - **Forms**: Form filling, validation, submission patterns
 - **Authentication**: Login flows, session state, headers-based auth

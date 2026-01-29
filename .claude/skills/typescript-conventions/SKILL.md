@@ -416,7 +416,7 @@ const handleSearch = useCallback((query: string) => {
 
 ## Few-Shot Examples
 
-Refer to `examples/` for pattern matching:
+When you work on a pattern matching one from examples, you MUST read `examples/`:
 
 | Example File             | Shows...                                                                   |
 | ------------------------ | -------------------------------------------------------------------------- |
