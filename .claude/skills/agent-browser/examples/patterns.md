@@ -1,5 +1,14 @@
 # Utility Patterns
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Wait for element | ## Wait for Element |
+| Scoped snapshot | ## Scoped Snapshot |
+| Screenshot comparison | ## Screenshot Comparison |
+| File upload | ## File Upload |
+
 Reusable patterns for common operations.
 
 ## Wait for Element

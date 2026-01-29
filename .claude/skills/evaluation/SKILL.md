@@ -206,7 +206,7 @@ recommendations:
 | Everything failing | Lower threshold (≥0.6 for experimental) |
 | Everything passing | Raise threshold (≥0.8 for production)   |
 
-## workflows
+## Workflows
 
 ### Building Quality Gates
 

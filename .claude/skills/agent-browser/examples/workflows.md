@@ -1,5 +1,14 @@
 # Workflows
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Multi-step with errors | ## Multi-Step with Error Handling |
+| SPA interaction | ## Dynamic SPA Interaction |
+| Error recovery | ## Error Recovery |
+| Pagination scraping | ## Data Scraping with Pagination |
+
 Multi-step processes with error handling.
 
 ## Multi-Step with Error Handling

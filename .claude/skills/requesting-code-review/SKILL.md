@@ -167,7 +167,7 @@ npx knip  # Check for unused files/deps
 | Quality reviewed before spec | Always do spec compliance first           |
 | Skipped spec compliance      | Verify requirements before quality checks |
 
-## workflows
+## Workflows
 
 ### Before Requesting Review
 

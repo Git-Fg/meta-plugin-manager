@@ -1,5 +1,14 @@
 # Data Extraction
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Screenshot capture | ## Screenshot |
+| Element data | ## Extract Element Data |
+| Table extraction | ## Table Extraction |
+| Scroll and load | ## Scroll and Load |
+
 Scraping, screenshots, and content extraction.
 
 ## Screenshot

@@ -1,5 +1,17 @@
 # Component Validation Checklist
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Structure checks | ## Gate 1: Structure Verification |
+| Progressive disclosure | ## Gate 2: Progressive Disclosure |
+| Portability | ## Gate 3: Portability Verification |
+| Content quality | ## Gate 4: Content Quality |
+| Test coverage | ## Gate 5: Test Coverage |
+| Quick validation | ## Quick Validation Commands |
+| Component-specific | ## Component-Specific Checks |
+
 ## Gate 1: Structure Verification
 
 | Check               | Criteria                              | Verification              |

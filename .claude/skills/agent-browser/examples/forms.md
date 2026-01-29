@@ -1,5 +1,12 @@
 # Form Interaction
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Basic form filling | ## Basic Form |
+| Form validation testing | ## Form Validation Test |
+
 Form filling, validation, and submission patterns.
 
 ## Basic Form

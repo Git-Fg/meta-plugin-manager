@@ -1,5 +1,16 @@
 # Three-Way Audit Patterns
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Review framework | ## The Review Framework |
+| Investigation phases | ## Investigation Phases |
+| Issue classification | ## Issue Classification |
+| Feedback format | ## Feedback Format |
+| Component detection | ## Component Type Detection |
+| Validation questions | ## Recognition Questions |
+
 ## The Review Framework
 
 Audit alignment between three dimensions:

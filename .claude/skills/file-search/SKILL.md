@@ -138,7 +138,7 @@ rg -l "pattern" | fzf --preview 'rg -C 3 "pattern" {}'
 
 ---
 
-## workflows
+## Workflows
 
 ### Find Specific Pattern
 

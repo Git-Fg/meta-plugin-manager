@@ -156,7 +156,7 @@ next_steps: [What to do next]
 | Scripts fail on Windows | Use POSIX-compliant bash         |
 | Path issues             | Use proper quoting and expansion |
 
-## workflows
+## Workflows
 
 ### Session Lifecycle
 

@@ -203,7 +203,7 @@ function handleResearchRequest(topic: string) {
 | Long pauses, short answers | Simplify questions, batch less      |
 | "Whatever you think"       | Still probe - don't skip categories |
 
-## workflows
+## Workflows
 
 ### When Requirements Are Vague
 

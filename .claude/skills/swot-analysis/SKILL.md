@@ -168,7 +168,7 @@ function deriveActions(swot: SWOT): StrategicAction[] {
 | Only strengths and weaknesses | Don't forget opportunities and threats |
 | All items in one category     | Distinguish all four dimensions        |
 
-## workflows
+## Workflows
 
 ### Strategic Decision Process
 

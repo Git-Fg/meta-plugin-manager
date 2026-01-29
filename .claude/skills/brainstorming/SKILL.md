@@ -166,7 +166,7 @@ Does this component structure work?
 | Presenting full design at once    | Present sections 200-300 words, validate each |
 | Getting "no, start over" feedback | Build on validated foundation                 |
 
-## workflows
+## Workflows
 
 ### When Requirements Are Vague
 

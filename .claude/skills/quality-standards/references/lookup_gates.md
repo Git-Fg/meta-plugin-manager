@@ -1,5 +1,17 @@
 # Gate Commands by Project Type
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Build validation | ## Build Gate |
+| Type checking | ## Type Gate |
+| Linting | ## Lint Gate |
+| Test execution | ## Test Gate |
+| Security scan | ## Security Gate |
+| Diff verification | ## Diff Gate |
+| Exit code meanings | ## Exit Codes |
+
 ## Build Gate
 
 | Project Type | Command                                 | Success Criteria |

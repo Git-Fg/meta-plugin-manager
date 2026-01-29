@@ -174,7 +174,7 @@ function verifyExplanation(
 | Treating assumptions as facts    | Verify before including in fact list         |
 | Mixing evidence with speculation | Separate observed facts from inferred causes |
 
-## workflows
+## Workflows
 
 ### When Debugging Complex Issues
 

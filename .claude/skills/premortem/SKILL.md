@@ -166,7 +166,7 @@ mitigation_checked: "No try/catch, no if (exists) check, no else branch"
 | Only finding tigers  | Ask "What's nobody talking about?" |
 | Uncomfortable topics | Surface them anyway                |
 
-## workflows
+## Workflows
 
 ### When Reviewing Plans/Designs
 

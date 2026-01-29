@@ -177,7 +177,7 @@ function rebuildFromTruths(truths: string[]): Solution[] {
 | Still thinking conventionally  | Ask "What would physics allow that we don't do?" |
 | Solutions look like variations | Go deeper - find more fundamental truths         |
 
-## workflows
+## Workflows
 
 ### When Stuck with Conventional Solutions
 

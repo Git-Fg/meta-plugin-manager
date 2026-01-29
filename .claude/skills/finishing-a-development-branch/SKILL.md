@@ -189,7 +189,7 @@ EOF
 | Merge fails due to conflicts | Resolve before completing  |
 | Base branch diverged         | Rebase or merge base first |
 
-## workflows
+## Workflows
 
 ### Before Commit
 

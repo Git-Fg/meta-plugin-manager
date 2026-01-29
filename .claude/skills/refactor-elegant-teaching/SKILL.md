@@ -181,7 +181,7 @@ if (retryCount > MAX_RETRIES && elapsed > REQUEST_TIMEOUT_MS) {
 2. Use targeted replace, not broad rewrites
 3. Verify surrounding context remains unchanged
 
-## workflows
+## Workflows
 
 ### Refactoring Workflow
 

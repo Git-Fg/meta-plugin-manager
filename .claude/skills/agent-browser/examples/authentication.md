@@ -1,5 +1,13 @@
 # Authentication
 
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Login flow | ## Login Flow |
+| Session reuse | ## Reuse Session |
+| Headers-based auth | ## Headers-Based Auth |
+
 Login flows and session management.
 
 ## Login Flow
