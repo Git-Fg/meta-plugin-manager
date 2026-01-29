@@ -1,43 +1,43 @@
 ---
-name: continue
-description: "Continue the conversation through simple clarifying questions that progressively narrow down user intent. Not for clear specific requests."
+description: "Continue conversation through clarifying questions when user intent is unclear. Use when requests are vague, ambiguous, or need narrowing. For session handoffs, use /handoff:resume instead."
 ---
 
+# Continue Command
+
 <mission_control>
-<objective>Continue conversation through natural questioning that helps user clarify and narrow their intent</objective>
-<success_criteria>User provides clarity through simple recognition-based questions</success_criteria>
+<objective>Clarify user intent through focused questions when conversation has context but direction is unclear</objective>
+<success_criteria>Intent clarified through 1-4 rounds of recognition-based questions, ready to proceed</success_criteria>
 </mission_control>
-
-<interaction_schema>
-listen → ask_simple_question → reflect → converge → act
-</interaction_schema>
-
-# Continue
-
-Continue a conversation by asking simple clarifying questions.
 
 ## When to Use
 
-When the user is unclear, vague, or you need to narrow down their intent:
+Use when:
 
 - Request is ambiguous ("fix it", "make it better")
 - Multiple interpretations possible
 - User seems unsure what they want
 - Conversation has gone off-track
+- Intent needs narrowing
 
-## How It Works
+**Not for:**
+
+- Blank sessions (use `/handoff:resume` for that)
+- Technical clarifications (ask directly)
+- Clarifications about previous work (continue naturally)
+
+## Workflow
 
 ### Step 1: Listen First
 
-Read the user's message carefully. What are they actually asking?
+Read the user's message carefully:
 
-- `Grep: conversation` → What words suggest intent?
-- `Grep: conversation` → What context is available?
-- `Grep: conversation` → What seems most likely?
+- What words suggest intent?
+- What context is available?
+- What seems most likely?
 
 ### Step 2: Ask Clarifying Questions
 
-Use `AskUserQuestion` with L'Entonnoir (funnel) pattern:
+Use `AskUserQuestion` with funnel pattern (L'Entonnoir):
 
 **Good patterns:**
 
@@ -46,13 +46,12 @@ Use `AskUserQuestion` with L'Entonnoir (funnel) pattern:
 - "Which part should I focus on?"
 - "Should I [A] or [B]?"
 
-**Batch related questions in one call:**
+**Batch related questions:**
 
-- 1-4 questions per `AskUserQuestion` call
+- 1-4 questions per call
 - Questions that share context
-- Natural language
 - Few options (2-3 per question)
-- User can answer with recognition
+- User answers with recognition
 
 ### Step 3: Reflect
 
@@ -60,36 +59,11 @@ Mirror back what you understand:
 
 "OK, so you want me to..."
 
-This confirms understanding and lets user correct you.
+This confirms understanding and lets user correct.
 
 ### Step 4: Converge
 
-Continue asking until intent is clear. Then proceed.
-
-### Step 5: Act
-
-Once clarity is achieved, take action.
-
-## Example
-
-**User says:** "Make it better"
-
-**You investigate context, then ask:**
-
-"Would you like me to:
-
-1. Improve performance
-2. Fix bugs
-3. Add features
-4. Something else?"
-
-**User selects: "1"**
-
-**You reflect:** "OK, performance is the priority. What aspect?
-
-1. Speed (faster execution)
-2. Efficiency (less resources)
-3. Both"
+Continue asking until intent is clear, then proceed.
 
 ## Simple Questions to Try
 
@@ -103,25 +77,33 @@ Once clarity is achieved, take action.
 
 ## What to Avoid
 
-- Unrelated questions in the same batch (batch by topic/context)
-- Over-batching (5+ questions in one call is overwhelming)
+- Unrelated questions in the same batch
+- Over-batching (5+ questions is overwhelming)
 - Technical jargon in questions
 - Open-ended questions ("What do you want?")
 - Assuming too quickly
 
-## Natural Language
+## Usage Patterns
 
-Keep questions conversational:
+**Default (clarify intent):**
 
-**Natural:** "So you're saying the login is slow?"
+```
+/continue
+[Conversation has context → Ask clarifying questions → Converge on intent]
+```
 
-**Robotic:** "Please clarify whether the authentication flow performance degradation is the primary concern."
+## Recognition Questions
+
+- "Is conversation context available?" → Continue mode
+- "Is intent clear?" → Converge or ask more
+- "Is this a blank session?" → Use `/handoff:resume`
 
 ---
 
 <critical_constraint>
-MANDATORY: Batch 1-4 related questions per AskUserQuestion call
-MANDATORY: Use simple, natural language
-MANDATORY: Let user recognize and confirm, not generate
-MANDATORY: Continue until intent is clear before acting
+MANDATORY: Batch 1-4 questions per AskUserQuestion call
+MANDATORY: Converge on intent before acting
+MANDATORY: Use recognition-based questions (2-4 options)
+MANDATORY: For handoffs, use /handoff:resume directly
+No exceptions. Continue enables intent clarification.
 </critical_constraint>

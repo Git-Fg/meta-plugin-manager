@@ -301,7 +301,14 @@ async function saveMarkdownFile(
 function parseUrlPattern(pattern: string): { baseUrl: string; prefix: string } {
   const wildcardIndex = pattern.indexOf("*");
   if (wildcardIndex === -1) {
-    throw new Error("Pattern must contain wildcard (*)");
+    // Treat as direct URL - extract base URL for single-page crawl
+    try {
+      const url = new URL(pattern);
+      const prefix = `${url.protocol}//${url.hostname}${url.pathname}`;
+      return { baseUrl: pattern, prefix };
+    } catch {
+      throw new Error("Pattern must contain wildcard (*) or be a valid URL");
+    }
   }
   const prefix = pattern.substring(0, wildcardIndex);
   return { baseUrl: prefix, prefix };
@@ -576,12 +583,21 @@ server.registerTool(
 
       validateOutputPath(outputPath);
 
-      // Generate filename from title or URL
-      const fileName = title
-        ? `${sanitizeFilename(title)}.md`
-        : `${sanitizeFilename(u.hostname + u.pathname)}.md`;
+      // Check if outputPath is already a filename (e.g., "docs/page.md")
+      const isExplicitFilename = /\.[a-z0-9]+$/i.test(outputPath);
 
-      const filePath = path.join(outputPath, fileName);
+      // Generate filename from title or URL
+      const fileName = isExplicitFilename
+        ? path.basename(outputPath)
+        : title
+          ? `${sanitizeFilename(title)}.md`
+          : `${sanitizeFilename(u.hostname + u.pathname)}.md`;
+
+      // Use explicit path or join with directory
+      const filePath = isExplicitFilename
+        ? outputPath
+        : path.join(outputPath, fileName);
+
       const fileContent = buildMarkdownFile(
         u.toString(),
         title,
@@ -589,7 +605,11 @@ server.registerTool(
         fetchTime,
       );
 
-      await saveMarkdownFile(filePath, fileContent);
+      // For explicit filenames, use parent directory; for directory paths, use outputPath
+      const dir = isExplicitFilename ? path.dirname(filePath) : outputPath;
+
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(filePath, fileContent, "utf-8");
 
       return {
         content: [

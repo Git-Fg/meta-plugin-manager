@@ -25,6 +25,94 @@ const perplexityClient = new Perplexity({
       | "off") ?? "warn",
 });
 
+// Input schemas
+const AskPerplexitySchema = z.object({
+  query: z.string().min(1).describe("The question or research query"),
+  model: z
+    .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
+    .default(MODELS.PERPLEXITY_SONAR_PRO)
+    .describe("Perplexity model to use"),
+  system_prompt: z
+    .string()
+    .optional()
+    .describe("Optional system prompt for context"),
+});
+
+const SearchPerplexitySchema = z.object({
+  query: z
+    .union([z.string(), z.array(z.string()).min(1)])
+    .describe("Search query or array of queries for batch search"),
+  maxResults: z
+    .number()
+    .min(1)
+    .max(50)
+    .default(10)
+    .describe("Maximum number of results to return"),
+  searchDomainFilter: z
+    .array(z.string())
+    .optional()
+    .describe(
+      "Limit results to trusted domains (e.g., science.org, nature.com)",
+    ),
+  searchRecencyFilter: z
+    .enum(["hour", "day", "week", "month", "year"])
+    .optional()
+    .describe("Filter by recency"),
+  searchAfterDateFilter: z
+    .string()
+    .optional()
+    .describe("Start date filter (MM/DD/YYYY)"),
+  searchBeforeDateFilter: z
+    .string()
+    .optional()
+    .describe("End date filter (MM/DD/YYYY)"),
+  searchMode: z
+    .enum(["web", "academic", "sec"])
+    .optional()
+    .default("web")
+    .describe(
+      "Search mode: web (default), academic (research papers), sec (SEC filings)",
+    ),
+});
+
+const AskPerplexityWithAssetsSchema = z.object({
+  query: z.string().min(1).describe("The question about the assets"),
+  model: z
+    .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
+    .default(MODELS.PERPLEXITY_SONAR_PRO)
+    .describe("Perplexity model to use"),
+  system_prompt: z
+    .string()
+    .optional()
+    .describe("Optional system prompt for context"),
+  assets: z
+    .array(
+      z.object({
+        type: z.enum(["image", "document"]).describe("Asset type"),
+        mimeType: z
+          .string()
+          .optional()
+          .describe(
+            "MIME type (auto-detected from file extension if data is a file path)",
+          ),
+        data: z
+          .string()
+          .describe(
+            "Asset as file path (e.g., /path/to/file.pdf or ./docs/doc.png), URL (http:// or https://), or base64-encoded content",
+          ),
+      }),
+    )
+    .optional()
+    .default([])
+    .describe("Array of image or document attachments"),
+});
+
+type AskPerplexityParams = z.infer<typeof AskPerplexitySchema>;
+type SearchPerplexityParams = z.infer<typeof SearchPerplexitySchema>;
+type AskPerplexityWithAssetsParams = z.infer<
+  typeof AskPerplexityWithAssetsSchema
+>;
+
 async function callPerplexitySearch(
   query: string | string[],
   options?: {
@@ -182,27 +270,17 @@ export function registerPerplexityTools(server: McpServer): void {
       title: "Ask Perplexity (Web-Grounded Answers)",
       description:
         "Tool to query Perplexity AI for web-grounded answers with citations. Use when you need research-focused responses with sources. Constraint: use search_perplexity for raw search results; use sonar-pro for advanced search.",
-      inputSchema: {
-        query: z.string().min(1).describe("The question or research query"),
-        model: z
-          .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
-          .default(MODELS.PERPLEXITY_SONAR_PRO)
-          .describe("Perplexity model to use"),
-        system_prompt: z
-          .string()
-          .optional()
-          .describe("Optional system prompt for context"),
-      },
-      outputSchema: {
-        answer: z.string().describe("The web-grounded answer from Perplexity"),
-      },
+      inputSchema: AskPerplexitySchema,
     },
-    async ({ query, model, system_prompt }) => {
+    async ({ query, model, system_prompt }: AskPerplexityParams) => {
       const cacheKey = getCacheKey("pplx", model, system_prompt, query);
       const cached = responseCache.get(cacheKey);
       if (cached) {
         console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-        return { content: [{ type: "text", text: cached.response }] };
+        return {
+          content: [{ type: "text", text: cached.response }],
+          structuredContent: { cached: true },
+        };
       }
 
       const result = await callPerplexity(query, model, system_prompt);
@@ -217,7 +295,16 @@ export function registerPerplexityTools(server: McpServer): void {
         response: result.response,
         timestamp: Date.now(),
       });
-      return { content: [{ type: "text", text: result.response }] };
+
+      return {
+        content: [{ type: "text", text: result.response }],
+        structuredContent: {
+          answer: result.response,
+          model,
+          usage: result.usage,
+          cost,
+        },
+      };
     },
   );
 
@@ -227,54 +314,7 @@ export function registerPerplexityTools(server: McpServer): void {
       title: "Search Perplexity (Raw Web Results)",
       description:
         "Tool to get ranked web search results with real-time information. Use when you need raw search results without AI summarization. Constraint: supports multi-query, domain filtering, date filtering, and search mode (web/academic/sec).",
-      inputSchema: {
-        query: z
-          .union([z.string(), z.array(z.string()).min(1)])
-          .describe("Search query or array of queries for batch search"),
-        maxResults: z
-          .number()
-          .min(1)
-          .max(50)
-          .default(10)
-          .describe("Maximum number of results to return"),
-        searchDomainFilter: z
-          .array(z.string())
-          .optional()
-          .describe(
-            "Limit results to trusted domains (e.g., science.org, nature.com)",
-          ),
-        searchRecencyFilter: z
-          .enum(["hour", "day", "week", "month", "year"])
-          .optional()
-          .describe("Filter by recency"),
-        searchAfterDateFilter: z
-          .string()
-          .optional()
-          .describe("Start date filter (MM/DD/YYYY)"),
-        searchBeforeDateFilter: z
-          .string()
-          .optional()
-          .describe("End date filter (MM/DD/YYYY)"),
-        searchMode: z
-          .enum(["web", "academic", "sec"])
-          .optional()
-          .default("web")
-          .describe(
-            "Search mode: web (default), academic (research papers), sec (SEC filings)",
-          ),
-      },
-      outputSchema: {
-        results: z
-          .array(
-            z.object({
-              title: z.string(),
-              url: z.string(),
-              snippet: z.string(),
-              date: z.string().optional(),
-            }),
-          )
-          .describe("Ranked search results"),
-      },
+      inputSchema: SearchPerplexitySchema,
     },
     async ({
       query,
@@ -284,7 +324,7 @@ export function registerPerplexityTools(server: McpServer): void {
       searchAfterDateFilter,
       searchBeforeDateFilter,
       searchMode,
-    }) => {
+    }: SearchPerplexityParams) => {
       const queryStr = Array.isArray(query) ? query.join("|") : query;
       const cacheKey = getCacheKey(
         "pplx-search",
@@ -299,7 +339,10 @@ export function registerPerplexityTools(server: McpServer): void {
       const cached = responseCache.get(cacheKey);
       if (cached) {
         console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-        return { content: [{ type: "text", text: cached.response }] };
+        return {
+          content: [{ type: "text", text: cached.response }],
+          structuredContent: { cached: true },
+        };
       }
 
       const result = await callPerplexitySearch(query, {
@@ -332,12 +375,12 @@ export function registerPerplexityTools(server: McpServer): void {
       });
 
       return {
-        content: [
-          {
-            type: "text",
-            text: responseText,
-          },
-        ],
+        content: [{ type: "text", text: responseText }],
+        structuredContent: {
+          results: result.results,
+          query: Array.isArray(query) ? query : query,
+          resultCount: result.results.length,
+        },
       };
     },
   );
@@ -348,42 +391,14 @@ export function registerPerplexityTools(server: McpServer): void {
       title: "Ask Perplexity with Assets (Multimodal)",
       description:
         "Tool to query Perplexity with image or document attachments for web-grounded multimodal analysis. Use when you need to analyze visual or document content with web context. Constraint: supports file paths (absolute or relative), URLs, and base64; max 50MB per file.",
-      inputSchema: {
-        query: z.string().min(1).describe("The question about the assets"),
-        model: z
-          .enum([MODELS.PERPLEXITY_SONAR_PRO, MODELS.PERPLEXITY_SONAR_DEEP])
-          .default(MODELS.PERPLEXITY_SONAR_PRO)
-          .describe("Perplexity model to use"),
-        system_prompt: z
-          .string()
-          .optional()
-          .describe("Optional system prompt for context"),
-        assets: z
-          .array(
-            z.object({
-              type: z.enum(["image", "document"]).describe("Asset type"),
-              mimeType: z
-                .string()
-                .optional()
-                .describe(
-                  "MIME type (auto-detected from file extension if data is a file path)",
-                ),
-              data: z
-                .string()
-                .describe(
-                  "Asset as file path (e.g., /path/to/file.pdf or ./docs/doc.png), URL (http:// or https://), or base64-encoded content",
-                ),
-            }),
-          )
-          .optional()
-          .default([])
-          .describe("Array of image or document attachments"),
-      },
-      outputSchema: {
-        answer: z.string().describe("The web-grounded multimodal analysis"),
-      },
+      inputSchema: AskPerplexityWithAssetsSchema,
     },
-    async ({ query, model, system_prompt, assets }) => {
+    async ({
+      query,
+      model,
+      system_prompt,
+      assets,
+    }: AskPerplexityWithAssetsParams) => {
       const assetKey = assets
         ? assets
             .map((a) => `${a.type}:${a.mimeType}:${a.data.slice(0, 50)}`)
@@ -399,7 +414,10 @@ export function registerPerplexityTools(server: McpServer): void {
       const cached = responseCache.get(cacheKey);
       if (cached) {
         console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-        return { content: [{ type: "text", text: cached.response }] };
+        return {
+          content: [{ type: "text", text: cached.response }],
+          structuredContent: { cached: true },
+        };
       }
 
       const attachments = assets?.map((a) => ({
@@ -425,7 +443,17 @@ export function registerPerplexityTools(server: McpServer): void {
         response: result.response,
         timestamp: Date.now(),
       });
-      return { content: [{ type: "text", text: result.response }] };
+
+      return {
+        content: [{ type: "text", text: result.response }],
+        structuredContent: {
+          answer: result.response,
+          model,
+          usage: result.usage,
+          cost,
+          assetCount: assets?.length ?? 0,
+        },
+      };
     },
   );
 }

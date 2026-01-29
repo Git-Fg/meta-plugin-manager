@@ -115,7 +115,7 @@ Recognition patterns for classifying user corrections to determine the appropria
 When invoked, follow this flow:
 
 ```
-1. Read session transcript from @.claude/transcripts/last-session.jsonl
+1. Read session transcript file
 
 2. Search for correction patterns:
    a. Scan user messages for trigger phrases

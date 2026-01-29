@@ -1,30 +1,70 @@
 ---
 name: create-meta-prompts
-description: "Generate meta-prompts for Claude-to-Claude pipelines and multi-stage workflows. Use when creating optimized prompts for complex workflows. Not for simple single-turn prompts or manual messaging."
+description: "Generate meta-prompts for Claude-to-Claude pipelines and multi-stage workflows. Use when creating optimized prompts for complex workflows, delegating to subagents, or managing multi-stage execution. Includes XML output structuring, metadata injection, and chain provenance. Not for simple single-turn prompts, manual messaging, or non-Claude integrations."
 ---
 
-##
+<mission_control>
+<objective>Generate meta-prompts for Claude-to-Claude pipelines with structured XML output and metadata for multi-stage workflows.</objective>
+<success_criteria>Prompt folder created in .claude/workspace/prompts/, SUMMARY.md generated, chain provenance maintained</success_criteria>
+</mission_control>
 
-Objective
-Create prompts optimized for Claude-to-Claude communication in multi-stage workflows. Outputs are structured with XML and metadata for efficient parsing by subsequent prompts.
-Every execution produces a `SUMMARY.md` for quick human scanning without reading full outputs.
-Each prompt gets its own folder in `.claude/workspace/prompts/` with its output artifacts, enabling clear provenance and chain detection.
+<guiding_principles>
 
-##
+## The Path to High-Quality Meta-Prompt Success
 
-Quick Start
+Meta-prompts excel when they preserve context across prompt boundaries, maintain clear provenance, and enable human scanning of results. These principles guide successful Claude-to-Claude pipeline creation:
 
-### Workflow
+**1. Structured delegation enables reliable multi-stage workflows.** When prompts specify clear outputs (XML for Claude, SUMMARY.md for humans), each stage can consume the previous stage's output without ambiguity. Clear handoff points prevent information loss and enable dependency tracking.
 
-1. **Intake**: Determine purpose (Do/Plan/Research/Refine), gather requirements
-2. **Chain detection**: Check for existing research/plan files to reference
-3. **Generate**: Create prompt using purpose-specific patterns
-4. **Save**: Create folder in `.claude/workspace/prompts/{number}-{topic}-{purpose}/`
-5. **Present**: Show decision tree for running
-6. **Execute**: Run prompt(s) with dependency-aware execution engine
-7. **Summarize**: Create SUMMARY.md for human scanning
+**2. Context preservation creates intelligent chains.** Research outputs that include confidence levels, dependencies, and assumptions allow planning prompts to build on verified findings rather than rediscovering context. Metadata injection creates self-documenting workflows that explain their own rationale.
 
-#### Folder Structure
+**3. Template patterns accelerate prompt creation.** Purpose-specific patterns (Do/Plan/Research/Refine) embed best practices for each workflow type. Templates ensure consistency while allowing customization for specific needs.
+
+**4. Chain detection avoids duplicate work.** Scanning for existing research and plan files before generating new prompts enables reuse of prior findings. Referencing existing outputs creates traceable provenance chains.
+
+**5. Validation before archiving ensures quality.** Checking that outputs meet requirements (file exists, has content, includes required sections, has substantive SUMMARY.md) before archiving prompts maintains high standards and provides recovery options when issues occur.
+
+**6. Decision trees keep users in control.** Presenting options (run now, review first, save for later) before execution enables informed workflow choices. Clear progress reporting during execution builds trust and enables intervention when needed.
+</guiding_principles>
+
+## Workflow
+
+**Generate and execute meta-prompts for multi-stage workflows:**
+
+1. **Intake →** Determine purpose (Do/Plan/Research/Refine), gather requirements → Result: Clear prompt scope
+2. **Chain Detection →** Check for existing research/plan files → Result: Referenced context
+3. **Generate →** Create prompt using purpose-specific patterns → Result: Structured prompt folder
+4. **Present →** Show decision tree for running → Result: User can execute, review, or save
+5. **Execute →** Run prompt(s) with dependency-aware engine → Result: XML output with metadata
+6. **Summarize →** Create SUMMARY.md for human scanning → Result: Quick-ler + key findings
+
+**Why:** Structured meta-prompts enable Claude-to-Claude pipelines with clear provenance and human-scannable summaries.
+
+## Navigation
+
+| If you need...              | Read...                                 |
+| :-------------------------- | :-------------------------------------- |
+| Generate meta-prompt        | ## Workflow → Generate                  |
+| Understand folder structure | ## Workflow → Folder Structure          |
+| Intake questions            | `references/lookup_question-bank.md`    |
+| Do patterns                 | `references/do-patterns.md`             |
+| Plan patterns               | `references/plan-patterns.md`           |
+| Refine patterns             | `references/refine-patterns.md`         |
+| Research patterns           | `references/research-patterns.md`       |
+| Intelligence rules          | `references/intelligence-rules.md`      |
+| Summary template            | `references/lookup_summary-template.md` |
+
+### Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Tracking**: Maintain a visible task list for meta-prompt creation
+- **Delegation**: Delegate workflow execution to specialized workers
+- **Navigation**: Navigate code structure for context gathering
+
+Trust the System Prompt to select the correct implementation for these patterns.
+
+### Folder Structure
 
 ```
 .claude/workspace/prompts/
@@ -52,10 +92,13 @@ Quick Start
 
 ##
 
-Context
-Prompts directory: !`[ -d ./.claude/planning/prompts ] && echo "exists" || echo "missing"`
-Existing research/plans: !`find ./.claude/planning/prompts -name "*-research.md" -o -name "*-plan.md" 2>/dev/null | head -10`
-Next prompt number: !`ls -d ./.claude/workspace/prompts/*/ 2>/dev/null | wc -l | xargs -I {} expr {} + 1`
+Context Gathering
+
+At invocation time, gather context using Read and Glob:
+
+- Check if `.claude/workspace/prompts/` directory exists
+- List existing research/plan folders
+- Determine next prompt number
 
 ##
 
@@ -120,7 +163,7 @@ If found:
 ##### Contextual Questioning
 
 Generate 2-4 questions using AskUserQuestion based on purpose and gaps.
-Load questions from: [references/question-bank.md](references/question-bank.md)
+Load questions from: `references/lookup_question-bank.md`
 Route by purpose:
 
 - Do → artifact type, scope, approach
@@ -165,7 +208,7 @@ Load purpose-specific patterns:
 All generated prompts include:
 
 1. **Objective**: What to accomplish, why it matters
-2. **Context**: Referenced files (@), dynamic context (!)
+2. **Context**: File references, dynamic state (see content-injection.md for command syntax)
 3. **Requirements**: Specific instructions for the task
 4. **Output specification**: Where to save, what structure
 5. **Metadata requirements**: For research/plan outputs, specify XML metadata structure
@@ -238,7 +281,7 @@ Choose (1-4): _
 Straightforward execution of one prompt.
 
 1. Read prompt file contents
-2. Spawn Task agent with subagent_type="general-purpose"
+2. Delegate to implementation specialist
 3. Include in task prompt:
    - The complete prompt contents
    - Output location: `.claude/workspace/prompts/{number}-{topic}-{purpose}/{topic}-{purpose}.md`
@@ -297,7 +340,7 @@ Unlike sequential, parallel continues even if some fail:
 
 For complex DAGs (e.g., two parallel research → one plan).
 
-1. Analyze dependency graph from @ references
+1. Analyze dependency graph from file references
 2. Group into execution layers:
    - Layer 1: No dependencies (run parallel)
    - Layer 2: Depends only on layer 1 (run after layer 1 completes)
@@ -319,16 +362,16 @@ Layer 3 (after layer 2): 004-implement
 
 ###### Automatic Detection
 
-Scan prompt contents for @ references to determine dependencies:
+Scan prompt contents for cross-references to determine dependencies:
 
-1. Parse each prompt for `@.claude/workspace/prompts/{number}-{topic}/` patterns
+1. Parse each prompt for `.claude/workspace/prompts/{number}-{topic}/` patterns
 2. Build dependency graph
 3. Detect cycles (error if found)
 4. Determine execution order
 
 ###### Inference Rules
 
-If no explicit @ references found, infer from purpose:
+If no explicit cross-references found, infer from purpose:
 
 - Research prompts: No dependencies (can parallel)
 - Plan prompts: Depend on same-topic research
@@ -585,36 +628,7 @@ Success Criteria
 ---
 
 <critical_constraint>
-MANDATORY: Create SUMMARY.md for every prompt execution
-MANDATORY: Validate output file exists and has required sections before archiving
-MANDATORY: Use proper XML metadata tags for research/plan outputs
-MANDATORY: Present decision tree before executing prompts
-MANDATORY: Handle validation failures gracefully with recovery options
-No exceptions. Meta-prompts must maintain provenance and enable human scanning.
+**Portability Invariant**: This skill must work in a project with ZERO `.claude/rules/` dependencies. All necessary patterns and philosophy are self-contained in this file and its references/ folder.
 </critical_constraint>
-
----
-
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---

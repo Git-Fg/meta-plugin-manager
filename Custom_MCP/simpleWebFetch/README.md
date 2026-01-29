@@ -67,96 +67,96 @@ npm run build
 
 ```bash
 # Test tools list
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | node abs/path/server.js
 
 # Test fullWebFetch
-echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"fullWebFetch","arguments":{"url":"https://example.com"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"fullWebFetch","arguments":{"url":"https://example.com"}}}' | node abs/path/server.js
 
 # Test simpleWebFetch
-echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"simpleWebFetch","arguments":{"url":"https://example.com"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"simpleWebFetch","arguments":{"url":"https://example.com"}}}' | node abs/path/server.js
 
 # Test webFetch (default - clean markdown)
-echo '{"jsonrpc":"2.0","id":3.1,"method":"tools/call","params":{"name":"webFetch","arguments":{"url":"https://example.com"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":3.1,"method":"tools/call","params":{"name":"webFetch","arguments":{"url":"https://example.com"}}}' | node abs/path/server.js
 
 # Test webFetch (with metadata)
-echo '{"jsonrpc":"2.0","id":3.2,"method":"tools/call","params":{"name":"webFetch","arguments":{"url":"https://example.com","includeMetadata":true}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":3.2,"method":"tools/call","params":{"name":"webFetch","arguments":{"url":"https://example.com","includeMetadata":true}}}' | node abs/path/server.js
 
 # Test saveWebFetch (auto-generated filename)
-echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"saveWebFetch","arguments":{"url":"https://example.com","outputPath":"test/"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"saveWebFetch","arguments":{"url":"https://example.com","outputPath":"test/"}}}' | node abs/path/server.js
 
 # Test saveWebFetch (custom filename)
-echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"saveWebFetch","arguments":{"url":"https://example.com","outputPath":"test/custom.md"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"saveWebFetch","arguments":{"url":"https://example.com","outputPath":"test/custom.md"}}}' | node abs/path/server.js
 
 # Test crawlWebFetch
-echo '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"crawlWebFetch","arguments":{"pattern":"https://example.com/*","outputPath":"crawl/"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"crawlWebFetch","arguments":{"pattern":"https://example.com/*","outputPath":"crawl/"}}}' | node abs/path/server.js
 
 # Test askWebFetch (default - key points)
-echo '{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"askWebFetch","arguments":{"url":"https://example.com"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"askWebFetch","arguments":{"url":"https://example.com"}}}' | node abs/path/server.js
 
 # Test askWebFetch (custom prompt)
-echo '{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"askWebFetch","arguments":{"url":"https://example.com","prompt":"What is this page about?"}}}' | node dist/server.js
+echo '{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"askWebFetch","arguments":{"url":"https://example.com","prompt":"What is this page about?"}}}' | node abs/path/server.js
 ```
 
 ### Using MCP Inspector
 
 ```bash
 # List tools
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js --method tools/list
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js --method tools/list
 
 # Call fullWebFetch
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name fullWebFetch \
   --tool-arg url=https://example.com
 
 # Call simpleWebFetch
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name simpleWebFetch \
   --tool-arg url=https://example.com
 
 # Call webFetch (RECOMMENDED - default)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://example.com
 
 # Call webFetch (with metadata)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://example.com \
   --tool-arg includeMetadata=true
 
 # Call saveWebFetch (auto-generated filename)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name saveWebFetch \
   --tool-arg url=https://example.com \
   --tool-arg outputPath=test/
 
 # Call saveWebFetch (custom filename)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name saveWebFetch \
   --tool-arg url=https://example.com \
   --tool-arg outputPath=test/custom-file.md
 
 # Call crawlWebFetch
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name crawlWebFetch \
   --tool-arg pattern=https://example.com/* \
   --tool-arg outputPath=crawl/
 
 # Call askWebFetch (default - key points)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://example.com
 
 # Call askWebFetch (custom prompt)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://example.com \
@@ -236,13 +236,13 @@ Example MCP server configuration for Claude Desktop:
 
 ```bash
 # Clean markdown for LLM context (RECOMMENDED)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://example.com/article
 
 # With title when needed
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://example.com/article \
@@ -385,7 +385,7 @@ The server includes an evaluation file (`evaluation.xml`) with test cases coveri
 
 ```bash
 # Save a documentation page to a local folder
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name saveWebFetch \
   --tool-arg url=https://docs.example.com/api-reference \
@@ -396,14 +396,14 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Save with a custom filename (auto-generates .md extension)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name saveWebFetch \
   --tool-arg url=https://blog.example.com/post \
   --tool-arg outputPath=blog/my-custom-post-name.md
 
 # Or with a different extension
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name saveWebFetch \
   --tool-arg url=https://blog.example.com/post \
@@ -414,13 +414,13 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Fetch clean markdown for LLM context (RECOMMENDED)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://docs.example.com/api-reference
 
 # Fetch with title when needed
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name webFetch \
   --tool-arg url=https://blog.example.com/post \
@@ -431,7 +431,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Crawl all blog posts from a site
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name crawlWebFetch \
   --tool-arg pattern=https://blog.example.com/posts/* \
@@ -442,7 +442,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Crawl with increased concurrency for faster processing
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name crawlWebFetch \
   --tool-arg pattern=https://docs.example.com/* \
@@ -454,7 +454,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Analyze a URL and extract key points (default behavior)
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://example.com/article
@@ -464,7 +464,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Ask specific questions about the content
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://docs.example.com/api \
@@ -475,7 +475,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Use a different OpenRouter model
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://example.com/article \
@@ -487,7 +487,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 
 ```bash
 # Analyze with custom fetch options
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name askWebFetch \
   --tool-arg url=https://example.com/long-article \

@@ -6,21 +6,117 @@ Think of this as the structural patterns for building components. We provide the
 
 ---
 
-## The Map vs Script Principle
+## Commander's Intent Pattern
 
-**The Script (Low Trust):**
+Define the destination and boundaries, not the turn-by-turn mechanics.
 
-- "First create the directory. Then create the SKILL.md file. Then add frontmatter."
-- Assumes the agent cannot manage basic operations
-- Brittle—breaks when context shifts
+```
+❌ Script: "Run `npm test`, then if it passes, run `git add .`, then `git commit`."
+✅ Intent: "Commit the changes once the test suite passes."
 
-**The Map (High Trust):**
+❌ Script: "First create the directory. Then create the SKILL.md file. Then add frontmatter."
+✅ Intent: "Here is the directory structure, quality standards, and where patterns live."
 
-- "Here is the directory structure, quality standards, and where patterns live."
-- Respects the agent's capability to execute
-- Flexible—adapts to context
+❌ Script: "Run `trash component.md`, then update the index, then clean dependencies."
+✅ Intent: "Archive retired components to conserve history while keeping the context window clean."
+```
 
-**Core Principle:** Architecture provides the Map. The Agent remains the Pilot.
+**Why this works:**
+
+| Script (Low Trust)                           | Intent (High Trust)              |
+| -------------------------------------------- | -------------------------------- |
+| Assumes agent cannot manage basic operations | Respects the agent's capability  |
+| Brittle—breaks when context shifts           | Flexible—adapts to context       |
+| Consumes tokens on implementation details    | Focuses on what matters: outcome |
+
+**The Pattern:** State what a perfect result looks like, then trust the agent to navigate there.
+
+---
+
+## Anti-Laziness Compensation Patterns
+
+> **Objective:** Ensure critical content is found whether agents skim or attend to recency.
+> **Success Criteria:** Content discoverable via navigation tables AND grep AND recency.
+
+### The Dual-Path Problem
+
+AI agents exhibit two conflicting behaviors due to their RLHF training:
+
+| Behavior           | Implication                             | Result                                     |
+| ------------------ | --------------------------------------- | ------------------------------------------ |
+| **Recency bias**   | Models attend strongly to recent tokens | Place constraints at bottom of files       |
+| **Agent laziness** | Agents tend to skim/skip to end         | Critical content missed if not at very end |
+
+**The conflict:** "Constraints at bottom" assumes models read sequentially. "Agents skip to end" means critical content may be missed entirely.
+
+**Solution:** Multi-modal discoverability—critical content accessible via multiple paths.
+
+### Required Elements for Reference Files
+
+| Element                       | Purpose                        | Placement                               |
+| :---------------------------- | :----------------------------- | :-------------------------------------- |
+| **Navigation table**          | Quick lookup via recognition   | File top, immediately after frontmatter |
+| **Greppable section headers** | PATTERN:, EDGE:, ANTI-PATTERN: | Throughout body                         |
+| **Constraints footer**        | Recency bias compliance        | File bottom                             |
+
+### Greppable Header Registry
+
+Use consistent, searchable prefixes that agents can find via grep:
+
+| Prefix             | Purpose                     | When to Use               |
+| :----------------- | :-------------------------- | :------------------------ |
+| `## PATTERN:`      | Core implementation pattern | Default for main content  |
+| `## ANTI-PATTERN:` | What to avoid               | Warnings, common mistakes |
+| `## EDGE:`         | Edge case handling          | Special conditions        |
+| `## REFERENCE:`    | API signatures, specs       | Technical details         |
+| `## EXAMPLE:`      | Complete working code       | Runnable demonstrations   |
+| `## TL;DR:`        | Executive summary           | Quick context             |
+
+### Reference File Template
+
+```markdown
+# Reference Title
+
+## Navigation
+
+| If you need... | Read...                   |
+| :------------- | :------------------------ |
+| Quick pattern  | ## PATTERN: Core Pattern  |
+| Edge case      | ## EDGE: Edge Cases       |
+| Common mistake | ## ANTI-PATTERN: Mistakes |
+
+## TL;DR
+
+[Executive summary - 2-3 lines]
+
+## PATTERN: Core Pattern
+
+[Main content]
+
+## ANTI-PATTERN: Common Mistakes
+
+[What to avoid and why]
+
+## EDGE: Edge Cases
+
+[Special conditions and handling]
+
+---
+
+## Absolute Constraints
+
+<critical_constraint>
+[Non-negotiable rules]
+</critical_constraint>
+```
+
+### Why Multi-Modal Discovery Works
+
+| Problem                 | Solution                | Result                  |
+| ----------------------- | ----------------------- | ----------------------- |
+| Agent skips to end      | Navigation table at top | Finds what it needs     |
+| Agent misses navigation | Greppable headers       | Searches find content   |
+| Agent attends to bottom | Constraints footer      | Final tokens reinforced |
 
 ---
 
@@ -28,125 +124,235 @@ Think of this as the structural patterns for building components. We provide the
 
 **The Standard:** XML for the Machine (Control), Markdown for the Human (Content), State for Interaction.
 
-### The 3-Layer Architecture
+### When to Use XML vs Markdown
 
-| Layer                 | Purpose  | What It Does                                      |
-| --------------------- | -------- | ------------------------------------------------- |
-| **Control Plane**     | Steering | Creates "Attention Sinks" with semantic anchors   |
-| **Data Plane**        | Content  | Maximizes token density (45% savings vs pure XML) |
-| **Interaction Plane** | Flow     | Manages cognitive state transitions               |
+| Use XML (Pay the Tax)          | Use Markdown (Skip)        |
+| ------------------------------ | -------------------------- |
+| Critical constraints           | Bulk data content          |
+| Rules that must not be ignored | Informational prose        |
+| Semantic anchoring needed      | Tables and structured data |
 
-**Why This Architecture Works:**
-
-- **Attention Anchors**: XML tags create high-contrast markers in the token stream—the model can "jump" to these anchors during generation
-- **Token Efficiency**: Markdown inside XML tags saves 45% of tokens compared to pure XML
-- **Context Rot Prevention**: Tags remain visible even in "Lost in the Middle" scenarios
-
-### The 45% XML Tax: When to Pay It
-
-| Pay the Tax (Use XML)          | Skip the Tax (Use Markdown) |
-| ------------------------------ | --------------------------- |
-| Critical constraints           | Bulk data content           |
-| Rules that must not be ignored | Informational prose         |
-| State transitions              | Code examples and logs      |
-| Semantic anchoring needed      | Tables and structured data  |
-
-**Rule of Thumb:** If it's "Data" → Markdown. If it's "Instruction" → XML.
+**Rule of Thumb:** If it's "Instruction" → XML. If it's "Data" → Markdown.
 
 **Example:**
 
 ```
-Inefficient: <instructions>## Step 1\nCreate directory</instructions>
-Efficient: ## Step 1\nCreate directory
+❌ Wrapped: <instructions>## Step 1\nCreate directory</instructions>
+✅ Inline: ## Step 1\nCreate directory
 
-Only wrap when critical: <critical_constraint>ALWAYS validate before save</critical_constraint>
+✅ Only wrap when critical:
+<critical_constraint>ALWAYS validate before save</critical_constraint>
+```
+
+### Standard Tags (Minimal)
+
+| Tag                     | Purpose                          | When to Use                |
+| :---------------------- | :------------------------------- | :------------------------- |
+| `<mission_control>`     | Objective and success criteria   | Low-freedom workflows only |
+| `<critical_constraint>` | System physics (true invariants) | Non-negotiables only       |
+| `<injected_content>`    | Wrapped @ references             | Command content injection  |
+
+---
+
+## The Path to High-Autonomy Success
+
+### 1. The Unified Neural Core
+
+Keep core logic in SKILL.md, not scattered across references. When logic is fragmented, context becomes fragmented. The pilot needs a single source of truth for each capability domain.
+
+**Recognition:** "Is the decision-making content in SKILL.md or scattered?"
+
+### 2. The Integrity of Discovery (Blind Pointers)
+
+Use navigation tables as **blind pointers** only. Never describe content in SKILL.md navigation.
+
+✅ **Blind Pointer:**
+
+```markdown
+| If you need...              | Read...                         |
+| :-------------------------- | :------------------------------ |
+| API Technical Specification | `references/lookup_api_spec.md` |
+```
+
+❌ **Spoiler:**
+
+```markdown
+| If you need... | Read...                                                  |
+| :------------- | :------------------------------------------------------- |
+| API endpoints  | See `references/api.md` for login, logout, token refresh |
+```
+
+**Recognition:** "Does my navigation describe what's in the reference, or just point to it?"
+
+### 3. Semantic Speed
+
+Use `lookup_`/`pattern_`/`workflow_` prefixes for reference files. Semantic prefixes create discoverable anchors.
+
+✅ `references/lookup_api.md` finds faster than `references/api_details_v2.md`
+
+### 4. Fluid User Experience
+
+Use positional arguments for unique identifiers only. `$1` should always be a slug, hash, or ID—not a flag or mode.
+
+✅ `/handoff:resume session-x` (ID-based)
+❌ `/handoff:resume --verbose` (not allowed)
+
+### 5. The Recency Advantage
+
+Place critical content at file bottoms. Models attend to recent tokens. The final tokens receive highest attention.
+
+### 6. The Attic Pattern
+
+Archive retired components, never delete. Git history is permanent; context window is not.
+
+- Use `trash` command to move to OS trash bin
+- Add `<deprecated>` tags at file top for clarity
+
+### 7. Define Boundaries, Not Steps
+
+Provide invariants (what the output must be), not instructions (how to get there). Trust the pilot to navigate.
+
+❌ "Run `rm -rf node_modules`"
+✅ "Zero external dependencies"
+
+---
+
+## Command vs Skill: Structural Choice, Not Capability
+
+> **Objective:** Guide structural choice based on cognitive load, not capability differences.
+
+**The Key Insight:** Skills and commands have IDENTICAL capabilities. The choice is about cognitive load management.
+
+| Both Can:           |                        |
+| :------------------ | :--------------------- |
+| User invocable      | Via slash commands     |
+| Model invocable     | By other components    |
+| Invoke tools        | Any tool (Bash, etc)   |
+| Delegate            | To specialized workers |
+| Use AskUserQuestion | For interaction        |
+
+### When to Choose Command
+
+- Quick intent-based invocation is primary
+- Content fits in single file (~500-1500 words)
+- Direct user interaction is the main pattern
+
+### When to Choose Skill
+
+- Content benefits from progressive disclosure
+- Need references/ for detailed lookup tables
+- Content may be invoked by other components
+
+### Structure Comparison
+
+```
+command.md (single file)
+└── All content loads at invocation
+
+skill-name/ (folder)
+├── SKILL.md (core)
+├── references/ (detailed lookup)
+├── examples/ (optional)
+└── scripts/ (optional)
 ```
 
 ---
 
-## Standard Tags Reference
+## The Unified Separation of Concerns Protocol
 
-### Control Plane (XML)
+> **Objective:** Define boundaries between Commands (Infrastructure) and Skills (Portable Logic).
 
-| Tag                     | Purpose                                  |
-| ----------------------- | ---------------------------------------- |
-| `<mission_control>`     | Top-level objective and success criteria |
-| `<critical_constraint>` | High-priority inviolable rules           |
-| `<trigger>`             | Defines when a rule applies              |
-| `<pattern>`             | Implementation patterns                  |
-| `<anti_pattern>`        | Anti-patterns with recognition triggers  |
-| `<rule_category>`       | Wraps related guidelines                 |
-| `<context_payload>`     | Wrapped data/state injection             |
-| `<router>`              | Complex branching logic                  |
+### Core Principle: Adapter Pattern
 
-### Interaction Plane (XML)
+**Command** = Local Adapter (Claude-specific infrastructure)
+**Skill** = Universal Logic Core (portable to any agent)
 
-| Tag                    | Purpose                      |
-| ---------------------- | ---------------------------- |
-| `<interaction_schema>` | State transition definitions |
-| `<thinking>`           | Internal reasoning sandbox   |
-| `<execution_plan>`     | Action steps                 |
-| `<state_transition>`   | Mark state changes           |
+### Three Boundaries
+
+| Boundary        | Commands (Adapter)           | Skills (Logic Core) |
+| --------------- | ---------------------------- | ------------------- |
+| **Context**     | Active injection (@, !)      | Passive reading     |
+| **Tooling**     | Hard binding (Bash, MCP)     | Semantic intent     |
+| **Interaction** | Negotiator (AskUserQuestion) | Executor (headless) |
+
+### The Rules
+
+1. **Injection Rule:** Commands use `!/@` for dynamic state. Skills use text instructions.
+2. **Argument Rule:** Only use `$1` for unique identifiers (IDs, hashes, slugs).
+3. **Binding Rule:** Commands translate universal intent into specific tool calls.
 
 ---
 
-## The Rooter Pattern: Complete Capability Packages
+## Component Structure: Frontmatter
 
-<mission_control>
-<objective>Provide a Router (Map) that empowers agents to select specific expertise</objective>
-<success_criteria>Components organized for cognitive load management, not linear scripting</success_criteria>
-</mission_control>
+All portable components MUST use YAML frontmatter with What-When-Not-Includes format:
 
-A **Rooter** is a complete capability package with multiple entry points:
-
-```
-my-rooter/
-├── command.md              → Quick intent-based invocation
-├── skill/
-│   └── SKILL.md            → Domain logic and patterns
-├── workflows/
-│   ├── workflow-1.md       → Guided step-by-step processes
-│   └── workflow-2.md
-├── references/             → Detailed documentation
-├── examples/               (optional) → Working demonstrations
-└── scripts/                (optional) → Automation scripts
+```yaml
+---
+name: component-name
+description: "Verb + object. Use when [triggers]. Includes [features]. Not for [exclusions]."
+---
 ```
 
-### Why Rooter is High Trust
+**Format breakdown:**
 
-1. **Freedom Preserved**: The AI decides how to solve problems
-2. **Clarity Maximized**: You're providing organized expertise, not linear commands
-3. **Cognitive Load Managed**: Progressive disclosure keeps context window clean
+| Part         | Purpose                                        |
+| :----------- | :--------------------------------------------- |
+| **What**     | Action verb + object (what the component does) |
+| **When**     | Triggers (when to use this component)          |
+| **Includes** | Key features                                   |
+| **Not**      | Exclusions (what this is NOT for)              |
 
-### The Rooter Workflow
+**Why:** Frontmatter description IS the trigger mechanism for auto-discovery.
 
-| Phase       | Purpose                                                  |
-| ----------- | -------------------------------------------------------- |
-| **Intake**  | Ask 1-3 batched questions to narrow intent (L'Entonnoir) |
-| **Route**   | Load the specific Workflow based on user response        |
-| **Execute** | Apply expert patterns from the Reference tier            |
+✅ **Correct:** "Apply TypeScript conventions for type safety. Use when writing or refactoring TypeScript code. Includes naming conventions, immutability patterns. Not for JavaScript projects."
+
+❌ **Incorrect:** Separate "## When to Use" sections that duplicate frontmatter.
+
+---
+
+## Content Injection: Dynamic Context Loading
+
+Commands support dynamic content injection at execution time:
+
+### @ Pattern (File Injection)
+
+```markdown
+<injected_content>
+@.claude/workspace/handoffs/diagnostic.yaml
+</injected_content>
+```
+
+### ! Pattern (Command Execution)
+
+```markdown
+Current branch: !`git branch --show-current`
+```
+
+### When to Use
+
+| Pattern              | Use When                                       |
+| -------------------- | ---------------------------------------------- |
+| `@path`              | Injecting static or existing file content      |
+| `!command`           | Dynamic state that changes between invocations |
+| `<injected_content>` | Semantic grouping of related @ injections      |
+
+**Note:** Skills must NOT use `@` or `!` syntax. Use text instructions instead.
 
 ---
 
 ## L'Entonnoir: The Funnel Pattern
 
-<mission_control>
-<objective>Iteratively narrow problem space through intelligent batching</objective>
-<success_criteria>Multiple rounds, each funneling toward execution</success_criteria>
-</mission_control>
-
-### The Core Principle
-
-Users recognize faster than they generate. Structure questions for recognition, not creation.
+> **Objective:** Iteratively narrow problem space through intelligent batching.
 
 ### The Funnel Flow
 
 ```
-AskUserQuestion (batch of 2-4 options, recognition-based)
+AskUserQuestion (2-4 options, recognition-based)
      ↓
-User selects from options (no typing)
+User selects from options
      ↓
-Explore based on selection → AskUserQuestion (narrower batch)
+Explore based on selection → AskUserQuestion (narrower)
      ↓
 Repeat until ready → Execute
 ```
@@ -155,9 +361,9 @@ Repeat until ready → Execute
 
 **Continuous Exploration:**
 
-- Investigate at ANY time - before first question, between questions, during questions
+- Investigate at ANY time—before first question, between questions
 - Don't wait for user response to explore context
-- Exploration informs the NEXT question, not waits for it
+- Exploration informs the NEXT question
 
 **Actionable Questions:**
 
@@ -165,142 +371,87 @@ Repeat until ready → Execute
 - User selects, never types free-form text
 - Options should narrow scope (funnel effect)
 
-**Efficient Funneling:**
-
-- Each round reduces uncertainty
-- Questions build on previous context
-- Exit to execution when scope is clear
-
 ### Batching Guidelines
 
 **DO batch together:**
 
 - Questions sharing the same context
 - Questions where earlier answers inform later options
-- Questions about the same topic/decision area
 - 2-4 questions max per call
 
 **DON'T batch together:**
 
 - Unrelated topics
-- Questions requiring separate investigation phases
 - More than 4 questions (overwhelming)
-
-### Question Structure Patterns
-
-| Pattern                       | Flow                                                |
-| ----------------------------- | --------------------------------------------------- |
-| **Broad → Specific → Action** | Categorize → Identify → Confirm → Execute           |
-| **Dependency Chain**          | Q1: Language? Q2: Framework? Q3: Library? → Execute |
-| **Elimination**               | Q1: X/Y/Z? Q2: Y/Z? Q3: Confirm → Execute           |
 
 ---
 
 ## Progressive Disclosure
 
+> **Objective:** Manage cognitive load through layered information architecture.
+
 Think of information architecture as cognitive load management:
 
 | Tier       | Content                            | Tokens        |
 | ---------- | ---------------------------------- | ------------- |
-| **Tier 1** | YAML metadata (What-When-Not)      | ~100          |
+| **Tier 1** | YAML metadata                      | ~100          |
 | **Tier 2** | Core workflows, mission, patterns  | 1.5k-2k words |
 | **Tier 3** | Deep patterns, API specs, examples | Unlimited     |
 
+**Scope:** Progressive disclosure applies ONLY to skills (with `references/`). Commands are single-file.
+
 **Principle:** Keep Tier 2 lean. Move detailed content to references/.
 
-### Reference File Structure
+---
 
-**Tier 2 (navigation only):**
+## Operational Patterns
 
-```
-| If you are...           | Read...                               |
-| ----------------------- | ------------------------------------- |
-| Creating commands       | references/executable-examples.md     |
-| Configuring frontmatter | references/frontmatter-reference.md   |
-```
+The architecture describes behavioral intent through semantic directives. Native tools execute these patterns at runtime.
 
-**Tier 3 (content only):**
+| Semantic Directive               | Purpose                        |
+| -------------------------------- | ------------------------------ |
+| "Delegate to specialized worker" | Spawn agents for complex tasks |
+| "Maintain a visible task list"   | Track progress                 |
+| "Consult the user"               | Recognition-based interaction  |
+| "Locate files matching patterns" | File discovery                 |
+| "Search file contents"           | Content search                 |
 
-```markdown
-# Reference Title
-
-[Content only - no meta-instructions about when to read]
-```
+<critical_constraint>
+ALWAYS use native tools to fulfill semantic directives. Trust the System Prompt to select the correct implementation.
+</critical_constraint>
 
 ---
 
 ## Recency Bias: The Final Token Rule
 
-<critical_constraint>
-**Place all constraint-related content at the very bottom of files.**
+**The pattern:** Header for identity, body for teaching, footer for what matters most.
 
-Models attend more strongly to recent tokens during generation.
-</critical_constraint>
-
-**File Structure:**
-
-1. Header (identity, mission, trigger)
-2. Body (patterns, examples, data)
-3. **Footer (constraints)** ← Highest priority
-
-**What belongs in the footer:**
-
-- `<critical_constraint>` - Non-negotiable rules
-- `<trigger>` - When this component applies
-- `<success_criteria>` - How to verify completion
+**Why position matters:** Models attend more strongly to recent tokens. Place non-negotiables where they'll receive highest attention—at the end of a document.
 
 ---
 
-## Component Template
+## Skill Opening Section Standard
+
+**Every skill MUST open with either `## Quick Start` or `## Workflow`:**
+
+| Section Type     | Use When                        | Pattern                          |
+| ---------------- | ------------------------------- | -------------------------------- |
+| `## Quick Start` | Tool-like skills with scenarios | "If you need X: Do Y → Result:"  |
+| `## Workflow`    | Process skills with phases      | "Phase → What happens → Result:" |
+
+Both sections MUST explain WHY:
 
 ```markdown
-# Component Name
+## Quick Start
 
-<mission_control>
-<objective>[What this achieves]</objective>
-<success_criteria>[How to verify]</success_criteria>
-</mission_control>
+**If you need X:** Do Y → Result
 
-<trigger>When [condition]</trigger>
-
-## Core Content
-
-[Patterns, examples, explanations in Markdown]
-
-## Reasoning Process
-
-<interaction_schema>
-thinking → planning → execution → output
-</interaction_schema>
-
-<thinking>
-[Analysis sandbox]
-</thinking>
-
-<execution_plan>
-[Concrete steps]
-</execution_plan>
-
----
-
-## Absolute Constraints
-
-<critical_constraint>
-MANDATORY: [Non-negotiable rule 1]
-MANDATORY: [Non-negotiable rule 2]
-No exceptions.
-</critical_constraint>
+**Why:** [Purpose and benefit]
 ```
 
 ---
 
 ## Self-Containment: The Portability Invariant
-
-<critical_constraint>
-**Every component MUST work with zero .claude/rules dependencies.**
-
-Components carry their own "genetic code" for context: fork isolation.
-</critical_constraint>
 
 **Recognition Question:** "Would this component work in a project with zero rules?"
 
@@ -320,29 +471,25 @@ Components carry their own "genetic code" for context: fork isolation.
 | **Progressive Disclosure** | Distribution | Tier 1 → Tier 2 → Tier 3                         |
 | **Recency Bias**           | Priority     | Constraints at bottom of files                   |
 
-## The Deprecation Protocol
+## The Attic Pattern: Retiring with Grace
 
-<critical_constraint>
-**When a component is retired, it must be archived, not just deleted.**
-</critical_constraint>
+**The principle:** Conserve history while keeping the context window clean.
 
-### The Attic Pattern
+| If you want to... | Do this...                                        |
+| ----------------- | ------------------------------------------------- |
+| Recover later     | Use `trash` command (files go to OS trash bin)    |
+| Keep in repo      | Add `<deprecated>REASON</deprecated>` at file top |
 
-1. **Use trash**: `trash component.md` (files go to OS trash, recoverable)
-2. **Tag Formatting**: If keeping file, add `<deprecated>REASON</deprecated>` at top
-3. **Update References**: Remove link from `CLAUDE.md` and indexes
-4. **Clean Dependencies**: Remove unused dependencies it introduced
-
-**Why**: Conserves history while cleaning the context window.
+**After archiving:** Remove links from `CLAUDE.md` and indexes.
 
 ---
 
 <critical_constraint>
-MANDATORY: Use XML for control, Markdown for data
-MANDATORY: Place critical constraints at bottom of files
-MANDATORY: Batch 1-4 related questions per AskUserQuestion
-MANDATORY: Investigate between rounds to narrow scope
-MANDATORY: Keep Tier 2 lean, Tier 3 deep
-MANDATORY: Every component MUST be self-contained
-No exceptions. Architecture is the Map, not the Script.
-</critical_constraint>
+**Absolute Portability Invariant:**
+
+Every component (Skill, Command, Agent, Hook, MCP) MUST be functionally complete and executable in a vacuum.
+
+1. It must work in a project containing ZERO config files
+2. It must carry its own "Genetic Code" within its own structure
+3. It must NOT reference global rules via text or links
+   </critical_constraint>

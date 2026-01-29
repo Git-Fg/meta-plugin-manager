@@ -1,6 +1,6 @@
 ---
 name: premortem
-description: "Identify failure modes before they occur. Use when reviewing plans, designs, or PRs to catch risks early. Not for post-incident analysis or debugging active issues."
+description: "Identify failure modes before they occur through systematic plan analysis. Use when reviewing plans, designs, or PRs to catch risks early, or when validating architectural decisions. Includes failure scenario enumeration, risk prioritization, and mitigation strategy development. Not for post-incident analysis, debugging active issues, or implementing fixes."
 user-invocable: true
 ---
 
@@ -11,17 +11,56 @@ user-invocable: true
 <success_criteria>Risks categorized (Tiger/Paper/Elephant) with specific verification evidence, HIGH severity risks addressed before proceeding</success_criteria>
 </mission_control>
 
-<trigger>When reviewing plans, designs, or PRs to catch risks early. Not for: Post-incident analysis or debugging active issues.</trigger>
+<guiding_principles>
 
-<interaction_schema>
-DETECT_CONTEXT → RUN_CHECKLIST → VERIFY_FINDINGS → PRESENT_RISKS → UPDATE_PLAN
-</interaction_schema>
+## The Path to High-Impact Risk Analysis
+
+1. **Imagined Failure Beats Real Failure**: When you envision failure scenarios BEFORE implementation, you catch risks at 1/100th the cost of post-deployment fixes. This mental time-travel surfaces blind spots that optimism hides.
+
+2. **Evidence Prevents False Alarms**: Verifying findings with context (±20 lines) and checking for mitigations prevents wasting time on non-issues. Verified findings build credibility; unverified claims erode it.
+
+3. **Categorization Enables Triage**: Tigers (clear threats), Paper Tigers (looks scary, actually fine), and Elephants (undiscussable) help you prioritize what actually needs attention. Not all risks deserve equal weight.
+
+4. **Collaboration Surfaces Elephants**: Some risks live in silence—not technical impossibility, but organizational reluctance. The premortem creates psychological safety to name what everyone sees but no one says.
+
+5. **HIGH Risks Demand Decisions**: When severity is HIGH, stop and require user acknowledgment. Proceeding without explicit acceptance creates "I told you so" moments that destroy trust.
+   </guiding_principles>
 
 Identify failure modes before they occur by systematically questioning plans, designs, and implementations. Based on Gary Klein's technique, popularized by Shreyas Doshi (Stripe).
 
 ## Core Concept
 
 > "Imagine it's 3 months from now and this project has failed spectacularly. Why did it fail?"
+
+## Workflow
+
+**Imagine failure:** "It's 3 months from now and this failed. Why?"
+
+**Identify risks:** Generate failure scenarios from multiple perspectives
+
+**Categorize:** Tiger (clear threat), Paper Tiger (looks scary but fine), Elephant (undiscussed)
+
+**Verify:** HIGH severity risks require evidence before proceeding
+
+**Why:** Proactive risk identification catches issues before they manifest—cheaper to fix at design time.
+
+## Navigation
+
+| If you need...           | Read...                                |
+| :----------------------- | :------------------------------------- |
+| Imagine failure scenario | ## Core Concept → workflow step        |
+| Identify failure risks   | ## Workflow → Identify risks           |
+| Categorize risks         | ## Workflow → Categorize               |
+| Verify severity          | ## Workflow → Verify                   |
+| Risk categories          | ## Risk Categories                     |
+| Premortem questioning    | ## Implementation Patterns → Pattern 1 |
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Tracking**: Maintain a visible task list for premortem analysis
+- **Management**: Manage task lifecycle for risk mitigation
 
 ## Risk Categories
 
@@ -31,93 +70,143 @@ Identify failure modes before they occur by systematically questioning plans, de
 | **Paper Tiger** | `[PAPER]`    | Looks threatening but probably fine             |
 | **Elephant**    | `[ELEPHANT]` | Thing nobody wants to talk about                |
 
-## CRITICAL: Verify Before Flagging
+## Implementation Patterns
 
-**Do NOT flag risks based on pattern-matching alone.** Every potential tiger MUST go through verification.
+### Pattern 1: Premortem Questioning
 
-### The False Positive Problem
+```typescript
+// Imagine: "It's 3 months from now and this failed. Why?"
+function runPremortem(plan: Plan): Risk[] {
+  return [
+    {
+      category: "tiger",
+      question: "What would cause catastrophic failure?",
+      evidence: traceFailurePath(plan),
+    },
+    {
+      category: "paper",
+      question: "What looks scary but is probably fine?",
+      evidence: verifyMitigations(plan),
+    },
+    {
+      category: "elephant",
+      question: "What's nobody discussing?",
+      evidence: identifySilence(plan),
+    },
+  ];
+}
+```
 
-Common mistakes that create false tigers:
+### Pattern 2: Tiger Verification Checklist
 
-- Seeing a hardcoded path without checking for `if exists():` fallback
-- Finding missing feature X without asking "is X in scope?"
-- Flagging code at line N without reading lines N±20 for context
-- Assuming error case isn't handled without tracing the code
+```typescript
+// Before flagging ANY tiger, verify:
+const verification = {
+  contextRead: readSurroundingLines(finding, 20),
+  fallbackCheck: hasTryCatchOrExists(finding),
+  scopeCheck: isInScope(finding),
+  devOnlyCheck: notInMainTestsDev(finding),
+};
 
-### Verification Checklist (REQUIRED)
+// ALL must pass to flag as tiger
+if (allChecksPass(verification)) {
+  flagAsTiger(finding);
+}
+```
 
-Before flagging ANY tiger, verify:
-
-1. **Context read**: Did I read ±20 lines around the finding?
-2. **Fallback check**: Is there try/except, if exists(), or else branch?
-3. **Scope check**: Is this even in scope for this code?
-4. **Dev-only check**: Is this in **main**, tests/, or dev-only code?
-
-**If ANY verification check is "no" or "unknown", DO NOT flag as tiger.**
-
-### Required Evidence Format
-
-Every tiger MUST include:
+### Pattern 3: Required Evidence Format
 
 ```yaml
 risk: "<description>"
 location: "file.py:42"
 severity: high|medium
 mitigation_checked: "<what was checked and NOT found>" # REQUIRED
+
+# Example:
+risk: "No fallback for missing config file"
+location: "config.ts:15"
+severity: high
+mitigation_checked: "No try/catch, no if (exists) check, no else branch"
 ```
 
-If you cannot fill in `mitigation_checked` with specific evidence, it's not a verified tiger.
+## Troubleshooting
 
-## Workflow
+### Issue: False Positives
 
-### Step 1: Detect Context & Depth
+| Symptom                           | Solution                                     |
+| --------------------------------- | -------------------------------------------- |
+| Flagging issues that aren't real  | Use verification checklist before flagging   |
+| Pattern-matching without evidence | Every tiger needs `mitigation_checked` field |
 
-Auto-detect based on context:
+### Issue: Missing Context
 
-- **Plan creation** → Quick (localized scope)
-- **Before implementation** → Deep (global scope)
-- **PR review** → Quick (localized scope)
-- **Otherwise** → Ask user
+| Symptom                                 | Solution                       |
+| --------------------------------------- | ------------------------------ |
+| Flagging line N without reading N±20    | Read surrounding context first |
+| Assuming error handling without tracing | Follow the code path           |
 
-### Step 2: Run Appropriate Checklist
+### Issue: Scope Confusion
 
-#### Quick Checklist (Plans, PRs)
+| Symptom                        | Solution                    |
+| ------------------------------ | --------------------------- |
+| Flagging features not in scope | Check scope before flagging |
+| Flagging dev-only code         | Check if in main/ or tests/ |
 
-Run through these mentally, note any that apply:
+### Issue: Verification Check Fails
 
-**Core Questions:**
+| Symptom                       | Solution                             |
+| ----------------------------- | ------------------------------------ |
+| Can't fill mitigation_checked | Don't flag as tiger                  |
+| Evidence is vague             | Be specific about what was NOT found |
 
-1. What's the single biggest thing that could go wrong?
-2. Any external dependencies that could fail?
-3. Is rollback possible if this breaks?
-4. Edge cases not covered in tests?
-5. Unclear requirements that could cause rework?
+### Issue: Ignoring Elephants
 
-**Output Format:**
+| Symptom              | Solution                           |
+| -------------------- | ---------------------------------- |
+| Only finding tigers  | Ask "What's nobody talking about?" |
+| Uncomfortable topics | Surface them anyway                |
 
-```yaml
-mode: quick
-context: "<plan/PR being analyzed>"
+## workflows
+
+### When Reviewing Plans/Designs
+
+1. **IMAGINE FAILURE** → "It's 3 months from now and this failed. Why?"
+2. **IDENTIFY RISKS** → What could go wrong?
+3. **CATEGORIZE** → Tiger / Paper Tiger / Elephant
+4. **VERIFY** → Check evidence for every tiger
+5. **PRESENT** → Show risks with severity
+
+### When Reviewing Code/PRs
+
+1. **READ CONTEXT** → ±20 lines around finding
+2. **CHECK MITIGATIONS** → try/catch, exists(), else
+3. **VERIFY SCOPE** → Is this in scope?
+4. **FLAG ACCORDINGLY** → Only tigers with evidence
 
 potential_risks: # Pass 1: Pattern-matching findings
-  - "hardcoded path at line 42"
-  - "missing error handling for X"
+
+- "hardcoded path at line 42"
+- "missing error handling for X"
 
 tigers: # Pass 2: After verification
-  - risk: "<description>"
-    location: "file.py:42"
-    severity: high|medium
-    category: dependency|integration|requirements|testing
-    mitigation_checked: "<what was NOT found>"
+
+- risk: "<description>"
+  location: "file.py:42"
+  severity: high|medium
+  category: dependency|integration|requirements|testing
+  mitigation_checked: "<what was NOT found>"
 
 elephants:
-  - risk: "<unspoken concern>"
-    severity: medium
+
+- risk: "<unspoken concern>"
+  severity: medium
 
 paper_tigers:
-  - risk: "<looks scary but ok>"
-    reason: "<why it's fine - what mitigation EXISTS>"
-```
+
+- risk: "<looks scary but ok>"
+  reason: "<why it's fine - what mitigation EXISTS>"
+
+````
 
 #### Deep Checklist (Before Implementation)
 
@@ -210,7 +299,7 @@ Append to the plan:
 - Mode: {quick|deep}
 - Tigers: {count}
 - Elephants: {count}
-```
+````
 
 ## Severity Thresholds
 
@@ -277,36 +366,5 @@ Run quick premortem on diff scope:
 ---
 
 <critical_constraint>
-MANDATORY: Verify every tiger with specific evidence before flagging
-MANDATORY: Use required YAML format with mitigation_checked field
-MANDATORY: Read ±20 lines around any finding for context
-MANDATORY: Block on HIGH severity risks until user addresses them
-MANDATORY: Never flag risks based on pattern-matching alone
-No exceptions. Unverified tigers waste time and undermine credibility.
+Portability invariant: This component must work standalone with zero external dependencies. All necessary philosophy and patterns are self-contained.
 </critical_constraint>
-
----
-
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----

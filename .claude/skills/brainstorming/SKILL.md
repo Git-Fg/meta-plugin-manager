@@ -1,148 +1,187 @@
 ---
 name: brainstorming
-description: "Turn ideas into validated designs. Use when creative work starts, requirements are vague, or user intent needs clarification. Not for execution when requirements are clear or simple fixes."
+description: "Turn ideas into validated designs through collaborative exploration. Use when creative work starts, requirements are vague, or user intent needs clarification. Includes l'entonnoir pattern, validation frameworks, and YAGNI application. Not for execution when requirements are clear, simple fixes, or well-defined tasks."
 ---
 
-# Brainstorming Ideas Into Designs
+<mission_control>
+<objective>Turn vague ideas into validated, concrete designs through collaborative exploration using the l'entonnoir pattern.</objective>
+<success_criteria>Design sections validated one at a time, YAGNI applied, 80-95% autonomy achieved</success_criteria>
+</mission_control>
 
-## Overview
+## The Path to Successful Design Collaboration
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+**Why these principles work:**
 
-Start by understanding the current project context, then use the l'entonnoir pattern: investigate, batch 1-4 related questions, investigate based on answers, repeat. Once you understand what you're building, present the design in small sections (200-300 words), checking after each section whether it looks right so far.
+1. **Recognition beats generation** — Users select from options 3-5x faster than typing free-form text, and options reveal tradeoffs they wouldn't have considered alone.
 
-## The Process
+2. **One question at a time** — Sequential questions prevent cognitive overload and allow each answer to inform the next question, creating a natural funnel effect.
 
-**Understanding the idea:**
+3. **Validate incrementally** — Presenting design in 200-300 word sections catches issues early; building on validated foundations prevents "start over" feedback.
 
-- Check out the current project state first (files, docs, recent commits)
-- Use l'entonnoir: investigate → batch 1-4 related questions → investigate based on answers → repeat
-- Prefer multiple choice questions when possible, but open-ended is fine too
-- Batch related questions in one AskUserQuestion call (1-4 max)
-- Focus on understanding: purpose, constraints, success criteria
+4. **YAGNI creates focus** — Stripping unnecessary features reveals the core value proposition, preventing scope creep that bloats designs and delays implementation.
 
-**Exploring approaches:**
+5. **Context-first exploration** — Checking project state before proposing solutions ensures designs build on existing patterns rather than duplicating or conflicting with established approaches.
 
-- Propose 2-3 different approaches with trade-offs
-- Present options conversationally with your recommendation and reasoning
-- Lead with your recommended option and explain why
+6. **Autonomy through batching** — Grouping 2-4 related questions reduces rounds while maintaining precision, achieving 80-95% autonomy (0-5 AskUserQuestion rounds per session).
 
-**Presenting the design:**
+**Result**: Collaborative exploration produces validated, implementable designs that users understand and feel ownership over.
 
-- Once you believe you understand what you're building, present the design
-- Break it into sections of 200-300 words
-- Ask after each section whether it looks right so far
-- Cover: architecture, components, data flow, error handling, testing
-- Be ready to go back and clarify if something doesn't make sense
+## Workflow
 
-## After the Design
+**Phase 1: Clarify Intent** → Ask recognition-based questions to narrow user intent (l'entonnoir)
 
-**Documentation:**
+**Phase 2: Explore Options** → Investigate codebase context, patterns, constraints
 
-- Write the validated design to `docs/plans/YYYY-MM-DD-<topic>-design.md`
-- Use clear, concise language
-- Commit the design document to git
+**Phase 3: Validate Design** → Present design sections one at a time for feedback
 
-**Implementation (if continuing):**
+**Phase 4: Apply YAGNI** → Strip unnecessary features, keep only what's needed
 
-- Ask: "Ready to set up for implementation?"
-- Use `using-git-worktrees` to create isolated workspace
-- Use `engineering-lifecycle` to create detailed implementation plan
+**Why:** Users recognize faster than they generate—structured questions yield better designs than open-ended prompts.
 
-## Key Principles
+## Navigation
 
-- **One question at a time** - Don't overwhelm with multiple questions
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
-- **YAGNI ruthlessly** - Remove unnecessary features from all designs
-- **Explore alternatives** - Always propose 2-3 approaches before settling
-- **Incremental validation** - Present design in sections, validate each
-- **Be flexible** - Go back and clarify when something doesn't make sense
+| If you need...      | Read...                                          |
+| :------------------ | :----------------------------------------------- |
+| Clarify intent      | ## Workflow → Clarify Intent                     |
+| Explore options     | ## Workflow → Explore Options                    |
+| Validate design     | ## Workflow → Validate Design                    |
+| Apply YAGNI         | ## Workflow → Apply YAGNI                        |
+| Initial orientation | ## Implementation Patterns → Initial Orientation |
+| Examples            | examples/                                        |
 
-## Question Strategies
+## Operational Patterns
 
-### Understanding Phase
+This skill uses semantic directives for behavioral patterns:
 
-**Open-ended questions:**
+- **Discovery**: Locate files matching patterns and search file contents for context
+- **Delegation**: Delegate exploration to specialized workers for research
+- **Consultation**: Consult the user with 2-4 options for creative direction
+- **Tracking**: Maintain a visible task list throughout ideation
 
-- "What's the core problem you're trying to solve?"
-- "Who is the primary user?"
-- "What does success look like?"
+## Implementation Patterns
 
-**Clarifying questions:**
+### Pattern 1: Initial Orientation
 
-- "When you say X, do you mean...?"
-- "Should this work with...?"
-- "Is this a requirement or a nice-to-have?"
-
-### Approach Exploration
-
-**Multiple choice format:**
-
-```
-For the architecture, which approach works best?
-1. Serverless (cost-effective, scales automatically)
-2. Containerized (more control, higher complexity)
-3. Managed service (least maintenance, vendor lock-in)
-
-I recommend #1 because... [reasoning]
+```bash
+# First, check project context
+git log --oneline -10
+ls -la
+cat CLAUDE.md 2>/dev/null | head -50
 ```
 
-### Design Validation
+```typescript
+// Ask user: "What are you trying to build?"
+type ProjectType =
+  | "backend-service"
+  | "frontend-webapp"
+  | "cli-tool"
+  | "mobile-app"
+  | "fullstack-app"
+  | "library";
 
-**Section-by-section review:**
-
+const questions = [
+  "What problem does this solve?",
+  "Who are the users?",
+  "Is this new or improving existing?",
+];
 ```
-Let's validate the design section by section:
 
+### Pattern 2: L'Entonnoir Question Batching
+
+```typescript
+// BAD: Too many questions
+const badQuestions = [
+  "What database?",
+  "What frontend?",
+  "What backend?",
+  "What styling?",
+  "What testing?",
+];
+
+// GOOD: Batch related questions, start broad
+const goodQuestions = [
+  "What type of project is this?",
+  // a) Backend API
+  // b) Frontend web app
+  // c) CLI tool
+  // d) Mobile app
+  // e) Full-stack application
+];
+```
+
+### Pattern 3: Design Presentation
+
+```markdown
 **Section 1: Architecture**
-- Proposed: Microservices with API gateway
-- Reasoning: [why this approach]
+
+- Proposed: [Microservices/Monolith/Serverless]
+- Reasoning: [why this approach fits requirements]
 
 Does this section look right, or should I adjust anything?
+
+[Wait for user confirmation before proceeding]
+
+**Section 2: Components**
+
+- [Component 1]: [responsibility]
+- [Component 2]: [responsibility]
+
+Does this component structure work?
 ```
 
-## Common Mistakes
+## Troubleshooting
 
-**Too many questions at once:**
+### Issue: Too Many Questions Overwhelm User
 
-- ❌ "Should we use TypeScript or JavaScript? And what about testing framework? Also, styling?"
-- ✅ "Let's start with language choice. TypeScript or JavaScript?"
+| Symptom                            | Solution                            |
+| ---------------------------------- | ----------------------------------- |
+| User seems confused or overwhelmed | Simplify to 1-2 questions at a time |
+| "I don't know" answers             | Provide options with tradeoffs      |
 
-**Skipping context check:**
+### Issue: Skipping Context Check
 
-- ❌ Jump straight to questions
-- ✅ First review project state, recent commits, existing patterns
+| Symptom                                          | Solution                                      |
+| ------------------------------------------------ | --------------------------------------------- |
+| Jumping straight to questions                    | First review project state, existing patterns |
+| "What framework?" without checking current stack | Check package.json, existing code             |
 
-**Leading questions:**
+### Issue: Leading Questions
 
-- ❌ "You want to use React, right?"
-- ✅ "What frontend framework would you prefer?"
+| Symptom                         | Solution                                 |
+| ------------------------------- | ---------------------------------------- |
+| "You want to use React, right?" | Should be "What frontend framework?"     |
+| Assuming user's preference      | Present options neutrally with tradeoffs |
 
-**Not validating incrementally:**
+### Issue: YAGNI Violations
 
-- ❌ Present full design, get feedback, start over
-- ✅ Present sections, validate each, build on validated foundation
+| Symptom                           | Solution                               |
+| --------------------------------- | -------------------------------------- |
+| "While we're at it, let's add..." | "That's out of scope for this feature" |
+| Feature creep during design       | Apply YAGNI ruthlessly                 |
 
-**YAGNI violations:**
+### Issue: Not Validating Incrementally
 
-- ❌ "While we're at it, let's also add..."
-- ✅ "That's out of scope for this feature"
+| Symptom                           | Solution                                      |
+| --------------------------------- | --------------------------------------------- |
+| Presenting full design at once    | Present sections 200-300 words, validate each |
+| Getting "no, start over" feedback | Build on validated foundation                 |
 
-## Red Flags
+## workflows
 
-**Rationalizations to watch for:**
+### When Requirements Are Vague
 
-- "This seems complex, let's just..."
-- "We can add that later"
-- "It's easier if we..."
-- "What if we also..."
-- "Since we're already..."
+1. **Explore Context** → Check project state, recent commits, existing patterns
+2. **Initial Questions** → 2-4 questions using l'entonnoir pattern
+3. **Refine Understanding** → Research gaps, offer options
+4. **Present Design** → Sections of 200-300 words, validate each
+5. **Document to File** → Write validated design to `docs/plans/`
 
-**Red flag questions:**
+### After Design Complete
 
-- "Is X important?" (trivializing important decisions)
-- "Should we include Y?" (adding scope creep)
-- "Do you prefer A or B?" (without context for decision)
+```bash
+# Set up for implementation
+git worktree add .worktrees/design -b feature/design
+```
 
 ## Example Workflow
 
@@ -188,34 +227,40 @@ Based on your needs, I recommend using Supabase Auth for OAuth integration:
 Does this architecture look right?
 ```
 
-## Key Principles Summary
+## Design Document Examples
 
-1. **One question at a time** - Prevents overwhelm
-2. **Multiple choice preferred** - Reduces cognitive load
-3. **YAGNI ruthlessly** - Prevents scope creep
-4. **Explore alternatives** - Ensures informed decisions
-5. **Incremental validation** - Catches issues early
-6. **Check context first** - Builds on existing patterns
-7. **YAGNI ruthlessly** - Focus on core value
-8. **Be flexible** - Design evolves through dialogue
+Refer to `examples/` for validated design patterns:
 
-Remember: The goal is to turn a vague idea into a concrete, validated design through collaborative exploration.
+| Example File     | Shows...                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------- |
+| `auth-design.md` | Complete architecture decision with alternatives, component structure, and code snippets |
+
+## Summary
+
+The goal is to turn a vague idea into a concrete, validated design through collaborative exploration. Recognition-based questions, incremental validation, and YAGNI focus on core value rather than speculative features.
+
+---
+
+## Recognition Patterns
+
+When you notice these thought patterns, return to core principles:
+
+| Pattern Noticed                         | Principle to Apply                          |
+| --------------------------------------- | ------------------------------------------- |
+| "While we're at it, let's add..."       | YAGNI prevents scope creep                  |
+| "This feature might be useful later"    | "Might" is not a requirement                |
+| "The design looks complete, skip YAGNI" | Designs always include unnecessary features |
+| "Users will want this"                  | Speculation vs. stated problem              |
+| "It's just one more question"           | Each question narrows scope—stop when clear |
+| "We can always add it later"            | Later = never. Build only what's needed now |
+
+**Recognition question**: "Does this serve the stated problem or speculation?"
 
 ---
 
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -224,9 +269,11 @@ No exceptions. Portability invariant must be maintained.
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-  MANDATORY: One question at a time (never overwhelm)
-  MANDATORY: Validate design section by section before proceeding
-  MANDATORY: Apply YAGNI ruthlessly (remove unnecessary features)
-  MANDATORY: Commit design document to git
-  No exceptions. Validation before commitment prevents rework.
-  </critical_constraint>
+
+---
+
+<critical_constraint>
+**Portability Invariant**: This component must work in a project with zero .claude/rules dependency.
+
+**Security Boundaries**: Never expose secrets or credentials in design documents.
+</critical_constraint>

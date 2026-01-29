@@ -1,6 +1,6 @@
 ---
 name: uv
-description: "Modern Python package and project management using uv. MUST BE USED for any Python-related tasks including working with Python projects, managing dependencies, running Python code/tests, or installing CLI tools. Prefer uv over pip/poetry/conda for all Python packaging work."
+description: "Manage Python packages and projects using uv. Use when installing dependencies, creating virtual environments, running Python code, or managing Python projects. Includes dependency resolution, lock file management, tool installation, and script execution. Not for non-Python package management or when explicitly requested to use pip/poetry/conda."
 ---
 
 # uv — Modern Python Package and Project Management
@@ -12,11 +12,91 @@ description: "Modern Python package and project management using uv. MUST BE USE
 
 <trigger>When working with Python projects (pyproject.toml/uv.lock), managing dependencies, running Python code/tests, installing CLI tools (ruff, pytest), or migrating from pip/poetry/conda.</trigger>
 
+<guiding_principles>
+
+## The Path to High-Efficiency Python Success
+
+### 1. Simplicity Through Standalone Scripts
+
+**Why standalone scripts succeed**: PEP 723 metadata in single files eliminates boilerplate while keeping dependencies portable. Scripts become self-documenting and executable—the full environment context travels with the code.
+
+**Practice**: Default to `uv init --script` or manual PEP 723 for quick utilities, data processing, or one-off tasks. The script shebang `#!/usr/bin/env -S uv run` makes files directly executable without activation steps.
+
+**Success outcome**: Zero setup friction—copy the script, run it anywhere. No project initialization, no venv management, no environment conflicts.
+
+### 2. Performance Through Global Cache Sharing
+
+**Why caching succeeds**: uv's shared cache deduplicates downloads across all projects, scripts, and tools. A package downloaded once becomes instantly available to every context on the machine.
+
+**Practice**: Trust the cache. Dependencies installed for one project are immediately available to others. Warm cache makes project switching nearly instantaneous.
+
+**Success outcome**: 8-115× faster than pip (benchmarks: 2.6s vs 21.4s for JupyterLab, 80-115× speedup on hot cache).
+
+### 3. Reproducibility Through Lockfiles
+
+**Why lockfiles succeed**: `uv.lock` contains exact versions, URLs, and platform markers. One file works across Linux, macOS, and Windows—eliminating "works on my machine" issues.
+
+**Practice**: Commit `uv.lock` to version control. Use `uv sync --frozen` in CI to detect drift. Lock scripts with `uv lock --script script.py` for temporal reproducibility.
+
+**Success outcome**: Identical behavior across all environments and time. New releases don't break existing deployments when using `exclude-newer` for temporal constraints.
+
+### 4. Consistency Through Automatic Environment Management
+
+**Why automatic management succeeds**: `uv run` verifies and synchronizes environments before each execution. No manual activation, no forgotten `pip install`, no desynchronized state.
+
+**Practice**: Use `uv run` for all execution. It handles venv creation, dependency updates, and Python version selection automatically.
+
+**Success outcome**: Zero "works locally but fails in CI" issues. Every run starts from a verified, synchronized state.
+
+### 5. Tool Choice Based on Task Complexity
+
+**Why task-based choice succeeds**: Not every Python task needs a project structure. Matching tool complexity to task complexity reduces cognitive load and maintenance burden.
+
+**Practice**: Choose standalone scripts for single-file tasks. Create full projects only when explicitly requested or when the task requires multiple files, tests, or publishing. Use `uv pip` interface only for legacy environments that cannot be converted.
+
+**Success outcome**: Right-sized solutions. Quick tasks stay quick. Complex tasks get proper structure without premature overhead.
+
+</guiding_principles>
+
 <interaction_schema>
 DETECT CONTEXT → SELECT MODE → EXECUTE WORKFLOW → VALIDATE
 </interaction_schema>
 
 uv is Astral's fast Python package and project manager. Use uv as the single source of truth for Python packaging and environments unless explicitly told otherwise.
+
+## Quick Start
+
+**Install package:** `uv add <package>` → Updates pyproject.toml + uv.lock
+
+**Run script:** `uv run script.py` → Creates temp environment, runs, cleans up
+
+**Create project:** `uv init` → New project with pyproject.toml
+
+**Run project commands:** `uv run pytest` → Executes in project environment
+
+**Why:** uv is 10-100x faster than pip—global cache shared across all projects and scripts.
+
+This skill integrates with Claude Code native tools for optimal execution:
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Execution**: Execute system commands for uv operations
+- **Tracking**: Maintain a visible task list for Python project setup
+
+Trust the System Prompt to select the correct native implementation for these patterns.
+
+## Navigation
+
+| If you need...       | Read...                         |
+| :------------------- | :------------------------------ |
+| Install package      | ## Quick Start → uv add         |
+| Run script           | ## Quick Start → uv run script  |
+| Create project       | ## Quick Start → uv init        |
+| Run project commands | ## Quick Start → uv run pytest  |
+| Philosophy           | ## Philosophy                   |
+| Script vs project    | See PEP 723 for inline metadata |
 
 ---
 
@@ -51,18 +131,6 @@ Three modes, one unified tool:
 | **legacy environment** | `requirements.txt` or `setup.py` | Pip interface mode |
 
 </context>
-
----
-
-<absolute_constraints>
-CRITICAL: Never mix pip/poetry/conda with uv in the same project. Choose one tool per project and stick with it.
-
-ALWAYS prefer uv for new Python projects over pip, poetry, or conda.
-
-ONLY use uv's pip interface (uv pip ...) when working with legacy environments that cannot be converted to uv projects.
-
-PREFER standalone scripts with PEP 723 metadata for single-file or quick tasks. ONLY create pyproject.toml (full project) when the user explicitly requests it or the task requires multiple files, tests, or publishing.
-</absolute_constraints>
 
 ---
 
@@ -584,28 +652,14 @@ uv export -o requirements.txt
 
 ---
 
-## Dynamic Sourcing Protocol
-
-<fetch_protocol>
-**MANDATORY FETCH**: Before using uv, fetch the content from https://docs.astral.sh/uv/
-
-This contains the authoritative and complete CLI reference. The local skill focuses on Seed System philosophy and patterns.
-</fetch_protocol>
-
----
-
 ## Navigation
-
-**Official Documentation**:
-
-- Complete CLI reference → https://docs.astral.sh/uv/
 
 **Local References**:
 
-| If you need...             | See...                            |
-| -------------------------- | --------------------------------- |
-| Seed System usage patterns | `references/cli-reference.md`     |
-| Complete workflow examples | `references/workflow-examples.md` |
+| If you need...             | Read...                              |
+| :------------------------- | :----------------------------------- |
+| CLI reference patterns     | `references/lookup_cli-reference.md` |
+| Complete workflow examples | `references/pattern_workflows.md`    |
 
 ---
 
@@ -654,19 +708,9 @@ This contains the authoritative and complete CLI reference. The local skill focu
 ## Absolute Constraints
 
 <critical_constraint>
-MANDATORY: ALWAYS prefer uv over pip/poetry/conda for new Python projects
-MANDATORY: NEVER mix pip/poetry/conda with uv in the same project
-MANDATORY: PREFER standalone scripts (PEP 723) over projects for single-file tasks
-MANDATORY: ONLY create pyproject.toml when explicitly requested or task requires multiple files/tests/publishing
+**Portability Invariant**: This skill must work standalone in any project with zero external dependencies to .claude/rules/ or other components.
 
-Standalone scripts are preferred for quick tasks and single-file utilities. Only create full projects when:
-
-- User explicitly requests a "project" or "package"
-- Multiple files/modules are needed
-- Tests are required
-- Publishing to PyPI is planned
-
-uv MUST be used for all Python packaging work unless explicitly told otherwise.
+**Tool Consistency**: Use uv as the single source of truth for Python packaging. Choose one package manager per project—mixing pip/poetry/conda with uv creates environment corruption that is difficult to debug and recover from.
 </critical_constraint>
 
 ---
@@ -676,21 +720,17 @@ uv MUST be used for all Python packaging work unless explicitly told otherwise.
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
+**Portability Invariant**: All components must be self-contained with zero .claude/rules/ dependency. This skill must work in any project.
+
+**Autonomy Target**: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session).
+
+**Description Standard**: Use What-When-Not-Includes format in third person for auto-discovery.
+
+**Component Reference**: No component references another component by name in description.
+
+**Progressive Disclosure**: Use references/ for detailed content. XML for control, Markdown for data.
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+</critical_constraint>
 
 ---

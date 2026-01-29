@@ -1,252 +1,67 @@
 ---
 name: brainstorm
-description: "Guided decision-making for complex problems with multiple variables. Investigate first, then use structured questions to help user recognize the right path. Not for simple tasks."
-disable-model-invocation: false
+description: "Guided decision-making for complex problems with multiple variables. Use when exploring options, prioritizing features, or evaluating tradeoffs. Not for simple tasks."
 ---
-
-<mission_control>
-<objective>Guide decision-making through investigate-first methodology with recognition-based questions</objective>
-<success_criteria>User recognizes optimal path through structured iterative questioning</success_criteria>
-</mission_control>
-
-<interaction_schema>
-investigate → ask → reflect → repeat → conclude
-</interaction_schema>
 
 # Brainstorm
 
-Guided decision-making for complex problems using INVESTIGATE → ASK → REFLECT → REPEAT methodology.
+## Context
 
-## How It Works
+This command routes to appropriate analytical framework commands based on problem type:
 
-Execute guided decision-making in four phases:
+| Problem Type          | Route To                    |
+| --------------------- | --------------------------- |
+| Root cause analysis   | `consider:5-whys`           |
+| 80/20 prioritization  | `consider:pareto`           |
+| Avoiding failure      | `consider:inversion`        |
+| Removing vs adding    | `consider:via-negativa`     |
+| Cost/benefit analysis | `consider:opportunity-cost` |
+| First principles      | `consider:first-principles` |
 
-### Phase 1: INVESTIGATE
+## Workflow
 
-Use tools first, never ask blind:
+### 1. Detect
 
-- Read files, grep patterns, run commands
-- Apply analytical frameworks
-- Map the full possibility space
+Analyze `$ARGUMENTS` for problem characteristics:
 
-**Investigation Matrix:**
+- **Decision type**: choice, prioritization, root cause, innovation
+- **Complexity**: simple (one variable) vs complex (multiple variables)
+- **Stage**: initial exploration vs trade-off evaluation
 
-| Type      | Tools            | What to Find                                 |
-| --------- | ---------------- | -------------------------------------------- |
-| Context   | `Read`, `Grep`   | Existing code, configuration, documentation  |
-| Structure | `Glob`, `Grep`   | File patterns, architecture, dependencies    |
-| State     | `Bash`           | Running processes, errors, logs, environment |
-| History   | `Bash` (git log) | Recent changes, commit patterns              |
-| Analysis  | Apply frameworks | Variables, constraints, stakeholders         |
+Use `AskUserQuestion` (L'Entonnoir) with recognition-based options to identify the analytical framework needed.
 
-**Recognition test:** "Could I find this with tools instead of asking?"
+### 2. Execute
 
-### Phase 2: ASK
+Route to appropriate command:
 
-Use AskUserQuestion with l'entonnoir (funnel) pattern:
+| Problem Type          | Route To                    |
+| --------------------- | --------------------------- |
+| Root cause analysis   | `consider:5-whys`           |
+| 80/20 prioritization  | `consider:pareto`           |
+| Avoiding failure      | `consider:inversion`        |
+| Removing vs adding    | `consider:via-negativa`     |
+| Cost/benefit analysis | `consider:opportunity-cost` |
+| First principles      | `consider:first-principles` |
 
-- Single-choice or multiple-choice questions
-- Batch 1-4 related questions per AskUserQuestion call
-- Recognition-based: user recognizes, doesn't generate
-- Each round eliminates a large problem space
-- After each response, investigate further before next round
+### 3. Verify
 
-**High-quality questions (use these):**
+Confirm decision-making output meets quality criteria:
 
-- "I've analyzed [evidence]. Which pattern matches?"
-- "Based on investigation, issue appears to be X, Y, or Z. Which resonates?"
-- "Which constraint feels most binding right now?"
+- Problem space fully mapped
+- Options evaluated against constraints
+- User recognizes optimal path
+- Clear action emerges
 
-**Low-quality questions (avoid these):**
+---
 
-- "What do you think is wrong?" ❌
-- "How should we approach this?" ❌
-- "What's the best solution?" ❌
+## Genetic Code
 
-### Phase 3: REFLECT
-
-Mirror back what you're learning:
-
-- "So what I'm hearing is..."
-- "Based on our exploration, the pattern seems to be..."
-- Help user see their own thinking clarified
-
-### Phase 4: REPEAT
-
-Continue until convergence:
-
-- User recognizes their path
-- Decision becomes clear
-- User states what they want to do
-
-## Critical Principles
-
-### Investigate First, Never Ask Blind
-
-Before asking anything, gather information using tools.
-
-### Recognition Over Generation
-
-Structure questions so users recognize, not generate.
-
-### One Question at a Time
-
-Each question must eliminate a massive section of the problem space.
-
-**Wrong:** Stack multiple questions
-
-```
-"Is it frontend or backend?"
-"Is it the API or database?"
-"Is it auth or data processing?"
-```
-
-**Right:** One comprehensive question
-
-```
-"I've traced the issue to three potential root causes. Which matches what you're observing?
-1. Database timeout (errors in logs around 30s mark)
-2. N+1 query pattern (specific endpoints slow, others fast)
-3. Connection pool exhaustion (gradual slowdown over time)"
-```
-
-### User Owns the Decision
-
-Guide; they decide. Help them think through it.
-
-**Wrong:** Make recommendations
-
-```
-"I recommend we use Redux Toolkit." ❌
-```
-
-**Right:** Help them explore until it's obvious
-
-```
-"Based on our exploration: medium team, e-commerce domain, need for structure.
-Given these constraints, which approach feels right?
-1. Redux Toolkit with standard patterns
-2. Zustand for simplicity
-3. Something else" ✅
-```
-
-## Analytical Frameworks
-
-Apply frameworks during investigation:
-
-| Framework            | Strategy                          | Use When                            |
-| -------------------- | --------------------------------- | ----------------------------------- |
-| Root Cause (5 Whys)  | Distinguish symptoms from systems | Debugging, recurring problems       |
-| Decision Tree        | Evaluate options against criteria | Choice-based decisions              |
-| Constraint Mapping   | Hard vs. soft constraints         | Strategy, resource allocation       |
-| Stakeholder Analysis | Who is affected, what they want   | Organizational decisions            |
-| Timeline Perspective | Immediate vs. short vs. long-term | Future impact analysis              |
-| Pareto (80/20)       | Group by impact                   | Prioritization, triage              |
-| RICE Score           | Reach, Impact, Confidence, Effort | Feature prioritization              |
-| First Principles     | Strip away assumptions            | Innovation, challenging conventions |
-
-## Usage Checklist
-
-**Before asking any question:**
-
-- [ ] Have I used available tools to investigate?
-- [ ] Can the user recognize the answer (not generate)?
-- [ ] Does this eliminate a large problem space?
-- [ ] Are these 1-4 related questions (batched)?
-- [ ] Will the answer help us converge?
-
-**Question design:**
-
-- Use AskUserQuestion with single or multiple choices
-- Batch 1-4 related questions per AskUserQuestion call
-- Options include evidence from investigation
-- Natural language, numbered options
-- Always include escape option ("Something else")
-
-**Reflection patterns:**
-
-- "So what I'm hearing is..." (mirror back understanding)
-- "Based on our exploration..." (synthesize findings)
-- "Does this align, or should we explore further?" (validation)
-- "What feels like the right next step?" (user decides)
-
-**Binary tests:**
-
-- "Multiple paths unclear?" → Use /brainstorm
-- "Request already specific?" → Direct action, no brainstorming needed
-- "Can I investigate this?" → Do that first
-
-## Example Usage
-
-**Context:** Working on a React app, user asks "Should we use Redux or Zustand?"
-
-**Cycle 1: INVESTIGATE**
-
-```
-[Read package.json] → react, react-dom, no state library
-[Glob src/components/] → 50+ components, nested props visible
-[Read README.md] → E-commerce dashboard
-[Scan recent commits] → Team of 3-4 developers
-```
-
-**Cycle 1: ASK**
-
-```
-"I've analyzed your codebase. For a 50+ component e-commerce dashboard with a small team,
-what matters most for your state management choice?
-
-1. Simplicity and quick setup (lighter learning curve, less boilerplate)
-2. Structure and standardization (clear patterns, easier onboarding)
-3. Something else is the priority"
-```
-
-**User selects:** "2"
-
-**Cycle 2: INVESTIGATE**
-
-```
-[Inference] → Structure matters, team will grow, patterns help
-[Analysis] → Redux Toolkit provides standardized patterns, RTK Query for server state
-[Consideration] → Zustand simpler but less prescriptive
-```
-
-**Cycle 2: REFLECT**
-
-```
-"So structure is the priority. Given that:
-- You have 50+ components and growing
-- Team values standardized patterns
-- E-commerce means significant server state
-
-Redux Toolkit with RTK Query would give you the structure you're looking like:
-- Prescriptive patterns (ducks, slices)
-- Built-in data fetching
-- Strong typing support
-
-Does this align with what you had in mind, or should we explore tradeoffs further?"
-```
-
-**User:** "That sounds right"
-
-**Cycle 3: REFLECT (convergence)**
-
-```
-"Great. So the path forward is Redux Toolkit with RTK Query.
-Ready to implement, or do you want to explore any specific aspects first?"
-```
-
-## Integration
-
-This command helps with decision points in workflows. After brainstorming:
-
-- Use `/plan` for implementation planning
-- Use `qa/code-review` for reviewing decisions
-- Use `/tdd` for test-driven implementation
+This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: Investigate with tools before asking any question
-MANDATORY: Use recognition-based questions (user recognizes, doesn't generate)
-MANDATORY: Batch 1-4 related questions per round, each eliminating massive problem space
-MANDATORY: Investigate between rounds to narrow scope based on answers
-No exceptions. Brainstorming is structured guidance, not free-form conversation.
+MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
+MANDATORY: Description MUST use What-When-Not-Includes format in third person
+MANDATORY: No component references another component by name in description
+MANDATORY: Use XML for control, Markdown for data
+No exceptions. Portability invariant must be maintained.
 </critical_constraint>

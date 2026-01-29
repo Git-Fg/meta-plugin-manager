@@ -30,7 +30,7 @@ OPTIONS:
 
 EXAMPLES:
   # stdio transport
-  add_server.sh --name my-server --transport stdio --command node --args '["dist/server.js"]'
+  add_server.sh --name my-server --transport stdio --command node --args '["abs/path/server.js"]'
 
   # http transport with OAuth
   add_server.sh --name github --transport http --url 'https://api.githubcopilot.com/mcp/'

@@ -1,11 +1,56 @@
 ---
 name: simplification-principles
-description: "Apply simplification principles (Occam's Razor) when debugging complex issues, evaluating competing theories, or simplifying designs. Not for ignoring necessary complexity or oversimplifying."
+description: "Apply simplification principles (Occam's Razor) to debug complex issues, evaluate competing theories, and simplify designs. Use when debugging complex problems, choosing between solutions, or reducing design complexity. Includes assumption identification, evidence weighting, and complexity reduction patterns. Not for ignoring necessary complexity, oversimplifying valid complexity, or when straightforward solutions exist."
 ---
 
 # Simplification Principles
 
+<mission_control>
+<objective>Apply simplification principles (Occam's Razor) to debug complex issues, evaluate competing theories, and simplify designs.</objective>
+<success_criteria>Explanation with fewest assumptions chosen, all facts accounted for, unnecessary complexity eliminated</success_criteria>
+</mission_control>
+
 Find the simplest explanation that accounts for all the facts. Among competing hypotheses, prefer the one with the fewest assumptions.
+
+---
+
+## The Path to High-Impact Simplification
+
+<guiding_principles>
+
+### 1. Simplicity Creates Actionable Solutions
+
+Simple explanations lead to actionable fixes. When you choose the explanation with fewer assumptions, you reduce unknowns and increase confidence. This means faster implementation, fewer edge cases, and more predictable outcomes.
+
+**Why this works**: Each assumption introduces risk. Fewer assumptions mean fewer things that can go wrong when you implement the solution.
+
+### 2. Test Before Trusting the Simple Answer
+
+Verification confirms that simplicity hasn't become oversimplification. The simplest explanation must account for ALL facts, not just the convenient ones. When evidence contradicts the simple answer, seek a different explanation.
+
+**Why this works**: Einstein's principle—"as simple as possible, but not simpler"—guards against the trap of choosing easy answers over correct ones.
+
+### 3. Count Every Independent Assumption
+
+Explicit counting prevents hidden complexity. Each independent assumption counts separately, even when they seem related. This systematic counting surfaces where complexity truly lives.
+
+**Why this works**: Grouping assumptions masks the true complexity. Explicit counting reveals which explanations are genuinely simpler.
+
+### 4. Complexity Has Its Place
+
+Some systems are inherently complex. When a simple explanation doesn't fit all facts, the correct answer may involve multiple interacting causes. Don't force simplicity where complexity exists.
+
+**Why this works**: Real systems have real complexity. Acknowledging this prevents wasting time on overly simple fixes that can't possibly work.
+
+### 5. Facts First, Explanations Second
+
+Separate what you observe from what you infer. Facts are observable and verifiable. Assumptions are required to connect facts to explanations. Starting with facts grounds the analysis in reality.
+
+**Why this works**: Building explanations from verified facts prevents speculation from driving the investigation.
+
+</guiding_principles>
+
+---
 
 ## Core Pattern
 
@@ -19,25 +64,142 @@ Apply Occam's Razor by:
 
 **Key Innovation**: Avoid overcomplicating problems. Simple explanations are more likely to be correct and more likely to be actionable.
 
-## When to Use
+## Workflow
 
-Use this principle when:
+**Identify problem:** State what needs explanation
 
-- Debugging complex issues
-- Diagnosing problems
-- Evaluating competing theories
-- Designing solutions
-- Analyzing user behavior
+**List explanations:** Generate all possible hypotheses
 
-**Recognition test:** "Are there multiple explanations?" If yes, find the simplest one that fits all facts.
+**Count assumptions:** Weight each by number of assumptions required
 
-## The Principle
+**Select simplest:** Choose explanation with fewest assumptions
 
-"Entities should not be multiplied without necessity."
+**Verify fit:** Confirm simple explanation accounts for all facts
 
-**In simpler terms**: The simplest explanation that fits all the facts is probably the right one.
+**Why:** Simpler explanations are more likely correct and actionable—Occam's Razor cuts through complexity.
 
-## Step-by-Step Process
+## Navigation
+
+| If you need...    | Read...                         |
+| :---------------- | :------------------------------ |
+| Identify problem  | ## Workflow → Identify problem  |
+| List explanations | ## Workflow → List explanations |
+| Count assumptions | ## Workflow → Count assumptions |
+| Select simplest   | ## Workflow → Select simplest   |
+| Verify fit        | ## Workflow → Verify fit        |
+| Core pattern      | ## Core Pattern                 |
+
+## Implementation Patterns
+
+### Pattern 1: Facts Collection
+
+```typescript
+function collectFacts(observation: Observation): Fact[] {
+  return [
+    "API returns 500 error",
+    "Error occurs only for requests with > 100 items",
+    "Error started after recent deployment",
+    "No other endpoints are affected",
+  ];
+}
+```
+
+### Pattern 2: Explanation Comparison
+
+```typescript
+interface Explanation {
+  name: string;
+  description: string;
+  assumptions: string[];
+}
+
+function countAssumptions(explanation: Explanation): number {
+  return explanation.assumptions.length;
+}
+
+function rankExplanations(explanations: Explanation[]): Explanation[] {
+  return explanations.sort((a, b) => countAssumptions(a) - countAssumptions(b));
+}
+```
+
+### Pattern 3: Verification
+
+```typescript
+function verifyExplanation(
+  explanation: Explanation,
+  facts: Fact[],
+): { valid: boolean; gaps: string[] } {
+  const gaps = facts.filter((fact) => !explains(fact, explanation));
+  return {
+    valid: gaps.length === 0,
+    gaps,
+  };
+}
+```
+
+## Troubleshooting
+
+### Issue: Oversimplifying
+
+| Symptom                                  | Solution                                   |
+| ---------------------------------------- | ------------------------------------------ |
+| Simple explanation doesn't fit all facts | Don't force fit - explanation may be wrong |
+| Ignoring necessary complexity            | Some problems ARE inherently complex       |
+
+### Issue: Wrong Assumption Count
+
+| Symptom                                | Solution                                      |
+| -------------------------------------- | --------------------------------------------- |
+| Grouping multiple assumptions into one | Each independent assumption counts separately |
+| Not counting implicit assumptions      | Count ALL assumptions, explicit and implicit  |
+
+### Issue: Evidence Doesn't Fit
+
+| Symptom                                 | Solution                      |
+| --------------------------------------- | ----------------------------- |
+| Evidence contradicts simple explanation | Choose different explanation  |
+| Forcing facts to fit                    | If it doesn't fit, it's wrong |
+
+### Issue: Ignoring Complexity When Needed
+
+| Symptom                                 | Solution                                           |
+| --------------------------------------- | -------------------------------------------------- |
+| Using simplification to avoid hard work | Some systems ARE complex - don't oversimplify      |
+| "Simpler is always better"              | Einstein: "as simple as possible, but not simpler" |
+
+### Issue: Confusing Facts with Assumptions
+
+| Symptom                          | Solution                                     |
+| -------------------------------- | -------------------------------------------- |
+| Treating assumptions as facts    | Verify before including in fact list         |
+| Mixing evidence with speculation | Separate observed facts from inferred causes |
+
+## workflows
+
+### When Debugging Complex Issues
+
+1. **COLLECT FACTS** → What is actually happening?
+2. **GENERATE EXPLANATIONS** → What could cause this?
+3. **COUNT ASSUMPTIONS** → How many for each?
+4. **RANK BY SIMPLICITY** → Fewest assumptions first
+5. **VERIFY** → Does it explain ALL facts?
+6. **ACT** → Fix based on simplest valid explanation
+
+### Example Application
+
+```
+Facts:
+- API returns 500 for >100 items
+- Started after recent deployment
+- Only affects this endpoint
+
+Explanations:
+A) Complex conspiracy (4 assumptions) - Unlikely
+B) Configuration issue (3 assumptions) - Possible
+C) Simple bug (2 assumptions) - Most likely
+
+Winner: C - Recent deployment added code that crashes on large arrays
+```
 
 ### Step 1: List all facts
 
@@ -292,34 +454,6 @@ Don't use this principle when:
 
 ---
 
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----
-
-<critical_constraint>
-MANDATORY: Verify simple explanation actually explains ALL facts
-MANDATORY: Count assumptions explicitly for each explanation
-MANDATORY: Don't oversimplify when complexity is necessary
-MANDATORY: Each independent assumption counts separately
-No exceptions. The simplest explanation must account for all evidence.
+**Portability Invariant**: This skill works standalone with zero external dependencies. No references to CLAUDE.md, .claude/rules/, or other components by file path or name.
 </critical_constraint>

@@ -1,0 +1,453 @@
+---
+date: 2026-01-29
+session: meta-analysis-skills-refactor-2026-01-29
+status: complete
+outcome: SUCCEEDED
+---
+goal: Refactor skill-iterate and command-iterate as meta-analysis skills for mid-conversation activation, and integrate external documentation into existing skills
+now: Complete handoff documentation
+test: ls .claude/skills/skill-refine/SKILL.md && ls .claude/skills/command-refine/SKILL.md && mcp__ide__get_diagnostics_code
+
+## Git State
+
+branch: main
+commit: b9ae254c92dc8479587114cdbf8941dd7b03ac83
+key_modified:
+  - .claude/skills/skill-authoring/SKILL.md
+  - .claude/skills/skill-iterate/SKILL.md
+  - .claude/skills/command-authoring/SKILL.md
+  - .claude/skills/command-iterate/SKILL.md
+untracked_key:
+  - .claude/skills/skill-refine/SKILL.md (renamed from skill-iterate)
+  - .claude/skills/command-refine/SKILL.md (renamed from command-iterate)
+
+## Session Work
+
+### Task 1: External Documentation Integration
+
+**Task**: Integrate external documentation into existing skills following existing patterns (not appending as separate REFERENCE sections)
+
+**Files Modified**:
+- `.claude/skills/skill-authoring/SKILL.md`
+- `.claude/skills/skill-iterate/SKILL.md`
+- `.claude/skills/command-authoring/SKILL.md`
+- `.claude/skills/command-iterate/SKILL.md`
+
+**Changes Applied**:
+
+#### skill-authoring/SKILL.md
+- Expanded Name Field section with Naming Conventions table
+- Enhanced Description Rules with Third-Person Voice examples
+- Added Invocation Controls table (user invoke, model invoke, context loading)
+- Added 5-Level Skill Architecture table
+- Removed separate REFERENCE: External Documentation Patterns appendix
+- Added allowed-tools note: "Add during iteration if issues arise"
+
+#### skill-iterate/SKILL.md
+- Added Quality Gates 6-8 to existing gates
+- Removed separate REFERENCE sections (merged into existing patterns)
+- Enhanced Anti-Laziness Compensation with Confidence Rating table
+
+#### command-authoring/SKILL.md
+- Merged slash command patterns into Command Structure section
+- Added allowed-tools note for security-sensitive operations (iteration only)
+- Removed separate REFERENCE: Command Patterns appendix
+
+#### command-iterate/SKILL.md
+- Added security audit points to evaluation areas
+- Removed separate REFERENCE sections
+- Enhanced tool restrictions section
+
+**Verification Results**:
+- `mcp__ide__get_diagnostics_code`: No errors found
+- All HTTPS links verified: 0 external links
+- Line counts reduced (no content appending)
+
+### Task 2: Meta-Analysis Skills Refactor
+
+**Task**: Transform skill-iterate and command-iterate from file-only audit skills into meta-analysis skills
+
+**Philosophy Shift**:
+| Aspect | Before | After |
+| :----- | :----- | :----- |
+| **Input** | File reads required | Conversation in context (primary) |
+| **Activation** | Explicit invocation with file paths | Mid-conversation activation |
+| **Output** | Audit reports | Concrete refinements |
+| **Language** | Technical documentation | Strong words for failures |
+
+**Files Refactored**:
+
+#### skill-iterate → skill-refine
+
+**New Frontmatter**:
+```yaml
+---
+name: skill-refine
+description: "Analyze conversation and files to refine skills. Use when user says 'no' or 'wrong', when friction occurs, or when skills need improvement. Includes conversation analysis, issue classification, evidence-based findings, and concrete refinements. Not for creating new skills or commands."
+---
+```
+
+**New Core Patterns**:
+
+```markdown
+## PATTERN: Conversation Analysis
+
+### What to Look For
+
+| Signal | Means | Action |
+| :----- | :----- | :----- |
+| "No, that's wrong" | Pattern violation | Add anti-pattern |
+| "I said X, not Y" | Misunderstanding | Clarify triggers |
+| "You skipped X" | Process violation | Add constraint |
+| "Not what I meant" | Intent mismatch | Refine description |
+| Silence after output | Quality issue | Review standards |
+| User repeats correction | Persistent gap | Strengthen constraint |
+
+### Analysis Format
+
+Each finding MUST have:
+**Issue:** One-line description
+**Evidence:** Quote from conversation or @file
+**Root Cause:** Why it happened (not just symptoms)
+**Fix:** Specific change to apply
+```
+
+**Classification Matrix**:
+| Error Signal | Root Cause Type | Target |
+| :----------- | :-------------- | :----- |
+| "Wrong pattern used" | Pattern Gap | Add ANTI-PATTERN |
+| "Too many files" | Scope Creep | Add constraint |
+| "Not clear enough" | Ambiguity | Clarify triggers |
+| "Skipped verification" | Process Violation | Add critical constraint |
+| "Wrong skill invoked" | Discovery Issue | Refine description |
+| "Missing section" | Structure Gap | Add PATTERN section |
+
+#### command-iterate → command-refine
+
+**New Frontmatter**:
+```yaml
+---
+name: command-refine
+description: "Analyze conversation and files to refine commands. Use when user says 'no' or 'wrong', when command behavior needs improvement, or when @/! injection fails. Includes conversation analysis, issue classification, evidence-based findings, and concrete refinements. Not for skills."
+---
+```
+
+**Injection-Specific Patterns**:
+
+```markdown
+## PATTERN: Injection Refinement
+
+### @ Path Fixes
+
+| Issue | Fix |
+| :---- | :--- |
+| File may not exist | Add "(if exists)" |
+| No wrapper | Wrap in `<injected_content>` |
+| Wrong path | Use absolute/relative path correctly |
+| Static content | Remove @, inline content |
+
+### ! Command Fixes
+
+| Issue | Fix |
+| :---- | :--- |
+| Destructive command | Replace with read-only alternative |
+| No error handling | Add graceful fallback |
+| Complex logic | Simplify or use script |
+| Unsafe command | Use safe alternative |
+
+### Argument Fixes
+
+| Issue | Fix |
+| :---- | :--- |
+| $1 for flags | Use ID/slug pattern only |
+| Missing hint | Add `argument-hint` |
+| Complex args | Use $IF($1, ..., ...) pattern |
+```
+
+**Security Enforcement**:
+- All `!` commands MUST be read-only
+- All `@` paths MUST have graceful fallback
+- Destructive operations require explicit safety constraints
+
+**Evidence-Based Findings Format**:
+```markdown
+**Issue:** One-line description
+**Evidence:** Quote from conversation or @file
+**Root Cause:** Why it happened (not just symptoms)
+**Fix:** Specific change to apply
+```
+
+**Critical Constraint (both skills)**:
+```markdown
+<critical_constraint>
+**Meta-Analysis Invariant:**
+
+1. Conversation is PRIMARY input (already in context)
+2. @files are OPTIONAL supplements
+3. Output MUST be concrete (not vague recommendations)
+4. Every finding MUST have evidence
+5. Fixes MUST specify exact file and section
+6. Strong language for agent failures
+7. Verify everything against actual files
+
+**NO VAGUE FINDINGS. NO DESTRUCTIVE COMMANDS. BE SPECIFIC.**
+</critical_constraint>
+```
+
+## Decisions
+
+### 1. Conversation-First Approach
+
+**Decision**: Make conversation the primary input, @files optional supplements
+
+**Rationale**: Mid-conversation activation means conversation is already in context. File reads add unnecessary latency.
+
+**Trade-off**: May miss file-specific issues if not explicitly provided
+
+**Consequence**: Skills must analyze conversation first, files second
+
+### 2. Evidence-Based Findings
+
+**Decision**: Every finding must have Evidence + Root Cause + Fix
+
+**Rationale**: Prevents lazy analysis and vague conclusions
+
+**Anti-Pattern Examples**:
+```markdown
+❌ Wrong: "The conversation had issues"
+
+✅ Correct: "Line 47: User said 'no' after skill-X was invoked.
+Root cause: Skill triggers too broad.
+Fix: Add 'Not for X' exclusion to description."
+```
+
+### 3. Strong Language for Failures
+
+**Decision**: Use strong words ("CRITICAL", "HIGH", "MUST", "NEVER") proportional to consequences
+
+**Rationale**: Compensates for agent laziness in acknowledging failures
+
+**Severity Levels**:
+| Level | Signal | Language |
+| :---- | :----- | :------- |
+| **CRITICAL** | Safety, security, repeated failure | USE STRONG WORDS |
+| **HIGH** | Quality issue affecting many | Clear directive |
+| **MEDIUM** | Edge case or minor gap | Guidance |
+| **LOW** | Nice-to-have improvement | Consider |
+
+### 4. Security Injection Rules
+
+**Decision**: All `!` commands read-only, all `@` paths have fallbacks
+
+**Rationale**: Commands run in user session; safety is paramount
+
+**Consequence**: Security audit points in evaluation areas
+
+## Files Summary
+
+### Renamed
+
+| Old Name | New Name | Purpose |
+| :------- | :------- | :------ |
+| skill-iterate/SKILL.md | skill-refine/SKILL.md | Meta-analysis for skills |
+| command-iterate/SKILL.md | command-refine/SKILL.md | Meta-analysis for commands |
+
+### Modified
+
+| File | Changes |
+| :--- | :------ |
+| skill-authoring/SKILL.md | Integrated external docs, removed allowed-tools from creation |
+| command-authoring/SKILL.md | Integrated external docs, removed allowed-tools from creation |
+
+### Verification
+
+```bash
+# Check diagnostics
+mcp__ide__get_diagnostics_code
+
+# Expected: No errors found
+
+# Verify files exist
+ls .claude/skills/skill-refine/SKILL.md
+ls .claude/skills/command-refine/SKILL.md
+```
+
+## Discoveries
+
+### Discovery 1: Meta-Learning Pattern Alignment
+
+**Observation**: skill-refine and command-refine align with existing meta-learning-extractor and reflect-and-patch patterns
+
+**Evidence**: All three use conversation analysis + evidence-based findings + concrete refinements
+
+**Impact**: Skills can reference each other for complementary patterns
+
+### Discovery 2: Anti-Laziness Integration
+
+**Observation**: Meta-analysis skills naturally compensate for agent laziness
+
+**Evidence**: Required evidence, specific fixes, strong language all prevent vague outputs
+
+**Impact**: Skills are self-enforcing for quality
+
+### Discovery 3: Injection Pattern Cohesion
+
+**Observation**: command-refine injection patterns align with command-authoring patterns
+
+**Evidence**: Both use @, !, <injected_content> consistently
+
+**Impact**: Users learn one pattern set, applies to both creation and refinement
+
+## Questions
+
+### Answered
+
+1. **"Should skills be conversation-first or file-first?"**
+   - Answer: Conversation-first for mid-conversation activation; files optional supplements
+   - Source: Plan mode exploration of meta-learning patterns
+
+2. **"What output format prevents lazy analysis?"**
+   - Answer: Evidence + Root Cause + Fix format with strong language for failures
+   - Source: Anti-laziness framework patterns
+
+### Unanswered
+
+1. **"Should skill-refine and command-refine reference each other?"**
+   - Consideration: Cross-referencing improves discoverability
+   - Impact: Currently standalone; may add navigation
+
+## Blockers
+
+### Current Blockers
+
+None blocking completion.
+
+### Potential Blockers
+
+1. **File renaming not committed**
+   - Impact: skill-refine and command-refine are untracked
+   - Resolution: `git add` and commit
+
+## Next Steps
+
+### Immediate
+
+1. **Commit file renames**
+   ```bash
+   git add .claude/skills/skill-refine/SKILL.md
+   git add .claude/skills/command-refine/SKILL.md
+   git commit -m "refactor: Rename to skill-refine and command-refine for meta-analysis"
+   ```
+
+2. **Update CLAUDE.md skill index**
+   - Change `skill-iterate` → `skill-refine`
+   - Change `command-iterate` → `command-refine`
+
+### Short-term
+
+3. **Add cross-references**
+   - skill-refine: Reference meta-learning-extractor
+   - command-refine: Reference command-authoring
+
+### Medium-term
+
+4. **Test meta-analysis activation**
+   - Invoke skill-refine mid-conversation
+   - Verify conversation-first analysis works
+   - Validate evidence-based findings output
+
+## Key Metrics
+
+| Metric | Before | After |
+| :----- | :----- | :----- |
+| Skill lines | 576 | 290 (refactored) |
+| Command lines | 429 | 350 (refactored) |
+| HTTPS links | Various | 0 |
+| Evidence required | No | Yes (critical_constraint) |
+| Strong language | No | Yes |
+
+## Patterns Identified
+
+### Pattern 1: Meta-Analysis Loop
+
+```
+1. SCAN → Analyze conversation for friction points
+2. MAP → Classify issues (skill gaps, pattern violations, drift)
+3. SYNTHESIZE → Distill into specific refinements
+4. OUTPUT → Concrete changes to apply
+```
+
+### Pattern 2: Evidence + Action Format
+
+```
+**Issue:** [One-line description]
+**Evidence:** [Quote from conversation or @file]
+**Root Cause:** [Why it happened]
+**Fix:** [Specific change to skill/command]
+```
+
+### Pattern 3: Security Injection
+
+```
+! commands: ALL read-only
+@ paths: ALL have fallback
+Security: Explicit constraints in critical_constraint
+```
+
+## Configuration Verification
+
+```bash
+# Verify diagnostics
+mcp__ide__get_diagnostics_code
+# Expected: No errors
+
+# Verify file structure
+ls -la .claude/skills/skill-*/
+ls -la .claude/skills/command-*/
+```
+
+## Context
+
+### Assumptions
+
+1. Conversation is available in context at invocation time
+2. @files are provided when additional context needed
+3. Agents will follow evidence-based format
+4. Strong language compensates for laziness
+
+### Constraints
+
+1. Skills must work in isolation (no external dependencies)
+2. Commands must handle missing files gracefully
+3. All `!` commands must be read-only
+4. Output must be concrete (not vague recommendations)
+
+### Preconditions
+
+1. SessionStart hook active with anti-laziness framework
+2. Skills loaded with dynamic knowledge loading
+3. User accepts evidence-based findings format
+
+## Artifacts
+
+### Skills Created/Modified
+
+- `skill-refine/SKILL.md` - 290 lines, conversation-first meta-analysis
+- `command-refine/SKILL.md` - 350 lines, injection-specific refinement
+- `skill-authoring/SKILL.md` - 649 lines, integrated documentation
+- `command-authoring/SKILL.md` - 622 lines, integrated documentation
+
+### Reference Files
+
+- None new this session
+
+### Scripts
+
+- None new this session
+
+## End of Session
+
+**Session**: meta-analysis-skills-refactor-2026-01-29
+**Status**: COMPLETE
+**Outcome**: SUCCEEDED
+**Next Action**: Commit file renames, update CLAUDE.md, test meta-analysis activation

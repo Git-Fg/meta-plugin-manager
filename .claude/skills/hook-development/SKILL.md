@@ -1,25 +1,118 @@
 ---
 name: hook-development
-description: "Create, validate, and audit event-driven hooks for intercepting events, enforcing security patterns, and automating interventions. Use when building or reviewing hooks and event handlers. Not for manual actions or passive knowledge."
+description: "Create, validate, and audit event-driven hooks for intercepting events, enforcing security patterns, and automating interventions. Use when building or reviewing hooks, implementing event handlers, or adding safety guardrails. Includes matcher patterns, action types, timeout configuration, and security enforcement. Not for manual actions, passive knowledge, or non-event-driven automation."
 ---
 
 <mission_control>
 <objective>Create event-driven hooks that intercept operations and enforce security patterns</objective>
 <success_criteria>Generated hook has valid matcher, action type, and timeout configuration</success_criteria>
-<standards_gate>
-MANDATORY: Read hooks documentation BEFORE creating hooks:
-
-- Event matchers & payloads → https://code.claude.com/docs/en/hooks.md
-- Security patterns → references/patterns.md
-- Quality guidelines → references/quality.md
-- Advanced techniques → references/advanced.md
-  </standards_gate>
-  </mission_control>
+</mission_control>
 
 <interaction_schema>
 event_analysis → matcher_design → action_definition → security_review → output</interaction_schema>
 
 # Hook Development
+
+**Skill Location**: This file
+
+## Quick Start
+
+**Create hook:** Follow matcher + action structure with timeout configuration
+
+**Review hook:** Use `quality-standards` skill → Apply security patterns
+
+**Test matcher:** Verify with `Bash` command before deployment
+
+**Why:** Hooks intercept operations at runtime—prevention is more valuable than post-hoc correction.
+
+## Critical Reference Loading
+
+**Key Reference**: `references/pattern_advanced.md` contains critical event handling patterns. Read in full when implementing complex hooks—partial understanding leads to runtime errors.
+
+## Navigation
+
+| If you need...         | Read...                            |
+| :--------------------- | :--------------------------------- |
+| Create hook            | ## Implementation Patterns         |
+| Review hook quality    | Use `quality-standards` skill      |
+| Test matcher           | See Bash examples in this file     |
+| Event matcher patterns | `references/pattern_advanced.md`   |
+| Security anti-patterns | `references/lookup_quality.md`     |
+| Migration guidance     | `references/workflow_migration.md` |
+
+## System Requirements
+
+- **Hook config**: JSON format with `matcher` + `hooks` array
+- **Action types**: `prompt` (requires user confirmation) or `command` (silent blocking)
+- **Timeout**: Required for `prompt` hooks (prevents blocking operations)
+- **Matcher syntax**: `tool == "Bash" && tool_input.command matches "pattern"`
+- **Portability**: Use project-relative paths, no hardcoded environment paths
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Planning**: Switch to planning mode for architectural decisions
+- **Discovery**: Locate files matching patterns and search file contents for hook integration points
+- **Delegation**: Delegate planning and exploration to specialized workers
+- **Tracking**: Maintain a visible task list for hook development
+
+<critical_constraint>
+Use native tools to fulfill these patterns. The System Prompt selects the correct implementation for semantic directives.
+</critical_constraint>
+
+## Implementation Patterns
+
+### Pattern: Destructive Operation Block
+
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf\"",
+  "hooks": [
+    {
+      "type": "prompt",
+      "prompt": "rm -rf detected. This cannot be undone. Type 'DELETE' to confirm.",
+      "timeout": 30
+    }
+  ]
+}
+```
+
+### Pattern: Sudo Confirmation
+
+```json
+{
+  "matcher": "tool == \"Bash\" && tool_input.command matches \"sudo\"",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "echo 'Sudo requires explicit confirmation.'"
+    }
+  ]
+}
+```
+
+### Pattern: Protected File Guard
+
+```bash
+if [[ "$file_path" == *".env"* ]]; then
+  echo '{"decision": "deny", "reason": "Protected file"}' >&2
+  exit 2
+fi
+```
+
+## Troubleshooting
+
+| Issue                               | Symptom                             | Solution                                                |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------- |
+| Broad match blocking all operations | Matcher `"*"` or overly generic     | Target specific tool + dangerous args                   |
+| User confused why operation failed  | Silent block with no explanation    | Use `prompt` type with clear message                    |
+| Hook blocking forever               | Missing timeout on prompt hook      | Add `timeout: 30` or similar                            |
+| Hook failing on different machines  | Hardcoded paths like `/home/user/`  | Use project-relative paths with `${CLAUDE_PROJECT_DIR}` |
+| Variable injection vulnerability    | Unquoted variables with spaces      | Always quote variables: `"$file_path"`                  |
+| Security bypass                     | No confirmation for destructive ops | Add prompt hook with confirmation requirement           |
+
+---
 
 Hooks are event-driven automation that intercept operations before execution. They provide safety mechanisms, enforce patterns, and enable automated intervention based on event matching.
 
@@ -81,18 +174,86 @@ Hooks provide:
 
 ---
 
-## Best Practices
+## Hook Anti-Patterns
 
-### Event Matching
+Avoid these common vulnerabilities:
 
-- Use precise matching criteria
-- Avoid overly broad patterns
-- Consider false positives
-- Test with various command patterns
+### 1. The Broad Match
 
-### Intervention Patterns
+```json
+// BAD: Matcher catches everything
+"matcher": "*"
+```
 
-**Prompt hooks**: Interactive user confirmation
+This generates noise and blocks legitimate operations.
+
+```json
+// GOOD: Target specific tool and dangerous args
+"matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf\""
+```
+
+### 2. The Silent Block
+
+```json
+// BAD: User has no idea why operation failed
+"type": "command",
+"command": "exit 1"
+```
+
+The user sees a generic failure with no guidance.
+
+```json
+// GOOD: Fail loudly with explanation
+"type": "prompt",
+"prompt": "Destructive rm -rf detected. This cannot be undone. Type 'DELETE' to confirm.",
+"timeout": 30
+```
+
+### 3. The Missing Timeout
+
+```json
+// BAD: No timeout - hook could block forever
+"type": "prompt"
+```
+
+Operations without timeouts can deadlock the system.
+
+```json
+// GOOD: Timeout prevents blocking
+"type": "prompt",
+"prompt": "Confirm destructive operation",
+"timeout": 30
+```
+
+### 4. The Hardcoded Path
+
+```json
+// BAD: Not portable across environments
+"command": "/home/user/scripts/validate.sh"
+```
+
+Fails when team members have different home directories.
+
+```json
+// GOOD: Use project-relative paths
+"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/scripts/validate.sh"
+```
+
+### 5. The Unquoted Variable
+
+```bash
+# BAD: Injection risk with spaces or special chars
+rm -rf $file_path
+
+# GOOD: Always quote variables
+rm -rf "$file_path"
+```
+
+---
+
+## Correct Patterns
+
+**Prompt for destructive operations:**
 
 ```json
 {
@@ -100,14 +261,14 @@ Hooks provide:
   "hooks": [
     {
       "type": "prompt",
-      "prompt": "Destructive operation detected. Confirm to proceed.",
+      "prompt": "rm -rf detected. This cannot be undone. Type 'DELETE' to confirm.",
       "timeout": 30
     }
   ]
 }
 ```
 
-**Command hooks**: Automated blocking
+**Block sudo with clear message:**
 
 ```json
 {
@@ -115,86 +276,21 @@ Hooks provide:
   "hooks": [
     {
       "type": "command",
-      "command": "BLOCKED: Use sudo with explicit confirmation only"
+      "command": "echo 'Sudo requires explicit confirmation. Remove this block if needed.'"
     }
   ]
 }
 ```
 
-### Security Patterns
+**Protect sensitive files:**
 
-- **PreToolUse**: Validate before execution
-- **PostToolUse**: Audit after execution
-- **Sensitive operations**: Always require confirmation
-- **Pattern matching**: Use regex for precision
-
-### Safety Mechanisms
-
-- Always include timeout values
-- Provide clear blocking messages
-- Log decisions for audit trail
-- Prevent deadlocks and infinite loops
-
-### Quality
-
-- Test hook matching thoroughly
-- Document intervention rationale
-- Include escape hatches for emergencies
-- Monitor for false positives
-
----
-
-## Dynamic Sourcing Protocol
-
-<fetch_protocol>
-**MANDATORY FETCH**: Before creating hooks, fetch the content from:
-
-- https://code.claude.com/docs/en/hooks.md (event types, matchers, payloads)
-
-This skill contains Seed System-specific hook patterns and quality standards.
-</fetch_protocol>
-
----
-
-## Navigation
-
-**Official Documentation**:
-
-- Event matchers & payloads → https://code.claude.com/docs/en/hooks.md
-
-| If you need...      | Reference                          |
-| ------------------- | ---------------------------------- |
-| Security patterns   | `references/patterns.md`           |
-| Quality guidelines  | MANDATORY: `references/quality.md` |
-| Advanced techniques | `references/advanced.md`           |
-| Migration guide     | `references/migration.md`          |
-
----
-
-## Validation Pattern
-
-Use native tools to validate hook scripts:
-
-**Grep: Search for required safety patterns**
-
-- `Grep: search for "^#!/"` → Shebang present
-- `Grep: search for "set -euo pipefail"` → Error handling enabled
-- `Grep: search for "cat\|read"` → stdin reading capability
-- `Grep: search for "jq"` → JSON parsing support
-- `Grep: search for "exit 0\|exit 2"` → Explicit exit codes
-- `Grep: search for ">&2"` → Error messages to stderr
-
-**Grep: Search for anti-patterns**
-
-- `Grep: search for "/home/\|/usr/\|/opt/"` → Hardcoded paths (anti-pattern)
-- `Grep: search for "sleep [0-9]{3,}"` → Long-running operations
-
-**Validation workflow**:
-
-1. `Glob: pattern "**/*.sh" in hooks/` → Find all hook scripts
-2. `Grep: search for "set -euo pipefail"` in each → Verify safety patterns
-3. `Grep: search for "cat\|read"` in each → Verify stdin handling
-4. `Grep: search for "/home/\|/usr/\|/opt/"` in each → Flag hardcoded paths
+```bash
+# Check for .env before allowing operations
+if [[ "$file_path" == *".env"* ]]; then
+  echo '{"decision": "deny", "reason": "Protected file"}' >&2
+  exit 2
+fi
+```
 
 ---
 
@@ -203,13 +299,11 @@ Use native tools to validate hook scripts:
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+All components work with zero .claude/rules dependencies (portability invariant).
+Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session).
+Use What-When-Not-Includes format in descriptions (third person).
+Progressive disclosure: SKILL.md contains core philosophy; references/ contains detailed content.
+Use XML for control (mission_control, critical_constraint), Markdown for data.
 </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
@@ -222,16 +316,66 @@ No exceptions. Portability invariant must be maintained.
 
 ---
 
+<guiding_principles>
+
+## The Path to High-Quality Hooks
+
+### 1. Precise Matcher Design
+
+Hooks work reliably when matchers target specific operations rather than broad patterns.
+
+- **Target specifically**: Match tool + dangerous args (e.g., `tool == "Bash" && command matches "rm -rf"`)
+- **Avoid broad matches**: Generic `"*"` matchers block legitimate operations
+- **Test thoroughly**: Verify matchers catch intended operations without false positives
+
+### 2. Clear User Communication
+
+Hooks succeed when users understand why operations are blocked.
+
+- **Prompt type for confirmation**: Use `type: "prompt"` for destructive operations requiring user consent
+- **Command type for clear blocks**: Use `type: "command"` with explanation messages
+- **Explain clearly**: Describe what was detected and why it matters
+
+### 3. Timeout Protection
+
+Hooks prevent system blocking when timeout values are properly configured.
+
+- **Always set timeouts**: `timeout: 30` or similar prevents indefinite waiting
+- **Prevent deadlocks**: Operations without timeouts can hang the entire system
+- **Reasonable defaults**: 30 seconds works for most confirmation prompts
+
+### 4. Portability Through Relative Paths
+
+Hooks work across environments when paths are project-relative.
+
+- **Use `${CLAUDE_PROJECT_DIR}`**: Instead of hardcoded paths like `/home/user/`
+- **Environment variables**: Externalize configuration for different machines
+- **Team compatibility**: Project-relative paths work across different home directories
+
+### 5. Variable Safety
+
+Hooks prevent injection vulnerabilities when variables are properly quoted.
+
+- **Always quote variables**: `"$file_path"` instead of `$file_path`
+- **Prevent injection**: Unquoted variables with spaces cause security issues
+- **Bash best practices**: Use `[[ ]]` for tests and quote all expansions
+
+### 6. Security-First Design
+
+Hooks protect systems when safety mechanisms are properly implemented.
+
+- **Destructive operation confirmation**: `rm -rf`, `sudo`, and similar commands require explicit approval
+- **Protected file guards**: `.env`, credentials, and config files need special handling
+- **Escape hatches**: Provide emergency override mechanisms for legitimate operations
+  </guiding_principles>
+
+---
+
 <critical_constraint>
-MANDATORY: Hooks must have timeout values to prevent blocking operations
+**System Physics:**
 
-MANDATORY: Use prompt hooks for destructive operations requiring user confirmation
-
-MANDATORY: Use command hooks only for clear blocking scenarios
-
-MANDATORY: Test matcher patterns thoroughly before deployment
-
-MANDATORY: Include escape hatches for emergency overrides
-
-No exceptions. Hooks are security mechanisms—they must be safe, timeout-protected, and non-blocking.
-</critical_constraint>
+1. Zero external dependencies (portability invariant)
+2. Hooks require timeout values to prevent blocking operations
+3. Prompt hooks for user confirmation, command hooks for clear blocking
+4. Completion claims require verification evidence
+   </critical_constraint>

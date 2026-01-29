@@ -1,16 +1,62 @@
 ---
-description: "Detect and fix context drift - knowledge scattered across files, duplicate documentation, or skills referencing external files. Use when auditing project health."
+name: ops:drift
+description: "Detect and fix context drift - knowledge scattered across files, duplicate documentation, or skills referencing external files. Uses TodoWrite for issue tracking. Use when auditing project health."
 context: fork
 ---
 
-<mission_control>
-<objective>Identify and fix context drift - knowledge in wrong locations</objective>
-<success_criteria>Each concept has single source of truth, skills self-contained, progressive disclosure maintained</success_criteria>
-</mission_control>
-
 # Detect Context Drift
 
+**Uses TodoWrite for issue tracking**
+
+## Quick Context
+
 Centralize all instructions and knowledge in their correct locations.
+
+## Workflow
+
+### 1. Detect
+
+Gather context:
+
+- `Glob: .claude/rules/*.md` → Rules files
+- `Glob: CLAUDE.md` → Project config
+- `Glob: .claude/skills/*/SKILL.md` → All skills
+
+### 2. Ask
+
+If drift detection finds issues, use recognition-based questions:
+
+- "Which issues should be fixed first?"
+- "Should these be consolidated or moved?"
+
+### 3. Execute
+
+**Architecture Checks:**
+
+| Check                  | Pattern                        | Tool               |
+| ---------------------- | ------------------------------ | ------------------ | --------------- |
+| Single source of truth | `Grep: "(pattern               | concept)._\n._\1"` | Find duplicates |
+| Self-contained skills  | `Grep: "external\|dependency"` | Find external refs |
+| Progressive disclosure | File line count                | Tier 2 ≠ Tier 3    |
+| Path independence      | `Grep: "^/\|^\."`              | Portable paths     |
+
+**Drift Patterns to Flag:**
+
+- CLAUDE.md mentions specific file paths
+- Multiple files document same pattern
+- Knowledge in wrong tier (Tier 2 vs Tier 3)
+- Skills reference external files
+
+**Do NOT Flag (Intentional Duplication):**
+
+- Philosophy in both rules/ and meta-skills (Layer A vs Layer B)
+- Progressive Disclosure explained in both
+- Delta Standard in both locations
+
+### 4. Verify
+
+1. **TodoWrite**: Create task entries for each drift issue
+2. **TaskUpdate**: Mark issues as fixed after refactoring
 
 ## Core Distribution
 
@@ -26,85 +72,10 @@ Centralize all instructions and knowledge in their correct locations.
 - How THIS project implements the rules
 - Architecture decisions unique to this project
 
-**Meta-Skills - Component Expertise**
+**Skills - Component Expertise**
 
 - invocable-development: How commands and skills work
 - [component]-development: How [component] works
-
-## Recognition Tests
-
-**Look for context drift when:**
-
-- CLAUDE.md mentions specific file paths
-- Multiple files document the same pattern
-- Knowledge lives in wrong tier (Tier 2 vs Tier 3)
-- Skills reference external files instead of being self-contained
-
-**Binary test:** "Is concept documented in multiple places?" → Centralize to single source.
-
-## The Architecture Rules
-
-### Single Source of Truth
-
-**Rule**: Each concept has exactly one home.
-
-**Binary test:** "Can you point to multiple locations for same concept?" → Fix to single source.
-
-### Self-Contained Skills
-
-**Rule**: Skills reference nothing external.
-
-**Binary test:** "Does skill reference external files?" → Inline or rewrite.
-
-### Progressive Disclosure
-
-**Rule**: Tier 2 ≠ Tier 3 content.
-
-**Binary test:** "Is this exact same content in both tiers?" → Differentiate or consolidate.
-
-### Path Independence
-
-**Rule**: Use portable paths, not project-specific.
-
-**Binary test:** "Do paths assume specific project structure?" → Make them portable.
-
-## Dual-Layer Architecture Exception
-
-**Critical:** Philosophy duplication between `.claude/rules/` (Layer A) and meta-skills (Layer B) is INTENTIONAL, not context drift.
-
-**Recognition test:** "Is it knowledge that is globally useful for all skills, projects and global philosophy to contextualize?"
-
-- **If YES** → Belongs in `.claude/rules/` (Layer A: universal philosophy)
-- **If NO** (component-specific, needs portability) → Belongs in the skill itself (Layer B: genetic code)
-
-**Why this distinction:**
-
-- Layer A guides the agent during current session (not embedded in components)
-- Layer B provides portable "genetic code" for components (must work in isolation)
-- Components must survive being moved to projects with ZERO `.claude/rules/`
-
-**Do NOT flag as drift:**
-
-- Progressive Disclosure explained in both rules/ and meta-skills
-- Delta Standard documented in both locations
-- Self-containment taught in both layers
-- Portability Invariant present in both
-
-**Flag as drift only when:**
-
-- Philosophy duplicated within the SAME layer (rules/ or skills/)
-- Specific file paths used in CLAUDE.md
-- Skills reference external files instead of containing knowledge
-
-## Context Fork Exception
-
-**When skills NEED project rules:**
-
-- Fully integrate the knowledge (don't reference)
-- Rewrite rules specifically for the skill's context
-- Make the skill self-contained
-
-**Binary test:** "Does fork context require external knowledge?" → Inline and rewrite.
 
 ## Quality Checklist
 
@@ -113,10 +84,8 @@ Centralize all instructions and knowledge in their correct locations.
 - `Glob: CLAUDE.md` → `Grep: "\.claude/"` - No file paths in CLAUDE.md
 - `Grep: "(pattern|concept).*\n.*\1"` - Each concept has exactly one source
 - `Grep: "external\|dependency" skills/*/SKILL.md` - Skills reference nothing external
-- `Bash: wc -w skills/*/SKILL.md` - Tier 2 ≠ Tier 3 content
+- `Bash: wc -l skills/*/SKILL.md` - Tier 2 ≠ Tier 3 content
 - `Grep: "^/\|^\."` - All cross-references use portable paths
-
-**Binary test:** "Does architecture follow single source of truth?" → Check all five criteria.
 
 **Key question:** "Would this component survive being moved to a fresh project?" → If no, fix context drift.
 
@@ -127,5 +96,6 @@ MANDATORY: Each concept has exactly one home - flag duplicates
 MANDATORY: Skills reference nothing external - must be self-contained
 MANDATORY: Tier 2 ≠ Tier 3 - progressive disclosure must be maintained
 MANDATORY: Flag file paths in CLAUDE.md as portability issues
+MANDATORY: Use TodoWrite for tracking drift issues
 No exceptions. Context drift creates maintenance burden and inconsistency.
 </critical_constraint>

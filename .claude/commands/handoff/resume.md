@@ -1,122 +1,126 @@
 ---
 name: handoff:resume
-description: Resume work by injecting the latest handoff context using !{command} syntax to auto-find and cat the most recent handoff file.
-disable-model-invocation: true
-allowed-tools: Read, Write, Bash, Glob
+description: "Resume work from a handoff document. Use at session start to restore context from previous session. Not for planning resume - use plan-specific mechanisms instead."
+argument-hint: "[handoff | diagnostic | attic/filename]"
 ---
+
+# Resume from Handoff
 
 <mission_control>
-<objective>Resume work by extracting and injecting the latest handoff context using shell command substitution</objective>
-<success_criteria>Latest handoff found via !{command}, context injected, previous handoffs archived</success_criteria>
+<objective>Restore session context from a YAML handoff document and prepare to continue work</objective>
+<success_criteria>Handoff context loaded, goal/now extracted, ready to proceed with next step</success_criteria>
 </mission_control>
 
-<interaction_schema>
-find_latest_handoff → archive_old_handoffs → inject_context → confirm
-</interaction_schema>
+## Current handoff (if exists)
 
-# Handoff Resume
+<injected_content>
+@.claude/workspace/handoffs/handoff.yaml
+</injected_content>
 
-Resume work by injecting the latest handoff context using shell command substitution.
+## Current diagnostic (if exists)
 
-## What This Command Does
+<injected_content>
+@.claude/workspace/handoffs/diagnostic.yaml
+</injected_content>
 
-1. **Find** the most recent handoff using `!{command}` syntax
-2. **Archive** old handoffs with timestamp suffix
-3. **Inject** the handoff content as immediate context
+If neither file exists: No handoff to resume - ask user for context
 
-## How It Works
+## Workflow
 
-### Phase 1: Find Latest Handoff with Command Substitution
+### 1. Detect
 
-Use shell command substitution to auto-find the latest handoff:
+Inject and parse handoff/diagnostic files:
 
-- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Find most recently modified handoff
-- `Bash: [ -z "$LATEST" ] && echo "No handoffs found in .claude/workspace/handoffs/"; exit 1` → Validate handoff exists
-- `Bash: cat "$LATEST"` → Display handoff content
+**Current handoff (if exists)**
 
-**Command substitution pattern:**
+<injected_content>
+@.claude/workspace/handoffs/handoff.yaml
+</injected_content>
 
-- `!{ls -t ... | head -1}` - Finds latest file
-- `!{cat "$(ls -t ... | head -1)"}` - Inlines content directly
+**Current diagnostic (if exists)**
 
-### Phase 2: Archive Old Handoffs
+<injected_content>
+@.claude/workspace/handoffs/diagnostic.yaml
+</injected_content>
 
-Before resuming, archive any existing handoffs:
+If neither file exists: No handoff to resume - ask user for context
 
-- `Glob: .claude/workspace/handoffs/*.yaml` → Find existing handoffs
-- `Bash: for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/$(basename "$f" .yaml)_$(date +%Y%m%d_%H%M%S).yaml"; done` → Archive with timestamp
+### 2. Execute
 
-### Phase 3: Inject Handoff Context
+Parse the injected YAML and extract key fields:
 
-Read and format the handoff for context injection:
+- **goal**: What was accomplished
+- **now**: Immediate next action
+- **test**: Verification command
+- **done_this_session**: Completed tasks
+- **decisions**: Key decisions made
+- **blockers**: Issues encountered
+- **next**: Next steps
 
-- `Bash: ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1` → Load latest handoff
-- `Grep: "^goal:" .claude/workspace/handoffs/*.yaml | sed 's/^goal: //'` → Extract goal
-- `Grep: "^now:" .claude/workspace/handoffs/*.yaml | sed 's/^now: //'` → Extract now
+### 3. Verify
 
-## Inline Command Substitution Examples
+Run the verification command from handoff and present summary:
 
-- `Bash: cat "$(ls -t .claude/workspace/handoffs/*.yaml | head -1)"` → Direct inline content
-- `Bash: echo "=== LATEST HANDOFF ===" && cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → With echo prefix
-- `Bash: echo "Goal: $(grep '^goal:' \"$(ls -t .claude/workspace/handoffs/*.yaml | head -1)\" | sed 's/^goal: //')"` → Parse specific fields
+```
+=== Handoff: {session-name} ===
+Date: {date}
+Status: {status} | Outcome: {outcome}
 
-## Quick Resume Pattern
+GOAL: {goal}
 
-- `Bash: cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → One-liner resume
-- `Bash: for f in .claude/workspace/handoffs/*.yaml; do [ -f "$f" ] && mv "$f" ".attic/$(basename "$f" .yaml)_$(date +%Y%m%d_%H%M%S).yaml"; done && cat "$(ls -t .claude/workspace/handoffs/*.yaml 2>/dev/null | head -1)"` → With archive
+NOW: {now}
 
-## Handoff Format Reference
+TEST: {test}
 
-The handoff YAML structure:
+Completed:
+  - {task 1}
+  - {task 2}
 
-```yaml
----
-date: YYYY-MM-DD
-session: { session-name }
-status: complete|partial|blocked
-outcome: SUCCEEDED|PARTIAL_PLUS|PARTIAL_MINUS|FAILED
----
-goal: { What this session accomplished }
-now: { What next session should do first }
-test: { Verification command }
+Decisions:
+  - {decision 1}
+  - {decision 2}
 
-done_this_session:
-  - task: { Task name }
-    files: [{ file1 }, { file2 }]
-
-blockers: [{ Any blocking issues }]
-questions: [{ Unresolved questions }]
-decisions:
-  - { name }: { rationale }
-findings:
-  - { name }: { details }
-worked: [{ What worked }]
-failed: [{ What failed }]
-next:
-  - { Next step 1 }
-  - { Next step 2 }
-files:
-  created: [{ Created files }]
-  modified: [{ Modified files }]
+Next Steps:
+  1. {next 1}
+  2. {next 2}
 ```
 
-## Best Practices
+- If test passes → Proceed with "now" action
+- If test fails → Report issue and await resolution
 
-- Use `!{command}` for inline execution and substitution
-- Always archive old handoffs before resuming
-- Extract `goal` and `now` for immediate context
-- Keep the full handoff for detailed reference
+## Usage Patterns
+
+**Resume from default handoff:**
+
+```
+/handoff:resume
+```
+
+**Resume from diagnostic:**
+
+```
+/handoff:resume diagnostic
+```
+
+**Resume from archived:**
+
+```
+/handoff:resume attic/handoff_20260129_143022.yaml
+```
 
 ## Recognition Questions
 
-- "Is this the correct handoff to resume?"
-- "Have all old handoffs been archived?"
-- "Is the 'now' field clear for immediate action?"
+- "Was handoff.yaml injected?" → Parse and extract fields
+- "Was diagnostic.yaml injected?" → Use if no handoff
+- "Was the goal accomplished?" → Check `goal` field
+- "What should happen now?" → Extract `now` field
+- "How do I verify?" → Run `test` command
+
+---
 
 <critical_constraint>
-MANDATORY: Use !{command} syntax for auto-finding and inlining handoff content
-MANDATORY: Archive old handoffs with timestamp before resuming
-MANDATORY: Extract goal/now fields for immediate context visibility
-MANDATORY: Preserve all handoff fields in context injection
-No exceptions. Resume must enable seamless continuation with command substitution.
+MANDATORY: Always extract goal/now/test fields for statusline
+MANDATORY: Run verification test before proceeding
+MANDATORY: Present clear summary before asking for action
+No exceptions. Resume must restore complete context.
 </critical_constraint>

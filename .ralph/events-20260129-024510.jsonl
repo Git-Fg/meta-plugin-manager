@@ -1,0 +1,1 @@
+{"payload":"{\"scope\": \"full\", \"areas\": [\"documentation\", \"rules\", \"skills\", \"commands\", \"agents\", \"mcp\", \"components\"], \"checks\": [\"context_drift\", \"rule_placement\", \"teaching_consistency\"]}","topic":"review.start","ts":"2026-01-29T02:45:46.015255+00:00"}

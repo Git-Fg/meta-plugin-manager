@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: "Review pull requests for spec compliance, security, performance, and code quality. Use when analyzing PRs. Not for writing new code or initial development."
+description: "Review pull requests for spec compliance, security vulnerabilities, performance issues, and code quality. Use when analyzing PRs, preparing code for merge, or conducting code audits. Includes security scanning, performance analysis, quality rubrics, and compliance checking. Not for writing new code, initial development, or post-merge validation."
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob, Bash
@@ -9,406 +9,314 @@ allowed-tools: Read, Grep, Glob, Bash
 # PR Reviewer
 
 <mission_control>
-<objective>Review pull requests with systematic analysis before generating feedback</objective>
-<success_criteria>All findings categorized by severity with specific recommendations</success_criteria>
-<standards_gate>
-MANDATORY: Load pr-reviewer references BEFORE starting review:
+<objective>Review pull requests with dimensional analysis—treating the PR as evidence to be examined against expert standards</objective>
+<success_criteria>Every finding traced to specific PR evidence; every recommendation connected to a principle</success_criteria>
+</mission_control>
 
-- Security patterns → references/security.md
-- Quality criteria → references/quality.md
-- Performance guidelines → references/performance.md
-  </standards_gate>
-  </mission_control>
+---
 
-Review pull request changes with comprehensive analysis including security, performance, code quality, and architecture.
+## The Path to Effective PR Reviews
 
-<interaction_schema>
-inject_context → thinking_analysis → stage1_spec_compliance → stage2_quality_review → categorize_findings → output
-</interaction_schema>
+**1. Dimensional Analysis Prevents Blind Spots**
 
-## Thinking Protocol: Analyze Before Speaking
+PR reviews succeed when you examine code through multiple lenses. Each dimension catches different issues: spec gaps, security vulnerabilities, performance problems, and quality concerns. Missing any dimension means incomplete review.
 
-<thinking_protocol>
-<mandatory_trigger>
-Before generating ANY PR review feedback
-</mandatory_trigger>
+**2. Evidence-Based Reviews Build Trust**
 
-<process>
-1. **Open `<thinking>`** - Analysis sandbox
-2. **Analyze the diff** - What changed, why, impact
-3. **Check requirements** - Does implementation match spec?
-4. **Identify issues** - Security, performance, quality, architecture
-5. **Weigh severity** - Blocker vs nitpick
-6. **Close `</thinking>`** - Hard stop before output
-7. **Generate review** - Categorized findings with recommendations
-</process>
-</thinking_protocol>
+Every finding should trace to specific code locations. Point to files and line numbers. Connect issues to principles like OWASP standards or architectural guidelines. Reviews without evidence become opinions rather than expertise.
 
-### Thinking Template
+**3. Severity Calibration Protects Team Velocity**
 
-```xml
-<thinking>
-<diff_analysis>
-- Files changed: [count and list]
-- Lines added/removed: [approximate]
-- Scope: [feature/bug/refactor/other]
-- Risk level: [high/medium/low]
-</diff_analysis>
+Assign severity based on actual impact, not feelings. BLOCKER for security and spec failures protects production. HIGH for significant issues with clear fixes. MEDIUM for technical debt. NIT for style. Consistent severity prevents review fatigue.
 
-<requirement_check>
-- PR description states: [requirements]
-- Implementation provides: [what was actually done]
-- Gaps identified: [missing features, extra features]
-- Spec compliance: [COMPLIANT/NON_COMPLIANT]
-</requirement_check>
+**4. Two-Stage Process Validates Delivery**
 
-<issue_scan>
-<security>
-- Injection vulnerabilities: [findings]
-- Auth/authz issues: [findings]
-- Secrets exposure: [findings]
-- Input validation: [findings]
-</security>
+Spec compliance comes first—verify requirements are met before quality review. This prevents debates about implementation when scope is missing. Quality gate follows only after spec passes.
 
-<performance>
-- N+1 queries: [findings]
-- Algorithmic issues: [findings]
-- Missing indexes: [findings]
-- Caching opportunities: [findings]
-</performance>
+**5. Structured Output Enables Action**
 
-<quality>
-- Code duplication: [findings]
-- Naming issues: [findings]
-- Test coverage: [findings]
-- Complexity issues: [findings]
-</quality>
+Present findings in clear tables showing What, Where, Why, and How. This structure transforms feedback from criticism into actionable guidance. Developers understand what to fix and why it matters.
 
-<architecture>
-- Layer violations: [findings]
-- Dependency issues: [findings]
-- Error handling: [findings]
-- API design: [findings]
-</architecture>
-</issue_scan>
+---
 
-<severity_assessment>
-- Blockers: [must-fix before merge]
-- Important: [should-fix before merge]
-- Nits: [nice-to-have improvements]
-</severity_assessment>
-</thinking>
+## Quick Start
+
+**Location**: `.claude/skills/pr-reviewer/`
+
+**Dimensional Analysis**:
+
+1. **Spec** - Does this deliver what was requested?
+2. **Security** - Does this introduce vulnerability?
+3. **Performance** - Does this create efficiency problems?
+4. **Quality** - Is this maintainable?
+
+**Review Output Format**:
+
+```markdown
+# PR Review: [Title]
+
+## [Dimension]
+
+| Requirement | Status | Evidence |
+| ----------- | ------ | -------- |
+
+## [Next Dimension]
+
+...
+
+## Result: APPROVE | REQUEST_CHANGES | BLOCK
+```
+
+## Navigation
+
+| If you need...                 | Read...                                                |
+| :----------------------------- | :----------------------------------------------------- |
+| Dimensional analysis framework | ## Quick Start → Dimensional Analysis                  |
+| Review output format           | ## Quick Start → Review Output Format                  |
+| Security review pattern        | ## Implementation Patterns → Security review pattern   |
+| Spec compliance pattern        | ## Implementation Patterns → Spec compliance pattern   |
+| Evidence formatting            | ## Implementation Patterns → What/Where/Why/How tables |
+| Severity calibration           | See BLOCKER/HIGH/MEDIUM/NIT definitions in body        |
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Discovery**: Locate files matching patterns and search file contents for PR analysis
+- **Delegation**: Delegate exploration to specialized workers for dimensional analysis
+- **Tracking**: Maintain a visible task list for review dimensions
+- **Verification**: Verify code quality using diagnostics and navigation
+
+---
+
+## Implementation Patterns
+
+**Security review pattern**:
+
+```markdown
+## Security Issues
+
+**BLOCKER** - SQL injection vulnerability
+
+| Field     | Value                                                                    |
+| --------- | ------------------------------------------------------------------------ |
+| **What**  | User input concatenated directly into SQL                                |
+| **Where** | `src/db/user.ts:47`                                                      |
+| **Why**   | OWASP Top 10 - Injection can extract/modify data                         |
+| **How**   | Use parameterized queries: `db.query('SELECT * WHERE id = ?', [userId])` |
+```
+
+**Spec compliance pattern**:
+
+```markdown
+## Spec Compliance
+
+| Requirement      | Status         | Evidence                     |
+| ---------------- | -------------- | ---------------------------- |
+| POST /auth/login | ✅ Implemented | `auth.ts:23`                 |
+| Rate limiting    | ❌ Missing     | PR description required this |
+
+**Assessment**: NON_COMPLIANT - Rate limiting required but not present
+```
+
+**Quality review pattern**:
+
+```markdown
+## Quality Issues
+
+**NIT** - Inconsistent naming
+
+| Field     | Value                                       |
+| --------- | ------------------------------------------- |
+| **What**  | `userData` vs `userRecord` for same concept |
+| **Where** | `auth.ts:31` and `auth.ts:45`               |
+| **Why**   | Cognitive load for maintainers              |
+| **How**   | Standardize to `userRecord` throughout      |
 ```
 
 ---
 
-This skill uses dynamic context injection with `!`command"` syntax to gather live PR data before review:
+## Troubleshooting
 
-```markdown
-## Current Context
+**Issue**: Reviews take too long
 
-- **PR diff**: !`git diff HEAD~1`
-- **PR title**: !`git log -1 --pretty=format:%s`
-- **PR description**: !`git log -1 --pretty=format:%b`
-- **Changed files**: !`git diff --name-only HEAD~1`
-- **Commits**: !`git log --oneline HEAD~1..HEAD`
-```
+- **Symptom**: Spending >30 minutes on simple PRs
+- **Solution**: Use `/verify --quick` for initial check before detailed review
 
-## Two-Stage Review Architecture
+**Issue**: Missing critical issues
 
-**MANDATORY**: PR review must follow two-stage process:
+- **Symptom**: Bugs reaching production
+- **Solution**: Use `/verify --security` for security-sensitive PRs; always complete dimensional analysis
 
-1. **Stage 1**: Spec Compliance Review - Verify implementation matches requirements
-2. **Stage 2**: Code Quality Review - Assess security, performance, quality, architecture
+**Issue**: Inconsistent severity assignment
 
-**NEVER skip stages or review out of order.**
+- **Symptom**: BLOCKERs feel arbitrary
+- **Solution**: Follow calibration strictly: BLOCKER=security/spec failure, HIGH=significant issue, MEDIUM=tech debt, NIT=style
 
-### Stage 1: Spec Compliance Review
+**Issue**: Findings lack evidence
 
-**First, verify implementation matches requirements:**
-
-#### Spec Compliance Checklist
-
-- [ ] All requirements from PR description implemented
-- [ ] Nothing extra added (YAGNI violations)
-- [ ] Acceptance criteria met
-- [ ] Edge cases addressed
-- [ ] No missing functionality
-
-#### Spec Compliance Output
-
-```markdown
-## Stage 1: Spec Compliance Review
-
-### Requirements Verification
-
-✅ All required features implemented
-✅ No extra features (YAGNI compliant)
-✅ Acceptance criteria met
-
-### Gap Analysis
-
-- Missing: [List any gaps]
-- Extra: [List any over-implementation]
-- Ambiguous: [List unclear requirements]
-
-**Result**: COMPLIANT | NON_COMPLIANT
-```
-
-### Stage 2: Code Quality Review
-
-<router>
-flowchart TD
-    Start([Start Review]) --> Stage1{Stage 1:\nSpec Compliance}
-    Stage1 -- PASS --> Stage2{Stage 2:\nCode Quality}
-    Stage1 -- FAIL --> Return[Return to User\n(Fix Spec)]
-    Stage2 -- PASS --> Approve[Approve PR]
-    Stage2 -- FAIL --> RequestChanges[Request Changes\n(Fix Code)]
-    RequestChanges --> Return
-</router>
-
-**Only after Stage 1 passes:**
-
-Execute comprehensive review across four dimensions:
-
-#### 1. Security Review
-
-- Check for injection vulnerabilities (SQL, XSS, command injection)
-- Verify authentication/authorization implementation
-- Look for secrets exposure in code
-- Validate input sanitization
-- Check for OWASP Top 10 vulnerabilities
-
-### 2. Performance Review
-
-- Identify N+1 query problems
-- Check for inefficient algorithms
-- Look for missing database indexes
-- Validate caching strategies
-- Review API response times
-
-### 3. Code Quality Review
-
-- Review naming conventions
-- Check for code duplication
-- Verify test coverage
-- Assess maintainability
-- Check for code complexity issues
-
-### 4. Architecture Review
-
-- Check layer separation (MVC, clean architecture)
-- Verify dependency injection
-- Assess error handling patterns
-- Review API design
-- Check for proper abstractions
-
-## Output Format
-
-<finding_categorization>
-<purpose>Force findings into XML buckets for clear categorization and severity assessment</purpose>
-
-<security_issues>
-<issue severity="BLOCKER | HIGH | MEDIUM | LOW">
-<description>[What's wrong]</description>
-<file_path>[path/to/file]</file_path>
-<line_number>[number]</line_number>
-<recommendation>[Specific fix with code example if applicable]</recommendation>
-<cve_reference>[If applicable CVE or OWASP reference]</cve_reference>
-</issue>
-</security_issues>
-
-<performance_issues>
-<issue severity="BLOCKER | HIGH | MEDIUM | LOW">
-<description>[What's wrong]</description>
-<file_path>[path/to/file]</file_path>
-<line_number>[number]</line_number>
-<recommendation>[Specific fix with optimization strategy]</recommendation>
-<impact>[Performance impact: +Xms, -Y queries/sec]</impact>
-</issue>
-</performance_issues>
-
-<code_quality_issues>
-<issue severity="NIT | LOW | MEDIUM">
-<type>[duplication | naming | complexity | coverage | style]</type>
-<description>[What's wrong]</description>
-<file_path>[path/to/file]</file_path>
-<line_number>[number]</line_number>
-<recommendation>[Specific improvement]</recommendation>
-</issue>
-</code_quality_issues>
-
-<architecture_issues>
-<issue severity="BLOCKER | HIGH | MEDIUM">
-<type>[layer_violation | dependency | error_handling | api_design]</type>
-<description>[What's wrong]</description>
-<file_path>[path/to/file]</file_path>
-<line_number>[number]</line_number>
-<recommendation>[Specific architectural improvement]</recommendation>
-</issue>
-</architecture_issues>
-</finding_categorization>
-
-### Markdown Output Template
-
-```markdown
-# PR Review: [PR Title]
-
-## Stage 1: Spec Compliance
-
-**Status**: ✅ PASS / ❌ FAIL
-
-### Requirements Verification
-
-[Summary of spec compliance check]
-
-### Gap Analysis
-
-- Missing: [list]
-- Extra: [list]
-- Ambiguous: [list]
+- **Symptom**: "I think this might be wrong"
+- **Solution**: Never assert without file:line reference; use What/Where/Why/How table for each finding
 
 ---
 
-## Stage 2: Code Quality Review
+## Reasoning Template
 
-### Security Issues
+Before generating ANY feedback, map the PR against this dimensional analysis:
 
-<security_issues count="0">
+| Dimension       | The Question                          | What to Find                                             |
+| --------------- | ------------------------------------- | -------------------------------------------------------- |
+| **Spec**        | Does this deliver what was requested? | Requirements from description, gaps, over-implementation |
+| **Security**    | Does this introduce vulnerability?    | Injections, auth gaps, secrets, validation failures      |
+| **Performance** | Does this create efficiency problems? | N+1 queries, algorithmic issues, missing caching         |
+| **Quality**     | Is this maintainable?                 | Naming, duplication, complexity, test coverage           |
 
-<!-- No security issues found -->
-
-</security_issues>
-
-### Performance Issues
-
-<performance_issues count="0">
-
-<!-- No performance issues found -->
-
-</performance_issues>
-
-### Code Quality Issues
-
-<code_quality_issues count="2">
-<issue severity="NIT">
-<type>naming</type>
-<description>Variable name 'x' not descriptive</description>
-<file_path>src/auth.py</file_path>
-<line_number>42</line_number>
-<recommendation>Use descriptive name like 'user_id'</recommendation>
-</issue>
-</code_quality_issues>
-
-### Architecture Issues
-
-<architecture_issues count="0">
-
-<!-- No architecture issues found -->
-
-</architecture_issues>
+**Only generate review after the matrix is satisfied.** A review without dimensional analysis is opinion, not expertise.
 
 ---
 
-## Overall Assessment
+## The Review as Evidence Examination
 
-**Result**: APPROVE | REQUEST_CHANGES
+Think of yourself as an analyst presenting findings to a stakeholder. Each finding should answer:
 
-**Summary**: [1-2 sentence summary]
+1. **What** - The specific issue or observation
+2. **Where** - The file and line (evidence location)
+3. **Why** - The principle or standard that defines it as an issue
+4. **How** - A concrete recommendation
 
-**Blockers**: [count] must be fixed before merge
-**Important**: [count] should be fixed before merge
-**Nits**: [count] optional improvements
-```
-
-## Review Loop Enforcement
-
-**CRITICAL**: If issues found, fixes must be verified before approval.
-
-### Review Loop Protocol
-
-1. **Reviewer finds issues** → Report all issues clearly
-2. **Developer fixes issues** → Resubmit for review
-3. **Reviewer re-reviews** → Verify fixes actually work
-4. **Repeat until approved** → No shortcuts, no exceptions
-
-**NEVER approve with open issues.**
-
-### Review Loop Template
+### Example: Security Finding
 
 ```markdown
-## Review Results
+**Finding: SQL injection vulnerability**
 
-### Stage 1: Spec Compliance
-
-**Status**: PASS | FAIL
-[If FAIL: List specific gaps]
-
-### Stage 2: Code Quality
-
-**Status**: PASS | FAIL
-
-#### Issues Found:
-
-1. **[Severity]** - [Issue]
-   - File: [path]
-   - Line: [number]
-   - Fix: [specific recommendation]
-
-#### Required Changes:
-
-- [ ] Fix issue 1
-- [ ] Fix issue 2
-- [ ] Re-review after fixes
-
-**Review will continue until all issues resolved.**
+| Field     | Value                                                                    |
+| --------- | ------------------------------------------------------------------------ |
+| **What**  | User input concatenated directly into SQL query                          |
+| **Where** | `src/db/user.ts:47`                                                      |
+| **Why**   | OWASP Top 10 - Injection attacks can extract or modify database contents |
+| **How**   | Use parameterized queries: `db.query('SELECT * WHERE id = ?', [userId])` |
 ```
 
-## Review Checklist
+### Example: Spec Finding
 
-### Security
+```markdown
+**Finding: Missing requirement**
 
-- [ ] No SQL injection vulnerabilities
-- [ ] XSS protection implemented
-- [ ] Authentication properly checked
-- [ ] Authorization enforced
-- [ ] No secrets in code
-- [ ] Input validation present
-- [ ] Rate limiting configured
+| Field     | Value                                                                    |
+| --------- | ------------------------------------------------------------------------ |
+| **What**  | Rate limiting not implemented                                            |
+| **Where** | `src/api/auth.ts` - entire endpoint                                      |
+| **Why**   | PR description explicitly required "defense against brute force attacks" |
+| **How**   | Add rate limiter middleware with 5 attempts per minute                   |
+```
 
-### Performance
+---
 
-- [ ] No N+1 queries
-- [ ] Efficient algorithms used
-- [ ] Proper indexing strategy
-- [ ] Caching implemented where appropriate
-- [ ] API responses optimized
+## Severity Calibration
 
-### Code Quality
+| Severity    | Definition                                | Action                  |
+| ----------- | ----------------------------------------- | ----------------------- |
+| **BLOCKER** | Security vulnerability or spec failure    | Must fix before merge   |
+| **HIGH**    | Significant issue with clear fix          | Should fix before merge |
+| **MEDIUM**  | Technical debt or maintainability concern | Request changes         |
+| **NIT**     | Style preference or minor improvement     | Optional suggestion     |
 
-- [ ] Consistent naming conventions
-- [ ] No code duplication
-- [ ] Adequate test coverage
-- [ ] Clear, readable code
-- [ ] Proper error handling
-- [ ] No commented-out code
+---
 
-### Architecture
+## Good Review Output Example
 
-- [ ] Proper layer separation
-- [ ] Dependencies properly injected
-- [ ] Errors handled appropriately
-- [ ] API follows REST conventions
-- [ ] Appropriate design patterns used
+```markdown
+# PR Review: Add user authentication endpoint
 
-## Integration
+## Spec Compliance
 
-This skill integrates with:
+| Requirement                              | Status         | Evidence                     |
+| ---------------------------------------- | -------------- | ---------------------------- |
+| POST /auth/login accepts email/password  | ✅ Implemented | `auth.ts:23`                 |
+| Rate limiting for brute force protection | ❌ Missing     | PR description required this |
+| JWT token generation                     | ✅ Implemented | `token.ts:15`                |
 
-- `security` - Security vulnerability detection
-- `coding-standards` - Code quality standards
-- `backend-patterns` - Architecture best practices
-- `engineering-lifecycle` - Testing requirements
+**Assessment**: NON_COMPLIANT - Rate limiting required but not present
+
+## Security Issues
+
+**BLOCKER** - No input validation on email field
+
+- Where: `auth.ts:24`
+- Why: Unvalidated input enables injection attacks
+- Fix: Add email format validation before query
+
+## Quality Issues
+
+**NIT** - Inconsistent naming
+
+- Where: `auth.ts:31` (`userData`) vs `auth.ts:45` (`userRecord`)
+- Why: Cognitive load for future maintainers
+- Fix: Standardize to `userRecord` throughout
+
+## Result: REQUEST_CHANGES
+
+See required fixes above. Re-review after implementation.
+```
+
+---
+
+## Common Rationalizations
+
+| Excuse                              | Reality                                              |
+| ----------------------------------- | ---------------------------------------------------- |
+| "Looks good to me"                  | Subjective opinion. Where is the evidence?           |
+| "Minor issues, approve anyway"      | Minor issues accumulate into technical debt.         |
+| "The tests pass, code must be fine" | Tests passing ≠ code quality. Check maintainability. |
+| "I don't want to block this PR"     | Blocking prevents debt. Blocking is kindness.        |
+| "Spec violations are small"         | Scope creep starts small. Address early.             |
+| "Performance seems fine"            | Measure it. "Seems" is not evidence.                 |
+
+**If you catch yourself thinking these, STOP. Complete dimensional analysis.**
+
+## Two-Stage Review Process
+
+### Stage 1: Spec Compliance Gate
+
+Before reviewing quality, verify the implementation meets specifications:
+
+| Check                   | Description                                    | Verdict   |
+| ----------------------- | ---------------------------------------------- | --------- |
+| Requirements Met        | All requirements from PR description addressed | PASS/FAIL |
+| No Over-implementation  | No features beyond scope                       | PASS/FAIL |
+| No Under-implementation | All required functionality present             | PASS/FAIL |
+
+**If Stage 1 fails**: Return spec findings, BLOCK quality review.
+
+### Stage 2: Quality Gate
+
+Only after spec compliance passes:
+
+| Dimension   | Focus                           |
+| ----------- | ------------------------------- |
+| Security    | Injections, auth, secrets       |
+| Performance | N+1, algorithmic issues         |
+| Quality     | Naming, duplication, complexity |
+
+### Two-Stage Output Format
+
+```markdown
+# PR Review: [Title]
+
+## Stage 1: Spec Compliance Gate
+
+| Check                   | Verdict | Evidence                   |
+| ----------------------- | ------- | -------------------------- |
+| Requirements Met        | PASS    | All requirements addressed |
+| No Over-implementation  | PASS    | No scope creep detected    |
+| No Under-implementation | FAIL    | Missing: rate limiting     |
+
+**Stage 1 Result**: BLOCKED - Resolve spec issues before quality review
+
+---
+
+## Stage 2: Quality Gate (skipped - see Stage 1)
+```
 
 ---
 
@@ -417,59 +325,5 @@ This skill integrates with:
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
-<critical_constraint>
-**MANDATORY: Complete `<thinking>` analysis BEFORE generating review output**
-
-- Analyze diff, requirements, and impact
-- Check security, performance, quality, architecture dimensions
-- Weigh severity before generating output
-- NEVER skip thinking phase, even for "simple" PRs
-
-**MANDATORY: Categorize findings into XML buckets**
-
-- Security issues → `<security_issues>`
-- Performance issues → `<performance_issues>`
-- Code quality issues → `<code_quality_issues>`
-- Architecture issues → `<architecture_issues>`
-- Each finding must have severity, description, location, recommendation
-
-**MANDATORY: Two-stage review process**
-
-- Stage 1: Spec compliance (requirements met?)
-- Stage 2: Code quality (security, performance, quality, architecture)
-- NEVER approve if Stage 1 fails (requirements not met)
-- NEVER approve with BLOCKER or HIGH severity issues open
-
-**MANDATORY: Verify fixes before approval**
-
-- If issues found, developer must fix
-- Re-review to verify fixes actually work
-- Repeat until all issues resolved
-- NEVER approve with open issues
-
-**MANDATORY: Never LGTM without analysis**
-
-- "Looks good to me" is forbidden without `<thinking>` analysis
-- Every PR deserves thorough review
-- Small PRs can have big bugs
-- No short-cuts, no exceptions
-
-**No exceptions. PR review is a gate, not a formality.**
+Portability invariant: This skill must work in a project containing ZERO config files. All behavioral guidance is self-contained.
 </critical_constraint>

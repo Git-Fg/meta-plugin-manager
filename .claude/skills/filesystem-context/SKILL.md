@@ -1,6 +1,6 @@
 ---
 name: filesystem-context
-description: "Manage filesystem context for offloading large context to files, persisting state between sessions, and reducing token usage. Use when managing cross-session state or context persistence. Not for small temporary data or in-memory variables."
+description: "Manage filesystem context for large data offloading, cross-session state persistence, and token optimization. Use when managing persistent state, offloading large context, or reducing token usage across sessions. Includes write-once/read-selective patterns, dynamic file discovery, and context reconstruction. Not for small temporary data, in-memory variables, or simple caching."
 ---
 
 # Filesystem-Based Context Engineering
@@ -10,7 +10,22 @@ description: "Manage filesystem context for offloading large context to files, p
 <success_criteria>Context efficiently managed with write-once/read-selective patterns, reducing token usage while maintaining full data availability</success_criteria>
 </mission_control>
 
-<trigger>When offloading large context to files, persisting state between sessions, or reducing token usage. Not for: Small temporary data or in-memory variables.</trigger>
+## The Path to High-Efficiency Context Management
+
+<guiding_principles>
+
+1. **Write-Once Pattern Preserves Token Budget**: Writing large outputs to files instead of returning them to context prevents token accumulation across long conversations. This keeps the context window lean while preserving full data for selective retrieval.
+
+2. **Read-Selectively Enables Progressive Disclosure**: Using Grep/Glob to pull only relevant portions on-demand creates natural progressive disclosure. You retrieve what you need, when you need it, without loading unnecessary data.
+
+3. **Dynamic Discovery Scales to Unlimited Context**: The filesystem provides unlimited storage capacity with searchable discovery. Instead of stuffing everything into context, you rely on file search to find relevant information on-demand.
+
+4. **Session State Persistence Enables Continuity**: Writing plans, state, and intermediate results to files enables cross-session handoffs. When context degrades or sessions restart, the full state remains recoverable.
+
+5. **Append-Only Logs Preserve History**: JSONL format preserves complete history for pattern analysis. Never-delete integrity ensures nothing is lost, enabling audit trails and temporal analysis.
+
+6. **Targeted Retrieval Improves Performance**: Reading specific sections (line ranges, grep results) instead of full files reduces processing overhead and improves response times.
+   </guiding_principles>
 
 <interaction_schema>
 WRITE_ONCE → READ_SELECTIVELY → DISCOVER_DYNAMICALLY
@@ -29,6 +44,34 @@ The filesystem provides unlimited context capacity through dynamic discovery. In
 3. Discover dynamically (find relevant files on-demand)
 
 **Benefit**: Unlimited context capacity with natural progressive disclosure
+
+## Quick Start
+
+**Write large outputs:** Store to files instead of returning to context
+
+**Read selectively:** Use Grep/Glob to pull relevant portions on-demand
+
+**Persist state:** Write-once pattern for cross-session continuity
+
+**Why:** Filesystem provides unlimited context—write once, read selectively, reduces token usage.
+
+## Navigation
+
+| If you need...          | Read...                                            |
+| :---------------------- | :------------------------------------------------- |
+| Understand core concept | ## Core Concept                                    |
+| Write large outputs     | ## Quick Start → Write large outputs               |
+| Read selectively        | ## Quick Start → Read selectively                  |
+| Persist state           | ## Quick Start → Persist state                     |
+| Interaction pattern     | <interaction_schema> → WRITE_ONCE → READ_SELECTIVE |
+| Context reconstruction  | See memory-persistence skill                       |
+
+## Operational Patterns
+
+- **Content Search**: Search file contents for context retrieval
+- **Discovery**: Locate files matching patterns for context reconstruction
+- **Tracking**: Maintain a visible task list for context operations
+- **Execution**: Execute system commands for file operations
 
 ## Context Engineering Patterns
 
@@ -360,12 +403,12 @@ skills/my-skill/
 
 ## References
 
-**Related Skills**:
+**Related Concepts**:
 
-- `context-fundamentals` - Progressive disclosure principles
-- `evaluation` - Multi-dimensional quality assessment
-- `iterative-retrieval` - Progressive refinement for targeted context discovery
-- `filesystem-context` - Context management patterns (this skill)
+- Progressive disclosure principles for context loading
+- Multi-dimensional quality assessment for context evaluation
+- Progressive refinement for targeted context discovery
+- Context management patterns (this skill's domain)
 
 **For Complex Discovery**:
 
@@ -396,29 +439,12 @@ grep("pattern", "**/*.ts")
 
 ---
 
-<critical_constraint>
-MANDATORY: Write large outputs to files, not to context
-MANDATORY: Use descriptive, timestamped filenames for traceability
-MANDATORY: Search before reading (find relevant sections first)
-MANDATORY: Use structured formats (YAML/JSONL) for machine-readability
-MANDATORY: Never return full large outputs to context (use references)
-No exceptions. Filesystem context enables unlimited capacity.
-</critical_constraint>
-
----
-
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+**Portability Invariant**: All components MUST be self-contained with zero .claude/rules dependency to enable fork isolation.
 </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows

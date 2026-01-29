@@ -1,6 +1,6 @@
 ---
 name: quality-standards
-description: "Unified quality assurance skill: enforce evidence-based completion claims through 6-phase gates and three-way audits. Use when claiming completion, committing code, or validating components. Not for skipping verification or assuming correctness."
+description: "Verify completion with evidence using 6-phase gates and three-way audits. Use when claiming task completion, committing code, or validating components. Includes gate criteria, audit protocols, and evidence requirements. Not for skipping verification, assuming correctness, or bypassing quality gates."
 auto_load_mapping:
   - If path contains ".mcp.json" -> load mcp-development
   - If path contains ".claude/skills" -> load invocable-development
@@ -10,107 +10,246 @@ auto_load_mapping:
 ---
 
 <mission_control>
-<objective>Ensure all completion claims have fresh verification evidence through systematic quality gates and three-way audits</objective>
-<success_criteria>All claims backed by fresh verification output; all 6 gates pass sequentially</success_criteria>
-<iron_law>
-**NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE**
-
-If you haven't run the verification command in this message, you cannot claim it passes. This is non-negotiable.
-</iron_law>
+<objective>Guide verification toward evidence-based completion claims through systematic quality gates and three-way audits</objective>
+<success_criteria>All claims backed by fresh verification output; all gates pass sequentially</success_criteria>
 </mission_control>
 
 # Quality Standards
 
+**Skill Location**: This file
+
+## Quick Start
+
+**Quick validation:** `/verify --quick` → BUILD → TYPE → LINT → TEST → DIFF
+
+**Security audit:** `/verify --security` → Security scan + vulnerability check
+
+**Full PR review:** `/verify --code-review` → Three-way audit (Request vs Delivery vs Standards)
+
+**Complete audit:** `/verify` → 6-phase gate + audits + portability check
+
+**Why:** Evidence-based verification prevents false completion claims—every gate must pass sequentially.
+
+### Component Type?
+
+1. **MCP server (.mcp.json)** → Auto-loads mcp-development
+2. **Skill (SKILL.md)** → Auto-loads invocable-development
+3. **Agent (.claude/agents)** → Auto-loads agent-development
+4. **Command (.claude/commands)** → Auto-loads invocable-development
+
+## Navigation
+
+| If you need...        | Read...                                      |
+| :-------------------- | :------------------------------------------- |
+| Quick validation      | ## Quick Start                               |
+| Security audit        | ## Quick Start                               |
+| Full PR review        | ## Quick Start                               |
+| Complete audit        | ## Quick Start                               |
+| 6-phase gate details  | ## Implementation Patterns                   |
+| Evidence requirements | ## Implementation Patterns                   |
+| Component validation  | `references/workflow_component-checklist.md` |
+
+## System Requirements
+
+- **Gate sequence**: BUILD → TYPE → LINT → TEST → SECURITY → DIFF
+- **Evidence requirement**: Every claim requires fresh verification output
+- **Three-way audit**: Request vs Delivery vs Standards comparison
+- **Portability check**: Zero external `.claude/rules` references
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Tracking**: Maintain a visible task list for quality verification
+- **Verification**: Verify code quality using diagnostics and linting
+- **Navigation**: Navigate code structure for deep verification
+
+Use native tools to fulfill these patterns. Trust the System Prompt to select the correct implementation.
+
+## Implementation Patterns
+
+### Pattern: 6-Phase Gate System
+
+| Phase | Gate     | What It Checks       | Typical Command |
+| ----- | -------- | -------------------- | --------------- |
+| 1     | BUILD    | Compilation succeeds | `npm run build` |
+| 2     | TYPE     | Type safety          | `tsc --noEmit`  |
+| 3     | LINT     | Code style           | `eslint .`      |
+| 4     | TEST     | Tests pass           | `npm test`      |
+| 5     | SECURITY | No secrets/vulns     | `npm audit`     |
+| 6     | DIFF     | Intentional changes  | `git diff`      |
+
+### Pattern: Evidence-Based Verification
+
+| Instead of...           | Use This Evidence...                           |
+| ----------------------- | ---------------------------------------------- |
+| "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
+| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
+| "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
+| "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |
+
+### Pattern: Three-Way Review
+
+| Dimension     | Question                              |
+| ------------- | ------------------------------------- |
+| **Request**   | What did the user explicitly ask for? |
+| **Delivery**  | What was actually implemented?        |
+| **Standards** | What do quality standards specify?    |
+
+### Pattern: Component Validation
+
+| Check                  | How to Verify                             |
+| ---------------------- | ----------------------------------------- |
+| Structure              | Read frontmatter, confirm valid YAML      |
+| Progressive Disclosure | Confirm Tier 1 + Tier 2 + Tier 3 exists   |
+| Portability            | Confirm zero external references          |
+| Content                | Confirm trigger phrases, imperative voice |
+
+## Troubleshooting
+
+| Issue                 | Symptom                                  | Solution                                   |
+| --------------------- | ---------------------------------------- | ------------------------------------------ |
+| Gates failing         | BUILD/TYPE/LINT/TEST/SECURITY/DIFF fails | Fix issues before claiming completion      |
+| No evidence           | Claims without verification output       | Run commands, capture output               |
+| Missing audits        | Three-way review not performed           | Compare Request vs Delivery vs Standards   |
+| Portability violation | References `.claude/rules`               | Remove external dependencies               |
+| Component not loading | Missing auto_load_mapping                | Add path mapping to frontmatter            |
+| False completion      | "Looks complete" without verification    | Follow evidence-based verification pattern |
+
+## The Verification Standard
+
+Replace assertions with evidence. The difference between claiming and proving:
+
+| Instead of...           | Use This Evidence...                           |
+| ----------------------- | ---------------------------------------------- |
+| "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
+| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
+| "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
+| "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |
+
+**The pattern**: Name the command, report the output, claim the result.
+
 ## The 6-Phase Gate System
 
-| Phase | Gate         | What It Checks                      | Command Pattern                                             | Evidence Required |
-| ----- | ------------ | ----------------------------------- | ----------------------------------------------------------- | ----------------- | ---- | ---------- |
-| 1     | **BUILD**    | Compilation succeeds, deps resolved | `npm run build`, `cargo build`, `pnpm build`, `mvn compile` | Exit code 0       |
-| 2     | **TYPE**     | Type safety, no type errors         | `tsc --noEmit`, `pyright`, `go vet`, `mypy`                 | 0 type errors     |
-| 3     | **LINT**     | Code style, anti-patterns           | `eslint`, `pylint`, `cargo clippy`, `flake8`                | 0 errors/warnings |
-| 4     | **TEST**     | Tests pass, 80%+ coverage           | `npm test`, `pytest --cov`, `cargo test --coverage`         | All pass, ≥80%    |
-| 5     | **SECURITY** | No secrets, console.logs, vulns     | Grep diff + `npm audit`, `pip-audit`                        | 0 issues          |
-| 6     | **DIFF**     | Intentional changes, no TODOs       | Grep git diff for `TODO                                     | FIXME             | // ` | Clean diff |
+| Phase | Gate     | What It Checks              | Typical Command |
+| ----- | -------- | --------------------------- | --------------- |
+| 1     | BUILD    | Compilation succeeds        | `npm run build` |
+| 2     | TYPE     | Type safety                 | `tsc --noEmit`  |
+| 3     | LINT     | Code style                  | `eslint .`      |
+| 4     | TEST     | Tests pass                  | `npm test`      |
+| 5     | SECURITY | No secrets, vulnerabilities | `npm audit`     |
+| 6     | DIFF     | Intentional changes         | `git diff`      |
 
-## The Gate Function
+Gates pass in sequence. If one fails, subsequent gates do not run.
 
-BEFORE claiming any status or expressing satisfaction:
+## The Verification Workflow
 
-1. **IDENTIFY**: What command proves this claim?
-2. **RUN**: Execute the FULL command (fresh, complete)
-3. **READ**: Full output, check exit code, count failures
-4. **VERIFY**: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. **ONLY THEN**: Make the claim
+Verification follows a simple pattern:
 
-Skip any step = lying, not verifying.
+1. **Identify**: What command proves this claim?
+2. **Execute**: Run the command fully
+3. **Read**: Examine the complete output
+4. **Claim**: State the result with the evidence
 
-## Component Validation Checklist
+Example:
 
-| Gate                       | Check                                           | Evidence                 |
-| -------------------------- | ----------------------------------------------- | ------------------------ |
-| **Structure**              | YAML frontmatter valid, naming conventions      | File reads confirm       |
-| **Progressive Disclosure** | Tier 1 metadata, Tier 2 main, Tier 3 references | Structure verified       |
-| **Portability**            | Zero external dependencies                      | Component self-contained |
-| **Content Quality**        | Trigger phrases, imperative voice, expert-only  | Quality gate passed      |
-| **Tests**                  | Behavior verified, edge cases covered           | Test output: 100% pass   |
+```
+❌ Assertion: "I fixed the bug."
+✅ Evidence: "npm test passed (see test_results.log: 47/47 passed)"
+```
 
-## Three-Way Review Pattern
+## The Three-Way Review
 
-| Dimension     | Question                                 |
-| ------------- | ---------------------------------------- |
-| **Request**   | What did the user explicitly ask for?    |
-| **Delivery**  | What was actually implemented?           |
-| **Standards** | What do meta-development skills specify? |
+Before claiming completion, compare three dimensions:
 
-Identify gaps: Intent misalignment, standards violations, completeness issues.
+| Dimension     | Question                              |
+| ------------- | ------------------------------------- |
+| **Request**   | What did the user explicitly ask for? |
+| **Delivery**  | What was actually implemented?        |
+| **Standards** | What do quality standards specify?    |
 
-## Red Flags - STOP
+Identify gaps between these. The goal is alignment, not judgment.
 
-- Using "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!")
-- About to commit/push without verification
-- Trusting agent success reports
-- Relying on partial verification
-- Thinking "just this once"
+## Component Validation
 
-## Rationalization Prevention
+Use these checks to validate components:
 
-| Stop Thinking             | Do Instead             |
-| ------------------------- | ---------------------- |
-| "Should work now"         | RUN the verification   |
-| "I'm confident"           | Confidence ≠ evidence  |
-| "Linter passed"           | Linter ≠ compiler      |
-| "Agent said success"      | Verify independently   |
-| "Partial check is enough" | Partial proves nothing |
+| Check                  | How to Verify                                    |
+| ---------------------- | ------------------------------------------------ |
+| Structure              | Read frontmatter, confirm valid YAML             |
+| Progressive Disclosure | Confirm Tier 1 + Tier 2 + Tier 3 exists          |
+| Portability            | Confirm zero external `.claude/rules` references |
+| Content                | Confirm trigger phrases, imperative voice        |
 
-## Sequential Enforcement
+## Examples of Good Verification
 
-Gates pass **in order**. If a gate fails:
+**Build Verification**:
 
-1. Stop verification immediately
-2. Report failure with details
-3. Do not run subsequent gates
-4. Provide actionable error messages
+```
+Bash: npm run build
+→ Exit code: 0
+→ Claim: Build successful
+```
 
-## When To Apply
+**Type Verification**:
 
-**ALWAYS before:**
+```
+Bash: npx tsc --noEmit
+→ Output: Found 0 errors, 0 warnings
+→ Claim: Type-safe
+```
 
-- ANY success/completion claims
-- ANY expression of satisfaction
-- Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
+**Test Verification**:
+
+```
+Bash: npm test
+→ Output: Test Suites: 12 passed, 12 total
+→ Claim: All tests passing
+```
+
+## When Verification Applies
+
+Use this skill when:
+
+- Claiming task completion
+- Committing or creating PRs
+- Validating component structure
+- Auditing code quality
+- Before moving to new tasks
 
 ## References
 
-| For...                                 | See...                              |
-| -------------------------------------- | ----------------------------------- |
-| Detailed gate commands by project type | `references/gates.md`               |
-| Three-way audit investigation phases   | `references/audit-patterns.md`      |
-| Per-component structure checks         | `references/component-checklist.md` |
+| For...                        | See...                              |
+| ----------------------------- | ----------------------------------- |
+| Gate commands by project type | `references/gates.md`               |
+| Three-way audit patterns      | `references/audit-patterns.md`      |
+| Component structure checks    | `references/component-checklist.md` |
+
+## Automated Validation (Tool Use Pattern)
+
+Use the validation script for deterministic gate checking:
+
+```bash
+# Run all gates
+node scripts/validate-gates.js
+
+# Check specific path
+node scripts/validate-gates.js /path/to/component
+```
+
+**What the script validates:**
+
+| Phase       | Gate            | What It Checks                 |
+| ----------- | --------------- | ------------------------------ |
+| BUILD       | Compilation     | npm run build succeeds         |
+| TYPE        | Type safety     | tsc --noEmit passes            |
+| LINT        | Code style      | ESLint passes                  |
+| TEST        | Tests           | npm test passes                |
+| SECURITY    | Vulnerabilities | npm audit shows no high vulns  |
+| DIFF        | Changes         | Git status shows changes       |
+| PORTABILITY | Self-contained  | No external .claude/rules refs |
 
 ---
 
@@ -119,32 +258,66 @@ Gates pass **in order**. If a gate fails:
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+All components MUST be self-contained (zero .claude/rules dependency)
+All components MUST use What-When-Not-Includes format in third person
+Progressive disclosure - core in SKILL.md, details in references/
+Use XML for control (mission_control, critical_constraint), Markdown for data
 </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
 **Recognition Questions**:
 
-- "Would Claude know this without being told?" → Delete (zero delta)
+- "Would Claude know this without being told?" → Skip (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---
 
-<critical_constraint>
-MANDATORY: Gates pass in sequence—stop on first failure
-MANDATORY: Each claim requires fresh verification output
-MANDATORY: Compare Request vs Delivery vs Standards in audits
-MANDATORY: No completion claims without fresh evidence
-MANDATORY: Show evidence (output) for every gate check
-No exceptions. Quality gates exist to prevent substandard work and completion hallucinations.
-</critical_constraint>
+## The Iron Law
+
+<absolute_constraint>
+**NO CLAIMS WITHOUT EVIDENCE**
+
+Every assertion requires fresh verification output. Every gate must pass sequentially.
+
+If you haven't run the commands, you haven't verified. If you haven't verified, you haven't completed.
+
+This is not optional. This is how quality is proven.
+</absolute_constraint>
+
+### The Evidence Standard
+
+| Instead of...           | Use This Evidence...                           |
+| ----------------------- | ---------------------------------------------- |
+| "I fixed the bug"       | `Test auth_login_test.ts passed (Exit Code 0)` |
+| "The build should work" | `Build output: ✓ Built in 2.4s`                |
+| "TypeScript is happy"   | `tsc --noEmit: 0 errors, 0 warnings`           |
+| "Tests pass"            | `Test suite: 47 passed, 0 failed`              |
+| "Linting is clean"      | `ESLint: no errors in src/utils.ts`            |
+
+**Violating the letter of this standard is violating the spirit of verification.**
 
 ---
+
+## Common Rationalizations
+
+| Excuse                                  | Reality                                                |
+| --------------------------------------- | ------------------------------------------------------ |
+| "Looks complete to me"                  | Completeness requires evidence, not intuition.         |
+| "Tests pass locally, should work in CI" | CI environment differs. Verify there too.              |
+| "The linter only shows warnings"        | Warnings become errors. Fix them.                      |
+| "Security audit takes too long"         | Security vulnerabilities take longer to fix.           |
+| "No one will review this anyway"        | You review your own work. Standards apply to yourself. |
+| "I can skip one gate just this once"    | Once becomes always. Standards don't bend.             |
+
+**If you catch yourself thinking these, STOP. Run the complete verification.**
+
+---
+
+<critical_constraint>
+Gates pass in sequence—stop on first failure
+Each claim requires fresh verification output
+Compare Request vs Delivery vs Standards in audits
+Show evidence (output) for every verification
+</critical_constraint>

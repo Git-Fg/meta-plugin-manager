@@ -3,7 +3,8 @@
 Prompt patterns for creating approaches, roadmaps, and strategies that will be consumed by subsequent prompts.
 
 <prompt_template>
-```xml
+
+````xml
 
 ## Objective
 
@@ -15,7 +16,7 @@ Output: {topic}-plan.md with actionable phases/steps
 
 ## Context
 
-Research findings: @.prompts/{num}-{topic}-research/{topic}-research.md
+Research findings: [research-file]
 {Additional context files}
 
 <planning_requirements>
@@ -30,58 +31,58 @@ Structure the plan using this XML format:
 
 ```xml
 <plan>
-  
+
 ## Summary
 
 {One paragraph overview of the approach}
-  
+
 
   <phases>
-    
+
 #### Example 1
 
 ## Objective
 
 {What this phase accomplishes}
-      
+
 ## Tasks
 
 <task priority="high">{Specific actionable task}
         <task priority="medium">{Another task}
-      
+
       <deliverables>
         <deliverable>{What's produced}
-      
-      
+
+
 ## Dependencies
 
 {What must exist before this phase}
-    
+
     <!-- Additional phases -->
-  
+
 
   <metadata>
-    
+
 ### {high|medium|low}
 
 {Why this confidence level}
-    
-    
+
+
 ## Dependencies
 
 {External dependencies needed}
-    
+
     <open_questions>
       {Uncertainties that may affect execution}
-    
-    
+
+
 ## Assumptions
 
 {What was assumed in creating this plan}
-    
-  
 
-```
+
+
+````
 
 <summary_requirements>
 Create `.prompts/{num}-{topic}-plan/SUMMARY.md`
@@ -99,7 +100,7 @@ For plans, emphasize phase breakdown with objectives and assumptions needing val
 - SUMMARY.md created with phase overview
 - Ready for implementation prompts to consume
 
-```
+````
 
 <key_principles>
 
@@ -109,17 +110,18 @@ Plans should build on research findings:
 
 ## Context
 
-Research findings: @.prompts/001-auth-research/auth-research.md
+Research findings: [research-file]
 
 Key findings to incorporate:
 - Recommended approach from research
 - Constraints identified
 - Best practices to follow
 
-```
+````
 
 <prompt_sized_phases>
 Each phase should be executable by a single prompt:
+
 ```xml
 
 #### Example 1
@@ -127,18 +129,19 @@ Each phase should be executable by a single prompt:
 ## Objective
 
 Create base auth structure and types
-  
+
 ## Tasks
 
 <task>Create auth module directory
     <task>Define TypeScript types for tokens
     <task>Set up test infrastructure
-  
+
 
 ```
 
 <execution_hints>
 Help the next Claude understand how to proceed:
+
 ```xml
 
 #### Example 2
@@ -147,7 +150,7 @@ Help the next Claude understand how to proceed:
     This phase modifies files from phase 1.
     Reference the types created in phase 1.
     Run tests after each major change.
-  
+
 
 ```
 
@@ -168,7 +171,7 @@ Output: auth-plan.md with 4-5 implementation phases
 
 ## Context
 
-Research: @.prompts/001-auth-research/auth-research.md
+Research: [research-file]
 
 <planning_requirements>
 - Break into independently testable phases
@@ -181,7 +184,7 @@ Research: @.prompts/001-auth-research/auth-research.md
 <decision_framework>
 For choosing between options:
 
-```xml
+````xml
 
 ## Objective
 
@@ -196,7 +199,7 @@ Structure as decision framework:
 
 ```xml
 <decision_framework>
-  
+
 ## Options
 
 ### PostgreSQL
@@ -204,43 +207,43 @@ Structure as decision framework:
 ## Pros
 
 {List}
-      
+
 ## Cons
 
 {List}
       <fit_score criteria="scalability">8/10
       <fit_score criteria="flexibility">6/10
-    
+
     <!-- Other options -->
-  
+
 
   <recommendation>
     <choice>{Selected option}
-    
+
 ## Rationale
 
 {Why this choice}
     <risks>{What could go wrong}
     <mitigations>{How to address risks}
-  
+
 
   <metadata>
-    
+
 ### high
 
 Clear winner based on requirements
-    
-    
+
+
 ## Assumptions
 
 - Expected data volume: 10M records
       - Team has SQL experience
-    
-  
 
-```
 
-```
+
+````
+
+````
 
 <process_definition>
 For defining workflows or methodologies:
@@ -267,42 +270,43 @@ Structure as process:
 {High-level flow}
 
   <steps>
-    
+
 #### Example 1
 
 <actions>
         <action>Run full test suite
         <action>Create database backup
         <action>Notify team in #deployments
-      
+
       <checklist>
         <item>Tests passing
         <item>Backup verified
         <item>Team notified
-      
+
       <rollback>N/A - no changes yet
-    
+
     <!-- Additional steps -->
-  
+
 
   <metadata>
-    
+
 ## Dependencies
 
 - CI/CD pipeline configured
       - Database backup system
       - Slack webhook for notifications
-    
+
     <open_questions>
       - Blue-green vs rolling deployment?
       - Automated rollback triggers?
-    
-  
 
-```
+
+
+````
 
 ```
 
 ## Metadata Guidelines
 
 Load: [metadata-guidelines.md](metadata-guidelines.md)
+```

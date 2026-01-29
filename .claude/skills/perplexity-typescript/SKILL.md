@@ -1,3 +1,8 @@
+---
+name: perplexity-typescript
+description: "Integrate Perplexity AI APIs in TypeScript projects. Use when building Perplexity Search, Chat Completions, Content, or Responses API integrations. Includes SDK setup, error handling, streaming patterns, and 2026 best practices. Not for non-TypeScript projects, server-side rendering with secrets, or manual API calls without SDK."
+---
+
 # Perplexity TypeScript Development
 
 <mission_control>
@@ -7,23 +12,57 @@
 
 <trigger>When writing TypeScript code that integrates with Perplexity's Search, Chat Completions, Content, or Responses APIs</trigger>
 
+<Guiding_Principles>
+
+## The Path to High-Quality Perplexity Integration Success
+
+### 1. Environment-First Security
+
+API keys in environment variables protect credentials across all deployment environments. Environment-specific configuration enables seamless development-to-production transitions without exposing secrets.
+
+### 2. Streaming for Responsiveness
+
+Streaming delivers real-time responses to users, while non-streaming suits batch processing. This choice optimizes user experience for the use case.
+
+### 3. Error Type Safety
+
+Instanceof checks ensure type-safe error handling. Typed error access prevents runtime errors and enables precise error responses.
+
+### 4. Retry Resilience
+
+Exponential backoff with automatic retries handles transient failures gracefully. Rate limit awareness prevents request throttling.
+
+### 5. Query Precision
+
+Specific, well-constructed queries yield relevant results. Multi-query searches enable comprehensive research across multiple angles.
+
+### 6. Production Logging Discipline
+
+Warn/error levels in production reduce log volume. Debug logging reserved for troubleshooting prevents performance impact.
+
+</Guiding_Principles>
+
 ## Quick Start
 
-Install the Perplexity SDK with Bun:
+**Install SDK:** `bun add @perplexity-ai/perplexity_ai@latest`
 
-```bash
-bun add @perplexity-ai/perplexity_ai@latest
-```
+**Set up client:** Initialize with API key from environment
 
-Basic client setup:
+**Make search:** `client.search.create({ query, maxResults })`
 
-```ts
-import Perplexity from "@perplexity-ai/perplexity_ai";
+**Why:** Perplexity provides web-grounded answers with citations—ideal for research and fact-checking.
 
-const client = new Perplexity({
-  apiKey: process.env["PERPLEXITY_API_KEY"],
-});
-```
+## Navigation
+
+| If you need...     | Read...                                     |
+| :----------------- | :------------------------------------------ |
+| Install SDK        | ## Quick Start                              |
+| Set up client      | ## Quick Start                              |
+| Make search        | ## Core API Capabilities → Search API       |
+| Chat completions   | ## Core API Capabilities → Chat Completions |
+| API reference      | `references/lookup_api-reference.md`        |
+| Search filters     | `references/pattern_search-filters.md`      |
+| Streaming patterns | `references/workflow_streaming.md`          |
 
 ## Core API Capabilities
 
@@ -325,10 +364,7 @@ This component carries essential Seed System principles for context: fork isolat
 ---
 
 <critical_constraint>
-MANDATORY: Verify package version before installation—check npm for latest
-MANDATORY: Never hardcode API keys—use environment variables
-MANDATORY: Use streaming for interactive UX, non-streaming for batch processing
-MANDATORY: Handle RateLimitError with exponential backoff
-MANDATORY: Verify errors with instanceof checks before accessing properties
-No exceptions. Production code requires proper error handling and security practices.
+**Portability Invariant:** This skill works in projects with ZERO `.claude/rules/` access. All patterns and principles are self-contained.
+
+**Security Boundary:** API keys MUST use environment variables—never hardcoded values. Client-side TypeScript MUST use backend proxy for secrets.
 </critical_constraint>

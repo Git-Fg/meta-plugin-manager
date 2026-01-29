@@ -1,6 +1,6 @@
 ---
 name: ops/reflect-and-patch
-description: "Analyze user corrections, read session transcripts, and proactively update .claude/rules/ or SKILL.md files to prevent recurrence. Not for debugging code errors or handling exceptions during execution."
+description: "Analyze user corrections and session transcripts to update rules and skills. Use when learning from mistakes, updating CLAUDE.md, or preventing error recurrence. Includes transcript analysis, rule updates, and pattern documentation. Not for debugging code errors, handling exceptions, or real-time corrections during execution."
 user-invocable: true
 ---
 
@@ -11,17 +11,64 @@ user-invocable: true
 <success_criteria>After invocation: 1) Session transcript analyzed, 2) Root cause identified, 3) Relevant rule/SKILL.md updated, 4) Change documented with transparency</success_criteria>
 </mission_control>
 
+<guiding_principles>
+
+## The Path to High-Impact Meta-Learning
+
+**Principle 1: Session Review Fuels Continuous Improvement**
+
+User corrections provide high-value learning opportunities. When Claude analyzes what went wrong and updates its own rules, each mistake becomes an investment in preventing future errors. This transforms corrections from one-time fixes into systemic improvements.
+
+**Principle 2: Root Cause Analysis Enables Targeted Prevention**
+
+Understanding WHY a mistake occurred is more valuable than knowing THAT it occurred. By identifying whether the issue stems from missing recognition questions, unclear constraints, or misunderstood patterns, Claude can apply the right fix strategy that addresses the underlying cause rather than surface symptoms.
+
+**Principle 3: Single-Source Updates Strengthen System Knowledge**
+
+Updating existing rules (rather than creating duplicates) ensures knowledge consolidates in its canonical location. This makes the entire system smarter and more consistent over time, preventing the same mistake across all contexts—not just the current one.
+
+**Principle 4: Transparency Builds Trust and Verification**
+
+Documenting what changed and why enables users to understand the system's self-improvement process. This transparency allows validation that patches are appropriate and provides a clear history of how the system evolves based on real usage patterns.
+
+**Principle 5: Systematic Analysis Ensures Quality**
+
+Reading the full transcript before making changes, classifying the failure type before selecting a strategy, and verifying patches don't break existing functionality all ensure that improvements are well-targeted and safe. This disciplined approach prevents over-correction and ensures each patch meaningfully improves the system.
+
+**Principle 6: Update-in-Place Prevents Fragmentation**
+
+Modifying the actual rule file rather than creating duplicates or exceptions keeps knowledge consolidated in its canonical location. This makes the entire system smarter and more consistent, preventing the same mistake across all contexts rather than creating scattered workarounds.
+
+</guiding_principles>
+
 Think of this skill as **self-diagnostic surgery**—when Claude makes a mistake that the user corrects, this skill investigates why and patches the relevant rule to prevent recurrence.
 
-## What This Skill Does
+## Workflow
 
-1. **Detects correction triggers** - User says "no", "wrong", "not what I asked", etc.
-2. **Reads session transcript** - Accesses `@.claude/transcripts/last-session.jsonl`
-3. **Classifies failure type** - Uses correction-patterns.md to categorize the mistake
-4. **Identifies root cause** - Why did the mistake occur?
-5. **Determines target file** - Which rule or SKILL.md needs patching?
-6. **Applies patch strategy** - Uses patch-strategies.md to update the file
-7. **Reports transparently** - Explains what was changed and why
+**Analyze corrections and patch rules to prevent recurrence:**
+
+1. **Detect →** User correction detected ("no", "wrong", "not what I asked") → Result: Trigger identified
+2. **Read Transcript →** Read the session transcript file → Result: Full context
+3. **Classify →** Categorize failure type (architecture, process, pattern, format) → Result: Target file determined
+4. **Analyze →** Identify root cause (missing recognition, skipped step, wrong pattern) → Result: Fix approach
+5. **Patch →** Apply strategy (add recognition, constraint, example) → Result: Rule updated
+6. **Verify →** Check syntax, no regressions → Result: Safe change
+7. **Report →** Explain what changed and why → Result: Transparency
+
+**Why:** Self-diagnostic patching turns mistakes into prevention—systematic reflection enables continuous improvement.
+
+## Navigation
+
+| If you need...     | Read...                                   |
+| :----------------- | :---------------------------------------- |
+| Detect corrections | ## Workflow → Detect                      |
+| Read transcript    | ## Workflow → Read Transcript             |
+| Classify failure   | ## Workflow → Classify                    |
+| Analyze root cause | ## Workflow → Analyze                     |
+| Apply patch        | ## Workflow → Patch                       |
+| Verify changes     | ## Workflow → Verify                      |
+| Auto-invocation    | ## Trigger Conditions → Auto-Invocation   |
+| Manual invocation  | ## Trigger Conditions → Manual Invocation |
 
 ## Trigger Conditions
 
@@ -48,19 +95,7 @@ Users can explicitly request:
 
 ## Transcript Access
 
-The session transcript is symlinked to a stable location:
-
-```
-@.claude/transcripts/last-session.jsonl
-```
-
-**How to read:**
-
-```
-Read @.claude/transcripts/last-session.jsonl
-```
-
-The file contains the previous session's transcript for analysis.
+The session transcript is stored at a stable location. Read it using the Read tool.
 
 ## Failure Classification
 
@@ -120,11 +155,7 @@ Use `references/patch-strategies.md` to determine how to update:
 
 ### Step 2: Read Transcript
 
-**Action:** Read the session transcript
-
-```
-Read @.claude/transcripts/last-session.jsonl
-```
+**Action:** Read the session transcript file
 
 **What to extract:**
 
@@ -286,16 +317,6 @@ Expected: Claude will now verify directory names before creation.
 
 This component carries essential Seed System principles for context: fork isolation:
 
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
 **Recognition Questions**:
@@ -318,10 +339,6 @@ No exceptions. Portability invariant must be maintained.
       </success_criteria>
 
 <critical_constraint>
-MANDATORY: Read the session transcript before making any changes
-MANDATORY: Classify failure type before determining patch strategy
-MANDATORY: Update the actual rule file, not create duplicates
-MANDATORY: Report all changes transparently with expected outcome
-MANDATORY: Verify patch doesn't break existing functionality
-No exceptions. Systematic reflection requires systematic analysis.
+All portable components MUST be self-contained (zero .claude/rules dependency).
+Portability invariant must be maintained.
 </critical_constraint>

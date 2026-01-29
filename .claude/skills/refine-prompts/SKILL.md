@@ -1,8 +1,13 @@
 ---
 name: refine-prompts
-description: "Refine vague or unclear prompts into precise, actionable instructions. Use when user asks to clarify or improve instructions or when input is vague. Not for already clear prompts or simple questions."
+description: "Refine vague or unclear prompts into precise, actionable instructions. Use when user asks to clarify or improve instructions or when input is vague. Includes L1/L2/L3/L4 methodology, context enrichment, and intent clarification. Not for already clear prompts, simple questions, or when user explicitly rejects refinement."
 user-invocable: true
 ---
+
+<mission_control>
+<objective>Refine vague or unclear prompts into precise, actionable instructions using L1/L2/L3/L4 methodology.</objective>
+<success_criteria>Prompt refined to appropriate L-level with sufficient context and clear intent</success_criteria>
+</mission_control>
 
 # Prompt Refinement
 
@@ -10,44 +15,115 @@ Refine vague or unclear prompts into precise, actionable instructions using L1/L
 
 ---
 
-## Critical Methodology (MANDATORY)
+## Quick Start
 
-**MANDATORY**: Understand L1/L2/L3/L4 refinement levels before refining prompts.
+**If you need simple clarification:** Use L1 → One-sentence outcome statement
 
-**WRONG LEVEL = POOR RESULTS**:
+**If you need context-rich refinement (most common):** Use L2 → Single paragraph with constraints woven in
 
-- **L1 (too simple)**: Misses critical context → Claude makes wrong assumptions
-- **L2/L3 (appropriate)**: Right balance → Good results
-- **L4 (too complex)**: Template for simple task → Wasted tokens, over-constrained
+**If you need structured, complex guidance:** Use L3 → Bulleted Task/Constraints/Output format
 
-**LEVEL SELECTION CRITERIA:**
+**If you need reusable patterns:** Use L4 → Template/framework format
 
-- **L1**: Single-sentence outcome (quick clarifications)
-- **L2**: Context-rich paragraph (most prompts - **DEFAULT**)
-- **L3**: Structured bullets (complex tasks, multiple constraints)
-- **L4**: Template/framework (ONLY for reusable patterns)
+**Why:** Matching refinement level to task complexity ensures clarity without token waste. L2 serves 80% of cases—default to it, escalate only when justified.
 
-**CRITICAL**: Default to L2. Only use L3/L4 when justified. Over-structuring wastes tokens and under-structuring misses requirements.
+---
+
+## The Path to High-Quality Prompts
+
+<guiding_principles>
+
+### 1. Match Complexity to Structure
+
+Prompt structure should reflect task complexity. Simple tasks with complex templates waste tokens; complex tasks with simple prompts miss requirements.
+
+**Select L-level by purpose:**
+
+- **L1 (Single-sentence)**: Quick clarifications, straightforward outcomes
+- **L2 (Context-rich paragraph)**: Default choice—balances clarity and efficiency
+- **L3 (Structured bullets)**: Complex tasks with multiple constraints
+- **L4 (Template/framework)**: Reusable patterns, repeatable workflows
+
+**Why this works:** Right-sized structure ensures Claude understands requirements without over-constraining creativity or under-specifying deliverables.
+
+### 2. Enrich Context, Reduce Ambiguity
+
+Add relevant background, technical constraints, and success criteria. Context prevents wrong assumptions and reduces clarification rounds.
+
+**Essential context elements:**
+
+- Technical stack/platform/environment
+- Forbidden approaches ("no external deps")
+- Compliance requirements
+- Output format specifications
+- Measurable success targets
+
+**Why this works:** Context acts as guardrails—Claude navigates within boundaries instead of guessing requirements.
+
+### 3. Preserve What Matters, Delete What Doesn't
+
+Keep only constraints that actually change the answer. Remove tone fluff, obvious best practices, and redundant examples.
+
+**Keep these non-negotiables:**
+
+- Tech stack/platform constraints
+- Forbidden approaches
+- Compliance requirements
+- Hard output format (JSON, word limits)
+- Measurable success targets
+
+**Delete these inefficiencies:**
+
+- Step-by-step instructions (Claude knows how to work)
+- Tone guidance ("be professional," "be creative")
+- Obvious best practices
+- Redundant examples
+
+**Why this works:** Minimal-yet-sufficient prompts achieve clarity with maximal efficiency. Every word should earn its place.
+
+### 4. Specify Outputs Precisely
+
+Define deliverables explicitly—format, structure, completeness. Ambiguous outputs produce ambiguous results.
+
+**Output specification patterns:**
+
+- "Complete deployable website with HTML/CSS/JS"
+- "JSON array with objects containing id, name, timestamp"
+- "≤500 words summary with key findings"
+- "Unit tests achieving 90%+ coverage"
+
+**Why this works:** Precise output specifications set clear expectations. Claude knows exactly what "done" looks like.
+
+</guiding_principles>
+
+---
+
+## Navigation
+
+| If you need...         | Read...                                   |
+| :--------------------- | :---------------------------------------- |
+| Understand L-levels    | ## Quick Start → L1/L2/L3/L4 descriptions |
+| Core methodology       | ## Core Methodology                       |
+| See refinement example | ## Example                                |
+| Output format          | ## Execution Process → STEP 4: Deliver    |
+
+## Operational Patterns
+
+- **Tracking**: Maintain a visible task list for prompt refinement
+- **Consultation**: Consult the user when L-level is unclear
+- **Management**: Manage task lifecycle for context enrichment
 
 ---
 
 ## Core Methodology
 
 **FROM_SCRATCH method**: Convert user's goal/topic into outcome + minimal context + hard constraints
+
 **REFINE method**: Delete fluff, keep only constraints that actually change the answer
 
-**Default**: Produce prompts as a single plain-text paragraph (no Markdown)
+**Default**: Produce prompts as a single plain-text paragraph (L2 format)
+
 **Escalate**: Use keypoints (L3) and templates (L4) only when justified
-
-## Non-Negotiables to Preserve
-
-**Always keep:**
-
-- Tech stack/platform/environment constraints
-- Forbidden approaches ("no external deps", "no web calls")
-- Compliance requirements
-- Hard output format requirements (must be JSON / must be ≤N words)
-- Measurable success targets (latency, accuracy, coverage)
 
 ## Execution Process
 
@@ -135,54 +211,30 @@ L4:
 Rationale: The refined prompt provides clear technical constraints (mobile-first, WCAG compliance, performance budget) while maintaining creative flexibility. The L4 template ensures consistent deliverable structure across different landing pages while allowing product-specific customization.
 ```
 
-## Critical Rules
+## Execution Best Practices
 
-- **Output ONLY the refined prompt** - never the methodology
-- **Use L4 template** only for complex or reusable scenarios
-- **Maintain all non-negotiable constraints** from original input
-- **Ask at most ONE question** if ambiguity blocks producing useful refinement
+**Deliver clean, focused output:**
 
-**Contrast:**
+- Output ONLY the refined prompt—never methodology explanations
+- Use L4 templates only for complex or reusable scenarios
+- Maintain all non-negotiable constraints from original input
+- Ask at most ONE question if ambiguity blocks producing useful refinement
+
+**Pattern contrast:**
 
 ```
 Good: Output L1→L2→L3→L4→Rationale format
 Good: Remove fluff, keep constraints that change answers
 Bad: Include methodology explanation in output
-Bad: Use L4 when simple prompt
+Bad: Use L4 when simple prompt suffices
 ```
 
-**Validation check:** Refinement provides clear, actionable instructions if it includes: 1) L1 outcome statement, 2) L2 context with constraints, 3) L3 structure, 4) L4 template if needed.
-
----
-
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+**Validation check:** Refinement succeeds when it includes: 1) L1 outcome statement, 2) L2 context with constraints, 3) L3 structure, 4) L4 template if needed, 5) Clear rationale.
 
 ---
 
 <critical_constraint>
-MANDATORY: Output ONLY the refined prompt (no methodology explanations)
-MANDATORY: Default to L2 unless complexity justifies L3/L4
-MANDATORY: Preserve all non-negotiable constraints from original input
-MANDATORY: Ask at most ONE question if ambiguity blocks refinement
-No exceptions. Refinement is about clarity, not elaboration.
+**Portability Invariant:**
+
+This component must work standalone with zero external dependencies. All necessary philosophy and patterns are contained within.
 </critical_constraint>

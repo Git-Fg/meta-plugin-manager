@@ -9,7 +9,7 @@ The SimpleWebFetch MCP server has been successfully implemented and tested. All 
 ### ✅ Test 1: Tools Discovery
 **Command:**
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js --method tools/list
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js --method tools/list
 ```
 
 **Result:** ✅ PASSED
@@ -24,7 +24,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js --method tools/
 ### ✅ Test 2: Full Web Fetch - Basic
 **Command:**
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name fullWebFetch \
   --tool-arg url=https://example.com
@@ -49,7 +49,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 ### ✅ Test 3: Simple Web Fetch - Fallback Mode
 **Command:**
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name simpleWebFetch \
   --tool-arg url=https://example.com \
@@ -65,7 +65,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 ### ✅ Test 4: Error Handling - Invalid URL
 **Command:**
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name fullWebFetch \
   --tool-arg url=invalid-url
@@ -79,7 +79,7 @@ npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
 ### ✅ Test 5: Error Handling - Network Failure
 **Command:**
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node dist/server.js \
+npx -y @modelcontextprotocol/inspector --cli node abs/path/server.js \
   --method tools/call \
   --tool-name simpleWebFetch \
   --tool-arg url=https://httpstat.us/200 \

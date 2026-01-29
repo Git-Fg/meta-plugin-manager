@@ -1,108 +1,138 @@
 ---
-date: 2026-01-28
-session: dynamic-sourcing-refactor
+date: 2026-01-29
+session: internal-review-system-2026-01-29
+type: diagnostic
 status: complete
-outcome: SUCCEEDED
-severity: low
+outcome: IN_PROGRESS
+severity: high
 ---
-goal: Transform 4 skills to use Dynamic Sourcing Framework with embedded URLs pointing to official Claude documentation
-now: Consider extending Dynamic Sourcing to other skills (build, ci-pipeline-manager, etc.)
-test: grep "<fetch_protocol>" .claude/skills/*/SKILL.md
+goal: Document findings from comprehensive system review of .claude/ components vs rules files
+now: Apply prioritized fixes based on clarified rules
+test: ls .claude/workspace/handoffs/*.yaml
 
-done_this_session:
-  - task: Updated invocable-development/SKILL.md
-    files: [.claude/skills/invocable-development/SKILL.md:11-17, .claude/skills/invocable-development/SKILL.md:331-349]
-  - task: Updated mcp-development/SKILL.md
-    files: [.claude/skills/mcp-development/SKILL.md:11-18, .claude/skills/mcp-development/SKILL.md:728-760, .claude/skills/mcp-development/SKILL.md:814-819]
-  - task: Updated hook-development/SKILL.md
-    files: [.claude/skills/hook-development/SKILL.md:9-15, .claude/skills/hook-development/SKILL.md:147-167]
-  - task: Updated agent-development/SKILL.md
-    files: [.claude/skills/agent-development/SKILL.md:11-18, .claude/skills/agent-development/SKILL.md:241-263]
-  - task: Verified all 7 official documentation URLs are accessible (HTTP 200)
+## User Clarification
 
-user_interactions:
-  - type: correction
-    user_says: |
-      OK that's still not the case; let's input directly the urls within the body of the skills.
-      Make sure before; that urls contains relevant informations; and remove informations that
-      strictly duplicate it from skills + references
-    context: I had created a claude-docs-index.md file and was updating skills to reference it
-    impact: User rejected the centralized index approach, requested direct URL embedding in each skill
-    response: Verified URLs contain relevant documentation, deleted index file, embedded URLs directly in each skill
-    resolution: User approved the direct URL embedding approach
-  - type: request
-    user_says: |
-      This refactoring transforms the guide from a static manual into a Dynamic Sourcing
-      Framework. The core philosophy is: Never hardcode volatile syntax. Instead, teach
-      the agent to fetch the "Live Instance" of the documentation...
-    context: Initial request for Dynamic Sourcing Framework refactor
-    impact: Defined the entire approach - embed URLs, add fetch protocol, remove duplicate static docs
-    response: Created plan, verified URLs, implemented changes
-    resolution: Approved and completed
+**On Progressive Disclosure**: Does NOT apply to commands.
+**On @path in Commands**: Commands MUST use @path injection to prevent context drift risk.
 
-behavior_signals:
-  - signal: assumption_error
-    description: Initially assumed user wanted a centralized index file
-    evidence: |
-      Created claude-docs-index.md in references/ directory and updated skills to point to it
-      User corrected: "let's input directly the urls within the body of the skills"
-    correction: Deleted index file, embedded URLs directly in each skill body
-    severity: medium
-    note: User's preference for direct embedding vs indirection through index file
+This changes the analysis - commands using @path are CORRECT behavior, not violations.
 
-behavior_issues: []
+## Critical Issues (Real)
 
-fixes:
-  - issue: Centralized index file rejected by user
-    approach: Deleted claude-docs-index.md, embedded URLs directly in each skill
-    rationale: User requested direct URL embedding in skill bodies
-    effectiveness: 10
-    alternatives: [Could have kept index but added direct links, or used hybrid approach]
+| # | Issue | Severity | Files |
+|---|-------|----------|-------|
+| 1 | CLAUDE.md self-contradiction | CRITICAL | CLAUDE.md:10-15 vs :211 |
+| 2 | Progressive disclosure scope | CRITICAL | principles.md:350 vs architecture.md:277-300 |
+| 3 | 5 agents missing sections | HIGH | security-auditor, skill-auditor, slash-command-auditor, toolkit-worker, subagent-auditor |
+| 4 | jules/status.md format violations | HIGH | jules/status.md |
+| 5 | Hooks missing timeouts | HIGH | settings.json |
 
-remarks:
-  - All 7 official Claude documentation URLs are accessible and return HTTP 200
-  - Official docs contain rich, current documentation that supersedes static content in skills
-  - skills.md contains complete frontmatter reference (name, description, context, agent, hooks)
-  - mcp.md contains comprehensive MCP docs including tool schema, transports, server config
-  - hooks.md contains complete hook lifecycle, configuration structure, all event types
-  - sub-agents.md contains agent frontmatter fields, execution modes, spawn conditions
-  - Each skill now has <fetch_protocol> section with 5-step process (DETECT → FETCH → EXTRACT → IMPLEMENT → DISPOSE)
-  - Each skill has Navigation section with official documentation URL
-  - No duplicate static documentation remains in skills (was already minimal)
+## Issues Reclassified as ACCEPTABLE
 
-issues: []
+| Issue | Previous Assessment | Corrected Assessment |
+|-------|--------------------|--------------------|
+| Commands using @path injection | VIOLATION | CORRECT - commands must use @path to prevent context drift |
+| Skills Genetic Code referencing .claude/rules | VIOLATION | ACCEPTABLE - meta-documentation, self-contained philosophy |
 
-incoherences: []
+## Resolution Plan
 
-errors: []
+### Priority 1 (Immediate)
 
-difficulties: []
+1. **Fix CLAUDE.md contradiction**
+   - Remove lines 10-15 (cross-reference table to rules) OR
+   - Remove line 211 (no cross-references constraint)
 
-diagnostics:
-  - hypothesis: User might want to remove more static documentation from skills
-    test: Checked skills for content that duplicates official docs
-    result: Skills already contain minimal static docs - mostly patterns and guidance, not syntax
-    conclusion: No further cleanup needed - current balance is appropriate
+2. **Fix architecture.md vs principles.md contradiction**
+   - Update architecture.md to align with principles.md
+   - Progressive disclosure applies ONLY to skills
 
-workarounds: []
+### Priority 2
 
-decisions:
-  - direct_urls: "Embed URLs directly in skill bodies instead of centralized index"
-  - fetch_protocol: "Add <fetch_protocol> sections to each skill with 5-step process"
-  - minimal_removal: "Skills already minimal - no need to remove more content"
+3. **Fix 5 non-compliant agents**
+   - Add missing sections to:
+     - security-auditor.md
+     - skill-auditor.md
+     - slash-command-auditor.md
+     - toolkit-worker.md
+     - subagent-auditor.md
 
-findings:
-  - url_content_quality: "Official docs are comprehensive and current"
-  - skill_content_balance: "Skills focus on patterns/guidance, official docs cover syntax"
+4. **Fix jules/status.md**
+   - Correct description format (imperative voice, Use when/Not for)
+   - Remove explicit file path reference
 
-worked: [direct URL embedding, fetch protocol sections, verification of URL accessibility]
+### Priority 3
 
-failed: [initial index file approach - rejected by user]
+5. **Fix hooks in settings.json**
+   - Add timeout to SessionStart hook
+   - Add timeout to PostToolUse hook
+   - Verify matcher syntax
 
-next:
-  - Consider extending Dynamic Sourcing to other skills (build, ci-pipeline-manager, etc.) as needed
-  - Monitor official documentation for changes that affect skills
+## Verification Checklist
 
-files:
-  created: []
-  modified: [.claude/skills/invocable-development/SKILL.md, .claude/skills/mcp-development/SKILL.md, .claude/skills/hook-development/SKILL.md, .claude/skills/agent-development/SKILL.md]
+- [ ] CLAUDE.md contradiction resolved
+- [ ] Progressive disclosure scope clarified in architecture.md
+- [ ] 5 agents updated with required sections
+- [ ] jules/status.md description format fixed
+- [ ] Hooks have timeouts
+
+## Notes
+
+**User Requirement**: Commands MUST use @path injection to prevent context drift. This is intentional design, not a violation.
+
+**Progressive Disclosure Scope**: ONLY skills. Commands are single-file, always load full content.
+
+---
+
+## Session: session-start-refinement-2026-01-29
+
+**Date**: 2026-01-29
+**Type**: diagnostic
+**Status**: complete
+**Outcome**: COMPLETED
+**Severity**: medium
+
+### Goal
+
+Refine session-start.sh with research-backed skill invocation enforcement
+
+### User Clarification
+
+**On skill threshold quantification**: LLMs respond well to explicit numerical thresholds and chain-of-thought evaluation patterns. Research shows:
+- Quantitative framing ("10x") improves adherence
+- Confidence rating (0-100) forces explicit evaluation
+- Explicit thresholds ("<90%") reduce ambiguity
+- Chain-of-thought steps improve reasoning compliance
+
+### Changes Applied
+
+1. **Semantic script improvements**
+   - Renamed variables for clarity (`SESSION_DIR` → `SESSION_BASE_DIR`, etc.)
+   - Added section delimiters (`--- Configuration ---`)
+   - Function renamed (`json_escape` → `escape_for_json`)
+   - Added `local` variable declaration
+
+2. **Discipline content refinement**
+   - Reduced from 2,962 → 913 characters (69% reduction)
+   - Added 10x skill sensitivity elevation
+   - Implemented CoT confidence rating (0-100, <90% threshold)
+   - Preserved strong language enforcement
+   - "1% chance" updated to "remotest chance"
+
+3. **Output JSON enhancement**
+   - Added `sessionId` field
+   - Added `version: "1.0"` for compatibility tracking
+   - Renamed `additionalContext` → `injectedContext`
+
+### Files Modified
+
+- `.claude/scripts/session-start.sh`
+
+### Test
+
+```bash
+cat .claude/scripts/session-start.sh | grep -A 5 "SKILL SENSITIVITY"
+```
+
+### Still Unresolved
+
+- Hook timeouts in settings.json (Priority 3 in main diagnostic)

@@ -1,46 +1,225 @@
 ---
 name: discovery
-description: "Conduct discovery interviews to gather requirements, clarify vague ideas, and create detailed specifications. Use when gathering requirements or clarifying vague ideas. Not for execution or simple partial updates."
+description: "Conduct discovery interviews to gather requirements, clarify vague ideas, and create detailed specifications. Use when gathering requirements, clarifying vague ideas, or starting new projects. Includes interview guidance, requirement extraction, and specification templates. Not for execution, simple partial updates, or when requirements are already clear."
 user-invocable: true
 ---
 
-# Discovery Interview
+**Skill Location**: This file
 
-Transform vague ideas into detailed, implementable specifications through deep, iterative interviews. Works for both technical and non-technical users.
+<mission_control>
+<objective>Conduct discovery interviews to gather requirements, clarify vague ideas, and create detailed specifications through thorough exploration.</objective>
+<success_criteria>Minimum 10-15 questions, research loops for non-trivial projects, completeness check before spec</success_criteria>
+</mission_control>
 
-## Core Philosophy
+## Workflow
 
-**Don't ask obvious questions. Don't accept surface answers. Don't assume knowledge.**
+**Conduct discovery interviews systematically:**
 
-Your job is to:
+1. **Initial Orientation →** 2-3 questions to understand project type → Result: Clear project context
+2. **Category Deep Dive →** 2-4 questions per category (A-H) → Result: Detailed requirements
+3. **Research Loops →** Investigate knowledge gaps → Result: Informed decisions
+4. **Conflict Resolution →** Surface impossible requirements → Result: Resolved tradeoffs
+5. **Completeness Check →** Verify all areas covered → Result: Ready for spec
+6. **Spec Generation →** Create actionable document → Result: Implementation-ready spec
 
-1. Deeply understand what the user _actually_ wants (not what they say)
-2. Detect knowledge gaps and educate when needed
-3. Surface hidden assumptions and tradeoffs
-4. Research when uncertainty exists
-5. Only write a spec when you have complete understanding
+**Why:** L'Entonnoir pattern ensures thorough exploration—minimum 10-15 questions prevent slop and produce quality specs.
 
-## Interview Process
+## Operational Patterns
 
-### Phase 1: Initial Orientation (2-3 questions max)
+This skill follows these behavioral patterns:
 
-Start broad. Understand the shape of the idea:
+- **Discovery**: Locate files matching patterns and search file contents for project context
+- **Delegation**: Delegate exploration to specialized workers for research
+- **Consultation**: Consult the user with options during interview phases
+- **Tracking**: Maintain a visible task list throughout discovery
 
-Ask about:
+Use native tools to fulfill these patterns. Trust the System Prompt to select the correct implementation.
 
-- "In one sentence, what problem are you trying to solve?"
-- "Who will use this? (End users, developers, internal team, etc.)"
-- "Is this a new thing or improving something existing?"
+## Navigation
 
-Based on answers, determine the PROJECT TYPE:
+| If you need...                  | Read...                           |
+| :------------------------------ | :-------------------------------- |
+| Initial orientation questions   | ## Workflow → Initial Orientation |
+| Category deep dive (A-H)        | ## Workflow → Category Deep Dive  |
+| Research unknown areas          | ## Workflow → Research Loops      |
+| Resolve impossible requirements | ## Workflow → Conflict Resolution |
+| Create specification document   | ## Workflow → Spec Generation     |
+| Templates and examples          | resources/templates/              |
 
-- **Backend service/API** → Focus: data, scaling, integrations
-- **Frontend/Web app** → Focus: UX, state, responsiveness
-- **CLI tool** → Focus: ergonomics, composability, output formats
-- **Mobile app** → Focus: offline, platform, permissions
-- **Full-stack app** → Focus: all of the above
-- **Script/Automation** → Focus: triggers, reliability, idempotency
-- **Library/SDK** → Focus: API design, docs, versioning
+## Workflow Decision Tree
+
+### What Stage of Discovery?
+
+| If you need to...                                      | Read this section             |
+| ------------------------------------------------------ | ----------------------------- |
+| **Initial clarity** → Understand core problem          | Phase 1: Initial Orientation  |
+| **Category deep dive** → Explore specific areas        | Phase 2: Category-by-Category |
+| **Research gaps** → Investigate unknowns               | Phase 3: Research Loops       |
+| **Resolve conflicts** → Handle impossible requirements | Phase 4: Conflict Resolution  |
+| **Create spec** → Generate actionable document         | Phase 6: Spec Generation      |
+
+## Implementation Patterns
+
+### Pattern 1: Initial Orientation (2-3 questions)
+
+```bash
+# Check project context first
+git log --oneline -10
+cat CLAUDE.md 2>/dev/null | head -30
+```
+
+```typescript
+// First batch of questions (1-3 max)
+const initialQuestions = [
+  {
+    question: "In one sentence, what problem are you trying to solve?",
+    options: ["Pain point relief", "New capability", "Performance improvement"],
+  },
+  {
+    question: "Who will use this?",
+    options: ["End users", "Developers", "Internal team", "All of the above"],
+  },
+];
+
+// Project type determination
+type ProjectType =
+  | "backend-service" // Focus: data, scaling, integrations
+  | "frontend-webapp" // Focus: UX, state, responsiveness
+  | "cli-tool" // Focus: ergonomics, composability
+  | "mobile-app" // Focus: offline, platform, permissions
+  | "fullstack-app" // Focus: all of the above
+  | "script-automation"; // Focus: triggers, reliability
+```
+
+### Pattern 2: Category Deep Dive (2-4 questions per category)
+
+```typescript
+// Category A: Problem & Goals
+const problemQuestions = [
+  "What's the current pain point?",
+  // a) Manual process takes too long
+  // b) Existing tools don't work well
+  // c) No current solution exists
+  // d) Research options
+
+  "How will you measure success?",
+  // a) Time saved
+  // b) User satisfaction
+  // c) Revenue impact
+  // d) Not sure yet
+];
+```
+
+### Pattern 3: Research Loop
+
+```typescript
+function handleResearchRequest(topic: string) {
+  // When user says "research this" or shows uncertainty
+  const findings = await WebSearch(`best approaches for ${topic}`);
+  return {
+    options: [
+      {
+        name: "WebSockets",
+        tradeoffs: "Bidirectional but requires sticky sessions",
+      },
+      {
+        name: "SSE",
+        tradeoffs: "Simpler, unidirectional, works with load balancers",
+      },
+      { name: "Polling", tradeoffs: "Easiest but wasteful" },
+    ],
+    recommendation: "Given your scale, SSE would likely work well",
+  };
+}
+```
+
+### Pattern 4: Spec Generation Template
+
+```markdown
+# [Project Name] Specification
+
+## Executive Summary
+
+[2-3 sentences: what, for whom, why]
+
+## Problem Statement
+
+[The problem this solves, current pain points]
+
+## Success Criteria
+
+[Measurable outcomes that define success]
+
+## Functional Requirements
+
+### Must Have (P0)
+
+- [Requirement with acceptance criteria]
+
+### Should Have (P1)
+
+- [Requirement with acceptance criteria]
+
+## Out of Scope
+
+[Explicitly what we're NOT building]
+```
+
+## Troubleshooting
+
+### Issue: Questions Too Vague
+
+| Symptom                  | Solution                     |
+| ------------------------ | ---------------------------- |
+| "What do you want?"      | Narrow to specific domain    |
+| User says "I don't know" | Offer options with tradeoffs |
+
+### Issue: Knowledge Gap Signals
+
+| Symptom                              | Solution                             |
+| ------------------------------------ | ------------------------------------ |
+| "I think..." or "Maybe..."           | Probe deeper, offer research         |
+| "Just simple X"                      | Challenge - define what simple means |
+| Technology buzzwords without context | Ask what they think it does          |
+
+### Issue: Premature Solution Description
+
+| Symptom                                  | Solution                                 |
+| ---------------------------------------- | ---------------------------------------- |
+| "Build a React app" (instead of problem) | "What problem does React solve for you?" |
+| "Use a database" (instead of data needs) | "What data do you need to store?"        |
+
+### Issue: Time Pressure
+
+| Symptom                       | Solution                           |
+| ----------------------------- | ---------------------------------- |
+| "We only have 10 minutes"     | Prioritize: core UX and data model |
+| Can't complete full discovery | Note uncovered areas as risks      |
+
+### Issue: User Overwhelm
+
+| Symptom                    | Solution                            |
+| -------------------------- | ----------------------------------- |
+| Long pauses, short answers | Simplify questions, batch less      |
+| "Whatever you think"       | Still probe - don't skip categories |
+
+## workflows
+
+### When Requirements Are Vague
+
+1. **Initial Orientation** → 2-3 questions to understand project type
+2. **Category Deep Dive** → 2-4 questions per category (A-H)
+3. **Research Loops** → Investigate knowledge gaps
+4. **Conflict Resolution** → Surface impossible requirements
+5. **Completeness Check** → Verify all areas covered
+6. **Spec Generation** → Create actionable document
+
+### Transition to Execution
+
+```bash
+# After discovery is complete
+git worktree add .worktrees/spec -b feature/spec
+```
 
 ### Phase 2: Category-by-Category Deep Dive
 
@@ -247,80 +426,9 @@ Only after completeness check passes:
 
 2. **Generate the spec** to a file:
 
-```markdown
-# [Project Name] Specification
+Use the spec template from the skill's resources folder:
 
-## Executive Summary
-
-[2-3 sentences: what, for whom, why]
-
-## Problem Statement
-
-[The problem this solves, current pain points, why now]
-
-## Success Criteria
-
-[Measurable outcomes that define success]
-
-## User Personas
-
-[Who uses this, their technical level, their goals]
-
-## User Journey
-
-[Step-by-step flow of the core experience]
-
-## Functional Requirements
-
-### Must Have (P0)
-
-- [Requirement with acceptance criteria]
-
-### Should Have (P1)
-
-- [Requirement with acceptance criteria]
-
-### Nice to Have (P2)
-
-- [Requirement with acceptance criteria]
-
-## Technical Architecture
-
-### Data Model
-
-[Key entities and relationships]
-
-### System Components
-
-[Major components and their responsibilities]
-
-### Integrations
-
-[External systems and how we connect]
-
-### Security Model
-
-[Auth, authorization, data protection]
-
-## Non-Functional Requirements
-
-- Performance: [specific metrics]
-- Scalability: [expected load]
-- Reliability: [uptime requirements]
-- Security: [compliance, encryption]
-
-## Out of Scope
-
-[Explicitly what we're NOT building]
-
-## Open Questions for Implementation
-
-[Technical details to resolve during implementation]
-
-## Appendix: Research Findings
-
-[Summary of research conducted during discovery]
-```
+3. Customize each section based on discovery findings
 
 ### Phase 7: Implementation Handoff
 
@@ -443,30 +551,74 @@ Watch for these signals:
 
 ---
 
-<critical_constraint>
-MANDATORY: Ask minimum 10-15 questions across categories for real projects
-MANDATORY: Include research loops for non-trivial projects
-MANDATORY: Always do completeness check before writing spec
-MANDATORY: Surface knowledge gaps and offer research options
-MANDATORY: Never accept solution descriptions instead of problem statements
-No exceptions. Discovery produces quality specs through thorough exploration.
-</critical_constraint>
+## YAGNI Principle
+
+**YAGNI ruthlessly** - Avoid gold-plating requirements. Only document what's actually needed.
+
+Before finalizing any spec, ask:
+
+- [ ] Is this requirement actually requested?
+- [ ] Can we deliver value without this?
+- [ ] Is this speculation about future needs?
+
+If you catch yourself thinking "we might need this later", remove it. The discovery phase produces specs, not feature wishlists.
 
 ---
 
+## Common Rationalizations
+
+| Excuse                                       | Reality                                                       |
+| -------------------------------------------- | ------------------------------------------------------------- |
+| "We only have 10 minutes, skip questions"    | Incomplete discovery produces incomplete specs. Note risks.   |
+| "I understand the problem, skip research"    | Understanding ≠ having all requirements. Research fills gaps. |
+| "The user said 'whatever you think'"         | That's uncertainty, not delegation. Probe deeper.             |
+| "This is straightforward, minimum questions" | Minimum is 10-15 questions for real projects.                 |
+| "We can clarify later"                       | Later means rework. Clarify now.                              |
+| "The spec template has TBD items"            | TBD = technical debt. Resolve before writing.                 |
+
+**If you catch yourself thinking these, STOP. Complete the discovery process.**
+
+---
+
+<guiding_principles>
+
+## The Path to High-Quality Discovery
+
+### 1. Thorough Exploration
+
+Quality specs emerge from minimum 10-15 questions across categories. L'Entonnoir pattern prevents slop and ensures comprehensive understanding.
+
+### 2. Research Discipline
+
+Non-trivial projects require investigation loops. Knowledge gaps fill through research, preventing assumptions.
+
+### 3. Completeness Protocol
+
+Completeness check before spec writing catches missing areas. Surface gaps and offer research to maintain quality.
+
+### 4. Problem-Focused
+
+Solution descriptions indicate unclear understanding. Problem statements reveal true requirements.
+
+### 5. YAGNI Principle
+
+Specs document what was asked, not what might be useful someday. Remove "might need later" items ruthlessly.
+
+</guiding_principles>
+
 ## Genetic Code
 
-This component carries essential Seed System principles for context: fork isolation:
+This component carries essential Seed System principles for context fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
+**System Physics:**
+
+1. Zero external dependencies for portable components
+2. Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
+3. Description uses What-When-Not-Includes format in third person
+4. Progressive disclosure - references/ for detailed content
+5. XML for control (mission_control, critical_constraint), Markdown for data
+   </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -475,5 +627,3 @@ No exceptions. Portability invariant must be maintained.
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----

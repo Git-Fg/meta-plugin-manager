@@ -8,12 +8,14 @@ Guidelines for determining prompt complexity, tool usage, and optimization patte
 Single focused task, clear outcome:
 
 **Indicators:**
+
 - Single artifact output
 - No dependencies on other files
 - Straightforward requirements
 - No decision-making needed
 
 **Prompt characteristics:**
+
 - Concise objective
 - Minimal context
 - Direct requirements
@@ -23,12 +25,14 @@ Single focused task, clear outcome:
 Multi-step tasks, multiple considerations:
 
 **Indicators:**
+
 - Multiple artifacts or phases
 - Dependencies on research/plan files
 - Trade-offs to consider
 - Integration with existing code
 
 **Prompt characteristics:**
+
 - Detailed objective with context
 - Referenced files
 - Explicit implementation guidance
@@ -39,6 +43,7 @@ Multi-step tasks, multiple considerations:
 
 <when_to_include>
 Use these phrases to activate deeper reasoning in complex prompts:
+
 - Complex architectural decisions
 - Multiple valid approaches to evaluate
 - Security-sensitive implementations
@@ -46,6 +51,7 @@ Use these phrases to activate deeper reasoning in complex prompts:
 - Trade-off analysis
 
 <trigger_phrases>
+
 ```
 "Thoroughly analyze..."
 "Consider multiple approaches..."
@@ -55,6 +61,7 @@ Use these phrases to activate deeper reasoning in complex prompts:
 ```
 
 <example_usage>
+
 ```xml
 
 ## Requirements
@@ -66,6 +73,7 @@ security implications of each choice.
 ```
 
 <when_not_to_use>
+
 - Simple, straightforward tasks
 - Tasks with clear single approach
 - Following established patterns
@@ -74,6 +82,7 @@ security implications of each choice.
 <parallel_tool_calling>
 
 <when_to_include>
+
 ```xml
 <efficiency>
 For maximum efficiency, invoke all independent tool operations
@@ -84,6 +93,7 @@ run in parallel.
 ```
 
 <applicable_scenarios>
+
 - Reading multiple files for context
 - Running multiple searches
 - Fetching from multiple sources
@@ -92,32 +102,35 @@ run in parallel.
 <context_loading>
 
 <when_to_load>
+
 - Modifying existing code
 - Following established patterns
 - Integrating with current systems
 - Building on research/plan outputs
 
 <when_not_to_load>
+
 - Greenfield features
 - Standalone utilities
 - Pure research tasks
 - Standard patterns without customization
 
 <loading_patterns>
+
 ```xml
 
 ## Context
 
 <!-- Chained artifacts -->
-Research: @.prompts/001-auth-research/auth-research.md
-Plan: @.prompts/002-auth-plan/auth-plan.md
+Research: [research-file]
+Plan: [plan-file]
 
 <!-- Existing code to modify -->
-Current implementation: @src/auth/middleware.ts
-Types to extend: @src/types/auth.ts
+Current implementation: [implementation-file]
+Types to extend: [types-file]
 
 <!-- Patterns to follow -->
-Similar feature: @src/features/payments/
+Similar feature: [similar-feature]
 
 ```
 
@@ -127,6 +140,7 @@ Similar feature: @src/features/payments/
 For research and plan outputs that may be large:
 
 **Instruct incremental writing:**
+
 ```xml
 
 ## Process
@@ -141,17 +155,20 @@ For research and plan outputs that may be large:
 ```
 
 **Why this matters:**
+
 - Prevents lost work from token limit failures
 - No need to estimate output size
 - Agent creates natural checkpoints
 - Works for any task complexity
 
 **When to use:**
+
 - Research prompts (findings accumulate)
 - Plan prompts (phases accumulate)
 - Any prompt that might produce >15k tokens
 
 **When NOT to use:**
+
 - Do prompts (code generation is different workflow)
 - Simple tasks with known small outputs
 
@@ -159,27 +176,29 @@ For research and plan outputs that may be large:
 For Claude-to-Claude consumption:
 
 **Use heavy XML structure:**
+
 ```xml
 <findings>
   <finding category="security">
     <title>Token Storage
     <recommendation>httpOnly cookies
-    
+
 ## Rationale
 
 Prevents XSS access
-  
+
 
 ```
 
 **Include metadata:**
+
 ```xml
 <metadata>
-  
+
 ### high
 
 Verified in official docs
-  
+
 ## Dependencies
 
 Cookie parser middleware
@@ -188,6 +207,7 @@ Cookie parser middleware
 ```
 
 **Be explicit about next steps:**
+
 ```xml
 <next_actions>
   <action priority="high">Create planning prompt using these findings
@@ -197,6 +217,7 @@ Cookie parser middleware
 
 <human_consumption>
 For human consumption:
+
 - Clear headings
 - Bullet points for scanning
 - Code examples with comments
@@ -231,6 +252,7 @@ Complex task prompts:
 Always explain why constraints matter:
 
 <bad_example>
+
 ```xml
 
 ## Requirements
@@ -240,6 +262,7 @@ Never store tokens in localStorage.
 ```
 
 <good_example>
+
 ```xml
 
 ## Requirements
@@ -255,6 +278,7 @@ This helps the executing Claude make good decisions when facing edge cases.
 <verification_patterns>
 
 <for_code>
+
 ```xml
 
 ## Verification
@@ -267,6 +291,7 @@ This helps the executing Claude make good decisions when facing edge cases.
 ```
 
 <for_documents>
+
 ```xml
 
 ## Verification
@@ -278,6 +303,7 @@ This helps the executing Claude make good decisions when facing edge cases.
 ```
 
 <for_research>
+
 ```xml
 
 ## Verification
@@ -290,6 +316,7 @@ This helps the executing Claude make good decisions when facing edge cases.
 ```
 
 <for_plans>
+
 ```xml
 
 ## Verification
@@ -305,6 +332,7 @@ This helps the executing Claude make good decisions when facing edge cases.
 
 <research_prompts>
 Research prompts should:
+
 - Structure findings for easy extraction
 - Include code examples for implementation
 - Clearly mark confidence levels
@@ -312,6 +340,7 @@ Research prompts should:
 
 <plan_prompts>
 Plan prompts should:
+
 - Reference research explicitly
 - Break phases into prompt-sized chunks
 - Include execution hints per phase
@@ -319,6 +348,7 @@ Plan prompts should:
 
 <do_prompts>
 Do prompts should:
+
 - Reference both research and plan
 - Follow plan phases explicitly
 - Verify against research recommendations

@@ -23,37 +23,28 @@ argument-hint: [optional pattern name or leave empty]
 
 **Skills:**
 
-- Folder with `SKILL.md` + optional `workflows/` and `references/`
+- Folder with `SKILL.md` + optional `references/`
 - Progressive disclosure (main content + detailed references)
 - Best when multiple files provide better organization
 - Flat naming structure
+- SKILL.md contains full workflows (no separate workflows/ folder)
 
 Both are invocable by AI and users based on description and context.
 
-## Process
+## Workflow
 
-### Phase 1: Context Scan
+### 1. Detect
 
 Gather context from:
 
 - Recent conversation history
 - Modified/created files in git status
 - Active work-in-progress patterns
+- Identify patterns suitable for extraction
 
-### Phase 2: Pattern Identification
+### 2. Execute
 
-For each pattern found:
-
-### Pattern: [Name]
-
-**Type:** command | skill | reject
-**Confidence:** high | medium | low
-**Evidence:**
-
-- [Specific evidence from context]
-- [Concrete usage observed]
-
-### Phase 3: Component Specification
+For each pattern found, create component specification:
 
 **Choose COMMAND when:**
 
@@ -67,7 +58,7 @@ For each pattern found:
 
 - Content benefits from multiple files
 - Progressive disclosure needed (core + detailed references)
-- Multiple workflow files provide better organization
+- Multiple workflows in SKILL.md provide better organization
 - Examples or scripts should be bundled
 - Example: `skill/engineering-lifecycle` - comprehensive methodology
 
@@ -76,20 +67,14 @@ For each pattern found:
 - For commands: Load `invocable-development` skill
 - For skills: Load `invocable-development` skill
 
-### Description Template
+### 3. Verify
 
-Third person, specific and concise:
+Confirm extracted patterns meet quality criteria:
 
-```
-[Action] [object/target] [constraints]
-Use when [trigger phrase]
-```
-
-Examples:
-
-- "Extract reusable patterns from conversation. Use when identifying new components."
-- "Detect context drift in project. Use when auditing self-containment."
-- "Review session for improvements. Use when reflecting on work."
+- Type correctly identified (command/skill/reject)
+- Confidence appropriately assessed (high/medium/low)
+- Evidence substantiates the pattern
+- Description follows third-person infinitive format
 
 ## Output
 
@@ -107,7 +92,7 @@ Provide structured findings:
 
 - Name: [proposed name]
 - Description: [what it does + use when trigger]
-- Category: [command (single file, nested) or skill (folder with workflows/references)]
+- Category: [command (single file, nested) or skill (folder with SKILL.md + references/)]
 ```
 
 ---
@@ -117,7 +102,7 @@ MANDATORY: Before extracting any pattern, load the relevant development skill
 
 MANDATORY: Commands are single-file with folder nesting for /category:command naming
 
-MANDATORY: Skills use folder structure with SKILL.md + optional workflows/ and references/
+MANDATORY: Skills use folder structure with SKILL.md + optional references/ (no workflows/ folder)
 
 MANDATORY: Both are invocable by AI and users based on description and context
 

@@ -1,32 +1,221 @@
 ---
 name: deviation-rules
-description: "Handle unexpected work during execution. Use when encountering bugs, missing features, blockers, or architectural changes while executing a plan. Not for initial planning or non-execution contexts."
-disable-model-invocation: false
-allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
+description: "Handle unexpected work during execution by classifying deviations and applying mechanistic rules. Use when encountering bugs, missing features, blockers, or architectural changes while executing a plan. Includes deviation classification, autonomous resolution rules, and 80-95% autonomy achievement. Not for initial planning, non-execution contexts, or manual decision-making."
 ---
 
-# Deviation Rules Engine
-
 <mission_control>
-<objective>Handle unexpected work during execution with mechanistic decision trees</objective>
-<success_criteria>Deviations handled according to logic trees with full transparency</success_criteria>
+<objective>Handle unexpected work during execution by classifying deviations and applying mechanistic rules for autonomous resolution.</objective>
+<success_criteria>All deviations classified via trigger conditions, mechanistic rule application, 80-95% autonomy</success_criteria>
 </mission_control>
 
-Automatic handling of discovered work during plan execution with clear rules and full transparency.
+<guiding_principles>
 
-## What This Skill Does
+## The Path to High-Autonomy Success
 
-Apply deviation rules when encountering unexpected work during plan execution:
+Mechanistic deviation handling enables 80-95% autonomy because predictable responses to unexpected events build trust between pilot and agent.
 
-1. **Auto-fix bugs** - Fix bugs discovered during implementation
-2. **Add missing critical** - Add critical functionality that was overlooked
-3. **Fix blockers** - Resolve blocking issues preventing completion
-4. **Ask about architectural changes** - Stop and ask for major structural changes
-5. **Log enhancements** - Log non-critical improvements for later
+**1. Classification-first clarity preserves momentum**
 
-**Key Innovation**: Handle real-world complexity automatically while maintaining full transparency.
+When unexpected work appears, classify it immediately by type and impact. Clear categorization (Bug/Missing Critical/Blocker/Architecture/Enhancement) reveals the appropriate response without requiring consultation. This preserves execution flow because the agent knows exactly what to do in each case.
 
-## Logic Trees: Mechanistic Decision Making
+**2. Trigger-based mechanistic rules enable autonomy**
+
+Using test conditions (logic errors, unambiguous fixes, structural changes) transforms subjective judgment into objective classification. The agent applies rules based on deviation properties, not interpretation. This works because trigger conditions map directly to actions: auto-fix bugs, add missing essentials, fix blockers, ask for architectural changes, log enhancements.
+
+**3. Documentation creates transparency and trust**
+
+Every deviation gets logged to SUMMARY.md with explanation of what was done and why. The user sees the complete picture of planned vs actual work, building confidence in autonomous execution. Documentation prevents "silent deviations" where work happens without visibility.
+
+**4. Conservative architectural boundaries prevent overreach**
+
+Only trigger user consultation for structural changes (file/folder reorganization, component additions, schema modifications). This design works because architectural decisions have lasting impact and multiple valid approaches. Being conservative here prevents the agent from making far-reaching changes without explicit approval.
+
+**5. Generous handling of missing essentials ensures completeness**
+
+When functionality is clearly essential and was simply overlooked, add it without asking. Error handling, input validation, and debugging support are completeness enablers, not scope creep. This principle works because the implementation becomes functional rather than requiring a second pass for basics.
+
+**6. Enhancement logging prevents scope drift**
+
+Valuable but non-critical improvements get logged for later consideration. This acknowledges good ideas without derailing current work. The pattern works because it respects the plan while capturing insights for future iterations.
+
+**Why this leads to success**: 80-95% autonomy emerges from clear rules for common situations. The agent handles routine deviations independently, consults only for true architectural decisions, and documents everything for transparency. The user gets high completion rates with full visibility into what changed and why.
+</guiding_principles>
+
+## Workflow
+
+**Rule 1: Bug** → Logic/syntax error with unambiguous fix → Auto-fix
+
+**Rule 2: Missing Critical** → Essential functionality missing → Add it
+
+**Rule 3: Blocker** → Blocking issue → Fix immediately
+
+**Rule 4: Architecture** → File/folder structure change → STOP, ask user
+
+**Rule 5: Enhancement** → Nice-to-have → Log for later
+
+**Why:** Mechanistic rules enable 80-95% autonomy—deviations are classified and resolved without asking.
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Tracking**: Maintain a visible task list for deviation classification
+- **Consultation**: Consult the user with options when deviation type is unclear
+- **Delegation**: Route to specialized workers based on deviation classification
+
+## Navigation
+
+| If you need...           | Read...                                |
+| :----------------------- | :------------------------------------- |
+| Bug fix                  | ## Workflow → Rule 1: Bug              |
+| Missing critical feature | ## Workflow → Rule 2: Missing Critical |
+| Blocker resolution       | ## Workflow → Rule 3: Blocker          |
+| Architecture change      | ## Workflow → Rule 4: Architecture     |
+| Enhancement logging      | ## Workflow → Rule 5: Enhancement      |
+| Deviation classification | ## Workflow Decision Tree              |
+
+### What Type of Deviation?
+
+| If you discover...              | Rule                      | Action          |
+| ------------------------------- | ------------------------- | --------------- |
+| Logic/syntax error              | Rule 1 (Bug)              | Auto-fix        |
+| Missing essential functionality | Rule 2 (Missing Critical) | Add             |
+| Blocking issue                  | Rule 3 (Blocker)          | Fix             |
+| File/folder structure change    | Rule 4 (Architecture)     | STOP - Ask user |
+| Nice-to-have improvement        | Rule 5 (Enhancement)      | Log for later   |
+
+## Implementation Patterns
+
+### Pattern 1: Bug Classification
+
+```typescript
+// When you encounter an error during implementation
+function classifyDeviation(issue: unknown): DeviationType {
+  const test = {
+    isLogicError: isLogicError(issue),
+    isSyntaxError: isSyntaxError(issue),
+    fixIsUnambiguous: hasClearSolution(issue),
+    changesArchitecture: affectsStructure(issue),
+  };
+
+  if (test.isLogicError && test.fixIsUnambiguous && !test.changesArchitecture) {
+    return "bug"; // Rule 1: Auto-fix
+  }
+  return "unknown"; // Requires human judgment
+}
+```
+
+### Pattern 2: Missing Critical Classification
+
+```typescript
+function isMissingCritical(issue: Issue): boolean {
+  return {
+    essentialForFunctionality: !issueFeatureExists(),
+    wouldMakeImplementationFail: !issue.wouldCauseFailure(),
+    solutionIsStraightforward: hasClearImplementation(),
+  };
+}
+```
+
+### Pattern 3: Architecture Change Detection
+
+```typescript
+function isArchitectureChange(issue: Issue): boolean {
+  return {
+    changesFileFolderStructure: modifiesStructure(),
+    addsRemovesComponents: changesComponentCount(),
+    changesDataModels: modifiesSchema(),
+  };
+  // If any true → Rule 4: STOP and ask
+}
+```
+
+### Pattern 4: Documenting Deviations
+
+```markdown
+## Deviations Log
+
+### Auto-Fixed Bugs
+
+- MD5 password hashing → Fixed to bcrypt (security fix)
+
+### Added Missing Critical
+
+- No error handling for database → Added error middleware
+
+### Fixed Blockers
+
+- Missing dependency → Installed dependency
+
+### Logged Enhancements
+
+- Code refactoring opportunity (deferred)
+```
+
+## Troubleshooting
+
+### Issue: Wrong Classification
+
+| Symptom                          | Solution                                       |
+| -------------------------------- | ---------------------------------------------- |
+| Treating architectural as bug    | Check: Does this change file/folder structure? |
+| Treating bug as architectural    | Check: Is there a clear, unambiguous fix?      |
+| Treating enhancement as critical | Check: Is this essential for functionality?    |
+
+### Issue: Not Documenting Deviations
+
+| Symptom                          | Solution                                 |
+| -------------------------------- | ---------------------------------------- |
+| Deviations lost in context       | Always document to SUMMARY.md            |
+| User doesn't know what was fixed | Explain WHY each deviation was necessary |
+
+### Issue: Being Too Liberal with Rule 4
+
+| Symptom                               | Solution                                          |
+| ------------------------------------- | ------------------------------------------------- |
+| Asking about every small change       | Only Rule 4 for structural changes                |
+| "When in doubt, ask" becoming default | Rule 4 for structural + multiple valid approaches |
+
+### Issue: Being Too Conservative with Rule 2
+
+| Symptom                              | Solution                      |
+| ------------------------------------ | ----------------------------- |
+| Leaving out essential error handling | Be generous with Rule 2       |
+| "Not in the plan" as excuse          | If clearly overlooked, add it |
+
+## workflows
+
+### When Unexpected Work Appears
+
+1. **Classify** → What type of deviation? (Bug/Missing/Blocker/Architecture/Enhancement)
+2. **Apply Rules** → Execute based on trigger conditions
+3. **Document** → Log to SUMMARY.md with explanation
+4. **Continue** → Return to planned work (or wait for Rule 4)
+
+### Example Execution Flow
+
+```typescript
+// Original Plan: Add JWT authentication
+const deviation = discoverIssue("MD5 password hashing");
+
+if (isBug(deviation)) {
+  // Rule 1: Auto-fix
+  fixToBcrypt();
+  document("Fixed insecure MD5 hashing");
+}
+
+if (isMissingCritical(deviation)) {
+  // Rule 2: Add
+  addErrorHandling();
+  document("Added error handling for database operations");
+}
+
+if (isArchitectureChange(deviation)) {
+  // Rule 4: STOP
+  askUser("Current data model doesn't support settings");
+  return; // Wait for decision
+}
+```
 
 <deviation_logic>
 <trigger condition="bug">
@@ -329,71 +518,9 @@ Before applying any rule, ask:
 - Consider team practices and standards
 - Consider long-term maintenance impact
 
-## Common Mistakes
-
-**❌ Wrong**: Treating every unexpected item as architectural (Rule 4)
-**✅ Correct**: Only Rule 4 for structural changes with multiple valid approaches
-
-**❌ Wrong**: Ignoring enhancements because they're not in the plan
-**✅ Correct**: Log enhancements (Rule 5) for future consideration
-
-**❌ Wrong**: Not documenting deviations
-**✅ Correct**: Always document to SUMMARY.md for transparency
-
-**❌ Wrong**: Making architectural assumptions without asking
-**✅ Correct**: Rule 4 triggers user consultation for architecture decisions
-
-## Integration with Planning
-
-## Related Skills
-
-This skill integrates with:
-
-- `engineering-lifecycle` - Test-driven development with deviation handling
-- `invocable-development` - Component creation with automatic fixes
-- `/orchestrate` - Native orchestration with deviation rules
-
 ## Arguments
 
 This skill is loaded automatically during plan execution. No direct invocation needed.
-
-**Manual invocation** (for reference/testing):
-
-```
-Skill: deviation-rules
-Args: [deviation description] [rule to apply]
-```
-
-## Example Use Cases
-
-### Use Case 1: API Development
-
-```
-Plan: "Add user profile endpoint"
-Deviation 1: No input validation → Rule 2 (add validation)
-Deviation 2: Database query vulnerable to SQL injection → Rule 1 (fix bug)
-Deviation 3: Response format inconsistent → Rule 4 (ask about standard)
-```
-
-### Use Case 2: Frontend Component
-
-```
-Plan: "Create dashboard widget"
-Deviation 1: Missing loading state → Rule 2 (add critical)
-Deviation 2: Could use animations → Rule 5 (log enhancement)
-Deviation 3: Color system doesn't support theme → Rule 4 (ask about theming)
-```
-
-### Use Case 3: Infrastructure
-
-```
-Plan: "Set up CI/CD pipeline"
-Deviation 1: Docker build fails → Rule 3 (fix blocker)
-Deviation 2: No test coverage reporting → Rule 2 (add critical)
-Deviation 3: Could add deployment previews → Rule 5 (log enhancement)
-```
-
-**Trust intelligence** - Deviation rules enable automatic handling of real-world complexity while maintaining transparency and architectural integrity.
 
 ---
 
@@ -402,14 +529,7 @@ Deviation 3: Could add deployment previews → Rule 5 (log enhancement)
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
+**Portability Invariant**: This skill MUST work in a project containing ZERO `.claude/rules/` files. All necessary behavioral guidance is contained within this SKILL.md.
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -418,42 +538,4 @@ No exceptions. Portability invariant must be maintained.
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
-<critical_constraint>
-**MANDATORY: Use `<trigger>` logic trees for decisions**
-
-- Classify deviation type using trigger conditions
-- Apply mechanistic rules based on trigger
-- Never make interpretive decisions
-- Follow decision flow exactly
-
-**MANDATORY: Document every deviation**
-
-- Auto-fixes: Log bug and fix applied
-- Additions: Log what was added and why
-- Architectural: Document user decision
-- Enhancements: Log for later consideration
-
-**MANDATORY: Be conservative with architectural triggers**
-
-- Only use Rule 4 for structural changes
-- Multiple valid approaches = ask user
-- When in doubt, ask rather than assume
-- Never change architecture without explicit approval
-
-**MANDATORY: Be generous with missing critical**
-
-- Err on side of completeness
-- Add what's clearly overlooked
-- Don't ask for obvious essentials
-- Implementation must be functional
-
-**MANDATORY: Stop and ask for architectural changes**
-
-- File/folder structure changes
-- Major component additions/removals
-- Data model or schema changes
-- Pattern or framework changes
-
-**No exceptions. Logic trees make decisions mechanistic, not interpretive.**
-</critical_constraint>
+  </critical_constraint>

@@ -3,21 +3,22 @@
 Prompt patterns for improving existing research or plan outputs based on feedback.
 
 <prompt_template>
+
 ```xml
 
 ## Objective
 
 Refine {topic}-{original_purpose} based on feedback.
 
-Target: @.prompts/{num}-{topic}-{original_purpose}/{topic}-{original_purpose}.md
-Current summary: @.prompts/{num}-{topic}-{original_purpose}/SUMMARY.md
+Target: [prompt-file]
+Current summary: [summary-file]
 
 Purpose: {What improvement is needed}
 Output: Updated {topic}-{original_purpose}.md with improvements
 
 ## Context
 
-Original output: @.prompts/{num}-{topic}-{original_purpose}/{topic}-{original_purpose}.md
+Original output: [prompt-file]
 
 <feedback>
 {Specific issues to address}
@@ -66,11 +67,12 @@ For Refine, always include:
 
 <preserve_context>
 Refine builds on existing work, not replaces it:
+
 ```xml
 
 ## Context
 
-Original output: @.prompts/001-auth-research/auth-research.md
+Original output: [output-file]
 
 Key strengths to preserve:
 - Library comparison structure
@@ -81,6 +83,7 @@ Key strengths to preserve:
 
 <specific_feedback>
 Feedback must be actionable:
+
 ```xml
 <feedback>
 Issues to address:
@@ -96,6 +99,7 @@ Do NOT change:
 
 <version_tracking>
 Archive before overwriting:
+
 ```xml
 
 ## Output
@@ -117,7 +121,7 @@ When research was too surface-level:
 
 Refine auth-research based on feedback.
 
-Target: @.prompts/001-auth-research/auth-research.md
+Target: [target-file]
 
 <feedback>
 - Security analysis too shallow - need specific vulnerability patterns
@@ -147,7 +151,7 @@ When research missed important areas:
 
 Refine stripe-research to include webhooks.
 
-Target: @.prompts/005-stripe-research/stripe-research.md
+Target: [target-file]
 
 <feedback>
 - Webhooks section completely missing
@@ -177,7 +181,7 @@ When plan needs adjustment:
 
 Refine auth-plan to add rate limiting phase.
 
-Target: @.prompts/002-auth-plan/auth-plan.md
+Target: [target-file]
 
 <feedback>
 - Rate limiting was deferred but is critical for production
@@ -206,7 +210,7 @@ When output has factual errors:
 
 Refine jwt-research to correct library recommendation.
 
-Target: @.prompts/003-jwt-research/jwt-research.md
+Target: [target-file]
 
 <feedback>
 - jsonwebtoken recommendation is outdated
@@ -246,6 +250,7 @@ Refine prompts get their own folder (new number), but output goes to the origina
 ```
 
 This maintains:
+
 - Clear prompt history (each prompt is numbered)
 - Single source of truth for each output
 - Visible iteration count in SUMMARY.md
@@ -254,6 +259,7 @@ This maintains:
 
 <dependency_handling>
 Refine prompts depend on the target output existing:
+
 - Check target file exists before execution
 - If target folder missing, offer to create the original prompt first
 
@@ -267,6 +273,7 @@ If `.prompts/{num}-{topic}-{original_purpose}/{topic}-{original_purpose}.md` not
 
 <archive_creation>
 Before overwriting, ensure archive exists:
+
 ```bash
 mkdir -p .prompts/{num}-{topic}-{original_purpose}/archive/
 mv .prompts/{num}-{topic}-{original_purpose}/{topic}-{original_purpose}.md \
@@ -275,6 +282,7 @@ mv .prompts/{num}-{topic}-{original_purpose}/{topic}-{original_purpose}.md \
 
 <summary_update>
 SUMMARY.md must reflect the refinement:
+
 - Update version number
 - Add "Changes from Previous" section
 - Update one-liner if findings changed

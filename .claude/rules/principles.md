@@ -58,11 +58,7 @@ Think of this as a Senior Architect leaving guidance for a Senior Engineer. Thes
 
 ## Invariants: The Boundaries of Freedom
 
-<critical_constraint>
-**Define Invariants, Not Instructions.**
-
-Tell the Agent what the output must always be. Trust it to determine how to get there.
-</critical_constraint>
+**Define Invariants, Not Instructions:** Tell the Agent what the output must always be. Trust it to determine how to get there.
 
 ### The Freedom Spectrum
 
@@ -78,33 +74,103 @@ Tell the Agent what the output must always be. Trust it to determine how to get 
 
 ## The Skill-First Doctrine
 
-<critical_constraint>
-**ALWAYS check for a skill before implementing.**
-</critical_constraint>
+Skills contain accumulated wisdom from previous sessions. Before starting work, ask: Does a skill already exist for this pattern? The skill system preserves what sessions learn—invoke it before reinventing.
 
-**The Protocol:**
+**Recognition question:** "Would this knowledge already be documented in a skill?"
 
-1. **Search**: `ls .claude/skills`
-2. **Read**: `view_file .claude/skills/SKILL/SKILL.md`
-3. **Execute**: Follow the skill's instructions exactly
+---
 
-**Why**: Skills contain the "Genetic Code" - the condensed wisdom of previous sessions. Ignoring them leads to regression.
+## Native Interface: Semantic Tool Patterns
+
+Components describe behavioral intent through semantic directives. The System Prompt maps these to appropriate native tools at runtime.
+
+### Semantic Directive Reference
+
+| Semantic Directive               | Maps To Native           | Purpose                           |
+| -------------------------------- | ------------------------ | --------------------------------- |
+| "Consult the user"               | AskUserQuestion          | Present recognition-based options |
+| "Request confirmation"           | AskUserQuestion          | Confirm before proceeding         |
+| "Maintain a visible task list"   | TodoWrite                | Track progress explicitly         |
+| "Track progress"                 | TodoWrite                | Session persistence               |
+| "Delegate to specialized worker" | Task()                   | Spawn isolated context            |
+| "Spawn isolated context"         | Task()                   | Fork for isolation                |
+| "Locate files matching patterns" | Glob                     | Pattern-based discovery           |
+| "Search file contents"           | Grep                     | Content pattern matching          |
+| "Examine file contents"          | Read                     | File content inspection           |
+| "Navigate code structure"        | LSP                      | TypeScript navigation             |
+| "Execute system commands"        | Bash                     | Shell command execution           |
+| "Switch to planning mode"        | EnterPlanMode            | Architectural mode                |
+| "Return to execution mode"       | ExitPlanMode             | Resume implementation             |
+| "Fetch web content"              | WebFetch                 | URL retrieval                     |
+| "Search the web"                 | WebSearch                | Web queries                       |
+| "Verify code quality"            | mcp**ide**getDiagnostics | Type/lint checking                |
+
+### Usage Pattern
+
+Skills describe WHAT they do semantically. The System Prompt handles HOW:
+
+```
+Delegation: "Delegate to specialized workers for complex analysis"
+Tracking: "Maintain a visible task list throughout execution"
+Discovery: "Locate files matching patterns and search file contents"
+```
+
+Use native tools to fulfill semantic directives. Trust the System Prompt to select the correct implementation.
+
+### Command vs Skill Syntax
+
+Commands can use Claude-specific tool syntax. Skills use semantic patterns for portability.
+
+| Component    | Pattern                               | Rationale                                                  |
+| ------------ | ------------------------------------- | ---------------------------------------------------------- |
+| **Commands** | Claude-specific tool invocations      | Commands are Claude infrastructure, always loaded together |
+| **Skills**   | Semantic delegation ("Delegate to X") | Must work standalone in forked contexts                    |
+| **Agents**   | Philosophy only, no Task() calls      | Agents provide context, not invocation patterns            |
+
+**Rule**: Skills describe WHAT semantically. Commands describe HOW specifically. Agents provide philosophy without delegation patterns.
+
+---
+
+### Agent Recursion Prohibition
+
+Agents must NOT spawn other agents. This pattern doesn't work reliably.
+
+| Pattern                              | Status    |
+| ------------------------------------ | --------- |
+| Agent → Task(subagent_type="...")    | Forbidden |
+| Agent → Delegate to specialist       | Forbidden |
+| Agent → Provide philosophy + context | Required  |
+
+**Why**: Recursive agent spawning fails. Native Task() handles delegation—agents should not duplicate this. Agents provide philosophy for context forks, then exit.
+
+**Recognition**: "Does this agent spawn another agent?" → Refactor to provide philosophy only.
+
+---
+
+### Command Dual-Mode Pattern
+
+Commands can operate in two modes based on arguments:
+
+| Mode         | Behavior                                                            | Example                                              |
+| ------------ | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Implicit** | Infer from conversation context when no explicit arguments provided | `/handoff:resume` → scans handoffs directory         |
+| **Explicit** | Use user-provided content when arguments specified                  | `/handoff:resume session-x` → loads specific session |
+
+**Rationale:** Zero-argument commands feel more natural; explicit arguments remain available for precise control.
+
+**Pattern:**
+
+```markdown
+$IF($1, Use the provided argument, Scan conversation for context and infer intent)
+```
 
 ---
 
 ## Deprecation Awareness
 
-<critical_constraint>
-**ALWAYS check for library deprecations before implementation.**
-</critical_constraint>
+Legacy code drifts toward obsolescence. When implementing, check whether the chosen library or pattern remains current. Modern alternatives typically offer better support, security, and community knowledge.
 
-**The Protocol:**
-
-1. **Check**: Run `npm view package time` or check docs
-2. **Verify**: If using standard libraries, check for `@deprecated` tags
-3. **Modernize**: Prefer the stable, modern alternative over the legacy easy path
-
-**Why**: Legacy code drifts. Modern code stays relevant longer.
+**Recognition question:** "Am I using the current, supported approach or a pattern that may have been superseded?"
 
 ---
 
@@ -118,7 +184,7 @@ When writing rules, explain the **rationale**—the Agent can then adapt that lo
 
 **High Trust (Why included):**
 
-- "Use third-person in descriptions to ensure the auto-discovery engine matches user intent reliably."
+- "Use infinitive voice in descriptions (bare infinitive, no 'you') to ensure the auto-discovery engine matches user intent reliably."
 
 **Result:** The Agent doesn't just follow the rule—it understands the principle and can apply it to new scenarios.
 
@@ -128,14 +194,14 @@ When writing rules, explain the **rationale**—the Agent can then adapt that lo
 
 ### The Infinitive Voice
 
-**Use the imperative/infinitive form (bare infinitive):**
+**Use the imperative/infinitive form (bare infinitive) for descriptions:**
 
 ```
 ✅ Correct:
 - "Validate inputs before processing."
 - "Create the skill directory and SKILL.md file."
-- "Use third-person in descriptions."
-- "Carry genetic code for context: fork isolation."
+- "Build portable commands for reusable capabilities."
+- "Apply TypeScript conventions for type safety."
 
 ❌ Incorrect:
 - "You should validate inputs..."
@@ -143,7 +209,11 @@ When writing rules, explain the **rationale**—the Agent can then adapt that lo
 - "The skill is for another Claude instance..."
 ```
 
-**Why:** The infinitive form becomes a direct extension of the Agent's internal logic, reducing "persona friction."
+**Why:** The infinitive form becomes a direct extension of the Agent's internal logic, reducing "persona friction." This is the standard "third-person" voice used in component descriptions (What-When-Not-Includes format).
+
+### Frontmatter Description Format
+
+**Component structure and frontmatter format**: See `architecture.md:103-130` for complete documentation. What-When-Not-Includes format, frontmatter requirements, and anti-patterns.
 
 ### Natural Teaching Language
 
@@ -302,15 +372,13 @@ READ THIS FILE COMPLETELY. DO NOT SKIP. DO NOT SKIM.
 This reference contains working examples of every pattern.
 ```
 
-### When to Use Each Level
+### Recognition Question
 
-1. **Can the task succeed without this?**
-   - Yes → Soft reference
-   - No → Continue to 2
+"Can the task succeed without this reference?"
 
-2. **All uses or specific tasks?**
-   - All uses → Critical reference
-   - Specific tasks → Hard reference
+- No, universal requirement → Critical level
+- No, specific workflow → Hard level
+- Yes, nice-to-have → Soft level
 
 ---
 
@@ -361,33 +429,7 @@ Only document the knowledge delta—what Claude wouldn't already have.
 
 ---
 
-## Progressive Disclosure: Respect the Context Window
-
-Think of the Map as having layers. Not every piece of information belongs in the main file.
-
-**CRITICAL**: Progressive disclosure applies ONLY to `.claude/skills/` - NOT to commands, agents, hooks, or MCP servers.
-
-| Layer      | Content                                         | Tokens        | Guideline                               |
-| ---------- | ----------------------------------------------- | ------------- | --------------------------------------- |
-| **Tier 1** | YAML metadata (What-When-Not)                   | ~100          | Always                                  |
-| **Tier 2** | SKILL.md - full philosophy, patterns, workflows | 1.5k-2k words | Target ~500 lines, flexible for context |
-| **Tier 3** | references/ - ultra-situational lookup material | Unlimited     | 2-3 files (rule of thumb)               |
-
-**Principle**: Tier 2 contains the FULL philosophy and context. Tier 3 is ONLY for ultra-situational information that AI would need to look up (API specs, code examples, detailed troubleshooting).
-
-**Key clarifications**:
-
-- **~500 lines is a rule of thumb**, NOT enforced against contextualization and readability
-- **Full philosophy in SKILL.md** - Delegation patterns, TDD requirements, domain knowledge belong in Tier 2
-- **References/ for ultra-situational info only** - Things you'd grep/search for when needed
-- **Each reference must have "Use when" context** - Clear trigger without spoiling content
-- **2-3 reference files is typical** - Big libraries/APIs can have more, but prefer fewer
-
-### How to Progressive Disclose
-
-- **Tier 2 (SKILL.md)**: Core concepts, philosophy, main workflows, key patterns, complete examples
-- **Tier 3 (references/)**: API specifications, lookup tables, code snippets, edge case details
-- **Navigation**: "If you need... Read..." table pattern
+**Progressive Disclosure**: See `architecture.md:262-301` for complete documentation. Tier 1 (YAML), Tier 2 (SKILL.md), Tier 3 (references/).
 
 ### Recognition Questions
 
@@ -395,16 +437,11 @@ Think of the Map as having layers. Not every piece of information belongs in the
 - "Is this general philosophy/context?" (delegation, TDD) → SKILL.md
 - "Would AI need this every time?" → SKILL.md
 - "Would AI only need this occasionally?" → references/
+- **"Am I summarizing reference content in SKILL.md navigation?"** → DELETE (use blind pointer instead)
 
 ---
 
 ## Recency Bias: The Final Token Rule
-
-<critical_constraint>
-**Place all constraint-related content at the very bottom of files.**
-
-Models attend more strongly to recent tokens during generation.
-</critical_constraint>
 
 **File Structure:**
 
@@ -418,13 +455,15 @@ Models attend more strongly to recent tokens during generation.
 
 ## The Genetic Code: Self-Contained Philosophy
 
-Every component must carry its own "genetic code"—condensed principles that allow it to work in isolation.
+Every portable component must carry its own "genetic code"—condensed principles that allow it to work in isolation.
 
-<critical_constraint>
-**Portability Invariant: Zero External Dependencies**
+**Scope clarification:**
 
-Every component MUST work in a project with ZERO `.claude/rules/` access.
-</critical_constraint>
+| File Type                      | Can Reference Paths? | Reason                                          |
+| ------------------------------ | -------------------- | ----------------------------------------------- |
+| Rules files (`.claude/rules/`) | YES                  | Source of truth, not forked                     |
+| CLAUDE.md                      | YES                  | Project-specific configuration                  |
+| Skills/Commands/Agents         | NO                   | Portable components, forked into other projects |
 
 ### What Genetic Code Contains
 
@@ -437,7 +476,8 @@ Every component MUST work in a project with ZERO `.claude/rules/` access.
 
 - **Skills**: In the SKILL.md footer, before final `<critical_constraint>`
 - **Commands**: In the command body, injected during creation via template
-- **Referenced**: Point to `invocable-development/references/genetic-code-template.md`
+
+Genetic code is now self-contained in each skill's SKILL.md—no external reference files needed.
 
 ---
 
@@ -463,7 +503,7 @@ Key invariants:
 - Progressive disclosure (core in SKILL.md, details in references/)
 - UHP structure (XML for control, Markdown for data)
 
-For pattern library, see references/advanced-techniques.md.
+For pattern library, see `skill-authoring/SKILL.md` and `command-authoring/SKILL.md`.
 ```
 
 ### Why High Trust Works
@@ -475,13 +515,35 @@ For pattern library, see references/advanced-techniques.md.
 
 ---
 
+## Token Efficiency: No Cross-References Between CLAUDE.md and Rules
+
+Both CLAUDE.md and `.claude/rules/` are loaded together at session start. Internal references between them waste tokens and create maintenance burden.
+
+**What this means:**
+
+| Pattern                                              | Action                             |
+| ---------------------------------------------------- | ---------------------------------- |
+| CLAUDE.md mentions "See .claude/rules/principles.md" | Remove - both files already loaded |
+| rules/principles.md mentions "As CLAUDE.md states"   | Remove - both files already loaded |
+| Reference the same concept                           | Consolidate to single source       |
+
+**Rationale:**
+
+- **Token waste**: If both files are in context, referencing one from the other adds no value
+- **Maintenance burden**: Changes require updating multiple files
+- **Definition of scope**: CLAUDE.md is project-specific; rules/ is universal philosophy
+
+**Exception:** References from skills/commands to rules/ are fine—those components aren't loaded with rules automatically.
+
+---
+
 ## Summary: The Pilot's Code
 
 | Principle                  | Application                                                    |
 | -------------------------- | -------------------------------------------------------------- |
 | **Map, not Script**        | Provide boundaries and invariants; trust the Pilot to navigate |
 | **Explain the Why**        | Rationale enables adaptation to edge cases                     |
-| **Infinitive Voice**       | "Validate," "Create," "Carry"—not "You should"                 |
+| **Infinitive Voice**       | "Validate," "Create," "Build"—not "You should"                 |
 | **Natural Teaching**       | "Remember that...", "Think of this as..."                      |
 | **Progressive Disclosure** | Tier 2 lean, Tier 3 deep                                       |
 | **Recency Bias**           | Constraints at bottom of files                                 |
@@ -490,11 +552,9 @@ For pattern library, see references/advanced-techniques.md.
 ---
 
 <critical_constraint>
-MANDATORY: Provide Map, not Script—trust the Pilot's intelligence
-MANDATORY: Explain the Why—enable adaptation to edge cases
-MANDATORY: Use infiniitive voice—reduce persona friction
-MANDATORY: Carry genetic code—ensure portability in isolation
-MANDATORY: Place constraints at bottom—exploit recency bias
-MANDATORY: Start with high freedom—constrain only when justified
-No exceptions. Principles enable intelligent adaptation; recipes create brittleness.
-</critical_constraint>
+**The Pilot's Physics:**
+
+1. Zero external dependencies for portable components
+2. No cross-references between CLAUDE.md and `.claude/rules/`
+3. Verification evidence required for completion claims
+   </critical_constraint>

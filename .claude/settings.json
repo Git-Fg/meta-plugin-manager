@@ -13,7 +13,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session-start.sh",
-            "description": "Inject native tool discipline into session context"
+            "description": "Inject native tool discipline into session context",
+            "timeout": 30
           }
         ]
       }
@@ -29,26 +30,15 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/prettier-hook.sh",
-            "description": "Hook d'hygiène: Formate automatiquement les fichiers .ts et .md avec Prettier après chaque écriture (message discret: [Document auto-formatted])"
-          }
-        ]
-      }
-    ],
     "SessionEnd": [
       {
         "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session-end.sh \"$CLAUDE_TRANSCRIPT_PATH\"",
-            "description": "Save raw transcript for post-mortem analysis by ops/reflect-and-patch skill"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/session-end.sh",
+            "description": "Archive stripped transcript to session directory for post-mortem analysis",
+            "timeout": 60
           }
         ]
       }

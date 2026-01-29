@@ -1,7 +1,41 @@
 ---
 name: swot-analysis
-description: "Analyze Strengths, Weaknesses, Opportunities, and Threats when you need to make strategic decisions, evaluate positions, or plan initiatives. Not for simple technical choices, debugging, or tactical execution."
+description: "Analyze Strengths, Weaknesses, Opportunities, and Threats for strategic decision-making. Use when making strategic decisions, evaluating positions, or planning initiatives. Includes quadrant analysis, internal/external factor identification, and action item derivation. Not for simple technical choices, debugging, or tactical execution."
 ---
+
+<mission_control>
+<objective>Analyze internal Strengths/Weaknesses and external Opportunities/Threats for strategic decision-making.</objective>
+<success_criteria>All four quadrants populated, strategic insights derived, action items identified</success_criteria>
+</mission_control>
+
+<guiding_principles>
+
+## The Path to Strategic Clarity
+
+### 1. Four Dimensions Reveal Hidden Connections
+
+Linear thinking misses strategic relationships. Mapping factors across Strengths, Weaknesses, Opportunities, and Threats reveals connections invisible to single-variable analysis. **Why**: Complete strategic awareness requires seeing internal capabilities alongside external realities—each quadrant illuminates the others.
+
+### 2. Specificity Fuels Actionable Strategy
+
+Vague factors ("good team") produce vague strategies. Specific, evidence-based factors ("team has 5 years React experience") enable precise action planning. **Why**: Strategy requires concrete footing—you can't leverage or address what you can't see clearly.
+
+### 3. Internal/External Distinction Enables Control
+
+Distinguishing what you control (S/W) from what you don't (O/T) clarifies strategic agency. Focus resources on leveraging strengths and addressing weaknesses; position for opportunities and defend against threats. **Why**: Strategic power comes from knowing what you can change versus what you must navigate.
+
+### 4. Strategy Emerges from Quadrant Intersections
+
+The real value lies in combining quadrants: SO (leverage strengths for opportunities), ST (use strengths against threats), WO (overcome weaknesses for opportunities), WT (minimize weaknesses to avoid threats). **Why**: Strategic thinking is inherently multidimensional—isolated factors inform; combined factors guide action.
+
+### 5. Prioritization Prevents Analysis Paralysis
+
+Not all factors matter equally. Prioritize by impact and feasibility to focus on what moves the needle. **Why**: Unlimited analysis capacity doesn't exist—strategic clarity comes from distinguishing critical from trivial.
+
+### 6. Honest Assessment Enables Real Strategy
+
+Overoptimism about strengths or minimizing weaknesses produces fantasy, not strategy. Honest assessment of all four quadrants—especially weaknesses and threats—creates realistic strategic foundations. **Why**: Strategy based on false assumptions fails when reality intrudes.
+</guiding_principles>
 
 # SWOT Analysis
 
@@ -19,17 +53,130 @@ Apply SWOT analysis by:
 
 **Key Innovation**: Mapping factors across four dimensions reveals strategic connections and action items that aren't obvious from linear thinking.
 
-## When to Use
+## Workflow
 
-Use this strategic framework when:
+**Strengths:** What internal factors work in your favor?
 
-- Making strategic decisions
-- Evaluating competitive position
-- Planning projects or initiatives
-- Assessing team or organization capabilities
-- Facing complex decisions with multiple factors
+**Weaknesses:** What internal factors work against you?
 
-**Recognition test:** "Is this a strategic decision with multiple factors?" If yes, map the situation.
+**Opportunities:** What external factors could help?
+
+**Threats:** What external factors could hurt?
+
+**Why:** Four-dimensional analysis reveals strategic connections invisible to linear thinking—maps complete position.
+
+## Navigation
+
+| If you need...         | Read...                     |
+| :--------------------- | :-------------------------- |
+| Analyze strengths      | ## Workflow → Strengths     |
+| Analyze weaknesses     | ## Workflow → Weaknesses    |
+| Identify opportunities | ## Workflow → Opportunities |
+| Identify threats       | ## Workflow → Threats       |
+| Core pattern           | ## Core Pattern             |
+| Strategic insights     | ## Implementation Patterns  |
+
+## Operational Patterns
+
+- **Tracking**: Maintain a visible task list for SWOT analysis
+- **Management**: Manage task lifecycle for action item derivation
+
+## Implementation Patterns
+
+### Pattern 1: SWOT Mapping
+
+```typescript
+interface SWOT {
+  strengths: string[]; // Internal advantages
+  weaknesses: string[]; // Internal limitations
+  opportunities: string[]; // External possibilities
+  threats: string[]; // External risks
+}
+
+function analyzeSWOT(context: AnalysisContext): SWOT {
+  return {
+    strengths: analyzeInternal("advantage"),
+    weaknesses: analyzeInternal("limitation"),
+    opportunities: analyzeExternal("possibility"),
+    threats: analyzeExternal("risk"),
+  };
+}
+```
+
+### Pattern 2: Prioritization Matrix
+
+```typescript
+// Prioritize based on impact and actionability
+function prioritizeSWOT(swot: SWOT): PrioritizedSWOT {
+  return {
+    criticalStrengths: swot.strengths.filter((s) => s.impact > 0.8),
+    keyWeaknesses: swot.weaknesses.filter((w) => w.impact > 0.6),
+    topOpportunities: swot.opportunities.filter((o) => o.feasibility > 0.7),
+    urgentThreats: swot.threats.filter((t) => t.likelihood > 0.7),
+  };
+}
+```
+
+### Pattern 3: Strategic Actions
+
+```typescript
+// Derive actions from SWOT
+function deriveActions(swot: SWOT): StrategicAction[] {
+  return [
+    // Leverage strengths
+    ...swot.strengths.map((s) => ({
+      type: "leverage",
+      source: s,
+      action: `Use ${s} to capture opportunity`,
+    })),
+    // Address weaknesses
+    ...swot.weaknesses.map((w) => ({
+      type: "mitigate",
+      source: w,
+      action: `Fix ${w} to reduce threat`,
+    })),
+  ];
+}
+```
+
+## Troubleshooting
+
+### Issue: Confusing Internal/External
+
+| Symptom                                | Solution            |
+| -------------------------------------- | ------------------- |
+| "Our team is small" - weakness         | Internal (weakness) |
+| "Competitor launched feature" - threat | External (threat)   |
+
+### Issue: Too Generic
+
+| Symptom                        | Solution                                         |
+| ------------------------------ | ------------------------------------------------ |
+| "Good team" as strength        | Be specific: "Team has 5 years React experience" |
+| "Competition exists" as threat | Be specific: "Competitor X has 70% market share" |
+
+### Issue: Not Actionable
+
+| Symptom                  | Solution                     |
+| ------------------------ | ---------------------------- |
+| Listed but no priorities | Use prioritization matrix    |
+| No strategic actions     | Derive actions from analysis |
+
+### Issue: Missing Dimension
+
+| Symptom                       | Solution                               |
+| ----------------------------- | -------------------------------------- |
+| Only strengths and weaknesses | Don't forget opportunities and threats |
+| All items in one category     | Distinguish all four dimensions        |
+
+## workflows
+
+### Strategic Decision Process
+
+1. **ANALYZE** → Map all four SWOT dimensions
+2. **PRIORITIZE** → Focus on critical/key/top/urgent items
+3. **DERIVE ACTIONS** → What should we do?
+4. **SET STRATEGY** → Based on analysis
 
 ## The Four Dimensions
 
@@ -300,34 +447,6 @@ For deeper analysis, consider all four strategic combinations:
 
 ---
 
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----
-
-<critical_constraint>
-MANDATORY: Use specific, evidence-based factors (not vague claims)
-MANDATORY: Distinguish internal (S/W) from external (O/T) factors
-MANDATORY: Develop actionable strategies (SO, ST, WO, WT combinations)
-MANDATORY: Prioritize factors by impact and feasibility
-No exceptions. SWOT without strategies is just a list.
+Portability invariant: This component works standalone (zero external dependencies).
 </critical_constraint>

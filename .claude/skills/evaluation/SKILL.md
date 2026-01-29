@@ -1,322 +1,153 @@
 ---
 name: evaluation
-description: "Evaluate agent systems with quality gates and LLM-as-judge. Use when you need to measure component quality or implement quality gates. Not for simple unit testing or binary pass/fail checks without nuance."
+description: "Evaluate agent systems with quality gates and LLM-as-judge pattern. Use when measuring component quality, implementing quality gates, or scoring system outputs. Includes multi-dimensional rubrics, nuanced quality assessment, and improvement recommendations. Not for simple unit testing, binary pass/fail checks, or manual review without automation."
 ---
 
-# Evaluation Methods for Agent Systems
-
 <mission_control>
-<objective>Build quality gates and measure component quality using outcome-focused evaluation that accounts for non-determinism and multiple valid paths</objective>
-<success_criteria>Multi-dimensional rubric implemented with weighted scoring, evidence requirements, and threshold-based quality gates</success_criteria>
+<objective>Evaluate agent systems using multi-dimensional rubrics and LLM-as-judge pattern for nuanced quality measurement.</objective>
+<success_criteria>Quality gates passed, rubric scores documented, improvement recommendations provided</success_criteria>
 </mission_control>
 
-<trigger>When building quality gates, measuring component quality, or implementing LLM-as-judge. Not for: Simple unit testing or binary pass/fail checks without nuance.</trigger>
+<guiding_principles>
 
-<interaction_schema>
-DEFINE_RUBRIC → BUILD_TEST_SET → IMPLEMENT_EVALUATION → TRACK_METRICS
-</interaction_schema>
+## The Path to High-Quality Evaluation Success
 
-Agent evaluation requires outcome-focused approaches that account for non-determinism and multiple valid paths. A robust framework enables continuous improvement, catches regressions, and validates that context engineering choices achieve intended effects.
+### 1. Multi-Dimensional Assessment Captures True Quality
 
-## Core Concepts
+Quality is composite, not singular. Single metrics (like accuracy alone) miss critical aspects like completeness, portability, and efficiency. Multi-dimensional rubrics with weighted scores provide nuanced assessment that reflects real-world quality.
 
-### The 95% Finding
+**Success pattern**: Design rubrics with 4-6 dimensions covering functional, structural, and performance aspects. Weight dimensions by importance to your use case.
 
-Research on BrowseComp evaluation (which tests browsing agents' ability to locate hard-to-find information) found three factors explain 95% of performance variance:
+### 2. Evidence-Based Assessment Prevents Hallucination
 
-| Factor               | Variance Explained | Implication                       |
-| -------------------- | ------------------ | --------------------------------- |
-| Token usage          | 80%                | More tokens = better performance  |
-| Number of tool calls | ~10%               | More exploration helps            |
-| Model choice         | ~5%                | Better models multiply efficiency |
+Scores without justification are opinions, not measurements. Requiring evidence for each dimension forces objective evaluation and provides audit trails for improvement.
 
-**Critical Insight**: Model upgrades often provide larger gains than doubling token budgets. Claude Sonnet 4.5 > 2× tokens on previous Sonnet.
+**Success pattern**: For every score, document specific evidence: "Portability: 0.8 - Self-contained with zero external dependencies" rather than just "Portability: 0.8".
 
-### Evaluation Challenges
+### 3. LLM-as-Judge Enables Nuanced Automation
 
-**Non-Determinism and Multiple Valid Paths**
+Binary pass/fail cannot capture quality gradients. LLM judges applying structured rubrics automate nuanced assessment while maintaining consistency. Position swapping in pairwise comparisons reduces bias.
 
-- Agents may take different valid paths to goals
-- Traditional evaluations checking specific steps fail
-- Solution: Outcome-focused evaluation judging results, not paths
+**Success pattern**: Implement judge prompts with clear rubric dimensions, scoring scales, and evidence requirements. Use position swapping when comparing outputs.
 
-**Context-Dependent Failures**
+### 4. Quality Gates Enable Confident Progression
 
-- Success on simple queries ≠ success on complex ones
-- Failures emerge only after extended interaction
-- Solution: Test across complexity levels, include extended interactions
+Thresholds block substandard work while allowing valid variation. Production gates (≥0.7) ensure baseline quality, while experimental gates (≥0.6) permit innovation with guardrails.
 
-**Composite Quality Dimensions**
+**Success pattern**: Set thresholds based on risk tolerance. Track scores over time to detect regressions before they reach production.
 
-- Agent quality is multi-dimensional
-- Includes: factual accuracy, completeness, coherence, tool efficiency
-- Solution: Multi-dimensional rubrics with appropriate weighting
+### 5. Outcome-Focused Evaluation Accepts Multiple Paths
 
-## Evaluation Framework
+Valid solutions take different routes. Judging specific implementation steps fails valid alternatives. Evaluating outcomes rather than paths preserves creativity while ensuring quality.
 
-### Multi-Dimensional Rubrics
+**Success pattern**: Define rubrics around results (correctness, completeness, efficiency) rather than methods (specific functions, tools, or approaches).
 
-**Design Principles**:
+### 6. Test Set Stratification Ensures Coverage
 
-- Cover key quality dimensions
-- Use descriptive levels (excellent, good, fair, poor, failed)
-- Convert to numeric scores (0.0 to 1.0)
-- Weight dimensions based on use case
+Simple cases don't reveal complex failures. Stratifying test sets across complexity levels (simple, moderate, extended interaction) catches edge cases before production.
 
-**Core Dimensions**:
+**Success pattern**: Build test sets representing real usage patterns. Include edge cases, multi-turn interactions, and boundary conditions.
 
-**Factual Accuracy**
+</guiding_principles>
 
-- Claims match ground truth
-- 1.0: All facts correct, no hallucinations
-- 0.7: Mostly correct, minor inaccuracies
-- 0.5: Mixed accuracy, some errors
-- 0.3: Many errors, significant inaccuracies
-- 0.0: Mostly false, major hallucinations
+## Workflow
 
-**Completeness**
+**Design rubric:** Create multi-dimensional scoring criteria with weights
 
-- Output covers all requested aspects
-- 1.0: Addresses all requirements comprehensively
-- 0.7: Covers most requirements with minor gaps
-- 0.5: Partial coverage, missing some aspects
-- 0.3: Minimal coverage, many gaps
-- 0.0: Fails to address core requirements
+**Implement LLM judge:** Automate scoring using rubric dimensions
 
-**Portability** (Seed System Specific)
+**Build test set:** Select representative test cases
 
-- Component works without external dependencies
-- 1.0: Zero dependencies, self-contained, portable
-- 0.7: Minimal dependencies, mostly portable
-- 0.5: Some dependencies, requires configuration
-- 0.3: Many dependencies, limited portability
-- 0.0: Tightly coupled, non-portable
+**Create quality gate:** Block substandard work with threshold
 
-**Context Efficiency** (Seed System Specific)
+**Why:** LLM-as-judge provides nuanced assessment beyond binary pass/fail—multi-dimensional rubrics capture quality.
 
-- Uses context optimally (progressive disclosure)
-- 1.0: Excellent use of progressive disclosure, minimal context
-- 0.7: Good context management, some optimization
-- 0.5: Adequate context usage, could be improved
-- 0.3: Inefficient context usage, verbose
-- 0.0: Wasteful context usage, bloats prompts
+## Operational Patterns
 
-**Tool Efficiency**
+This skill follows these behavioral patterns:
 
-- Uses appropriate tools reasonable number of times
-- 1.0: Optimal tool selection, minimal calls
-- 0.7: Good tool usage, slightly inefficient
-- 0.5: Adequate tool usage, some redundancy
-- 0.3: Inefficient tool usage, many redundant calls
-- 0.0: Poor tool selection, excessive calls
+- **Tracking**: Maintain a visible task list throughout evaluation phases
+- **Consultation**: Consult the user when evaluation criteria needs clarification
 
-### Scoring System
+## Navigation
 
-**Individual Dimension Scores**: 0.0 to 1.0 for each dimension
+| If you need...           | Read...                                           |
+| :----------------------- | :------------------------------------------------ |
+| Design rubric            | ## Workflow → Design rubric                       |
+| Implement LLM judge      | ## Workflow → Implement LLM judge                 |
+| Build test set           | ## Workflow → Build test set                      |
+| Create quality gate      | ## Workflow → Create quality gate                 |
+| Multi-dimensional rubric | ## Implementation Patterns → Pattern 1            |
+| LLM judge pattern        | ## Implementation Patterns → LLM-as-Judge Pattern |
 
-**Weighted Overall Score**:
+### What Type of Evaluation?
+
+| If you need to...                                | Read this section           |
+| ------------------------------------------------ | --------------------------- |
+| **Design rubric** → Create scoring criteria      | Multi-Dimensional Rubrics   |
+| **Implement LLM judge** → Automate scoring       | LLM-as-Judge Pattern        |
+| **Build test set** → Select test cases           | Test Set Design             |
+| **Create quality gate** → Block substandard work | Quality Gate Implementation |
+
+## Implementation Patterns
+
+### Pattern 1: Multi-Dimensional Rubric
 
 ```python
-overall_score = sum(score[dim] * weight[dim] for dim in dimensions)
+# Define quality dimensions with weights
+rubric = {
+    "factual_accuracy": {"weight": 0.25, "description": "Claims match ground truth"},
+    "completeness": {"weight": 0.25, "description": "Covers all requested aspects"},
+    "portability": {"weight": 0.25, "description": "Zero external dependencies"},
+    "context_efficiency": {"weight": 0.15, "description": "Optimal context usage"},
+    "tool_efficiency": {"weight": 0.10, "description": "Appropriate tool selection"}
+}
+
+def calculate_overall(scores, rubric):
+    return sum(scores[dim] * rubric[dim]["weight"] for dim in rubric)
 ```
 
-**Pass Threshold**: Set based on use case
+### Pattern 2: LLM-as-Judge Prompt
 
-- Production components: ≥ 0.8
-- Development components: ≥ 0.7
-- Experimental: ≥ 0.6
+```typescript
+const judgePrompt = `
+Task: Evaluate the component output
+Agent Output: {output}
+Evaluation Criteria:
+- Factual Accuracy (0.0-1.0): Claims match ground truth
+- Completeness (0.0-1.0): Covers all requirements
+- Portability (0.0-1.0): Zero external dependencies
 
-### LLM-as-Judge Pattern
+Evaluate each dimension with score and evidence:
+1. Factual Accuracy: [score] - [evidence]
+2. Completeness: [score] - [evidence]
+3. Portability: [score] - [evidence]
 
-**Direct Scoring**
-
-- Evaluate against weighted criteria with rubrics
-- Provide clear task description
-- Include agent output and ground truth (if available)
-- Request structured judgment with evidence
-
-**Prompt Template**:
-
-```
-Task: [Description]
-Agent Output: [Output]
-Evaluation Criteria: [Rubric]
-
-Evaluate the agent output on each dimension:
-1. Factual Accuracy (0.0-1.0): [Score] - [Evidence]
-2. Completeness (0.0-1.0): [Score] - [Evidence]
-3. Portability (0.0-1.0): [Score] - [Evidence]
-4. Context Efficiency (0.0-1.0): [Score] - [Evidence]
-5. Tool Efficiency (0.0-1.0): [Score] - [Evidence]
-
-Overall Score: [Weighted average]
-Pass/Fail: [Threshold-based]
+Overall Score: [weighted average]
+Pass/Fail: [>=0.7 for production]
+`;
 ```
 
-**Pairwise Comparison**
-
-- Compare two outputs with position bias mitigation
-- Automatically swap positions to reduce bias
-- Ask judge to choose better overall output
-
-**Position Swapping**:
+### Pattern 3: Pairwise Comparison with Position Swapping
 
 ```python
 def evaluate_pairwise(output_a, output_b):
-    # First comparison: A vs B
+    # Compare A vs B
     result_1 = judge_evaluate(output_a, output_b)
 
-    # Second comparison: B vs A (swapped)
+    # Compare B vs A (swap positions)
     result_2 = judge_evaluate(output_b, output_a)
 
-    # Combine results
+    # Reconcile results to reduce position bias
     return reconcile_comparisons(result_1, result_2)
 ```
 
-## Evaluation Methods
-
-### Test Set Design
-
-**Sample Selection**
-
-- Start small during development (dramatic impacts early)
-- Sample from real usage patterns
-- Add known edge cases
-- Ensure coverage across complexity levels
-
-**Complexity Stratification**
-
-- **Simple**: Single tool call, clear requirements
-- **Medium**: Multiple tool calls, some ambiguity
-- **Complex**: Many tool calls, significant ambiguity
-- **Very Complex**: Extended interaction, deep reasoning
-
-### Context Engineering Evaluation
-
-**Testing Context Strategies**
-
-- Run with different context strategies on same test set
-- Compare quality scores, token usage, efficiency metrics
-- Validate progressive disclosure effectiveness
-
-**Degradation Testing**
-
-- Test at different context sizes
-- Identify performance cliffs
-- Establish safe operating limits
-
-### Continuous Evaluation
-
-**Evaluation Pipeline**
-
-- Run automatically on component changes
-- Track results over time
-- Compare versions to identify improvements/regressions
-
-**Production Monitoring**
-
-- Sample interactions in production
-- Evaluate randomly
-- Set alerts for quality drops
-
-## Practical Implementation
-
-### Building Evaluation Frameworks
-
-**Step 1**: Define quality dimensions relevant to use case
-**Step 2**: Create rubrics with clear level descriptions
-**Step 3**: Build test sets from real patterns and edge cases
-**Step 4**: Implement automated evaluation pipelines
-**Step 5**: Establish baseline metrics before changes
-**Step 6**: Run evaluations on all significant changes
-**Step 7**: Track metrics over time
-**Step 8**: Supplement with human review
-
-### Example: Component Evaluation
-
-```python
-def evaluate_component(component, test_set):
-    """Evaluate a Seed System component"""
-
-    rubric = {
-        "factual_accuracy": {"weight": 0.25},
-        "completeness": {"weight": 0.25},
-        "portability": {"weight": 0.25},
-        "context_efficiency": {"weight": 0.15},
-        "tool_efficiency": {"weight": 0.10}
-    }
-
-    scores = {}
-    for test in test_set:
-        result = run_test(component, test)
-        for dimension in rubric:
-            scores[dimension] = assess_dimension(result, dimension)
-
-    overall = weighted_average(scores, rubric)
-    passed = overall >= 0.7
-
-    return {
-        "passed": passed,
-        "scores": scores,
-        "overall": overall,
-        "threshold": 0.7
-    }
-```
-
-## Avoiding Evaluation Pitfalls
-
-❌ **Overfitting to specific paths**
-
-- Evaluate outcomes, not specific steps
-
-❌ **Ignoring edge cases**
-
-- Include diverse test scenarios
-
-❌ **Single-metric obsession**
-
-- Use multi-dimensional rubrics
-
-❌ **Neglecting context effects**
-
-- Test with realistic context sizes
-
-❌ **Skipping human evaluation**
-
-- Automated evaluation misses subtle issues
-
-## Enhanced Validation Workflow
-
-**Phase 1: Component Generation**
-
-- Generate component using meta-skills
-- Apply progressive disclosure principles
-- Optimize context usage
-
-**Phase 2: Multi-Dimensional Evaluation**
-
-- Run through evaluation framework
-- Score on all 5 dimensions
-- Calculate weighted overall score
-
-**Phase 3: Quality Gate**
-
-- Block if below threshold (e.g., 0.7)
-- Provide detailed feedback
-- Suggest improvements
-
-**Phase 4: Evidence Collection**
-
-- Store evaluation results
-- Track metrics over time
-- Enable regression detection
-
-### Example: Validation Report
+### Pattern 4: Validation Report
 
 ```yaml
 # Validation Report
 component: my-skill
-timestamp: 2026-01-26
+timestamp: 2026-01-29
 overall_score: 0.82
 threshold: 0.70
 passed: true
@@ -328,15 +159,74 @@ dimensions:
     evidence: "Covers all requirements with minor gaps"
   portability: 0.80
     evidence: "Self-contained, zero external dependencies"
-  context_efficiency: 0.75
-    evidence: "Good progressive disclosure, some optimization possible"
-  tool_efficiency: 0.85
-    evidence: "Optimal tool selection, minimal redundant calls"
 
 recommendations:
-  - "Consider further context optimization for large components"
-  - "Add more examples to references/"
+  - "Consider further context optimization"
 ```
+
+## Troubleshooting
+
+### Issue: Overfitting to Specific Paths
+
+| Symptom                              | Solution                     |
+| ------------------------------------ | ---------------------------- |
+| Evaluating specific steps taken      | Judge outcomes, not paths    |
+| Failing valid alternative approaches | Accept multiple valid routes |
+
+### Issue: Single-Metric Obsession
+
+| Symptom                       | Solution                                 |
+| ----------------------------- | ---------------------------------------- |
+| Only measuring accuracy       | Use multi-dimensional rubrics            |
+| Missing other quality aspects | Add dimensions: completeness, efficiency |
+
+### Issue: Position Bias in Comparisons
+
+| Symptom                            | Solution                       |
+| ---------------------------------- | ------------------------------ |
+| A always beats B when listed first | Implement position swapping    |
+| Inconsistent pairwise results      | Swap and reconcile comparisons |
+
+### Issue: Ignoring Edge Cases
+
+| Symptom                     | Solution                           |
+| --------------------------- | ---------------------------------- |
+| Tests pass on simple cases  | Add complexity stratification      |
+| Failures only in production | Include extended interaction tests |
+
+### Issue: No Evidence for Scores
+
+| Symptom                            | Solution                        |
+| ---------------------------------- | ------------------------------- |
+| "Score: 0.8" without justification | Require evidence for all scores |
+| Subjective judgments               | Use explicit rubric levels      |
+
+### Issue: Threshold Too Strict/Relaxed
+
+| Symptom            | Solution                                |
+| ------------------ | --------------------------------------- |
+| Everything failing | Lower threshold (≥0.6 for experimental) |
+| Everything passing | Raise threshold (≥0.8 for production)   |
+
+## workflows
+
+### Building Quality Gates
+
+1. **Define Rubric** → Create multi-dimensional scoring criteria
+2. **Build Test Set** → Sample from real usage, include edge cases
+3. **Implement Evaluation** → LLM-as-judge with position swapping
+4. **Set Threshold** → ≥0.7 for production, ≥0.6 for experimental
+5. **Track Metrics** → Store results, detect regressions
+
+### Continuous Evaluation Pipeline
+
+```bash
+# Run on component changes
+npm run evaluate -- --component=my-skill
+# Output: validation report with scores
+```
+
+---
 
 ## Guidelines
 
@@ -349,41 +239,11 @@ recommendations:
 7. **Combine automated and human** - Catch what automation misses
 8. **Test context strategies** - Validate progressive disclosure
 
-## References
-
-<routing_table>
-Skills referenced for related evaluation capabilities.
-
-| When You Need To...                  | Use This Skill       | Routing Command               |
-| ------------------------------------ | -------------------- | ----------------------------- |
-| Implement progressive disclosure     | `filesystem-context` | `Skill("filesystem-context")` |
-| Validate component quality           | `quality-standards`  | `Skill("quality-standards")`  |
-| Build evaluation rubrics and scoring | (this skill)         | (current context)             |
-
-**Research References**:
-
-- BrowseComp evaluation on performance drivers
-- Eugene Yan on LLM-evaluators
-- Position bias in pairwise comparison
-
-**Key Principle**: Evaluation should be outcome-focused, multi-dimensional, and continuously validated. Judge whether components achieve right outcomes while following reasonable processes.
-</routing_table>
-
 ---
 
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -392,9 +252,15 @@ No exceptions. Portability invariant must be maintained.
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-  MANDATORY: Use multi-dimensional rubrics (not single metrics)
-  MANDATORY: Require evidence for all scores
-  MANDATORY: Implement position swapping for pairwise comparisons
-  MANDATORY: Block below threshold (≥0.7 for production)
-  No exceptions. Evaluation without evidence is opinion, not assessment.
-  </critical_constraint>
+
+<critical_constraint>
+**Portability Invariant**: All components MUST be self-contained with zero .claude/rules dependency. This ensures the component works when copied to other projects.
+
+**Autonomy Standard**: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session).
+
+**Frontmatter Format**: Description MUST use What-When-Not-Includes format in third person (bare infinitive).
+
+**Progressive Disclosure**: Use references/ folder for detailed content to keep SKILL.md lean.
+
+**Unified Hybrid Protocol**: Use XML for control (mission_control, critical_constraint), Markdown for data.
+</critical_constraint>

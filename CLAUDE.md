@@ -1,470 +1,594 @@
 # CLAUDE.md: The Seed System
 
-Meta-toolkit for Claude Code focused on .claude/ configuration with dual-role architecture: **health maintenance** + **portable component factory**.
+Meta-toolkit for Claude Code focused on `.claude/` configuration with dual-role architecture: **health maintenance** + **portable component factory**.
 
 ---
 
-## Core Philosophy
+## 1. The Constitution (Global Rules)
 
-This project is a **meta-meta system**—a toolkit for building toolkits. It serves **two distinct roles**:
-
-### Role 1: Health Maintenance (Current Session)
-
-The Seed System governs its own internal health:
-
-- Maintains consistency across rules, skills, and documentation
-- Ensures high autonomy (80-95% target: 0-5 questions per session)
-- Enforces quality standards and progressive disclosure
-- Validates component structure and portability
-
-### Role 2: Portable Component Factory (Building Offspring)
-
-The Seed System builds portable, self-sufficient components:
-
-- Generates Skills/Commands/Agents/Hooks/MCPs that bundle their own philosophy
-- Ensures components work in isolation (zero .claude/rules dependency)
-- Embeds Success Criteria for self-validation
-- Creates components with intentional redundancy (condensed philosophy included)
-
-**Key Innovation**: Components carry their own "genetic code"—they don't depend on the Seed System to function.
+Behavioral rules are defined in `.claude/rules/`. These files are load together with CLAUDE.md at session start.
 
 ---
 
-## Dual-Layer Architecture
+## 2. Project Navigation (Local Map)
 
-The Seed System uses a **two-layer architecture** to achieve both roles:
+### Quick Actions
 
-### Layer A: Behavioral Rules (Session-Only)
+| Intent       | Command               |
+| :----------- | :-------------------- |
+| Build        | `/create`             |
+| Analyze      | `/analyze`            |
+| Verify       | `/verify`             |
+| Plan         | `/strategy:architect` |
+| Execute Plan | `/strategy:execute`   |
+| Phase Verify | `/qa:verify-phase`    |
 
-**Purpose**: Guide agent behavior in the current session
-**Scope**: Session-only, not embedded in components
-**Audience**: The agent operating NOW
-
-### Layer B: Construction Standards (For Building Components)
-
-**Purpose**: Meta-rules for creating portable components
-**Scope**: Embedded in generated components as "genetic code"
-**Audience**: The component's own intelligence
-
-**Key Insight**: The agent's "soul" (Layer A) teaches it to embed its "brain" (Layer B) into every component it builds.
-
----
-
-## The Portability Invariant
+### Skills vs Commands: Structure, Not Capability
 
 <critical_constraint>
-MANDATORY: Every component MUST be self-contained and work in a project with ZERO .claude/rules.
+ARCHITECTURAL FACT: Skills and commands have IDENTICAL capabilities under the hood.
+The ONLY difference is structure/syntax for cognitive load management.
 </critical_constraint>
 
-This is the **defining characteristic** of the Seed System. Unlike traditional toolkits that create project-dependent components, the Seed System creates portable "organisms" that survive being moved to any environment.
+**Functional Equivalence:**
+
+| Aspect                      | Skills | Commands |
+| :-------------------------- | :----- | :------- |
+| **User invocable**          | ✅ Yes | ✅ Yes   |
+| **Model invocable**         | ✅ Yes | ✅ Yes   |
+| **Can invoke tools**        | ✅ Yes | ✅ Yes   |
+| **Can delegate**            | ✅ Yes | ✅ Yes   |
+| **Can use AskUserQuestion** | ✅ Yes | ✅ Yes   |
+
+**Structural Differences Only:**
+
+| Aspect                     | Skills                                      | Commands                                            |
+| :------------------------- | :------------------------------------------ | :-------------------------------------------------- |
+| **Format**                 | Folder with SKILL.md + optional references/ | Single file                                         |
+| **Progressive disclosure** | Yes (Tier 2/Tier 3)                         | No (single-file loads full content)                 |
+| **Naming**                 | Flat structure                              | Nested with `:` separator (e.g., `/folder:command`) |
+
+**When to Use Which:**
+
+- **Choose Skill** when content benefits from progressive disclosure (complex domain knowledge), need references/ folder for detailed lookup tables, or content may be invoked by other components
+- **Choose Command** when quick intent-based invocation is primary use case, content fits comfortably in single file, or direct user interaction is the main pattern
+
+### Component Index
+
+- **Skills**: `.claude/skills/` - Domain knowledge with progressive disclosure
+- **Commands**: `.claude/commands/` - Intent aliases and shortcuts
+- **Agents**: `.claude/agents/` - Autonomous workers
+
+### Skill Library Index
+
+44 skills organized by purpose. Skills marked with `(*)` have navigation tables.
+
+#### Factory (Building the toolkit)
+
+| Skill                   | Description                                             |
+| :---------------------- | :------------------------------------------------------ |
+| `skill-authoring`       | Create portable skills with SKILL.md and references/    |
+| `skill-iterate`         | Audit, critique, and improve existing skills            |
+| `command-authoring`     | Create single-file commands with @/! injection patterns |
+| `command-iterate`       | Audit and improve commands with dynamic injection       |
+| `agent-development`     | Create, validate, and audit autonomous agents           |
+| `hook-development`      | Create, validate, and audit event-driven hooks          |
+| `mcp-development`       | Create, test, and audit MCP servers and tools           |
+| `claude-md-development` | Manage CLAUDE.md as project's single source of truth    |
+
+<deprecated>
+`invocable-development` has been split into 4 granular skills above.
+</deprecated>
+
+#### Software Lifecycle (The "Big Skills")
+
+| Skill                            | Description                                                   |
+| :------------------------------- | :------------------------------------------------------------ |
+| `engineering-lifecycle`          | Plan, implement, and verify software with TDD discipline      |
+| `quality-standards`              | Verify completion with evidence using 6-phase gates           |
+| `pr-reviewer`                    | Review pull requests for spec, security, performance, quality |
+| `requesting-code-review`         | Request code reviews through pre-review checklist             |
+| `finishing-a-development-branch` | Finish development branches for merge or PR                   |
+
+#### Analysis & Thinking (Cognitive Tools)
+
+| Skill                       | Description                                        |
+| :-------------------------- | :------------------------------------------------- |
+| `analysis-diagnose`         | Perform systematic root cause investigation        |
+| `brainstorming`             | Turn ideas into validated designs                  |
+| `discovery`                 | Conduct discovery interviews for requirements      |
+| `first-principles-thinking` | Break down problems to fundamental truths          |
+| `inversion-thinking`        | Solve problems backwards to identify failure modes |
+| `premortem`                 | Identify failure modes before they occur           |
+| `simplification-principles` | Apply simplification principles to debug issues    |
+
+#### Operations & Environment
+
+| Skill                 | Description                                             |
+| :-------------------- | :------------------------------------------------------ |
+| `filesystem-context`  | Manage filesystem context for large data offloading     |
+| `using-git-worktrees` | Manage git worktrees for isolated workspaces            |
+| `uv`                  | Manage Python packages and projects using uv            |
+| `file-search`         | Search files and content in a codebase                  |
+| `iterative-retrieval` | Execute 4-phase loop for progressive context refinement |
+
+#### Specialized Orchestration
+
+| Skill                         | Description                                             |
+| :---------------------------- | :------------------------------------------------------ |
+| `dispatching-parallel-agents` | Dispatch parallel agents for concurrent problem-solving |
+| `distributed-processor`       | Distribute work across multiple contexts                |
+| `jules-api`                   | Programmatic interface to Google's Jules API            |
+| `create-meta-prompts`         | Generate meta-prompts for Claude-to-Claude pipelines    |
+| `ops/reflect-and-patch`       | Review conversation for improvement opportunities       |
+
+#### API Integrations
+
+| Skill                        | Description                                             |
+| :--------------------------- | :------------------------------------------------------ |
+| `google-genai-typescript`    | Integrate Google GenAI SDK for Gemini models            |
+| `perplexity-typescript`      | Integrate Perplexity AI APIs in TypeScript              |
+| `memory-persistence`         | Provide session lifecycle hooks for context persistence |
+| `multi-session-orchestrator` | Orchestrate multi-session workflows                     |
+
+#### Evaluation & Decision-Making
+
+| Skill                       | Description                                           |
+| :-------------------------- | :---------------------------------------------------- |
+| `evaluation`                | Evaluate agent systems with quality gates             |
+| `swot-analysis`             | Analyze Strengths, Weaknesses, Opportunities, Threats |
+| `deviation-rules`           | Handle unexpected work during execution               |
+| `refactor-elegant-teaching` | Refactor code to be cleaner and self-documenting      |
+| `refine-prompts`            | Refine vague prompts into precise instructions        |
+
+#### Development Tools
+
+| Skill                     | Description                                      |
+| :------------------------ | :----------------------------------------------- |
+| `agent-browser`           | Automate browser interactions                    |
+| `exploration-guide`       | Exploration philosophy and verification practice |
+| `planning-guide`          | Planning philosophy, patterns, and practices     |
+| `typescript-conventions`  | Apply TypeScript conventions for type safety     |
+| `meta-learning-extractor` | Analyze session history to auto-refine rules     |
 
 ---
 
-## The Delta Standard
+### Self-Maintenance (ops namespace)
 
-> **Good Component = Expert-only Knowledge − What Claude Already Knows**
-
-See `.claude/rules/principles.md` for complete Delta Standard explanation with positive/negative delta examples.
-
----
-
-## Knowledge-Factory Architecture
-
-This project demonstrates the **Knowledge-Factory architecture**:
-
-### Knowledge Layer (Understanding)
-
-- **Unified Knowledge Skill**: `invocable-development` - Commands and skills are the same system with different organization
-- **Other Knowledge Skills**: hook-development, agent-development, mcp-development
-- Provides concepts, patterns, and philosophy
-- Teaches the "why" behind component creation
-
-### Factory Layer (Execution)
-
-- **Toolkit Commands**: Intent-based orchestration with context inference
-  - `/toolkit:build:*` - Create commands, skills, packages
-  - `/toolkit:audit:*` - Validate commands, skills
-  - `/toolkit:critique:*` - Meta-critic review for commands, skills
-- Apply architectural patterns via `invocable-development` skill
-- Bundle condensed philosophy into outputs
-
-### Quality Layer (Validation)
-
-- **Meta-Critic**: Three-way quality validation (Request vs Delivery vs Standards)
-- Success Criteria Invariant for self-validation
-- **Component Orchestrate**: TDD-based component validation with staged deployment
-
-**Usage pattern**: Use toolkit commands for workflow orchestration, which invoke `invocable-development` for domain logic.
-
-### Semantic Anchoring Pattern
-
-**Pattern**: Replace bash code blocks with tool invocation anchors to force correct tool usage.
-
-**Format**: `- \`Tool: command\` → description`
-
-**Example**:
-
-````markdown
-# Before:
-
-```bash
-npx knip
-```
-````
-
-# After:
-
-- `Bash: npx knip` → Run knip for unused exports/files/dependencies
-
-```
-
-**Applied to**: All commands, agents (68+ files converted)
-
-**Why**: Forces AI to use native tools instead of treating commands as prose text.
+| Intent               | Command        |
+| :------------------- | :------------- |
+| Extract patterns     | `/ops:extract` |
+| Detect context drift | `/ops:drift`   |
+| Review session       | `/ops:reflect` |
 
 ---
 
-## Toolkit Commands
+## 3. The Factory Protocols
 
-The toolkit provides command-based interfaces for creating and validating invocable components (commands and skills).
+<critical_constraint>
+MANDATORY: Produced components must work in a vacuum (Zero CLAUDE.md/.claude/rules/ dependency).
+</critical_constraint>
 
-### Invocable Components
+### Factory Reference Table
 
-**Commands and Skills are the same system** - same frontmatter, same invocation, same capabilities. The only difference is organizational:
-
-| Component    | Structure                                                      | Naming                                 | Best For                                |
-| ------------ | -------------------------------------------------------------- | -------------------------------------- | --------------------------------------- |
-| **Commands** | Single `.md` file                                              | `commands/build/fix.md` → `/build:fix` | Intent/state definition, folder nesting |
-| **Skills**   | Folder with `SKILL.md` + optional `references/`                | Flat: `skills/engineering-lifecycle/`  | Domain logic, progressive disclosure    |
+| To Build...   | Invoke Skill...     |
+| :------------ | :------------------ |
+| Skill         | `skill-authoring`   |
+| Command       | `command-authoring` |
+| Audit Skill   | `skill-iterate`     |
+| Audit Command | `command-iterate`   |
+| Agent         | `agent-development` |
+| MCP Server    | `mcp-development`   |
+| Hook          | `hook-development`  |
 
 ### Build Commands
 
-| Command                  | Purpose                                                             | Autonomy             |
-| ------------------------ | ------------------------------------------------------------------- | -------------------- |
-| `/toolkit:build:command` | Create one-file commands                         | High (0-2 questions) |
-| `/toolkit:build:skill`   | Create skills with SKILL.md + optional references/ | High (0-2 questions) |
-| `/toolkit:build:package` | Create complete packages (command + skill + references) | High (0-3 questions) |
+| Command                  | Purpose                                   |
+| :----------------------- | :---------------------------------------- |
+| `/create`                | Unified entry - auto-routes to builder    |
+| `/toolkit:build:command` | Create one-file commands                  |
+| `/toolkit:build:skill`   | Create skills with SKILL.md + references/ |
+| `/toolkit:build:package` | Create complete packages                  |
 
-### Audit Commands
+### Audit & Critique
 
-| Command          | Purpose                                                                  | Autonomy                   |
-| ---------------- | ------------------------------------------------------------------------ | -------------------------- |
-| `/toolkit:audit` | Universal auditor - auto-detects target and routes to correct references | High (auto-detects target) |
-
-### Critique Commands
-
-| Command             | Purpose                                             | Autonomy                |
-| ------------------- | --------------------------------------------------- | ----------------------- |
-| `/toolkit:critique` | Universal quality audit via quality-standards skill | High (analyzes context) |
-
-**Rooter Archetype**: A complete capability package with multiple entry points:
-
-- **Command**: Quick intent invocation
-- **Skill**: Comprehensive domain knowledge with optional step-by-step workflows in SKILL.md
-- **Examples/Scripts**: Working demonstrations and automation
-
-### Key Features
-
-**Context Inference**: Commands auto-detect targets from conversation
-
-- Auto-detects recently created components
-- No need to specify paths manually
-
-**No Syntax Required**: Trust AI intelligence
-
-- Commands work with natural language descriptions
-- Progressive refinement when necessary
-
-**High Autonomy**: Target 80-95% completion (0-5 questions)
-
-- Auto-detect when possible
-- Ask only when genuinely ambiguous
-
-### Command Orchestration Pattern (Optional)
-
-One component can orchestrate another for workflow automation. Both are auto-invocable - this pattern is about coordination, not capability difference.
-
-- **Orchestrator**: Coordinates workflow, manages interaction flow, handles state transitions
-- **Orchestrated**: Contains detailed knowledge/patterns to execute
-
-**Critical constraint**: Orchestrated component must not reference orchestrator (portability invariant).
-
-See `invocable-development/references/command-orchestration.md` for complete pattern documentation.
+| Command             | Purpose                             |
+| :------------------ | :---------------------------------- |
+| `/toolkit:audit`    | Universal auditor (auto-routes)     |
+| `/toolkit:critique` | Quality audit via quality-standards |
 
 ---
 
-## Quick Navigation
+## 4. System Discoveries (2026-01-29)
 
-### For Health Maintenance (Current Session)
+Key findings from internal system review and their resolutions:
 
-```
+### mission_control Requirement
 
-Need to maintain project health?
-│
-├─ Self-maintenance → Use /ops namespace
-│ ├─ /ops:rooter - Router for all ops commands
-│ ├─ /ops:extract - Extract patterns from conversation
-│ ├─ /ops:drift - Detect and fix context drift
-│ └─ /ops:reflect - Review session for improvements
-├─ Update rules → Check .claude/rules/ for consistency
-├─ Audit quality → Use quality-standards skill
-├─ Fix autonomy issues → Review architecture.md (L'Entonnoir pattern)
-└─ Validate structure → Check quality.md (anti-patterns)
+**Discovery**: Not all skills had `<mission_control>` and `<critical_constraint>` XML tags as mandated by `invocable-development`.
 
-```
+**Resolution**: Added `<mission_control>` with `<objective>` and `<success_criteria>` to all 39 skills.
 
-### For Component Factory (Building Offspring)
+### Progressive Disclosure Scope
 
-```
+**Discovery**: `principles.md` stated progressive disclosure applies ONLY to skills, but `architecture.md` referenced `references/` for commands.
 
-Need to build a portable component?
-│
-├─ Complete package → /toolkit:build:package
-├─ Create a command → /toolkit:build:command
-├─ Create a skill → /toolkit:build:skill
-├─ Audit component → /toolkit:audit (auto-routes by extension)
-├─ Critique component → /toolkit:critique (auto-routes by extension)
-├─ Create agent → agent-development
-├─ Add hook → hook-development
-├─ Add MCP server → mcp-development
-└─ Refine prompt → refine-prompts
+**Resolution**: Commands can reference `references/` for ultra-situational lookup. Progressive disclosure primarily applies to skills.
 
-```
+### SUMMARY.md Pattern Removed
 
----
+**Discovery**: Several skills used `SUMMARY.md` pattern but it was never documented in rules.
 
-## Invocable Components
+**Resolution**: Deleted all SUMMARY.md files. Skills must be self-contained in SKILL.md.
 
-**Commands and Skills are the same system** with identical capabilities. The difference is structural:
+### Portability Invariant Enforcement
 
-| **Commands** | Single `.md` file | Folder nesting: `commands/analysis/diagnose.md` → `/analysis:diagnose` |
-| **Skills** | Folder with `SKILL.md` + optional `references/` | Flat: `skills/engineering-lifecycle/SKILL.md` |
+**Discovery**: Skills contained explicit file paths creating portability violations.
 
-**Both are auto-invocable** - AI and users can invoke either based on description and context.
+**Resolution**: Removed explicit file path references from skill headers. Skills are self-contained.
 
-### Primary Meta-Skill
+### AskUserQuestion Integration Pattern
 
-**`invocable-development`** - Unified skill for creating both commands and skills. Consolidates `skill-development` and `command-development` knowledge.
-
-### Toolkit Commands
-
-| **Category** | **Commands**                                                             |
-| ------------ | ------------------------------------------------------------------------ |
-| **Build**    | `/toolkit:build:command` `/toolkit:build:skill` `/toolkit:build:package` |
-| **Audit**    | `/toolkit:audit:command` `/toolkit:audit:skill`                          |
-| **Critique** | `/toolkit:critique:command` `/toolkit:critique:skill`                    |
-
-### Planning Commands
-
-| **Command**         | \*\*Purpose                                             |
-| ------------------- | ------------------------------------------------------- |
-| `/plan:create`      | Fully autonomous planning (brief/roadmap/phases/chunks) |
-| `/plan:execute`     | Execute single PLAN.md file                             |
-| `/plan:execute-all` | Execute all incomplete PLAN.md files sequentially       |
-| `/plan:handoff`     | Create context handoff                                  |
-| `/plan:resume`      | Continue from handoff                                   |
-
-**Planning system**: Single command (`/plan:create`) handles everything - auto-detects state and creates brief → roadmap → phases → chunks as needed. Domain logic in 'engineering-lifecycle' skill.
-
-**Deprecated**: `/plan:brief`, `/plan:roadmap`, `/plan:chunk` - merged into `/plan:create` for fully autonomous planning.
-
----
-
-## The Three Rule Files
-
-The Seed System consolidates all guidance into three rule files:
-
-| File                | Focus               | Content                                                     |
-| ------------------- | ------------------- | ----------------------------------------------------------- |
-| **principles.md**   | The "Soul"          | The "Why," the "Tone," and the "Degrees of Freedom"         |
-| **architecture.md** | The "Skeleton"      | UHP (XML/MD), Progressive Disclosure, Interaction Protocols |
-| **quality.md**      | The "Immune System" | "Smell tests," anti-hallucination, verification loops       |
-
----
-
-## Component Description Guidelines
-
-### No Direct Skill Mentions in Descriptions
-
-**Rule**: Never mention other skills by name in component descriptions.
-
-**Why**:
-
-- **Discoverability anti-pattern**: Claude can discover skills through the skill system—naming others creates implicit dependencies
-- **Portability violation**: A command that references `skill-development` cannot work in a project without that skill
-- **Self-containment**: Descriptions should explain what the component does, not point to other components
-
-**How to describe without naming**:
-
-| Instead of...                                      | Use...                                             |
-| -------------------------------------------------- | -------------------------------------------------- |
-| "Reusable logic libraries (use skill-development)" | "Logic libraries that Claude invokes contextually" |
-| "Background event handling (use hook-development)" | "Background event handling"                        |
-| "Create agents (use agent-development)"            | "Autonomous agents with independent execution"     |
-
----
-
-## Skill Reference Pattern in Commands
-
-**Pattern**: Use invocation-based references instead of direct file paths to skill content.
-
-**Why**: Direct file paths like `invocable-development/references/genetic-code-template.md` create implicit dependencies. Using invocation patterns makes the intent clearer and follows the skill system's design.
-
-**Conversion Pattern**:
-
-| Instead of... | Use... |
-| ------------- | ------ |
-| `Read: invocable-development/references/genetic-code-template.md` | "Invoke invocable-development skill and read genetic-code-template.md from references folder" |
-| `Read: skills/*/SKILL.md` | "Invoke skill and read SKILL.md from its folder" |
-| `File: .claude/skills/my-skill/SKILL.md:15` | "Invoke my-skill and edit SKILL.md line 15" |
-
-**When to apply**: In command documentation, router tables, guidance sections, and implementation plans.
-
-**When NOT to apply**:
-- Tool invocation arguments (Glob patterns, file paths as command arguments)
-- Bash/grep commands that require file paths as syntax
-- Code examples showing implementation
-- Example output demonstrating results
-
-**Binary test**: "Is this a conceptual reference to skill content, or a tool argument/code syntax?" → Apply pattern only to conceptual references.
-
----
-
-## Native Tool Pattern (CRITICAL)
-
-**Replace brittle bash scripts with native tool calls in skill instructions.**
-
-When documenting file operations, search, or text manipulation in skills, use native tools instead of complex bash commands:
-
-| Bash Pattern                | Replace With                    |
-| --------------------------- | ------------------------------- |
-| `grep -n "pattern" file`    | `Grep` tool                     |
-| `head -n N \| grep`         | `Read` with offset + `Grep`     |
-| `sed -n '/^---$/,/^---$/p'` | `Read` tool + parse             |
-| `echo "$VAR" \| grep -q`    | `Grep` with `-q` flag           |
-| `fd \| xargs rg`            | `Glob` + `Grep`                 |
-| `xargs sed -i`              | `Edit` with `replace_all: true` |
-
-**Why**: Native tools are more reliable, self-documenting, and work consistently across environments. Bash scripts with pipes are brittle and hard to maintain.
-
-**When**: Apply this pattern when documenting search, validation, or file manipulation patterns in skills and references.
+**Discovery**: Commands should present concrete placement options with AskUserQuestion before applying changes, rather than using abstract syntax examples.
 
 **Example**:
 
-```
+- Instead of: `[Ask user for approval before applying]`
+- Use: "I found X placements: Append to ## Gotchas, Create new section ## Commands, etc."
 
-<!-- Instead of -->
+**Rationale**: Concrete options are actionable; abstract syntax guidance wastes context.
 
-grep -n "type=\"checkpoint" PLAN.md
+### Dual-Mode Command Pattern
 
-<!-- Use -->
+**Discovery**: Commands can operate in two modes based on arguments:
 
-Grep: Search PLAN.md for pattern type="checkpoint (shows line numbers)
+- **Implicit Mode**: Infer from conversation context when no explicit arguments provided
+- **Explicit Mode**: Use user-provided content when arguments are specified
 
-```
+**Example**: `/learning:archive` now scans conversation for discoveries, then asks where to place them.
 
-**Files updated with this pattern**:
+**Rationale**: Zero-argument commands feel more natural; explicit arguments remain available for precise control.
 
-- `engineering-lifecycle/references/execution-modes.md`
-- `invocable-development/references/testing-strategies.md`
-- `file-search/references/advanced-workflows.md`
-- `hook-development/references/patterns.md`
-- `invocable-development/references/plugin-features-reference.md`
-- `quality-standards/SKILL.md`
+### Agent Structure Enforcement
 
----
+**Discovery**: Agent files in `.claude/agents/` were missing sections mandated by `agent-development` skill.
 
-## Writing Style
+**Required agent sections**:
 
-See `.claude/rules/principles.md` for:
+- `<mission_control>` with objective and success_criteria
+- `## Overview` - What the agent does
+- `## Autonomous Capability` - How it operates independently
+- `## Trigger Conditions` - When to spawn and when NOT to
+- `## Philosophy Bundle` - Behavioral guidance for context fork
 
-- **Imperative Form** - How to write instructions
-- **Clear Examples** - Show, don't just tell
-- **Voice Strength** - Gentle → Standard → Strong → Critical
-- **Degrees of Freedom** - High → Medium → Low specificity
+**Resolution**: Added missing sections to agents.
 
----
+### Command Description Convention
 
-## Progressive Disclosure
+**Discovery**: Commands were using non-infinitive voice in descriptions, violating What-When-Not-Includes format.
 
-**Tier 1**: Metadata (~100 tokens)
-**Tier 2**: Component body (~1,500-2,000 words)
-**Tier 3**: References/ (on-demand)
+**Required pattern**: "Verb + object. Use when [condition]. Includes [key features]. Not for [exclusion]."
 
-Keep SKILL.md focused and lean. Move detailed content to references/.
-
-**Skill Structure Standard**:
+**Examples**:
 
 ```
+✅ Correct: "Analyze issues, explore context, or reason through problems. Use when user needs diagnosis, investigation, or decision framework. Includes pattern matching, evidence gathering, and structured output. Not for simple lookups or well-understood issues."
+❌ Incorrect: "Unified analysis command that routes to appropriate workflow..."
 
-skill-name/
-├── SKILL.md # Full philosophy - fully self-sufficient
-└── references/ # Optional - lookup tables, API specs, detailed examples
-├── pattern-catalog.md
-└── troubleshooting.md
-
+✅ Correct: "Execute quality verification with flexible modes. Use when validating code changes before commit."
+❌ Incorrect: "Comprehensive verification workflow..."
 ```
 
-**Why no workflows/ folder**:
+**Resolution**: Updated `commands/analyze.md` and `commands/verify.md` to use infinitive voice.
 
-- SKILL.md must contain full workflow processes for self-sufficiency
-- references/ is for ultra-situational lookup material (API specs, tables), not guided processes
-- Commands orchestrate by invoking skills and reading specific references when needed
-- This ensures skills work standalone even if references/ are deleted
+### Reference File Navigation
 
----
+**Discovery**: Reference files in skill folders lacked "Use when" navigation tables required by progressive disclosure patterns.
 
-## Format: Unified Hybrid Protocol (UHP)
+**Required structure for each reference file**:
 
-See `.claude/rules/architecture.md` for complete UHP reference (3-layer architecture, XML/Markdown usage, state management).
+- "If you need..." navigation table (section lookup)
+- "Context Condition" table (when to load)
 
----
+**Resolution**: Added navigation tables to:
 
-## Session Commands
+- `agent-development/references/copy_agent_patterns.md`
+- `hook-development/references/quality.md`
 
-- `/handoff` - Create session handoff document
-- `/plan` - Enter plan mode for complex tasks
+### Content Injection Patterns
 
-**Self-Maintenance Commands (ops namespace):**
+**Discovery**: Commands were using bash file existence checks (`[ -f file ] && echo`) and explicit bash calls for git state, cluttering the command body.
 
-- `/ops:reflect` - Review conversation for improvements
-- `/ops:extract` - Extract reusable patterns
-- `/ops:drift` - Detect context drift
+**Resolution**: Implemented content injection patterns:
 
----
+- `@path` - Auto-injects file content at invocation time
+- `!`command`` - Auto-executes bash and inlines output
+- `<injected_content>` - Semantic wrapper for @ references
+- "(if exists)" headers - Graceful handling of non-existent files
 
-## Plan Mode Workflow (CRITICAL)
+**Affected commands**: handoff:resume, handoff:diagnostic, plan:create, ops:reflect, ops:drift, learning:archive, learning:refine-rules, jules:docsync
 
-**MANDATORY: Get user approval before proceeding to implementation.**
+### Reference Lookup Pattern
 
-For any non-trivial task requiring multiple steps or file modifications:
+**Discovery**: Long reference files needed better internal navigation without spoiling content.
 
-1. **Phase 1** - Understand requirements
-2. **Phase 2** - Design approach
-3. **Phase 3** - Get user approval
-4. **Phase 4** - Execute plan
-5. **Phase 5** - Verify and complete
+**Resolution**: Added navigation tables to reference files:
 
-**CRITICAL**: Never skip Phase 3 (Review) or jump directly to implementation.
+```markdown
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Topic A        | Section X            |
 
 ---
 
-## Verification Protocol (MANDATORY)
+| Context Condition | Action |
+| :---------------- | :----- |
+| Situation A       | Do X   |
+```
 
-**Before calling `ExitPlanMode`, you MUST verify:**
+**Resolution**: Created `invocable-development/references/lookup_content_injection.md` with full patterns.
 
-1. **Evidence-based verification** - Run verification commands and provide fresh evidence
-2. **Complete execution** - All planned tasks completed
-3. **Quality gates passed** - All automated checks pass
-4. **No false completion claims** - Never claim "complete" without verification
+### XML Simplification Refactor (2026-01-29)
 
-**The Iron Law**: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+**Discovery:** Excessive XML tags created technical documentation feel rather than architectural success framework.
+
+**Resolution:**
+
+- Kept only 2 XML tags: `<mission_control>` and `<critical_constraint>` (for low-freedom workflows)
+- Removed: `<guiding_principles>`, `<trigger>`, `<philosophy_bundle>`, `<interaction_schema>`, `<thinking>`, `<execution_plan>`, `<router>`, `<rule_category>`, `<anti_pattern>`, `<pattern>`
+- Replaced XML wrappers with Markdown sections
+- Adopted skill-creator patterns: ✅/❌ emoji anchors, recognition questions, navigation tables
+
+**Style Changes:**
+| Before | After |
+| :----- | :---- |
+| `<guiding_principles>` sections | `## The Path to...` Markdown sections |
+| `<trigger>` tags | Inline `> **When:**` callouts |
+| `<philosophy_bundle>` | Inline critical content only |
+| Long XML tables | Markdown tables with ✅/❌ examples |
+
+**New Skills Created:**
+
+- `skill-authoring` - Create portable skills with SKILL.md + references/
+- `skill-iterate` - Audit and improve existing skills
+- `command-authoring` - Create single-file commands with @/! injection
+- `command-iterate` - Audit commands with injection patterns
+
+### Semantic Bridge Refactoring (2026-01-29)
+
+**Discovery**: Bridge file and hardcoded tool syntax created portability issues and potential confusion.
+
+**Resolution**:
+
+- Deleted `bridge.md` entirely
+- Replaced with semantic directives in principles.md
+- Skills use "Delegate to X specialist" patterns
+- Commands keep Claude-specific syntax
+- Agents provide philosophy without Task() calls
+
+**Key insight**: Commands are Claude infrastructure—specific syntax is appropriate. Skills must be portable—semantic patterns required. Agents must not spawn other agents—philosophy only.
 
 ---
+
+## 4b. Iterative Prompting Framework (2026-01-29)
+
+A self-improving framework for compensating AI agent tool/skill invocation reluctance through explicit mechanisms, quantitative thresholds, and structured reasoning.
+
+### The Core Problem
+
+AI agents exhibit **natural reluctance** to invoke tools/skills. Research shows explicit quantitative enforcement significantly improves tool usage rates (30-50% reduction in unnecessary calls, increased accuracy on complex tasks).
+
+### Framework Components
+
+#### 1. Confidence Rating (0-100)
+
+Before any significant action, explicitly rate confidence:
+
+```
+Confidence Scale:
+100-95: Certain - proceed without tools
+94-90: High - consider tools, likely not needed
+89-80: Moderate - invoke tools if relevant
+79-70: Low - invoke tools
+<70:  Insufficient - invoke tools, gather context
+```
+
+**Recognition Question**: "Did I read the actual file, or just see it in grep?"
+
+#### 2. Quantitative Thresholds
+
+Use explicit numbers to reduce ambiguity:
+
+| Threshold           | Meaning                 | Action                       |
+| :------------------ | :---------------------- | :--------------------------- |
+| **<90% confidence** | Below high confidence   | Invoke tools/skills          |
+| **1% chance**       | Even marginal relevance | Absolute rule, no exceptions |
+| **10x sensitivity** | Aggressive threshold    | Lower threshold 10x          |
+
+#### 3. The 1% Rule (ABSOLUTE)
+
+> "If there is even the remotest chance a tool/skill applies, invoke it. No exceptions."
+
+This is not guidance—it is enforcement.
+
+#### 4. Chain-of-Thought Enforcement
+
+Force explicit reasoning before actions:
+
+```
+BEFORE ACTING:
+1. What is the goal?
+2. Rate confidence (0-100)
+3. What tools/skills might help?
+4. Is threshold met?
+5. Execute with evidence
+```
+
+#### 5. Anti-Laziness Triggers
+
+| Stop Thinking             | Do Instead                  |
+| :------------------------ | :-------------------------- |
+| "Simple, no tool needed"  | Check for tools first       |
+| "I'll just explore first" | Tools tell you HOW          |
+| "I know what to do"       | Use tool for best practices |
+| "Tools take too long"     | Tools SAVE time             |
+
+### The Mandatory Loop
+
+```
+MANDATORY LOOP: CONTEXT → CHECK → EXECUTE
+
+Before EVERY action:
+1. Gather relevant context
+2. ASK YOURSELF: "Does a tool/skill exist?"
+3. If 1% chance applies, invoke it
+4. Execute with evidence
+5. Loop continues with every new action
+```
+
+### Reference Implementation
+
+**SessionStart Hook** (`.claude/scripts/session-start.sh`):
+
+```bash
+SKILL SENSITIVITY: 10x ELEVATED
+
+Your skill invocation threshold is now 10x LOWER than normal.
+Before EVERY action:
+
+1. Rate confidence (0-100) in completing without a skill
+2. If confidence <90%, ASK YOURSELF: "Does a skill exist for this?"
+3. If 1% chance applies, invoke it
+
+CONTEXT FIRST. CHECK SKILL. EXECUTE.
+```
+
+**Anti-Laziness Reference** (`.claude/skills/skill-iterate/SKILL.md` - search for "Anti-Laziness"):
+
+Comprehensive reference with 8 sections:
+
+- Quick Reference
+- Confidence Rating
+- Evidence Protocol
+- CoT Patterns
+- Threshold Gates
+- Anti-Laziness Triggers
+- Meta-Cognitive Checkpoints
+- Uncertainty Protocol
+
+### Iterative Refinement
+
+The framework evolves through observation:
+
+1. **Monitor**: Track tool invocation rates
+2. **Measure**: Compare against thresholds
+3. **Adjust**: Refine confidence ratings and thresholds
+4. **Validate**: Test enforcement effectiveness
+
+**Key Metrics**:
+
+- Tool invocation frequency
+- Confidence rating accuracy
+- Error rate in tool selection
+- Rationalization detection rate
+
+### Integration Points
+
+| Component             | How It Uses the Framework                                                 |
+| :-------------------- | :------------------------------------------------------------------------ |
+| **SessionStart hook** | Injects discipline content at session start                               |
+| **Skills**            | Reference `lookup_anti_laziness_patterns.md` in Dynamic Knowledge Loading |
+| **MCP tools**         | Apply confidence rating before tool calls                                 |
+| **Agents**            | Include philosophy bundle with threshold enforcement                      |
+
+### Evidence-Based Verification
 
 <critical_constraint>
-MANDATORY: No cross-references between CLAUDE.md and .claude/rules/
+NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 </critical_constraint>
+
+| Instead of...         | Use This Evidence...                           |
+| :-------------------- | :--------------------------------------------- |
+| "I fixed the bug"     | `Test auth_login_test.ts passed (Exit Code 0)` |
+| "TypeScript is happy" | `tsc --noEmit: 0 errors, 0 warnings`           |
+| "File exists"         | `Read /path/to/file.ts:47 lines verified`      |
+
+### Confidence Markers
+
+| Marker          | Meaning                 | Action Required        |
+| :-------------- | :---------------------- | :--------------------- |
+| **✓ VERIFIED**  | Read file, traced logic | Safe to assert         |
+| **? INFERRED**  | Based on grep/search    | Verify before claiming |
+| **✗ UNCERTAIN** | Haven't checked         | Must investigate       |
+
+### Why This Works
+
+Research (CoT prompting, threshold-based scoring) shows:
+
+1. **Quantitative framing** reduces ambiguity—LLMs respond to explicit numbers
+2. **Self-reflection triggers** force reconsideration before action
+3. **Anti-laziness tables** catch rationalization patterns
+4. **Evidence requirements** prevent false claims
+5. **Loop structure** ensures consistent enforcement
+
+### Evolution Pattern
+
+The framework improves through iteration:
+
+1. **Initial**: Strong enforcement language
+2. **Observation**: What gets skipped?
+3. **Refinement**: Add specific triggers for observed gaps
+4. **Validation**: Test and measure improvement
+5. **Repeat**: Continuous refinement cycle
+
+---
+
+## 5. Native Integration
+
+The Seed System aligns with Claude Code native capabilities:
+
+| Native Capability                  | Seed System Pattern                                 |
+| ---------------------------------- | --------------------------------------------------- |
+| `EnterPlanMode`                    | `/strategy:architect` wraps with parallel detection |
+| `TodoWrite`                        | Primary task tracking (phase-level)                 |
+| `Task()` batching                  | `/strategy:execute` batches parallel tasks          |
+| Delegate to exploration specialist | `exploration-guide.md` provides context             |
+| Delegate to planning specialist    | `planning-guide.md` provides philosophy             |
+| `qa:verify-phase`                  | Build + Type + Test + Conflict gates                |
+
+**Key Principle**: Native tools execute; Seed System provides philosophy and context.
+
+### Guide System
+
+Philosophy guides provide context to native agents:
+
+| Guide               | Purpose                | Provides                                                |
+| ------------------- | ---------------------- | ------------------------------------------------------- |
+| `planning-guide`    | Planning philosophy    | L'Entonnoir, 2-3 task rule, parallel detection          |
+| `exploration-guide` | Exploration philosophy | Verification practice, output standards, tool selection |
+
+### Strategy Orchestration
+
+The Strategic Orchestrator enables parallel execution:
+
+| Command               | Purpose                                         |
+| :-------------------- | :---------------------------------------------- |
+| `/strategy:architect` | Create STRATEGY.md with parallel detection      |
+| `/strategy:execute`   | Execute with parallel Task() batching           |
+| `/qa:verify-phase`    | Phase gatekeeper (build, type, test, conflicts) |
+
+**STRATEGY.md Schema**:
+
+```markdown
+## Phase 2: Feature Implementation
+
+<phase id="phase-2" type="parallel" gate="qa:verify-phase">
+  <task id="2.1" name="API" style="tdd" agent="implementation">...</task>
+  <task id="2.2" name="UI" style="tdd">...</task>
+</phase>
+```
+
+---
 
 <critical_constraint>
 MANDATORY: No completion claims without fresh verification evidence
@@ -477,4 +601,3 @@ MANDATORY: Use ExitPlanMode before implementation
 <critical_constraint>
 MANDATORY: Every component MUST work with zero .claude/rules dependencies
 </critical_constraint>
-```

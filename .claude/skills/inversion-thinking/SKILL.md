@@ -1,13 +1,58 @@
 ---
 name: inversion-thinking
-description: "Solve problems by thinking backwards. Use when forward thinking is stuck, you need to identify risks, or find non-obvious solutions. Not for straightforward implementation tasks or simple bug fixes."
+description: "Solve problems by thinking backwards to identify failure modes and inverse solutions. Use when forward thinking is stuck, risks need identification, or non-obvious solutions are required. Includes failure mode enumeration, inverse pattern development, and risk documentation. Not for straightforward implementation tasks, simple bug fixes, or when forward analysis suffices."
 ---
+
+<mission_control>
+<objective>Solve problems by working backwards - identify what guarantees failure, then avoid those patterns.</objective>
+<success_criteria>Failure modes identified, inverse solutions found, risks documented</success_criteria>
+</mission_control>
+
+<trigger>When forward thinking is stuck, risks need identification, or non-obvious solutions are required</trigger>
 
 # Inversion Thinking
 
 Solve problems by working backwards - think about what guarantees failure, then avoid those things.
 
+---
+
+## The Path to Inversion Success
+
+### 1. Think Backwards to Move Forward
+
+Working backwards from failure is often easier than thinking forward to success because failure modes are more concrete and visible. When you're stuck on "how do we succeed," ask "how do we guarantee failure" - the answers often reveal themselves immediately.
+
+**Why this works**: People disagree on the "best" approach but easily agree on the "worst" approach. Inversion bypasses analysis paralysis by starting from consensus.
+
+### 2. Find Genuine Failure Modes, Not Opposites
+
+Effective inversion identifies realistic failure scenarios from actual experience, not abstract opposites of good ideas. A genuine failure mode is something that has actually happened or could realistically happen - not a theoretical contrarian view.
+
+**Why this matters**: "Don't be successful" is meaningless. "Make users wait 15 minutes to see value" is a real UX failure pattern that reveals an actionable success strategy.
+
+### 3. Combine Inversion with Forward Thinking
+
+Inversion provides one perspective. The complete picture emerges when you combine backward thinking (what to avoid) with forward thinking (what to do). Use inversion to surface risks, then use forward analysis to design solutions.
+
+**Why this creates completeness**: Forward thinking is prone to optimism bias. Inversion is naturally skeptical. Together, they provide balanced analysis that neither approach achieves alone.
+
+### 4. Derive Actionable Strategies
+
+Every identified failure mode should lead to a concrete, avoidable action. If you can't clearly avoid the failure mode, it's not actionable - return to step 2 and find more specific failures.
+
+**Why this creates impact**: Inversion that ends with abstract observations is wasted effort. The value comes from converting "don't do X" into "do Y instead."
+
+---
+
 ## Core Pattern
+
+**If you need to identify failure modes:** State goal → Invert problem → List failures → Derive solutions
+
+**If you need consensus on approach:** Ask "what guarantees failure" instead of "what creates success"
+
+**If you need actionable strategies:** Convert each failure mode into an avoidable action
+
+**Why:** Working backwards reveals non-obvious solutions by starting from consensus on what causes failure.
 
 Apply inversion by:
 
@@ -18,17 +63,14 @@ Apply inversion by:
 
 **Key Innovation**: Finding non-obvious solutions by approaching from the opposite direction. Often easier to agree on what causes failure than what causes success.
 
-## When to Use
+## Navigation
 
-Use this approach when:
-
-- Forward thinking isn't yielding solutions
-- Want to identify risks and failure modes
-- Consensus on "what to do" is difficult
-- Problem seems too complex to solve directly
-- Want to find non-obvious approaches
-
-**Recognition test:** "Is forward thinking stuck?" If solutions aren't emerging, invert the problem.
+| If you need...         | Read...                             |
+| :--------------------- | :---------------------------------- |
+| Core pattern           | ## Core Pattern                     |
+| Goal inversion example | ## Application Examples → Example 1 |
+| Troubleshooting        | ## Troubleshooting                  |
+| Output format          | ## Output Format                    |
 
 ## The Inversion Process
 
@@ -61,6 +103,68 @@ Success Strategies:
 2. [Avoid failure mode 2] → [Success strategy]
 3. [Avoid failure mode 3] → [Success strategy]
 ```
+
+## Implementation Patterns
+
+### Pattern 1: Goal Inversion
+
+```typescript
+// Original: "How do we make this successful?"
+// Inverted: "How do we guarantee failure?"
+
+function invertGoal(goal: string): string {
+  return `How do we guarantee the opposite of: ${goal}`;
+}
+
+const original = "Create great user onboarding";
+const inverted = invertGoal(original);
+// "How do we make users hate our onboarding?"
+```
+
+### Pattern 2: Failure Mode Listing
+
+```typescript
+// Genuine failure modes vs. opposites of good ideas
+const genuineFailures = [
+  "Make them read 10 pages of text", // Real UX antipattern
+  "Ask for 20 pieces of information", // Real friction point
+  "Don't show value for 15 minutes", // Real attention killer
+];
+```
+
+### Pattern 3: Success Strategy Derivation
+
+```typescript
+function deriveSuccessFromFailure(failure: string): string {
+  const strategy = oppositeOf(failure);
+  return {
+    avoid: failure,
+    doInstead: strategy,
+  };
+}
+```
+
+## Troubleshooting
+
+### Issue: Not Genuine Failure Modes
+
+| Symptom                | Solution                                   |
+| ---------------------- | ------------------------------------------ |
+| "Don't be successful"  | Too obvious - find realistic failure modes |
+| Opposite of good ideas | These aren't genuine failures              |
+
+### Issue: Contrived Failures
+
+| Symptom                             | Solution                                     |
+| ----------------------------------- | -------------------------------------------- |
+| Failure modes don't actually happen | Focus on realistic scenarios from experience |
+
+### Issue: Agreement Still Difficult
+
+| Symptom                        | Solution                                  |
+| ------------------------------ | ----------------------------------------- |
+| Team can't agree on success    | Ask "What would definitely fail?" instead |
+| Different opinions on approach | Everyone can agree on failure modes       |
 
 ## Two Types of Inversion
 
@@ -262,35 +366,7 @@ After analysis, produce structured output:
 ---
 
 <critical_constraint>
-MANDATORY: Identify genuine failure modes (not just opposites of good ideas)
-MANDATORY: Focus on realistic, actionable failure modes from experience
-MANDATORY: Combine inversion with forward thinking for complete analysis
-MANDATORY: Derive actionable strategies from avoiding each failure
-No exceptions. Inversion without genuine failure modes is wasted effort.
+**Portability Invariant:**
+
+This component must work in a project containing ZERO config files. It carries its own genetic code for context: fork isolation.
 </critical_constraint>
-
----
-
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
----

@@ -1,7 +1,6 @@
 ---
 name: update-docs
 description: "Sync documentation from source-of-truth when code changes, new features are added, or documentation drift is detected. Keeps docs aligned with codebase."
-disable-model-invocation: true
 ---
 
 <mission_control>

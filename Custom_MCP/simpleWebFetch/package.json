@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "dev": "tsx src/server.ts",
-    "test": "tsx src/test-server.ts"
+    "test": "tsx src/test-server.ts",
+    "test:suite": "tsx src/test-suite.ts"
   },
   "dependencies": {
     "@just-every/crawl": "^1.0.0",

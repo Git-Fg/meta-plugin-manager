@@ -1,3 +1,8 @@
+---
+name: google-genai-typescript
+description: "Integrate Google GenAI SDK (@google/genai) for Gemini models in TypeScript projects. Use when building Gemini integrations, Vertex AI support, multimodal capabilities, or agent workflows. Includes SDK setup, error handling, streaming, and 2026 best practices. Not for non-TypeScript projects, Python SDK usage, or non-Gemini model integrations."
+---
+
 # Google GenAI TypeScript Development
 
 <mission_control>
@@ -7,23 +12,76 @@
 
 <trigger>When writing TypeScript code that integrates with Google's GenAI SDK for Gemini models, including Vertex AI support, multimodal capabilities, or agent workflows</trigger>
 
+---
+
+## The Path to High-Value Google GenAI Integrations
+
+### 1. Start with the Right Client Foundation
+
+Proper client setup determines your entire integration architecture. Choose between API key (simple) and Vertex AI (enterprise) based on your scale needs. Vertex AI provides organization-level security and billing, while API keys work well for prototypes and smaller applications.
+
+**Why this matters:** The client configuration controls authentication, billing, and access patterns. Getting this right first prevents refactoring later.
+
+### 2. Match API Choice to Use Case
+
+Each API serves distinct interaction patterns:
+
+- **Models API** for single requests and simple streaming
+- **Chats API** for multi-turn conversations with local state
+- **Interactions API** for server-side agents with long-running tasks
+- **Files API** for large media attachments (PDFs, images, videos)
+- **Caches API** for cost optimization with repeated large prompts
+- **Live API** for real-time sessions with audio/video I/O
+
+**Why this matters:** Using the correct API reduces code complexity and improves performance. Chats manage conversation history automatically. Interactions handle agent state server-side. Files avoid base64 bloat.
+
+### 3. Use Streaming for Interactive Experiences
+
+Streaming responses (`generateContentStream`) provide immediate feedback and better user perception. The time-to-first-token is typically milliseconds, compared to waiting for complete responses.
+
+**Why this matters:** Users perceive streaming as faster even when total time is similar. The progressive display creates engagement and allows early termination if the response goes off-track.
+
+### 4. Leverage Structured Outputs for Reliable Parsing
+
+Combine `responseMimeType: "application/json"` with `responseSchema` to force JSON output matching your types. This eliminates fragile regex parsing and reduces retry loops.
+
+**Why this matters:** Type-safe integrations require predictable output formats. Structured outputs guarantee parseable results, reducing post-processing and error handling complexity.
+
+### 5. Handle Errors by Type, Not Message
+
+The SDK throws typed `ApiError` subclasses. Use `instanceof` checks to distinguish between authentication failures (401), rate limits (429), and server errors (500+). Each error type requires different handling strategies.
+
+**Why this matters:** Error messages change between versions. Error types remain stable. Type-based handling ensures your integration survives SDK updates without breaking.
+
+### 6. Prefer Tools Over Prompt Engineering
+
+Function calling, Google Search grounding, and code execution provide reliable capabilities that prompt engineering cannot match. These tools have structured inputs/outputs and verifiable results.
+
+**Why this matters:** Prompt-based workarounds are fragile and model-dependent. Tools provide stable interfaces that work across model versions and reduce prompt complexity.
+
+### 7. Optimize Cost with Caching and File Uploads
+
+Use `ai.caches` for repeated large system prompts. Use `ai.files` for large media attachments. Caching reduces token costs by 90%+ for cached content. File uploads avoid repeated base64 encoding.
+
+**Why this matters:** Large prompts multiply quickly in multi-turn conversations. Caching the stable portion (system instructions, context) dramatically reduces per-request costs.
+
+### 8. Configure Model Behavior Judiciously
+
+Avoid setting `maxOutputTokens`, `topP`, `topK` unless you have specific requirements. Avoid changing safety settings unless policy requires it. Default settings work well for most use cases.
+
+**Why this matters:** Unnecessary configuration reduces model performance and creates maintenance burden. Default settings are tuned for general use cases. Override only when measurement shows benefit.
+
+---
+
 ## Quick Start
 
-Install the SDK with Bun:
+**Install SDK:** `bun add @google/genai@latest`
 
-```bash
-bun add @google/genai@latest
-```
+**Set up client:** Initialize `GoogleGenAI` with API key
 
-Basic client setup for Gemini Developer API:
+**Make request:** `ai.models.generateContent()`
 
-```ts
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-```
+**Why:** Google's GenAI SDK provides Gemini models with multimodal support—Vertex AI for enterprise scale.
 
 For Vertex AI (enterprise):
 
@@ -34,6 +92,25 @@ const ai = new GoogleGenAI({
   location: process.env.GOOGLE_CLOUD_LOCATION,
 });
 ```
+
+## Operational Patterns
+
+This skill uses these standard patterns:
+
+- **Tracking**: Maintain visible progress for GenAI integration tasks
+- **Web Fetch**: Fetch current API documentation when needed
+- **Navigation**: Use LSP for TypeScript code structure understanding
+
+## Navigation
+
+| If you need...        | Read...                                     |
+| :-------------------- | :------------------------------------------ |
+| Install SDK           | ## Quick Start → Install SDK                |
+| Set up client         | ## Quick Start → Set up client              |
+| Make request          | ## Quick Start → Make request               |
+| Core API capabilities | ## Core API Capabilities                    |
+| Models API            | ## Core API Capabilities → Models API       |
+| Vertex AI setup       | ## Quick Start → For Vertex AI (enterprise) |
 
 ## Core API Capabilities
 
@@ -402,7 +479,7 @@ Before fetching any URL:
 
 5. **Dispose Context** - Remove fetched content after extracting delta
 
-**NEVER copy documentation from URLs.** Instead: fetch the URL, identify current API syntax, apply directly to local files. Do not store documentation in the session.
+**Delta Pattern**: Fetch the URL, identify current API syntax, apply directly to local files. Store patterns, not documentation. Documentation becomes stale; patterns remain actionable.
 
 **When NOT to fetch:**
 
@@ -425,37 +502,26 @@ Before fetching any URL:
 
 ---
 
-## Genetic Code
+## Dynamic Sourcing
 
-This component carries essential Seed System principles for context: fork isolation:
+<fetch*protocol>
+**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For raw SDK syntax (installation, API methods, model config):
 
-**Core Principles:**
+1. **Fetch**: `https://www.npmjs.com/package/@google/genai`
+2. **Extract**: The specific API methods or configuration you need
+3. **Discard**: Do not retain the fetch in context
 
-- Map, not Script: Provide boundaries and invariants; trust the Pilot to navigate
-- Explain the Why: Rationale enables adaptation to edge cases
-- Infinitive Voice: "Validate," "Create," "Carry"—not "You should"
-- Carry genetic code: Ensure portability in isolation
-- Place constraints at bottom: Exploit recency bias
-- Start with high freedom: Constrain only when justified
+**Additional Sources** (when needed):
 
-**Portability Invariant:** Every component MUST work in a project with ZERO `.claude/rules/` access. Components carry their own "genetic code" for context fork isolation.
-
-**Delta Standard:** Good Component = Expert Knowledge − What Claude Already Knows. Document only the knowledge delta—what Claude wouldn't already have.
-
-**Recognition Questions:**
-
-- "Would this work standalone?" → Fix by adding patterns and examples
-- "Would Claude know this without being told?" → Delete zero-delta content
-- "Did I read the actual file, or just grep?" → Verify before claiming
+- SDK API changes → `https://github.com/googleapis/js-genai/blob/main/README.md`
+- Model updates → `https://ai.google.dev/gemini-api/docs/quickstart`
+- Vertex AI config → `https://docs.cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview`
+  </fetch_protocol>
 
 ---
 
 <critical_constraint>
-MANDATORY: Verify package version before installation—check npm for latest
-MANDATORY: Never hardcode API keys—use environment variables
-MANDATORY: Use streaming for interactive UX, non-streaming for batch processing
-MANDATORY: Use ai.chats for simple conversations, ai.interactions for agents
-MANDATORY: Handle errors with instanceof checks before accessing properties
-MANDATORY: Use responseMimeType + responseSchema for structured outputs
-No exceptions. Production code requires proper error handling and security practices.
+**Portability Invariant:** This skill must work in a project with ZERO .claude/rules/ access. All patterns and examples are self-contained.
+
+**Security Boundary:** Never hardcode API keys in code. Use environment variables or secure secret management. For browser applications, route requests through a server to protect API keys.
 </critical_constraint>

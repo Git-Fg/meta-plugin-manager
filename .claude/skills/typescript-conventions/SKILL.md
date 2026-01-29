@@ -1,21 +1,118 @@
 ---
 name: typescript-conventions
-description: "Apply TypeScript conventions when writing or refactoring TypeScript code to ensure type safety and consistency. Not for JavaScript or other languages."
+description: "Apply TypeScript conventions for type safety, consistency, and maintainability. Use when writing or refactoring TypeScript code. Includes explicit types, strict mode, error handling patterns (Result<T>, typed errors), naming conventions, immutability patterns, module organization, and testing standards. Not for JavaScript, non-TypeScript languages, or when project conventions explicitly differ."
 user-invocable: false
 ---
+
+<mission_control>
+<objective>Apply TypeScript conventions for type safety, consistency, and maintainability across the codebase.</objective>
+<success_criteria>Type strictness enforced, explicit types used, consistent patterns applied</success_criteria>
+</mission_control>
+
+<guiding_principles>
+
+## The Path to High-Quality TypeScript Code
+
+### 1. Type Safety Through Strictness
+
+TypeScript's compiler catches bugs at compile-time when configured strictly. The `strict: true` setting enables all type-checking options, making the type system work for you rather than against you.
+
+**Why strict mode matters:**
+
+- Catches null/undefined errors before runtime
+- Enforces explicit type annotations
+- Prevents implicit any types
+- Makes code serve as its own documentation
+
+### 2. Explicit Types Over Convenience
+
+Explicit type annotations create clarity and prevent cascading errors. When you specify input and output types, the compiler verifies your logic at every step.
+
+**Why explicit types help:**
+
+- Functions become self-documenting
+- Refactoring becomes safe (compiler catches breaking changes)
+- Team onboarding is faster (types show intent)
+- IDE autocomplete improves dramatically
+
+### 3. Named Semantics Through Conventions
+
+Consistent naming creates shared understanding across the codebase. When interfaces, types, and constants follow predictable patterns, code becomes readable at a glance.
+
+**Why naming conventions matter:**
+
+- PascalCase for types signals "this is a shape or contract"
+- camelCase for functions signals "this is an action"
+- UPPER_SNAKE_CASE for constants signals "this never changes"
+- Predictable patterns reduce cognitive load
+
+### 4. Immutability for Predictability
+
+Immutable data prevents bugs from unexpected mutations. The spread operator creates new objects and arrays, leaving originals unchanged—critical for React rendering and state management.
+
+**Why immutability prevents bugs:**
+
+- No stale closures from mutated references
+- React can efficiently detect changes (reference equality)
+- State changes become explicit and traceable
+- Time-travel debugging becomes possible
+
+### 5. Typed Errors for Traceability
+
+Typed error classes carry context through the call stack. When operations fail, structured error data enables logging, monitoring, and user-friendly messages.
+
+**Why Result<T> pattern works:**
+
+- Forces explicit error handling at call sites
+- Error types prevent silent failures
+- Context in errors enables debugging
+- Error states become part of the type system
+
+</guiding_principles>
 
 # TypeScript Team Conventions
 
 TypeScript conventions that auto-apply when writing TypeScript code. These conventions ensure consistency, type safety, and maintainability across the codebase.
 
+## Quick Start
+
+**Apply TypeScript conventions systematically:**
+
+1. **If you need type safety:** Enforce strict mode → Use explicit types → Define return types → Result: Compile-time error catching
+2. **If you need error handling:** Create typed error classes → Use Result<T> pattern → Include context → Result: Traceable failures
+3. **If you need consistent patterns:** Follow naming conventions → Use immutability → Use named constants → Result: Maintainable codebase
+
+**Why:** Conventions prevent bugs at compile-time, serve as documentation, and enable safe refactoring.
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Verification**: Verify code quality using diagnostics and linting
+- **Navigation**: Navigate TypeScript code structure for refactoring
+- **Tracking**: Maintain a visible task list for convention enforcement
+
+Trust native tools to fulfill these patterns. The System Prompt selects the correct implementation.
+
+## Navigation
+
+| If you need...          | Read...                              |
+| :---------------------- | :----------------------------------- |
+| Type safety             | ## Quick Start → type safety         |
+| Error handling          | ## Quick Start → error handling      |
+| Consistent patterns     | ## Quick Start → consistent patterns |
+| Type strictness         | ## Type Strictness                   |
+| Error handling patterns | ## Error Handling Patterns           |
+| Examples                | examples/                            |
+
 ## Type Strictness
 
-**Always enforce:**
+**Type safety starts with strict configuration:**
 
-- Use strict mode: `"strict": true` in tsconfig.json
-- Never use `any` (use `unknown` instead)
+- Enable strict mode: `"strict": true` in tsconfig.json
+- Use `unknown` instead of `any` when type is truly unknown
 - Define explicit return types for all functions
-- Prefer interfaces over types for object shapes
+- Prefer interfaces for object shapes that can be extended
 
 **Example - Good:**
 
@@ -30,20 +127,28 @@ function validateEmail(email: string): Result<Email, ValidationError> {
 }
 ```
 
-**Example - Bad:**
+**Example - Type Safety:**
 
 ```typescript
+// ❌ Avoid: any disables type checking
 function validateEmail(email: any): any {
-  // DON'T use 'any'
+  // No type safety
+}
+
+// ✅ Prefer: unknown + type guards
+function validateEmail(email: unknown): Email | null {
+  if (typeof email !== "string") return null;
+  if (!isValidEmailFormat(email)) return null;
+  return email as Email;
 }
 ```
 
 ## Error Handling
 
-**Requirements:**
+**Typed errors make failures traceable and actionable:**
 
-- Never throw bare errors; use typed error classes
-- Always include context: `new ValidationError('message', { context })`
+- Create typed error classes that extend Error
+- Include context in error constructors (field, data, metadata)
 - Use Result<T> pattern for operations that can fail
 - Handle async errors with try/catch in async functions
 
@@ -78,12 +183,25 @@ function validateUser(
 }
 ```
 
-**Example - Bad:**
+**Example - Error Handling:**
 
 ```typescript
+// ❌ Avoid: bare errors lose context
 function validateUser(user: any) {
-  if (!user) throw new Error("Invalid user"); // DON'T use bare Error
+  if (!user) throw new Error("Invalid user");
   return user;
+}
+
+// ✅ Prefer: typed errors with context
+class ValidationError extends Error {
+  constructor(
+    message: string,
+    public readonly field?: string,
+    public readonly context?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = "ValidationError";
+  }
 }
 ```
 
@@ -111,12 +229,13 @@ function getUserById(id: UserId) {} // ✅ Good
 
 ## Module Organization
 
-**File structure:**
+**Organize code for discoverability and maintainability:**
 
-- Use: `src/<domain>/<feature>/<File.ts>`
-- Export only public interfaces from index.ts
-- Keep files under 300 lines
-- Use named exports, avoid default exports
+- Use domain-driven structure: `src/<domain>/<feature>/<File.ts>`
+- Export only public interfaces from index.ts files
+- Keep files focused (under 300 lines)
+- Use named exports for better tree-shaking
+- Reserve default exports for single-export modules
 
 **Example - Good:**
 
@@ -133,33 +252,38 @@ export class DatabaseUserRepository implements UserRepository {
 }
 ```
 
-## Immutability Pattern (CRITICAL)
+## Immutability Pattern
 
-**WHY**: Prevents stale closures, makes state predictable, enables React optimizations.
+**Immutable data prevents bugs from unexpected mutations:**
 
-**✅ ALWAYS use spread operator:**
+**Why immutability works:**
+
+- Prevents stale closures from mutated references
+- Enables React to efficiently detect changes (reference equality)
+- Makes state changes explicit and traceable
+- Supports time-travel debugging
+
+**Prefer creating new objects:**
 
 ```typescript
+// ✅ Good: spread creates new reference
 const updatedUser = { ...user, name: "New Name" };
 const updatedArray = [...items, newItem];
-```
 
-**❌ NEVER mutate directly:**
-
-```typescript
-user.name = "New Name"; // BAD - causes bugs
-items.push(newItem); // BAD - breaks React optimizations
+// ❌ Avoid: direct mutation
+user.name = "New Name"; // Causes bugs in closures
+items.push(newItem); // Breaks React optimizations
 ```
 
 ## Code Organization
 
-**Best practices:**
+**Structure code for clarity and testability:**
 
-- Group related functionality into classes or modules
-- Use dependency injection for services
-- Keep pure functions separate from side-effect code
+- Group related functionality into cohesive modules
+- Use dependency injection for testability
+- Separate pure functions from side-effect code
 - Prefer composition over inheritance
-- Use early returns over deep nesting
+- Use early returns to reduce nesting
 
 **Example - Good:**
 
@@ -179,11 +303,11 @@ function processUser(user: User): Result<ProcessedUser, ValidationError> {
 
 ## Testing Standards
 
-**Requirements:**
+**Tests verify behavior and enable safe refactoring:**
 
 - Write tests for all public functions
 - Use descriptive test names: `should_return_user_when_id_exists`
-- Mock external dependencies
+- Mock external dependencies for isolation
 - Aim for 80%+ code coverage
 
 **Example - Good:**
@@ -209,11 +333,10 @@ describe("UserRepository", () => {
 
 ## Type Safety Over Convenience
 
-**WHY**: Types catch bugs at compile-time, serve as documentation, enable refactoring.
-
-**✅ GOOD (proper types):**
+**Types catch bugs at compile-time and serve as documentation:**
 
 ```typescript
+// ✅ Good: explicit types enable compiler checking
 interface Market {
   id: string;
   name: string;
@@ -221,21 +344,17 @@ interface Market {
 }
 
 function getMarket(id: string): Promise<Market> {}
-```
 
-**❌ BAD (using `any`):**
-
-```typescript
+// ❌ Avoid: any disables type checking
 function getMarket(id: any): Promise<any> {}
 ```
 
 ## Constants Over Magic Numbers
 
-**Use named constants instead of magic numbers:**
-
-**✅ Good:**
+**Named constants reveal intent and enable easy updates:**
 
 ```typescript
+// ✅ Good: constants are self-documenting
 const MIN_AGE = 18;
 const MAX_AGE = 120;
 const MIN_NAME_LENGTH = 2;
@@ -244,24 +363,20 @@ const MAX_NAME_LENGTH = 100;
 if (user.age < MIN_AGE || user.age > MAX_AGE) {
   throw new ValidationError("Age out of range");
 }
-```
 
-**❌ Bad:**
-
-```typescript
+// ❌ Avoid: magic numbers hide intent
 if (user.age < 18 || user.age > 120) {
-  // Magic numbers
   throw new Error("Invalid age");
 }
 ```
 
 ## Performance Best Practices
 
-**Use for:**
+**Memoization prevents unnecessary re-computation in React:**
 
-- Expensive computations (`useMemo`)
-- Functions passed to children (`useCallback`)
-- Pure components (`React.memo`)
+- Use `useMemo` for expensive computations
+- Use `useCallback` for functions passed to children
+- Use `React.memo` for pure components
 
 ```typescript
 const sortedMarkets = useMemo(() => {
@@ -273,71 +388,46 @@ const handleSearch = useCallback((query: string) => {
 }, []);
 ```
 
-## Common Anti-Patterns to Avoid
+## Common Anti-Patterns
 
-❌ **Using `any` for types**
+**These patterns create maintenance burden and bugs:**
 
-```typescript
-// DON'T
-function process(data: any): any {}
-```
-
-❌ **Default exports**
-
-```typescript
-// DON'T
-export default function process() {}
-```
-
-❌ **Bare `throw new Error()`**
-
-```typescript
-// DON'T
-throw new Error("Something went wrong");
-```
-
-❌ **Mixed concerns in single file**
-
-```typescript
-// DON'T - mixing business logic, UI, and data access
-function UserComponent() {
-  // UI logic
-  // Data access
-  // Business logic
-}
-```
-
-❌ **Magic numbers without constants**
-
-```typescript
-// DON'T
-if (retries > 3) {
-}
-```
-
-❌ **Console.log in production**
-
-```typescript
-// DON'T
-console.log("User data:", user);
-```
+| Pattern                   | Why Avoid                             | Alternative                    |
+| :------------------------ | :------------------------------------ | :----------------------------- |
+| `any` for types           | Disables type checking                | Use `unknown` with type guards |
+| Default exports           | Breaks tree-shaking, hard to refactor | Use named exports              |
+| Bare `throw new Error()`  | Loses context, hard to debug          | Use typed error classes        |
+| Mixed concerns            | Violates single responsibility        | Separate by layer              |
+| Magic numbers             | Hides intent, error-prone             | Use named constants            |
+| Console.log in production | Clutters logs, security risk          | Use proper logging             |
 
 ## Verification Checklist
 
-Before considering TypeScript code complete:
+**Quality indicators for TypeScript code:**
 
 - [ ] Strict mode enabled in tsconfig.json
-- [ ] No `any` types (use `unknown` instead)
-- [ ] Explicit return types defined
-- [ ] Typed error classes used (not bare Error)
-- [ ] Result<T> pattern for operations that can fail
-- [ ] Immutability pattern followed (spread operators)
-- [ ] Constants instead of magic numbers
-- [ ] Descriptive naming conventions
-- [ ] Files under 300 lines
-- [ ] Named exports (no default)
-- [ ] Tests written for all public functions
-- [ ] 80%+ code coverage
+- [ ] Explicit types defined (no `any` unless truly unknown)
+- [ ] Return types explicitly declared
+- [ ] Typed error classes for domain errors
+- [ ] Result<T> pattern for fallible operations
+- [ ] Immutability via spread operators
+- [ ] Named constants for business values
+- [ ] Consistent naming conventions applied
+- [ ] Files focused and under 300 lines
+- [ ] Named exports for better tree-shaking
+- [ ] Tests covering public functions
+- [ ] 80%+ code coverage target
+
+## Few-Shot Examples
+
+Refer to `examples/` for pattern matching:
+
+| Example File             | Shows...                                                                   |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `good-naming.ts`         | Proper naming conventions (interfaces, types, enums, constants, functions) |
+| `bad-practices.ts`       | What to avoid (any, bare Error, mutation, magic numbers)                   |
+| `good-error-handling.ts` | Typed error classes and Result<T> pattern                                  |
+| `good-practices.ts`      | Immutability, early returns, constants                                     |
 
 ## Integration
 
@@ -367,25 +457,10 @@ This skill contains Seed System-specific conventions (Result<T> pattern, immutab
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+**Portability Invariant:** This skill works with zero .claude/rules dependencies.
+**Autonomy Target:** 80-95% autonomous operation (0-5 questions per session).
+**Frontmatter Format:** Description uses What-When-Not-Includes in infinitive voice.
+**Discovery Method:** Description enables auto-discovery without component name references.
+**Content Structure:** Progressive disclosure with references/ for detailed content.
+**Format Standard:** XML for control (mission_control, critical_constraint), Markdown for data.
 </critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-  MANDATORY: Define explicit return types for all functions
-  MANDATORY: Use Result<T> pattern for operations that can fail
-  MANDATORY: Use typed error classes, never bare Error
-  MANDATORY: Never mutate objects directly (use spread operator)
-  No exceptions. Type safety prevents runtime bugs.
-  </critical_constraint>

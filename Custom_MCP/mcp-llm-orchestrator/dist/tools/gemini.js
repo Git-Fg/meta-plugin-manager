@@ -1,7 +1,58 @@
 import { z } from "zod";
 import { GoogleGenAI } from "@google/genai";
-import { MODELS, env, responseCache, calculateCost, logCost, getCacheKey, } from "./shared.js";
+import { MODELS, env, responseCache, calculateCost, logCost, getCacheKey, processAssetData, } from "./shared.js";
 const ai = new GoogleGenAI({ apiKey: env.GOOGLE_API_KEY });
+// Input schemas
+const AskGeminiProSchema = z.object({
+    query: z
+        .string()
+        .min(1)
+        .describe("The question requiring current information"),
+    system_prompt: z
+        .string()
+        .optional()
+        .describe("Optional system prompt for context"),
+    disable_web_search: z
+        .boolean()
+        .default(false)
+        .describe("Set true to disable Google Search grounding"),
+});
+const AskGeminiFlashSchema = z.object({
+    query: z.string().min(1).describe("The question to answer"),
+    system_prompt: z
+        .string()
+        .optional()
+        .describe("Optional system prompt for context"),
+    disable_web_search: z
+        .boolean()
+        .default(false)
+        .describe("Set true to disable Google Search grounding"),
+});
+const AnalyzeMediaSchema = z.object({
+    prompt: z
+        .string()
+        .min(1)
+        .describe("Question or instructions about the media"),
+    mediaType: z
+        .enum(["image", "video", "audio", "document"])
+        .describe("Type of media to analyze"),
+    mimeType: z
+        .string()
+        .optional()
+        .describe("MIME type (auto-detected from file extension if data is a file path)"),
+    data: z
+        .string()
+        .optional()
+        .describe("File path (e.g., /path/to/image.png or ./docs/document.pdf), URL (http:// or https://), or base64-encoded content"),
+    uri: z
+        .string()
+        .optional()
+        .describe("Alias for data parameter (legacy support)"),
+    model: z
+        .enum([MODELS.GEMINI_FLASH, MODELS.GEMINI_PRO])
+        .default(MODELS.GEMINI_FLASH)
+        .describe("Model to use (Flash for cost, Pro for complex reasoning)"),
+});
 function formatGroundingSources(sources) {
     if (!sources || sources.length === 0)
         return "";
@@ -70,33 +121,17 @@ async function callGeminiMultimodal(prompt, _mediaType, mediaSource, mimeType, d
 export function registerGeminiTools(server) {
     server.registerTool("ask_gemini_pro", {
         title: "Ask Gemini 3 Pro with web research",
-        description: "Query Gemini 3 Pro with Google Search grounding for up-to-date answers with web citations. " +
-            "Use disable_web_search=true to disable grounding for pure text responses.",
-        inputSchema: {
-            query: z
-                .string()
-                .min(1)
-                .describe("The question requiring current information"),
-            system_prompt: z
-                .string()
-                .optional()
-                .describe("Optional system prompt for context"),
-            disable_web_search: z
-                .boolean()
-                .default(false)
-                .describe("Set true to disable Google Search grounding"),
-        },
-        outputSchema: {
-            answer: z
-                .string()
-                .describe("The answer from Gemini with web citations"),
-        },
-    }, async ({ query, system_prompt, disable_web_search }) => {
+        description: "Tool to query Gemini 3 Pro with Google Search grounding. Use when you need up-to-date answers with web citations. Constraint: use ask_gemini_flash for cost-efficient queries; use disable_web_search=true for pure text without grounding.",
+        inputSchema: AskGeminiProSchema,
+    }, async ({ query, system_prompt, disable_web_search, }) => {
         const cacheKey = getCacheKey("gemini-pro", disable_web_search.toString(), system_prompt, query);
         const cached = responseCache.get(cacheKey);
         if (cached) {
             console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-            return { content: [{ type: "text", text: cached.response }] };
+            return {
+                content: [{ type: "text", text: cached.response }],
+                structuredContent: { cached: true },
+            };
         }
         const result = await callGemini(query, MODELS.GEMINI_PRO, system_prompt, !disable_web_search);
         const cost = calculateCost(MODELS.GEMINI_PRO, result.usage.inputTokens, result.usage.outputTokens);
@@ -105,37 +140,29 @@ export function registerGeminiTools(server) {
             response: result.response,
             timestamp: Date.now(),
         });
-        return { content: [{ type: "text", text: result.response }] };
+        return {
+            content: [{ type: "text", text: result.response }],
+            structuredContent: {
+                answer: result.response,
+                model: MODELS.GEMINI_PRO,
+                usage: result.usage,
+                cost,
+            },
+        };
     });
     server.registerTool("ask_gemini_flash", {
-        title: "Ask Gemini 3 Flash",
-        description: "Query Gemini 3 Flash for fast, efficient responses with Google Search grounding. " +
-            "Use disable_web_search=true for pure text responses without web grounding. " +
-            "Most cost-effective option ($0.50/$3 per 1M tokens).",
-        inputSchema: {
-            query: z.string().min(1).describe("The question to answer"),
-            system_prompt: z
-                .string()
-                .optional()
-                .describe("Optional system prompt for context"),
-            disable_web_search: z
-                .boolean()
-                .default(false)
-                .describe("Set true to disable Google Search grounding"),
-        },
-        outputSchema: {
-            answer: z.string().describe("The response from Gemini Flash"),
-            sources: z
-                .array(z.string())
-                .optional()
-                .describe("Web sources if grounding enabled"),
-        },
-    }, async ({ query, system_prompt, disable_web_search }) => {
+        title: "Ask Gemini 3 Flash (Cost-Efficient)",
+        description: "Tool to query Gemini 3 Flash for fast, efficient responses with Google Search grounding. Use when you need cost-effective web-grounded answers. Constraint: use ask_gemini_pro for complex reasoning; use disable_web_search=true for pure text responses.",
+        inputSchema: AskGeminiFlashSchema,
+    }, async ({ query, system_prompt, disable_web_search, }) => {
         const cacheKey = getCacheKey("gemini-flash", disable_web_search.toString(), system_prompt, query);
         const cached = responseCache.get(cacheKey);
         if (cached) {
             console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-            return { content: [{ type: "text", text: cached.response }] };
+            return {
+                content: [{ type: "text", text: cached.response }],
+                structuredContent: { cached: true },
+            };
         }
         const result = await callGemini(query, MODELS.GEMINI_FLASH, system_prompt, !disable_web_search);
         const cost = calculateCost(MODELS.GEMINI_FLASH, result.usage.inputTokens, result.usage.outputTokens);
@@ -144,55 +171,58 @@ export function registerGeminiTools(server) {
             response: result.response,
             timestamp: Date.now(),
         });
-        return { content: [{ type: "text", text: result.response }] };
+        return {
+            content: [{ type: "text", text: result.response }],
+            structuredContent: {
+                answer: result.response,
+                model: MODELS.GEMINI_FLASH,
+                usage: result.usage,
+                cost,
+            },
+        };
     });
     server.registerTool("analyze_media", {
         title: "Analyze Image, Video, Audio, or Document",
-        description: "Use Gemini to analyze images, videos, audio, or documents. " +
-            "Flash is recommended for cost efficiency. Pro is better for complex reasoning. " +
-            "Supports inline base64 data or File API URIs.",
-        inputSchema: {
-            prompt: z
-                .string()
-                .min(1)
-                .describe("Question or instructions about the media"),
-            mediaType: z
-                .enum(["image", "video", "audio", "document"])
-                .describe("Type of media to analyze"),
-            mediaSource: z
-                .enum(["inline", "uri"])
-                .describe("inline for base64, uri for File API"),
-            mimeType: z
-                .string()
-                .describe("MIME type (e.g., image/jpeg, video/mp4, audio/wav, application/pdf)"),
-            data: z
-                .string()
-                .optional()
-                .describe("Base64-encoded media if mediaSource=inline"),
-            uri: z.string().optional().describe("File URI if mediaSource=uri"),
-            model: z
-                .enum([MODELS.GEMINI_FLASH, MODELS.GEMINI_PRO])
-                .default(MODELS.GEMINI_FLASH)
-                .describe("Model to use (Flash for cost, Pro for complex reasoning)"),
-        },
-        outputSchema: {
-            answer: z.string().describe("The analysis result from Gemini"),
-        },
-    }, async ({ prompt, mediaType, mediaSource, mimeType, data, uri, model }) => {
+        description: "Tool to analyze images, videos, audio, or documents using Gemini. Use when you need multimodal analysis. Constraint: Flash for cost efficiency; Pro for complex reasoning; supports file paths (absolute/relative), URLs, and inline base64.",
+        inputSchema: AnalyzeMediaSchema,
+    }, async ({ prompt, mediaType, mimeType, data, uri, model, }) => {
+        const mediaData = data || uri;
+        if (!mediaData) {
+            return {
+                content: [
+                    { type: "text", text: "Either data or uri parameter is required" },
+                ],
+                isError: true,
+            };
+        }
         const cacheKey = getCacheKey("vision", model, mediaType, prompt.slice(0, 50));
         const cached = responseCache.get(cacheKey);
         if (cached) {
             console.error("[CACHE] Hit for", cacheKey.slice(0, 50));
-            return { content: [{ type: "text", text: cached.response }] };
+            return {
+                content: [{ type: "text", text: cached.response }],
+                structuredContent: { cached: true },
+            };
         }
-        const result = await callGeminiMultimodal(prompt, mediaType, mediaSource, mimeType, data, uri, model);
+        const processed = await processAssetData(mediaData, mimeType);
+        const mediaSource = processed.isUrl ? "uri" : "inline";
+        const result = await callGeminiMultimodal(prompt, mediaType, mediaSource, processed.mimeType, processed.isUrl ? undefined : processed.data, processed.isUrl ? processed.data : undefined, model);
         const cost = calculateCost(model, result.usage.inputTokens, result.usage.outputTokens);
         logCost(cost, false);
         responseCache.set(cacheKey, {
             response: result.response,
             timestamp: Date.now(),
         });
-        return { content: [{ type: "text", text: result.response }] };
+        return {
+            content: [{ type: "text", text: result.response }],
+            structuredContent: {
+                analysis: result.response,
+                model,
+                mediaType,
+                usage: result.usage,
+                cost,
+            },
+        };
     });
 }
 //# sourceMappingURL=gemini.js.map

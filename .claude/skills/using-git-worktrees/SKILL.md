@@ -1,7 +1,12 @@
 ---
 name: using-git-worktrees
-description: "Manage git worktrees when creating isolated workspaces for features or parallel plans. Not for simple branch switching or single-task sessions."
+description: "Manage git worktrees to create isolated workspaces for features or parallel plans. Use when creating isolated workspaces, working on multiple features, or avoiding branch switching. Includes worktree creation, isolation patterns, and cleanup protocols. Not for simple branch switching, single-task sessions, or when regular branches suffice."
 ---
+
+<mission_control>
+<objective>Manage git worktrees to create isolated workspaces for features or parallel plans without branch switching.</objective>
+<success_criteria>Worktree created, isolated workspace established, safety verification passed</success_criteria>
+</mission_control>
 
 # Using Git Worktrees
 
@@ -12,6 +17,67 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 **Core principle:** Systematic directory selection + safety verification = reliable isolation.
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
+
+---
+
+## The Path to Successful Isolation
+
+<guiding_principles>
+
+### 1. Systematic Directory Selection Prevents Confusion
+
+Following a clear priority order for directory location eliminates ambiguity and ensures consistency across sessions. When directory selection is systematic, worktrees are predictably located and easily managed.
+
+**Why this works:** A priority-based approach (existing → CLAUDE.md preference → ask) respects project conventions while providing fallback options. This prevents scattered worktree locations and makes cleanup straightforward.
+
+### 2. Safety Verification Protects Repository Integrity
+
+Verifying that project-local worktree directories are git-ignored prevents accidental commits of worktree contents to the repository. This check is a simple step that avoids complex cleanup later.
+
+**Why this works:** Using `git check-ignore` before creation catches the problem before it exists. Fixing .gitignore immediately when the check fails maintains the principle of fixing broken things as soon as they're discovered.
+
+### 3. Clean Baseline Enables Accurate Problem Diagnosis
+
+Running tests immediately after worktree creation establishes a known-good state. When tests pass at the start, any failures during feature work are attributable to new code, not pre-existing issues.
+
+**Why this works:** A passing test suite provides confidence that the workspace is functional. Reporting failures immediately gives the user an informed choice about proceeding versus investigating.
+
+### 4. Auto-Detection Ensures Project Compatibility
+
+Detecting project type from manifest files (package.json, Cargo.toml, etc.) and running appropriate setup commands ensures the worktree is ready for work regardless of technology stack.
+
+**Why this works:** Auto-detection adapts to the project's actual tooling rather than assuming a specific ecosystem. This flexibility makes the skill work across Node, Rust, Python, Go, and other environments.
+
+### 5. Proper Cleanup Maintains Workspace Hygiene
+
+Using the finishing-a-development-branch skill after work completion ensures proper merge, cleanup, and worktree removal when appropriate.
+
+**Why this works:** Structured cleanup prevents abandoned worktrees from accumulating and keeps the workspace organized over time.
+
+</guiding_principles>
+
+## Workflow
+
+**Safety check:** Verify no conflicts with existing worktrees
+
+**Directory selection:** Check `.worktrees` or `worktrees`, or CLAUDE.md preference
+
+**Create worktree:** `git worktree add <path> <branch>`
+
+**Verify isolation:** Confirm workspace is isolated and ready
+
+**Why:** Worktrees enable parallel development without branch switching—no context loss between tasks.
+
+## Navigation
+
+| If you need...       | Read...                           |
+| :------------------- | :-------------------------------- |
+| Understand worktrees | ## Overview                       |
+| Safety check         | ## Workflow → Safety check        |
+| Directory selection  | ## Workflow → Directory selection |
+| Create worktree      | ## Workflow → Create worktree     |
+| Verify isolation     | ## Workflow → Verify isolation    |
+| Cleanup protocol     | See cleanup patterns in body      |
 
 ## Directory Selection Process
 
@@ -52,26 +118,20 @@ Which would you prefer?
 
 ### For Project-Local Directories (.worktrees or worktrees)
 
-**MUST verify directory is ignored before creating worktree:**
+Verifying directory is ignored before creating worktree prevents accidental commits of worktree contents to the repository.
 
 ```bash
 # Check if directory is ignored (respects local, global, and system gitignore)
 git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
 ```
 
-**If NOT ignored:**
+**If NOT ignored:** Following the principle of fixing broken things immediately, add the appropriate line to .gitignore, commit the change, then proceed with worktree creation.
 
-Per the rule "Fix broken things immediately":
-
-1. Add appropriate line to .gitignore
-2. Commit the change
-3. Proceed with worktree creation
-
-**Why critical:** Prevents accidentally committing worktree contents to repository.
+**Why this matters:** A single ignored directory check prevents complex cleanup and repository pollution.
 
 ### For Global Directory (~/.config/superpowers/worktrees)
 
-No .gitignore verification needed - outside project entirely.
+No .gitignore verification needed - the directory is outside the project entirely.
 
 ## Creation Steps
 
@@ -194,32 +254,32 @@ Ready to implement auth feature
 
 ## Red Flags
 
-**Never:**
+**Practices to avoid:**
 
-- Create worktree without verifying it's ignored (project-local)
-- Skip baseline test verification
-- Proceed with failing tests without asking
-- Assume directory location when ambiguous
-- Skip CLAUDE.md check
+- Creating worktree without verifying it's ignored (project-local)
+- Skipping baseline test verification
+- Proceeding with failing tests without asking
+- Assuming directory location when ambiguous
+- Skipping CLAUDE.md check
 
-**Always:**
+**Practices that lead to success:**
 
-- Follow directory priority: existing > CLAUDE.md > ask
-- Verify directory is ignored for project-local
-- Auto-detect and run project setup
-- Verify clean test baseline
+- Following directory priority: existing > CLAUDE.md > ask
+- Verifying directory is ignored for project-local
+- Auto-detecting and running project setup
+- Verifying clean test baseline
 
 ## Integration
 
 **Called by:**
 
-- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
-- Any skill needing isolated workspace
+- Design workflows when implementation follows approved design
+- Any component needing isolated workspace for experimentation
 
 **Pairs with:**
 
-- **finishing-a-development-branch** - REQUIRED for cleanup after work complete
-- **engineering-lifecycle** or **subagent-driven-development** - Work happens in this worktree
+- Branch cleanup workflows after work complete
+- Planning and execution workflows where work happens in isolated worktree
 
 ## Directory Structure
 
@@ -312,24 +372,9 @@ Using git worktrees provides isolation without context switching, making paralle
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+**Portability Invariant:** This component must work in a project containing ZERO .claude/rules files. All necessary patterns and principles are contained within.
+
+**Security Boundary:** Project-local worktree directories MUST be verified as git-ignored before creation to prevent repository pollution.
+
+**Verification Standard:** Clean test baseline required before starting work in isolated workspace. This ensures new failures are attributable to new code, not pre-existing issues.
 </critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
-  MANDATORY: Run tests to establish clean baseline before starting work
-  MANDATORY: Never proceed with failing tests without explicit permission
-  MANDATORY: Auto-detect project type and run appropriate setup commands
-  No exceptions. Worktree isolation requires verification at each step.
-  </critical_constraint>

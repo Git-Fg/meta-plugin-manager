@@ -3,6 +3,7 @@
 Prompt patterns for execution tasks that produce artifacts (code, documents, designs, etc.).
 
 <prompt_template>
+
 ```xml
 
 ## Objective
@@ -15,11 +16,11 @@ Output: {What artifact(s) will be produced}
 ## Context
 
 {Referenced research/plan files if chained}
-@{topic}-research.md
-@{topic}-plan.md
+[topic]-research.md
+[topic]-plan.md
 
 {Project context}
-@relevant-files
+[relevant-files]
 
 ## Requirements
 
@@ -67,17 +68,19 @@ For Do prompts, include Files Created section with paths and descriptions. Empha
 
 <reference_chain_artifacts>
 If research or plan exists, always reference them:
+
 ```xml
 
 ## Context
 
-Research findings: @.prompts/001-auth-research/auth-research.md
-Implementation plan: @.prompts/002-auth-plan/auth-plan.md
+Research findings: [research-file]
+Implementation plan: [plan-file]
 
 ```
 
 <explicit_output_location>
 Every artifact needs a clear path:
+
 ```xml
 
 ## Output
@@ -91,6 +94,7 @@ Create files in ./src/auth/:
 
 <verification_matching>
 Include verification that matches the task:
+
 - Code: run tests, type check, lint
 - Documents: check structure, validate links
 - Designs: review against requirements
@@ -99,6 +103,7 @@ Include verification that matches the task:
 
 <simple_do>
 Single artifact example:
+
 ```xml
 
 ## Objective
@@ -123,6 +128,7 @@ Test with: valid emails, invalid formats, edge cases
 
 <complex_do>
 Multiple artifacts with dependencies:
+
 ```xml
 
 ## Objective
@@ -134,9 +140,9 @@ Output: Auth middleware, routes, types, and tests
 
 ## Context
 
-Research: @.prompts/001-auth-research/auth-research.md
-Plan: @.prompts/002-auth-plan/auth-plan.md
-Existing user model: @src/models/user.ts
+Research: [research-file]
+Plan: [plan-file]
+Existing user model: [user-model-file]
 
 ## Requirements
 
@@ -187,6 +193,7 @@ Create in ./src/auth/__tests__/:
 <non_code_examples>
 
 <document_creation>
+
 ```xml
 
 ## Objective
@@ -198,8 +205,8 @@ Output: OpenAPI spec + markdown guide
 
 ## Context
 
-Implementation: @src/auth/routes.ts
-Types: @src/auth/types.ts
+Implementation: [routes-file]
+Types: [types-file]
 
 ## Requirements
 
@@ -222,6 +229,7 @@ Types: @src/auth/types.ts
 ```
 
 <design_architecture>
+
 ```xml
 
 ## Objective
@@ -233,8 +241,8 @@ Output: Schema diagram + migration files
 
 ## Context
 
-Research: @.prompts/001-multitenancy-research/multitenancy-research.md
-Current schema: @prisma/schema.prisma
+Research: [research-file]
+Current schema: [prisma-schema-file]
 
 ## Requirements
 

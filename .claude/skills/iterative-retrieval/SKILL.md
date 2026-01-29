@@ -1,11 +1,179 @@
 ---
 name: iterative-retrieval
-description: "Execute 4-phase loop for progressive context refinement. Use when complex searches require multiple refinement cycles or context gap is unknown. Not for simple file searches or known file locations."
+description: "Execute 4-phase loop for progressive context refinement. Use when complex searches require multiple refinement cycles, context gaps exist, or information location is unknown. Includes dispatch, evaluate, refine, and loop phases with evidence-based refinement. Not for simple file searches, known file locations, or single-query lookups."
 ---
 
-# Iterative Retrieval Pattern
+<mission_control>
+<objective>Execute 4-phase loop for progressive context refinement when information location is unknown.</objective>
+<success_criteria>DISPATCH → EVALUATE → REFINE → LOOP completes with sufficient context (max 3 iterations)</success_criteria>
+</mission_control>
 
-A 4-phase loop for progressive context refinement when dealing with unknown or complex information needs.
+<guiding_principles>
+
+## The Path to High-Quality Retrieval Success
+
+### 1. Progressive Refinement Yields Higher Relevance
+
+Starting broad and narrowing progressively through multiple iterations produces better results than single-pass searches. Each iteration learns from the previous one, refining the search criteria based on actual file content rather than assumptions.
+
+**Why this works:** Unknown terminology becomes known through exploration. Initial queries are either too broad (finding irrelevant files) or too narrow (missing relevant files). The 4-phase loop adapts based on evidence.
+
+### 2. Relevance Scoring Enables Data-Driven Decisions
+
+Scoring files on a 0-1 scale with consistent criteria transforms subjective relevance into objective rankings. This enables systematic comparison and data-driven refinement decisions.
+
+**Why this works:** Quantitative scores eliminate guesswork. Files can be ranked, compared, and selected based on evidence rather than intuition. The 0.8 threshold provides clear convergence criteria.
+
+### 3. Query Evolution Creates Traceable Refinement
+
+Documenting how search terms change across iterations creates an audit trail of the discovery process. This traceability enables understanding what worked and what didn't.
+
+**Why this works:** Explicit documentation prevents circular refinements. Seeing the query evolution ("context" → "React useContext" → "createContext") reveals what vocabulary the codebase actually uses.
+
+### 4. Termination Gates Prevent Infinite Loops
+
+Clear stopping conditions (max 3 iterations, 3+ high-relevance files, diminishing returns) ensure convergence without wasting cycles on unproductive searches.
+
+**Why this works:** Without explicit gates, refinement can continue indefinitely without improvement. The 3-iteration limit balances thoroughness with efficiency. The 3-file threshold ensures sufficient context without over-collection.
+
+### 5. Multi-Modal Discovery Increases Coverage
+
+Combining pattern-based discovery (Glob) with content-based search (Grep) captures files that match either naming conventions or actual usage patterns.
+
+**Why this works:** Some relevant files have clear naming (auth.ts) while others reveal relevance only through content. Multi-modal discovery ensures neither category is missed.
+
+</guiding_principles>
+
+## Workflow
+
+**Phase 1: DISPATCH** → Broad initial query to find candidate files
+
+**Phase 2: EVALUATE** → Score relevance 0-1 for each candidate
+
+**Phase 3: REFINE** → Update search criteria based on evaluation
+
+**Phase 4: LOOP** → Max 3 iterations, exit when converged
+
+**Why:** Complex searches need progressive refinement—when location is unknown, single-query searches fail.
+
+```python
+# Iterative Retrieval 4-Phase Loop
+for iteration in range(max_iterations=3):
+    candidates = DISPATCH(broad_search_query)
+    scored = EVALUATE(candidates, target_query)
+    if CONVERGED(scored):
+        return HIGH_RELEVANCE_FILES
+    search_query = REFINE(scored, target_query)
+```
+
+## Navigation
+
+| If you need...       | Read...                                         |
+| :------------------- | :---------------------------------------------- |
+| Dispatch phase       | ## Workflow → Dispatch                          |
+| Evaluate phase       | ## Workflow → Evaluate                          |
+| Refine phase         | ## Workflow → Refine                            |
+| Loop control         | ## Workflow → Loop Control                      |
+| 4-phase loop code    | ## Workflow → code block                        |
+| Basic implementation | ## Implementation Patterns → Basic 4-Phase Loop |
+
+---
+
+## Implementation Patterns
+
+### Basic 4-Phase Loop
+
+```python
+# Phase 1: DISPATCH - Broad initial query
+files = glob("**/*auth*.ts") + glob("**/*login*.ts")
+files += grep("authenticate|login|signup", "**/*.ts")
+
+# Phase 2: EVALUATE - Score relevance 0-1
+scored_files = []
+for file in files:
+    score = 0
+    if "auth" in file.name: score += 0.3
+    if "authenticate" in file.content: score += 0.4
+    if file.content.count("login") > 3: score += 0.2
+    scored_files.append((file, score))
+
+# Phase 3: REFINE - Update search criteria
+if len([f for f, s in scored_files if s >= 0.8]) >= 3:
+    return [f for f, s in scored_files if s >= 0.8]
+else:
+    refined_query = add_specific_terms(search_query, scored_files)
+
+# Phase 4: LOOP - Repeat with refined criteria
+# (max 3 iterations)
+```
+
+### React Context Discovery Example
+
+**Task**: Find React context patterns in a large codebase
+
+**Iteration 1:**
+
+- **DISPATCH**: Search for "context"
+- **EVALUATE**: 50 files found, mostly React createContext
+- **REFINE**: Add "React useContext" to narrow
+- **LOOP**: Continue
+
+**Iteration 2:**
+
+- **DISPATCH**: Search for "React useContext useContext"
+- **EVALUATE**: 15 files, mostly usage patterns
+- **REFINE**: Add "createContext" to find definitions
+- **LOOP**: Continue
+
+**Iteration 3:**
+
+- **DISPATCH**: Search for "createContext useContext React"
+- **EVALUATE**: 8 files, 4 with high relevance (0.8+)
+- **CONVERGED**: Sufficient high-relevance files found
+
+### Result Format
+
+```markdown
+## Iterative Retrieval Results
+
+### Summary
+
+- **Iterations**: 3
+- **Total files evaluated**: 73
+- **High-relevance files**: 4
+- **Search query evolution**: "context" → "React useContext" → "createContext"
+
+### High-Relevance Files (0.8+)
+
+1. **src/context/AuthContext.tsx** (score: 0.95)
+2. **src/context/ThemeContext.tsx** (score: 0.88)
+```
+
+---
+
+## Troubleshooting
+
+**Issue**: No results found
+
+- **Symptom**: Initial query returns empty
+- **Solution**: Refine search terms, expand file types, check directory scope
+
+**Issue**: Too many results
+
+- **Symptom**: Hundreds of matches
+- **Solution**: Narrow scope, add path filters, increase specificity
+
+**Issue**: Convergence not reached
+
+- **Symptom**: Scores not improving after 3 iterations
+- **Solution**: Change terminology entirely, try different search patterns
+
+**Issue**: Wrong domain found
+
+- **Symptom**: Found frontend files when needing backend
+- **Solution**: Add domain-specific terms (e.g., "server", "api", "backend")
+
+---
 
 ## The Problem
 
@@ -286,29 +454,9 @@ Progressive refinement through 4-phase loop (DISPATCH → EVALUATE → REFINE �
 
 ---
 
-<critical_constraint>
-MANDATORY: Maximum 3 iterations - stop when converged
-MANDATORY: Score files on 0-1 scale with documented criteria
-MANDATORY: Report high-relevance files (0.8+) with scores
-MANDATORY: Document query evolution across iterations
-No exceptions. Iterative retrieval must converge efficiently with traceable refinement.
-</critical_constraint>
-
----
-
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
@@ -317,5 +465,13 @@ No exceptions. Portability invariant must be maintained.
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
+
+---
+
+<critical_constraint>
+**Portability Invariant:**
+
+This component MUST work in a project containing ZERO config files. It carries its own genetic code and references no external rules or paths.
+</critical_constraint>
 
 ---

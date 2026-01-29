@@ -15,7 +15,13 @@ export declare const COST_PER_MILLION: Record<ModelName, CostRate>;
 export declare const EnvSchema: z.ZodObject<{
     PERPLEXITY_API_KEY: z.ZodOptional<z.ZodString>;
     GOOGLE_API_KEY: z.ZodOptional<z.ZodString>;
-}, z.core.$strip>;
+}, "strip", z.ZodTypeAny, {
+    PERPLEXITY_API_KEY?: string | undefined;
+    GOOGLE_API_KEY?: string | undefined;
+}, {
+    PERPLEXITY_API_KEY?: string | undefined;
+    GOOGLE_API_KEY?: string | undefined;
+}>;
 export declare const env: {
     PERPLEXITY_API_KEY?: string | undefined;
     GOOGLE_API_KEY?: string | undefined;
@@ -31,6 +37,16 @@ export declare const responseCache: LRUCache<string, {
     response: string;
     timestamp: number;
 }, unknown>;
+export declare const MIME_TYPES: Record<string, string>;
+export declare function detectMimeType(filePath: string): string;
+export declare function isAssetData(data: string): "url" | "base64" | "file";
+export interface ProcessedAsset {
+    type: "image" | "document" | "video" | "audio";
+    mimeType: string;
+    data: string;
+    isUrl: boolean;
+}
+export declare function processAssetData(data: string, mimeType?: string): Promise<ProcessedAsset>;
 export declare function calculateCost(model: ModelName, inputTokens: number, outputTokens: number): CostMetrics;
 export declare function logCost(metrics: CostMetrics, cacheHit?: boolean): void;
 export declare function getCacheKey(prefix: string, ...parts: (string | undefined)[]): string;

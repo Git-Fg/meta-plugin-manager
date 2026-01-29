@@ -1,26 +1,168 @@
 ---
 name: analysis-diagnose
-description: "Perform systematic root cause investigation. Use when you encounter bugs, test failures, or unexpected behavior. Not for trivial or obvious fixes, creative experimentation, or learning new systems."
+description: "Perform systematic root cause investigation through 4-phase process. Use when encountering bugs, test failures, or unexpected behavior. Includes evidence gathering, hypothesis formation, testing protocols, and solution justification. Not for trivial fixes, creative experimentation, learning new systems, or implementing solutions."
 ---
 
-# Systematic Analysis & Diagnosis
-
 <mission_control>
-<objective>Perform systematic root cause investigation with evidence gathering before any fixes</objective>
-<success_criteria>Root cause identified with documented evidence, minimal fix applied and verified</success_criteria>
+<objective>Perform systematic root cause investigation through 4-phase process: gather, hypothesize, test, conclude.</objective>
+<success_criteria>Root cause identified with evidence, hypothesis tested, solution with justification provided</success_criteria>
 </mission_control>
 
-## Overview
+<guiding_principles>
 
-Systematic root cause investigation framework for debugging bugs, test failures, and unexpected behavior. Implements the 4-phase Iron Law with evidence gathering protocols and psychological pressure resistance.
+## The Path to High-Quality Diagnoses
 
-**Core principle:** NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+1. **Evidence beats assumptions** — Systematic investigation gathers concrete proof before forming conclusions. Evidence-based diagnosis prevents chasing phantom causes and ensures fixes address actual problems rather than perceived symptoms.
 
-**The Iron Law:** Root Cause → Pattern Analysis → Hypothesis → Implementation (never skip phases)
+2. **Root causes prevent recurrence** — The 5 Whys technique reveals fundamental issues behind symptoms. Treating root causes eliminates problems permanently; treating symptoms guarantees they will return.
 
-<interaction_schema>
-symptom → evidence → hypothesis → test → implementation → verify
-</interaction_schema>
+3. **Single hypotheses test cleanly** — One theory at a time enables clear verification. Testing multiple hypotheses simultaneously makes it impossible to know which fix worked, creating uncertainty and potential regressions.
+
+4. **Patterns reveal scope** — Counting affected components distinguishes isolated bugs from architectural problems. Three or more similar failures indicate systemic issues requiring broader solutions than localized patches.
+
+5. **Verification confirms understanding** — Testing hypotheses before implementing fixes validates comprehension of the problem. Verified fixes work correctly; untested fixes create technical debt and future issues.
+
+6. **Pressure resistance ensures quality** — Systematic investigation resists shortcuts during time constraints. Rushed fixes without root cause analysis create more problems than they solve, increasing total debugging time.
+
+</guiding_principles>
+
+## Workflow
+
+**Phase 1: State the Problem** → Document symptom, error messages, reproduction steps, frequency
+
+**Phase 2: Gather Evidence** → Collect logs, recent changes, environment data, diagnostic output
+
+**Phase 3: Form Hypothesis** → Generate single testable theory using 5 Whys technique
+
+**Phase 4: Test & Conclude** → Minimal reproduction test, verify hypothesis, implement fix
+
+**Why:** Systematic root cause investigation prevents premature fixes that create technical debt.
+
+## Navigation
+
+| If you need...          | Read...                                  |
+| :---------------------- | :--------------------------------------- |
+| State the problem       | ## Workflow → Phase 1: State the Problem |
+| Gather evidence         | ## Workflow → Phase 2: Gather Evidence   |
+| Form hypothesis         | ## Workflow → Phase 3: Form Hypothesis   |
+| Test & conclude         | ## Workflow → Phase 4: Test & Conclude   |
+| Debugging process       | ## 4-Phase Debugging Process             |
+| Basic bug investigation | ## Implementation Patterns → Pattern 1   |
+| Deviation handling      | See deviation-rules skill                |
+
+## 4-Phase Debugging Process
+
+```mermaid
+graph TD
+    A[Phase 1: State the Problem] --> B[Phase 2: Gather Evidence]
+    B --> C[Phase 3: Form Hypothesis]
+    C --> D[Phase 4: Test & Conclude]
+    C -->|Hypothesis Fails| B
+    D --> E{Root Cause Found?}
+    E -->|Yes| F[Implement Fix]
+    E -->|No| B
+    F --> G[Complete]
+```
+
+**If debugging stalls:** Apply deviation-rules to route to specialist.
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Discovery**: Locate files matching patterns and search file contents for diagnostic evidence
+- **Delegation**: Delegate exploration to specialized workers for investigation
+- **Tracking**: Maintain a visible task list through the 4-phase process
+- **Navigation**: Navigate code structure to trace root causes
+
+## Implementation Patterns
+
+### Pattern 1: Basic Bug Investigation
+
+```typescript
+// Step 1: Gather evidence
+const diagnostic = {
+  symptom: "API returns 500 error",
+  errorMessages: errorLog,
+  reproductionSteps: ["Request /api/users", "Include >100 items"],
+  frequency: "Always",
+};
+
+// Step 2: Trace backward from error
+function traceRootCause(error: Error): RootCause {
+  const stackTrace = error.stack;
+  const failurePoint = identifyFailurePoint(stackTrace);
+  return findUpstreamCause(failurePoint);
+}
+
+// Step 3: Test hypothesis
+const hypothesis = "Request size exceeds limit";
+const test = { input: "151 items", expected: "500 error" };
+```
+
+### Pattern 2: Temporal Analysis
+
+```bash
+# When did this first occur?
+git log --oneline --since="2 weeks ago" --until="1 week ago"
+
+# What changed between working and broken?
+git log -p --reverse --all -S "MAX_ITEMS"
+```
+
+### Pattern 3: 5 Whys Technique
+
+```
+Problem: API returns 500 for large requests
+
+Why 1: Server throws internal error
+→ Why 2: Array.reduce() fails on large arrays
+→ Why 3: No maximum input validation
+→ Why 4: Developer assumed frontend would limit
+→ Why 5: No code review caught this gap
+
+Root Cause: Missing input validation layer
+Action: Add maxItems check at API boundary
+```
+
+## Troubleshooting
+
+### Issue: Tests Fail But Code Seems Correct
+
+| Symptom                                     | Solution                                                 |
+| ------------------------------------------- | -------------------------------------------------------- |
+| All tests passing locally, some fail in CI  | Check environment differences, timeouts, race conditions |
+| Flaky tests that sometimes pass             | Look for async timing issues, mock dependencies properly |
+| Test passes in isolation, fails with others | Check shared state leakage between tests                 |
+
+**Fix**: Run tests with verbose output to identify timing/environment issues.
+
+### Issue: Bug Recurs After Fix
+
+| Symptom                            | Solution                                                           |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| Same bug reappears weeks later     | Root cause wasn't truly fixed, or similar pattern exists elsewhere |
+| Fix works temporarily, then breaks | Addressed symptom not cause, or fix created new issue              |
+
+**Fix**: Re-run 5 Whys analysis to find deeper root cause.
+
+### Issue: Multiple Hypotheses Conflicting
+
+| Symptom                             | Solution                                    |
+| ----------------------------------- | ------------------------------------------- |
+| Several theories about what's wrong | Each hypothesis needs separate minimal test |
+| Evidence points to multiple causes  | Pick ONE, test it, then move to next        |
+
+**Fix**: Create minimal reproduction for each hypothesis independently.
+
+### Issue: Pattern Recognition Fails
+
+| Symptom                                           | Solution                                     |
+| ------------------------------------------------- | -------------------------------------------- |
+| Cannot determine if issue is isolated or systemic | Count affected components: 3+ = systemic     |
+| Architecture seems fine but bugs persist          | Look at integration points, state management |
+
+**Fix**: After 3+ failed hypotheses, question the pattern, not individual bugs.
 
 ## Investigation Format
 
@@ -55,40 +197,11 @@ symptom → evidence → hypothesis → test → implementation → verify
 </investigation>
 </investigation_format>
 
----
-
-## The Iron Law
-
-<absolute_constraint>
-**NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST**
-
-If you haven't completed Phase 1, you CANNOT propose fixes.
-
-This is not a suggestion. This is a law of debugging.
-</absolute_constraint>
-
-## When to Use
-
-**Use when:**
-
-- Any bug or test failure occurs
-- Unexpected behavior observed
-- Regression testing fails
-- Debugging session extends beyond 15 minutes
-- Multiple failed fix attempts
-- Architecture-level issues suspected
-
-**Don't use when:**
-
-- Issue is trivial and obvious (typo, missing import)
-- Creative/experimental debugging
-- Learning new systems (use exploratory approach)
-
 ## The Four-Phase Investigation
 
 ### Phase 1: Root Cause Investigation
 
-**MANDATORY FIRST STEP** - Never skip to fixing
+Complete this phase before proposing any fixes.
 
 #### Evidence Gathering Protocol
 
@@ -221,7 +334,7 @@ graph TD
 
 ### Phase 3: Hypothesis Formation
 
-**MANDATORY:** Single hypothesis, minimal testing
+Single hypothesis, minimal testing.
 
 #### Hypothesis Criteria
 
@@ -255,7 +368,7 @@ graph TD
 
 ### Phase 4: Implementation
 
-**Only after Phases 1-3 complete**
+Only after Phases 1-3 complete.
 
 #### Implementation Protocol
 
@@ -278,41 +391,6 @@ test_fix() {
   fi
 }
 ```
-
-## Red Flags - STOP
-
-### Investigation Violations
-
-- Skipping Phase 1 (root cause) and jumping to fixes
-- Multiple competing hypotheses (choose ONE)
-- Fixing without evidence-based hypothesis
-- Assuming instead of testing
-- Pattern denial (ignoring systemic issues)
-- **Starting to code before completing Phase 3**
-
-### Rationalization Prevention
-
-| Excuse                  | Reality                             |
-| ----------------------- | ----------------------------------- |
-| "This should work"      | TEST it first                       |
-| "Looks correct"         | Evidence needed                     |
-| "Probably just a typo"  | Verify root cause                   |
-| "I've seen this before" | This case may differ                |
-| "Time pressure"         | Fixes without root cause waste time |
-| "Probably nothing"      | Thorough investigation needed       |
-| "Just restart"          | Restarts don't fix root causes      |
-
-### Stop Patterns
-
-If you catch yourself:
-
-- ✅ Fixing without root cause analysis
-- ✅ Making multiple hypothesis at once
-- ✅ Ignoring evidence that contradicts assumptions
-- ✅ Rushing to implementation
-- ✅ Denying systemic patterns
-
-STOP and return to Phase 1.
 
 ## Pressure Resistance
 
@@ -474,7 +552,16 @@ STOP and return to Phase 1.
 
 **Remember:** Fixing without root cause investigation is like putting tape on a water pipe without finding the crack.
 
----
+## Common Rationalizations
+
+| Excuse | Reality |
+|--------|---------|
+| "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
+| "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
+| "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
+| "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
+| "The fix is obvious, let me just apply it" | Obvious ≠ Correct. Verify with evidence. |
+| "We've already spent X hours, don't want to start over" | Sunk cost fallacy. Wrong approach wastes more time. |
 
 ## References
 
@@ -487,16 +574,6 @@ For related diagnostic capabilities:
 
 This component carries essential Seed System principles for context: fork isolation:
 
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
 
 **Recognition Questions**:
@@ -504,46 +581,26 @@ No exceptions. Portability invariant must be maintained.
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
----
-
-## Absolute Constraints (Non-Negotiable)
-
 <critical_constraint>
-**THE IRON LAW: NO FIXES WITHOUT ROOT CAUSE INVESTIGATION**
+**Portability Invariant: Zero External Dependencies**
 
-- Complete Phase 1 (Root Cause Investigation) BEFORE proposing ANY fix
-- Document symptoms, evidence, hypothesis BEFORE implementing
-- Test hypothesis with minimal reproduction BEFORE full fix
-- NEVER skip to Phase 4 without completing Phases 1-3
+This component must work in a project with ZERO .claude/rules/ access.
+All necessary philosophy is embedded within this skill.
 
-**MANDATORY: Use `<investigation>` format**
+**Evidence Requirements**
 
-- Symptom: What is the observable problem?
-- Evidence: Error messages, logs, recent changes, environment
-- Hypothesis: What is the likely root cause and why?
-- Test: Minimal reproduction to confirm hypothesis
+Complete Phase 1 (Root Cause Investigation) before proposing fixes.
+Document symptoms, evidence, hypothesis before implementing.
+Test hypothesis with minimal reproduction before full fix.
 
-**MANDATORY: One hypothesis at a time**
+**Single Hypothesis Protocol**
 
-- Form single hypothesis based on evidence
-- Test with minimal reproduction
-- Confirm or reject before next hypothesis
-- NEVER try multiple fixes simultaneously
+Form single hypothesis based on evidence.
+Test with minimal reproduction.
+Confirm or reject before next hypothesis.
 
-**MANDATORY: Verification before claiming completion**
+**Architecture Pattern Recognition**
 
-- Test confirms fix resolves issue
-- No regressions introduced
-- Edge cases considered
-- Root cause documented
-
-**MANDATORY: Question architecture after 3+ failed hypotheses**
-
-- If 3+ hypotheses fail: STOP fixing
-- Question the pattern/architecture
-- Discuss with human partner
-- Wrong pattern cannot be fixed by more patches
-
-**No exceptions. Symptom patches are failure. Evidence-based investigation is mandatory.**
+Three or more similar failures indicate architectural problems requiring broader solutions than localized patches.
 </critical_constraint>
 ```

@@ -5,10 +5,10 @@ Prompt patterns for gathering information that will be consumed by planning or i
 Includes quality controls, verification mechanisms, and streaming writes to prevent research gaps and token limit failures.
 
 <prompt_template>
-```xml
+
+````xml
 <session_initialization>
-Before beginning research, verify today's date:
-!`date +%Y-%m-%d`
+Before beginning research, determine today's date for "current" information searches.
 
 Use this date when searching for "current" or "latest" information.
 Example: If today is 2025-11-22, search for "2025" not "2024".
@@ -94,11 +94,11 @@ Structure findings using this XML format:
 
 ```xml
 <research>
-  
+
 ## Summary
 
 {2-3 paragraph executive summary of key findings}
-  
+
 
   <findings>
     <finding category="{category}">
@@ -106,96 +106,100 @@ Structure findings using this XML format:
       <detail>{Detailed explanation}
       <source>{Where this came from}
       <relevance>{Why this matters for the goal}
-    
+
     <!-- Additional findings -->
-  
+
 
   <recommendations>
     <recommendation priority="high">
       <action>{What to do}
-      
+
 ## Rationale
 
 {Why}
-    
+
     <!-- Additional recommendations -->
-  
+
 
   <code_examples>
     {Relevant code patterns, snippets, configurations}
-  
+
 
   <metadata>
-    
+
 ### {high|medium|low}
 
 {Why this confidence level}
-    
-    
+
+
 ## Dependencies
 
 {What's needed to act on this research}
-    
+
     <open_questions>
       {What couldn't be determined}
-    
-    
+
+
 ## Assumptions
 
 {What was assumed}
-    
+
 
     <!-- ENHANCED: Research Quality Report -->
     <quality_report>
       <sources_consulted>
         {List URLs of official documentation and primary sources}
-      
+
       <claims_verified>
         {Key findings verified with official sources}
-      
+
       <claims_assumed>
         {Findings based on inference or incomplete information}
-      
+
       <contradictions_encountered>
         {Any conflicting information found and how resolved}
-      
+
       <confidence_by_finding>
         {For critical findings, individual confidence levels}
         - Finding 1: High (official docs + multiple sources)
         - Finding 2: Medium (single source, unclear if current)
         - Finding 3: Low (inferred, requires hands-on verification)
-      
-    
-  
 
-```
+
+
+
+````
 
 <pre_submission_checklist>
 Before submitting your research report, confirm:
 
 **Scope Coverage**
+
 - [ ] All enumerated options/approaches investigated
 - [ ] Each component from verification checklist documented or marked "not found"
 - [ ] Official documentation cited for all critical claims
 
 **Claim Verification**
+
 - [ ] Each "not possible" or "only way" claim verified with official docs
 - [ ] URLs to official documentation included for key findings
 - [ ] Version numbers and dates specified where relevant
 
 **Quality Controls**
+
 - [ ] Blind spots review completed ("What did I miss?")
 - [ ] Quality report section filled out honestly
 - [ ] Confidence levels assigned with justification
 - [ ] Assumptions clearly distinguished from verified facts
 
 **Output Completeness**
+
 - [ ] All required XML sections present
 - [ ] SUMMARY.md created with substantive one-liner
 - [ ] Sources consulted listed with URLs
 - [ ] Next steps clearly identified
 
-```
+````
 
 <incremental_output>
 **CRITICAL: Write findings incrementally to prevent token limit failures**
@@ -219,9 +223,10 @@ Step 1 - Initialize structure:
 # Create file with skeleton
 Write: .prompts/{num}-{topic}-research/{topic}-research.md
 Content: Basic XML structure with empty sections
-```
+````
 
 Step 2 - Append findings incrementally:
+
 ```bash
 # After researching authentication libraries
 Edit: Append <finding> to <findings> section
@@ -231,26 +236,29 @@ Edit: Append another <finding> to <findings> section
 ```
 
 Step 3 - Add code examples as discovered:
+
 ```bash
 # Found jose example
 Edit: Append to <code_examples> section
 ```
 
 Step 4 - Finalize metadata:
+
 ```bash
 # After completing research
 Edit: Update <metadata> section with confidence, dependencies, etc.
 ```
 
 <example_prompt_instruction>
-```xml
+
+````xml
 <output_requirements>
 Write findings incrementally to {topic}-research.md as you discover them:
 
 1. Create the file with this initial structure:
    ```xml
    <research>
-     
+
 ## Summary
 
 [Will complete at end]
@@ -258,8 +266,8 @@ Write findings incrementally to {topic}-research.md as you discover them:
      <recommendations>
      <code_examples>
      <metadata>
-   
-   ```
+
+````
 
 2. As you research each aspect, immediately append findings:
    - Research JWT libraries → Write finding
@@ -312,23 +320,25 @@ For research, emphasize key recommendation and decision readiness. Next step typ
 
 <structure_for_consumption>
 The next Claude needs to quickly extract relevant information:
+
 ```xml
 <finding category="authentication">
   <title>JWT vs Session Tokens
   <detail>
     JWTs are preferred for stateless APIs. Sessions better for
     traditional web apps with server-side rendering.
-  
+
   <source>OWASP Authentication Cheatsheet 2024
   <relevance>
     Our API-first architecture points to JWT approach.
-  
+
 
 ```
 
 <include_code_examples>
 The implementation prompt needs patterns to follow:
-```xml
+
+````xml
 <code_examples>
 
 ## Example
@@ -341,35 +351,37 @@ const { payload } = await jwtVerify(
   new TextEncoder().encode(secret),
   { algorithms: ['HS256'] }
 );
-```
+````
+
 Source: jose library documentation
 
-```
+````
 
 <explicit_confidence>
 Help the next Claude know what to trust:
 ```xml
 <metadata>
-  
+
 ### medium
 
 API documentation is comprehensive but lacks real-world
     performance benchmarks. Rate limits are documented but
     actual behavior may differ under load.
-  
+
 
   <quality_report>
     <confidence_by_finding>
       - JWT library comparison: High (npm stats + security audits + active maintenance verified)
       - Performance benchmarks: Low (no official data, community reports vary)
       - Rate limits: Medium (documented but not tested)
-    
-  
 
-```
+
+
+````
 
 <enumerate_known_possibilities>
 When researching systems with known components, enumerate them explicitly:
+
 ```xml
 <verification_checklist>
 **CRITICAL**: Verify ALL configuration scopes:
@@ -548,6 +560,7 @@ For each option:
 Load: [metadata-guidelines.md](metadata-guidelines.md)
 
 **Enhanced guidance**:
+
 - Use <quality_report> to distinguish verified facts from assumptions
 - Assign confidence levels to individual findings when they vary
 - List all sources consulted with URLs for verification
@@ -558,14 +571,17 @@ Load: [metadata-guidelines.md](metadata-guidelines.md)
 
 <context7_mcp>
 For library documentation:
+
 ```
 Use mcp__context7__resolve-library-id to find library
 Then mcp__context7__get-library-docs for current patterns
 ```
+
 </context7_mcp>
 
 <web_search>
 For recent articles and updates:
+
 ```
 Search: "{topic} best practices {current_year}"
 Search: "{library} security vulnerabilities {current_year}"
@@ -574,6 +590,7 @@ Search: "{topic} vs {alternative} comparison {current_year}"
 
 <web_fetch>
 For specific documentation pages:
+
 ```
 Fetch official docs, API references, changelogs with exact URLs
 Prefer WebFetch over WebSearch for authoritative sources
@@ -586,6 +603,7 @@ Before completing research, review common pitfalls:
 Load: [research-pitfalls.md](research-pitfalls.md)
 
 Key patterns to avoid:
+
 - Configuration scope assumptions - enumerate all scopes
 - "Search for X" vagueness - provide exact URLs
 - Deprecated vs current confusion - check changelogs

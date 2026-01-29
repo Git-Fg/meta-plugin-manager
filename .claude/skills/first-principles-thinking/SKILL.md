@@ -1,9 +1,48 @@
 ---
 name: first-principles-thinking
-description: "Break down problems to fundamental truths. Use when conventional solutions fail, you need innovation, or want to challenge assumptions. Not for standard problems with known solutions or minor optimizations."
+description: "Break down problems to fundamental truths and rebuild innovative solutions. Use when conventional solutions fail, innovation is needed, or assumptions must be challenged. Includes problem decomposition, truth identification, and solution reconstruction. Not for standard problems with known solutions, minor optimizations, or when established patterns suffice."
 ---
 
-# First Principles Thinking
+<mission_control>
+<objective>Break down complex problems to fundamental truths and rebuild innovative solutions from first principles.</objective>
+<success_criteria>Problem stripped to fundamentals, novel solution rebuilt from truths, assumptions challenged</success_criteria>
+</mission_control>
+
+<guiding_principles>
+
+## The Path to High-Impact Innovation Success
+
+### 1. Challenge Before Building
+
+Innovation requires questioning what "everyone knows." When you accept assumptions as truths, you optimize within constraints that may not exist. By challenging assumptions first, you open solution space that conventional thinking cannot access.
+
+**Practice**: Before accepting any constraint, ask whether it's a fundamental truth or just conventional wisdom.
+
+### 2. Truth Is Physics, Not Opinion
+
+Fundamental truths are physical laws, resource constraints, or unchangeable facts. Industry standards, best practices, and common approaches are assumptions—even when widely adopted. Building from truths ensures solutions withstand reality; building from opinions inherits others' constraints.
+
+**Practice**: Test each "fact" by asking whether it could be false in a different context or with different technology.
+
+### 3. Novelty Emerges from Fundamentals
+
+When you rebuild only from fundamental truths, solutions emerge that weren't visible when constrained by "how things are done." This isn't just optimization—it's discovering entirely different approaches to problems.
+
+**Practice**: After identifying truths, ask "what becomes possible when we ignore all conventional approaches?"
+
+### 4. Depth Before Speed
+
+First principles thinking is cognitively expensive but yields insights that assumption-based thinking cannot. Superficial analysis leads to superficial solutions—variations of existing approaches rather than genuine innovation.
+
+**Practice**: Continue breaking down problems until you reach truths that cannot be decomposed further.
+
+### 5. Document to Surface Assumptions
+
+Writing down assumptions and why they might be wrong makes hidden constraints visible. This documentation isn't bureaucracy—it's a tool for revealing what you've unconsciously accepted as immutable.
+
+**Practice**: List every assumption alongside the question "why might this be wrong?" to expose hidden constraints.
+
+</guiding_principles>
 
 Break down complex problems to their fundamental truths and rebuild from scratch. Strip away assumptions and existing solutions to find root causes and innovative approaches.
 
@@ -18,17 +57,155 @@ Apply first principles reasoning in four steps:
 4. REBUILD → Novel Solutions
 ```
 
-## When to Use
+## Workflow
 
-Use this thinking methodology when:
+**DEFINE:** State the problem clearly, strip to essentials
 
-- Stuck with conventional solutions that don't work
-- Need to innovate beyond existing approaches
-- Problem seems unsolvable with current methods
-- Want to understand the root nature of a problem
-- Challenging industry assumptions
+**STRIP:** Remove all assumptions, existing solutions, conventional approaches
 
-**Recognition test:** "Would first principles help here?" If conventional approaches have failed, strip to fundamentals.
+**TRUTH:** Identify fundamental truths that cannot be questioned
+
+**REBUILD:** Construct novel solutions from first principles
+
+**Why:** Conventional solutions optimize for the past—first principles find novel approaches for unprecedented problems.
+
+## Navigation
+
+| If you need...          | Read...                                |
+| :---------------------- | :------------------------------------- |
+| Define problem          | ## Workflow → DEFINE                   |
+| Strip assumptions       | ## Workflow → STRIP                    |
+| Find fundamental truths | ## Workflow → TRUTH                    |
+| Rebuild novel solution  | ## Workflow → REBUILD                  |
+| Core pattern            | ## Core Pattern                        |
+| Problem definition      | ## Implementation Patterns → Pattern 1 |
+
+## Operational Patterns
+
+- **Tracking**: Maintain a visible task list for first principles analysis
+- **Management**: Manage task lifecycle for solution reconstruction
+
+Trust native tools to fulfill these patterns. The System Prompt selects the correct implementation based on semantic directives.
+
+## Implementation Patterns
+
+### Pattern 1: Problem Definition
+
+```typescript
+function defineProblem(statement: string): ProblemDefinition {
+  return {
+    original: statement,
+    coreIssue: extractCoreIssue(statement),
+    constraints: [],
+    assumptions: [],
+  };
+}
+```
+
+### Pattern 2: Assumption Stripping
+
+```typescript
+// BAD: Accepting industry norms
+const badAssumptions = [
+  "Microservices are the answer to scaling",
+  "We need Kubernetes for container orchestration",
+  "REST is the standard for APIs",
+];
+
+// GOOD: Questioning everything
+function stripAssumptions(solution: string): string[] {
+  return solution
+    .split("\n")
+    .filter((line) => isAssumptionNotTruth(line))
+    .map((line) => `${line} - WHY is this true?`);
+}
+```
+
+### Pattern 3: Finding Fundamental Truths
+
+```typescript
+// Truths are physics, constraints, or unchangeable facts
+const fundamentalTruths = [
+  "Code executes on CPUs", // Physical constraint
+  "Memory is finite", // Resource constraint
+  "Network has latency", // Physics of distance
+  "Users have limited attention", // Human factor
+];
+```
+
+### Pattern 4: Rebuilding from Truths
+
+```typescript
+function rebuildFromTruths(truths: string[]): Solution[] {
+  return truths.map((truth) => {
+    return {
+      basedOn: truth,
+      possibility: derivePossibility(truth),
+      innovation: findNonObviousApproach(truth),
+    };
+  });
+}
+```
+
+## Troubleshooting
+
+### Issue: Not Going Deep Enough
+
+| Symptom                      | Solution                                    |
+| ---------------------------- | ------------------------------------------- |
+| "Best practices" as answer   | Question WHY they're best                   |
+| "Industry standard" as truth | What physics/constraint makes it necessary? |
+
+### Issue: Confusing Assumptions with Truths
+
+| Symptom                      | Solution                          |
+| ---------------------------- | --------------------------------- |
+| "Microservices scale better" | That's an assumption, not a truth |
+| "React is the best frontend" | That's opinion, not physics       |
+
+### Issue: Rebuilding with Same Assumptions
+
+| Symptom                  | Solution                              |
+| ------------------------ | ------------------------------------- |
+| "Better microservices"   | Still constrained by same assumptions |
+| "Optimized version of X" | Not a fundamental rebuild             |
+
+### Issue: No Novel Solutions Emerging
+
+| Symptom                        | Solution                                         |
+| ------------------------------ | ------------------------------------------------ |
+| Still thinking conventionally  | Ask "What would physics allow that we don't do?" |
+| Solutions look like variations | Go deeper - find more fundamental truths         |
+
+## workflows
+
+### When Stuck with Conventional Solutions
+
+1. **DEFINE** → State problem without solution language
+2. **STRIP** → List all "the way things are done" assumptions
+3. **TRUTH** → Identify physical/constraint truths only
+4. **REBUILD** → What becomes possible from truths?
+
+### Example Application
+
+```
+Problem: "How do we reduce API latency?"
+
+Assumptions:
+- HTTP is required
+- Synchronous responses needed
+- Single region deployment
+
+Truths:
+- Speed of light limits network latency
+- Caching eliminates repeated work
+- Parallel processing reduces total time
+
+Rebuilt Solutions:
+- Cache at edge locations
+- Use async processing
+- Move computation closer to data
+```
 
 ## Step-by-Step Process
 
@@ -253,35 +430,7 @@ First principles thinking bypasses conventional thinking to find innovative solu
 ---
 
 <critical_constraint>
-MANDATORY: Challenge all assumptions, not just surface ones
-MANDATORY: Identify fundamental truths before rebuilding solutions
-MANDATORY: Rebuild from truths, not from modified assumptions
-MANDATORY: Document assumptions and why they may be wrong
-No exceptions. First principles requires going deeper than conventions.
+Portability invariant: This skill must work with zero external dependencies or .claude/rules references.
 </critical_constraint>
-
----
-
-## Genetic Code
-
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
-
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---

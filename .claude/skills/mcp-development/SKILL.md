@@ -1,19 +1,144 @@
 ---
 name: mcp-development
-description: "Create, validate, and audit MCP servers for Claude integration. Use when building MCP servers, tools, resources, or prompts. Includes stdio/http transport, tool schemas, authentication, and validation frameworks. Not for manual tool configuration or non-MCP integrations."
+description: "Create, test, and audit MCP (Model Context Protocol) servers, tools, resources, and prompts. Use when building MCP components, writing tool schemas, designing transport layers (stdio/http), or validating MCP servers. Includes prompt-engineered descriptions, Zod validation, authentication patterns, and `test_mcp.sh` for validation. Not for manual tool configuration or non-MCP integrations."
 ---
 
 # MCP Development
+
+**Skill Location**: This file
+
+## Quick Start
+
+**Create MCP server:** `/toolkit:build:package` → Full structure with SDK setup
+
+**Define tools:** Follow `<tool_schema>` template with JSON Schema validation
+
+**Choose transport:** stdio (local) or http (remote) based on use case
+
+**Validate server:** `scripts/test_mcp.sh` → Quick integration testing
+
+**Why:** MCP provides structured tool definitions with type safety—prevents runtime errors from malformed inputs.
+
+## Navigation
+
+| If you need...          | Read...                                    |
+| :---------------------- | :----------------------------------------- |
+| Create MCP server       | ## Quick Start → /toolkit:build:package    |
+| Define tool schema      | ## Implementation Patterns                 |
+| Choose transport        | ## Implementation Patterns                 |
+| Authentication patterns | `references/pattern_auth_patterns.md`      |
+| Validate server         | See validation section in this file        |
+| 2026 syntax features    | `references/pattern_2026_syntax.md`        |
+| Plugin integration      | `references/pattern_plugin_integration.md` |
+
+## Critical Reference Loading
+
+**Key Reference**: Authentication patterns in `pattern_auth_patterns.md` contain JSON Schema validation rules critical for runtime stability. Read these patterns in full when implementing authentication—summarization causes validation failures.
+
+## System Requirements
+
+- **MCP SDK**: `@modelcontextprotocol/sdk` (latest via npm/pnpm)
+- **TypeScript**: >= 5.0
+- **Node.js**: >= 18
+- **Validation**: `scripts/test_mcp.sh` (bundled CLI abstraction)
+- **Transport**: stdio (local) or http (remote)
+- **Schema**: Valid JSON Schema for tool input/output
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Planning**: Switch to planning mode for architectural decisions
+- **Discovery**: Locate files matching patterns and search file contents for MCP integration
+- **Delegation**: Delegate planning and exploration to specialized workers
+- **Tracking**: Maintain a visible task list for MCP development
+
+<critical_constraint>
+Use native tools to fulfill these patterns. The System Prompt selects the correct implementation for semantic directives.
+</critical_constraint>
+
+## Implementation Patterns
+
+### Pattern: Tool Definition Template
+
+```json
+{
+  "name": "tool_name",
+  "description": "Tool to <verb> <resource>. Use when <condition>. Constraints: <limits>.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "param_name": {
+        "type": "string",
+        "description": "Parameter description",
+        "enum": ["value1", "value2"],
+        "format": "email"
+      }
+    },
+    "required": ["param_name"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "result": { "type": "string", "description": "Result description" }
+    }
+  }
+}
+```
+
+### Pattern: stdio Transport (Local)
+
+```json
+{
+  "transport": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["server.js"]
+  }
+}
+```
+
+### Pattern: http Transport (Remote)
+
+```json
+{
+  "transport": {
+    "type": "http",
+    "url": "http://localhost:3000",
+    "authentication": {
+      "type": "bearer",
+      "token": "${API_TOKEN}"
+    }
+  }
+}
+```
+
+### Pattern: Error Message
+
+```
+"Invalid input: parameter must be a valid email address. Please provide a valid email like user@example.com."
+```
+
+## Troubleshooting
+
+| Issue                      | Symptom              | Solution                                                  |
+| -------------------------- | -------------------- | --------------------------------------------------------- |
+| Schema validation fails    | Tool calls rejected  | Ensure valid JSON Schema, add descriptions                |
+| Agent doesn't use tool     | Poor description     | Use formula: "Tool to X. Use when Y. Constraints: Z."     |
+| Missing required fields    | Runtime errors       | Add `required` array in inputSchema                       |
+| Wrong parameter type       | Type errors          | Match type in schema (string/number/boolean/array/object) |
+| Enum values not recognized | Unexpected behavior  | Use enums for finite value sets                           |
+| Transport connection fails | Server not reachable | Verify stdio command or http URL                          |
 
 <mission_control>
 <objective>Create portable MCP servers with strict tool schema definitions, clear transport logic, and prompt-engineered descriptions that guide agent behavior</objective>
 <success_criteria>Generated MCP server has valid JSON Schema for tools, prompt-engineered descriptions, and proper transport configuration</success_criteria>
 <standards_gate>
-MANDATORY: Read MCP documentation BEFORE creating servers:
+Before creating MCP servers, review:
 
 - Tool schema & transport → https://code.claude.com/docs/en/mcp.md
-- Performance & security → references/tool-development.md
-- Authentication → references/authentication.md
+- Authentication patterns → `Glob: lookup_auth_patterns.md`
   </standards_gate>
   </mission_control>
 
@@ -456,14 +581,14 @@ Tool to <verb> <resource>. Use when <trigger condition>. Constraints: <key limit
 
 <validation_rules>
 
-- name MUST be kebab-case with namespace prefix (e.g., service_action)
-- description MUST follow formula: "Tool to <verb> <resource>. Use when <condition>. Constraints: <limits>."
-- inputSchema MUST be valid JSON Schema
-- properties MUST have descriptions explaining parameter meaning and constraints
-- required MUST list all non-optional parameters
-- additionalProperties SHOULD be false for strict validation
-- Use enums for finite value sets
-- Use format constraints where applicable (email, date, etc.)
+- Tool names work best with kebab-case and namespace prefix (e.g., service_action)
+- Descriptions achieve clarity when following: "Tool to <verb> <resource>. Use when <condition>. Constraints: <limits>."
+- Valid JSON Schema ensures runtime reliability for inputSchema
+- Parameter descriptions prevent misuse by explaining meaning and constraints
+- The required field lists all non-optional parameters
+- Set additionalProperties to false for strict validation
+- Enums improve reliability for finite value sets
+- Format constraints (email, date, etc.) add automatic validation
 
 </validation_rules>
 
@@ -588,7 +713,7 @@ MCP servers provide:
 ### Server Configuration (McpServer)
 
 <critical_constraint>
-**MANDATORY: Use `McpServer` from `@modelcontextprotocol/sdk/server/mcp.js` (NOT legacy `Server`)**
+**Use McpServer from `@modelcontextprotocol/sdk/server/mcp.js`** (the legacy `Server` is deprecated)
 </critical_constraint>
 
 ```typescript
@@ -621,35 +746,36 @@ await server.connect(transport);
 
 ### Validation Framework
 
-**MANDATORY: Verify MCP servers using @modelcontextprotocol/inspector CLI**
+<critical_constraint>
+**Use `scripts/test_mcp.sh` for MCP server validation**—this script abstracts `@modelcontextprotocol/inspector` complexity into a simple CLI.
+</critical_constraint>
 
-The inspector CLI provides fast, scriptable contract validation for MCP servers. Use it for smoke tests, schema validation, and functional verification.
-
-**Basic CLI patterns:**
+**Quick validation commands:**
 
 ```bash
-# Health check
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method ping
+# Health check (verifies server starts and responds)
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js health
 
-# List tools (verify schema and descriptions)
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method tools/list
+# List all tools (verify schema and descriptions)
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js tools
 
 # List resources
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method resources/list
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js resources
 
 # List prompts
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js --method prompts/list
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js prompts
 
 # Call a tool (happy path)
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js \
-  --method tools/call --tool-name mytool --tool-arg key=value
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js call myTool --arg key=value
 
-# Call a tool with JSON arg
-npx -y @modelcontextprotocol/inspector --cli node Custom_MCP/{project}/dist/server.js \
-  --method tools/call --tool-name mytool --tool-arg 'options={"format": "json"}'
+# Call with JSON arguments
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js call myTool --json '{"key": "value"}'
+
+# Run full test suite
+scripts/test_mcp.sh Custom_MCP/{project}/dist/server.js all
 ```
 
-**CI/CD validation script example:**
+**CI/CD validation with exit codes:**
 
 ```bash
 #!/bin/bash
@@ -657,23 +783,18 @@ set -e
 
 PROJECT="your-project-name"
 SERVER_PATH="Custom_MCP/${PROJECT}/dist/server.js"
-INSPECTOR="npx -y @modelcontextprotocol/inspector --cli node ${SERVER_PATH}"
 
-echo "=> 1. Health check"
-$INSPECTOR --method ping
+# Health check (exit 0 = server running)
+scripts/test_mcp.sh "$SERVER_PATH" health || exit 1
 
-echo "=> 2. Verify tools list"
-TOOLS=$($INSPECTOR --method tools/list)
-echo "$TOOLS" | jq -e '.tools | length > 0'
+# List tools (verify definitions)
+TOOLS=$(scripts/test_mcp.sh "$SERVER_PATH" tools)
+echo "$TOOLS" | jq -e '.tools | length > 0' || exit 1
 
-echo "=> 3. Test critical tools"
-$INSPECTOR --method tools/call --tool-name diagnostics
+# Test critical tool
+scripts/test_mcp.sh "$SERVER_PATH" call myCriticalTool --arg input="test" || exit 1
 
-echo "=> 4. Verify resources/prompts"
-$INSPECTOR --method resources/list
-$INSPECTOR --method prompts/list
-
-echo "✅ MCP server validation: PASS"
+echo "MCP server validation: PASS"
 ```
 
 **For deep spec compliance**, combine with external validators like `mcp-validator`:
@@ -749,7 +870,7 @@ Before fetching MCP specification URLs:
 
 5. **Dispose Context** - Remove fetched content after extracting delta
 
-**NEVER copy documentation from URLs.** Instead: fetch the URL, identify the current tool-calling syntax, apply it directly to the local file. Do not store documentation in the session.
+**Delta Pattern**: Fetch the URL, identify current tool-calling syntax, apply directly to the local file. Store patterns, not documentation. Documentation becomes stale; patterns remain actionable.
 
 **When NOT to fetch:**
 
@@ -776,11 +897,11 @@ Before fetching MCP specification URLs:
 ## Dynamic Sourcing Protocol
 
 <fetch_protocol>
-**MANDATORY FETCH**: Before creating MCP servers, fetch the content from:
+**Before creating MCP servers**, fetch current syntax from:
 
 - https://code.claude.com/docs/en/mcp.md (tool schema and transport)
 
-**CONDITIONAL FETCH**: For CLI testing, fetch from https://github.com/modelcontextprotocol/inspector when needed.
+**Note**: For CLI testing, use `scripts/test_mcp.sh` instead of fetching inspector documentation.
 </fetch_protocol>
 
 ---
@@ -797,12 +918,12 @@ Before fetching MCP specification URLs:
 - SDK docs → https://modelcontextprotocol.io/quickstart/server
 - Testing guide → https://www.stainless.com/mcp/how-to-test-mcp-servers
 
-| If you need...     | Reference                                   |
-| ------------------ | ------------------------------------------- |
-| Tool development   | MANDATORY: `references/tool-development.md` |
-| Authentication     | `references/authentication.md`              |
-| Plugin integration | `references/plugin-integration.md`          |
-| 2026 features      | `references/2026-features.md`               |
+| If you need...     | Reference                                 |
+| ------------------ | ----------------------------------------- |
+| Testing MCP server | `scripts/test_mcp.sh`                     |
+| Authentication     | `references/lookup_auth_patterns.md`      |
+| Plugin integration | `references/lookup_plugin_integration.md` |
+| 2026 features      | `references/lookup_2026_syntax.md`        |
 
 ---
 
@@ -811,13 +932,11 @@ Before fetching MCP specification URLs:
 This component carries essential Seed System principles for context: fork isolation:
 
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+All components work with zero .claude/rules dependencies (portability invariant).
+Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session).
+Use What-When-Not-Includes format in descriptions (third person).
+Progressive disclosure: SKILL.md contains core philosophy; references/ contains detailed content.
+Use XML for control (mission_control, critical_constraint), Markdown for data.
 </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
@@ -830,59 +949,110 @@ No exceptions. Portability invariant must be maintained.
 
 ---
 
-## Absolute Constraints (Non-Negotiable)
+<guiding_principles>
+
+## The Path to MCP Server Quality
+
+### 1. Prompt-Engineered Descriptions
+
+Tool descriptions achieve optimal agent behavior when written as micro-prompts.
+
+- **Description formula**: "Tool to <verb> <resource>. Use when <condition>. Constraints: <limits>."
+- **Front-load constraints**: Place critical requirements and workflows first
+- **Conciseness**: 1-2 sentences, under 1024 characters
+
+### 2. Schema-First Design
+
+Valid JSON Schema prevents runtime errors and guides agent behavior.
+
+- **Use `<tool_schema>` template**: Follow the tool definition structure exactly
+- **Kebab-case names**: Service_action format improves discoverability
+- **Property descriptions**: Explain parameter meaning and constraints
+- **Enums over free text**: Finite value sets reduce ambiguity
+- **Format constraints**: Add automatic validation (email, date, uri, uuid)
+
+### 3. Transport by Use Case
+
+Choose stdio or http based on deployment requirements.
+
+- **stdio for local**: Single client, direct integration, simpler setup
+- **http for remote**: Multiple clients, network transport, load balancing
+- **Define clearly**: Transport configuration affects deployment architecture
+
+### 4. Error Messages as Micro-Prompts
+
+Errors guide agents to self-correct when structured properly.
+
+- **Pattern**: "<Problem>. <Why>. <Fix>."
+- **Concrete suggestions**: Include examples of correct parameters
+- **Recovery actions**: Explicit next steps instead of stack traces
+
+### 5. Portability First
+
+Servers work across environments when configured properly.
+
+- **Environment variables**: Externalize configuration
+- **Project-relative paths**: Use `${CLAUDE_PROJECT_DIR}` instead of hardcoding
+- **Self-contained dependencies**: Bundle required packages
+- **Graceful degradation**: Handle missing configuration safely
+
+### 6. Security by Design
+
+Input validation and sanitization prevent common vulnerabilities.
+
+- **Validate all inputs**: Against schema before processing
+- **Sanitize user input**: Prevent injection attacks
+- **Parameterized queries**: Use prepared statements for databases
+- **Rate limiting**: Prevent abuse and resource exhaustion
+- **Mask sensitive data**: Never log credentials or tokens
+- **HTTPS only**: Encrypt external communications
+
+### 7. Performance Patterns
+
+Servers remain responsive under load when optimized appropriately.
+
+- **Cache repeated operations**: Use `@lru_cache` or equivalent
+- **Paginate large results**: Return data in manageable chunks
+- **Batch operations**: Group related calls when possible
+- **Set timeouts**: Prevent indefinite waits
+  </guiding_principles>
+
+---
 
 <critical_constraint>
-**MANDATORY: Prompt-engineer tool descriptions**
+**System Physics:**
 
-- Use formula: "Tool to <verb> <resource>. Use when <condition>. Constraints: <limits>."
-- Front-load critical constraints and required workflows
-- Keep 1-2 sentences, under 1024 characters
+1. Zero external dependencies (portability invariant)
+2. Use `McpServer` from `@modelcontextprotocol/sdk/server/mcp.js` (legacy `Server` deprecated)
+3. Completion claims require verification evidence
+4. Prompt-engineered descriptions required for protocol correctness
+   </critical_constraint>
 
-**MANDATORY: Use `<tool_schema>` tags for tool definitions**
+---
 
-- Follow tool definition template exactly
-- name MUST be kebab-case with namespace prefix
-- description MUST be prompt-engineered
-- inputSchema MUST be valid JSON Schema
-- properties MUST have descriptions
-- required MUST list all non-optional parameters
-- Use enums for finite value sets
-- Use format constraints where applicable
+## Dynamic Knowledge Loading
 
-**MANDATORY: Choose appropriate transport type**
+This skill uses Blind Navigation for references. Load specialized knowledge ONLY when specific conditions are met:
 
-- stdio for local development, single client
-- http for remote servers, multiple clients
-- Define transport configuration clearly
-- Handle authentication if http
+| Context Condition             | Resource                                 | Action                                     |
+| :---------------------------- | :--------------------------------------- | :----------------------------------------- |
+| **Testing MCP server**        | `Glob: test_mcp.sh`                      | Execute for validation                     |
+| **Authentication patterns**   | `Glob: lookup_auth_patterns.md`          | `Grep` for .env setup and header formats   |
+| **Plugin integration**        | `Glob: lookup_plugin_integration.md`     | `Grep` for MCP client patterns             |
+| **2026 syntax features**      | `Glob: lookup_2026_syntax.md`            | `Grep` for new primitives                  |
+| **Tool schema templates**     | See tool_schema section                  | `Grep` for JSON Schema patterns            |
+| **Enforcing tool invocation** | `Glob: lookup_anti_laziness_patterns.md` | `Grep` for confidence rating, CoT patterns |
 
-**MANDATORY: Portability requirements**
+---
 
-- Environment variable configuration
-- No hardcoded paths
-- Self-contained dependencies
-- Graceful degradation
+## Dynamic Sourcing
 
-**MANDATORY: Error messages must guide agent recovery**
+<fetch*protocol>
+**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For raw MCP tool schema syntax:
 
-- Use pattern: "<Problem>. <Why>. <Fix>."
-- Never return raw stack traces
-- Include concrete recovery suggestions
-
-**MANDATORY: Read mandatory reference**
-
-MANDATORY READ: `references/tool-development.md` before creating tools
-This reference contains critical patterns for tool definition.
-
-**MANDATORY: Dynamic Sourcing from Official Documentation**
-
-- For MCP tool schema → fetch https://code.claude.com/docs/en/mcp.md
-- Verify current syntax before implementation
-- Fetch → Extract → Implement → Dispose
-- Never store documentation in session context
-
-**No exceptions. MCP servers require strict schema compliance and prompt-engineered descriptions for protocol correctness.**
-</critical_constraint>
+1. **Fetch**: `https://code.claude.com/docs/en/mcp.md`
+2. **Extract**: The specific tool schema fields you need
+3. **Discard**: Do not retain the fetch in context
+   </fetch_protocol>
 
 ---

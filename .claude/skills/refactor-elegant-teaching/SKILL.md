@@ -1,21 +1,215 @@
 ---
 name: refactor-elegant-teaching
-description: "Refactor code to be cleaner, more modular, and self-documenting when making code more teachable and maintainable. Not for quick fixes, non-educational changes, or style-only changes."
+description: "Refactor code to be cleaner, more modular, and self-documenting. Use when making code more teachable, maintainable, or educational. Includes modular design, self-documenting patterns, and teaching-focused restructuring. Not for quick fixes, non-educational changes, style-only changes, or performance optimization."
 ---
+
+<mission_control>
+<objective>Refactor code toward elegance where structure teaches intent through self-documenting, modular design.</objective>
+<success_criteria>Code refactored with clear intent, self-documenting structure, maintainable modules</success_criteria>
+</mission_control>
 
 # Refactor: Elegant Teaching
 
 Refactor code toward elegance—where structure teaches intent. Clean code reads like well-written prose: self-documenting, modular, and obvious to the next reader.
 
+## Workflow
+
+**Understand:** Explore codebase, grasp current structure and intent
+
+**Identify pattern:** Find anti-patterns (naming, structure, duplication)
+
+**Apply refactor:** Extract, rename, restructure toward self-documenting code
+
+**Verify:** Tests still pass, readability improved
+
+**Why:** Elegant code teaches intent through structure—maintainability improves when code reads like prose.
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Discovery**: Locate files matching patterns and search file contents for refactoring scope
+- **Delegation**: Delegate exploration to specialized workers
+- **Tracking**: Maintain a visible task list for refactoring phases
+- **Navigation**: Navigate code structure for refactoring analysis
+
+Trust native tools to fulfill these patterns. The System Prompt selects the correct implementation.
+
+## Navigation
+
+| If you need...         | Read...                                |
+| :--------------------- | :------------------------------------- |
+| Understand structure   | ## Workflow → Understand               |
+| Identify anti-patterns | ## Workflow → Identify pattern         |
+| Apply refactoring      | ## Workflow → Apply refactor           |
+| Verify changes         | ## Workflow → Verify                   |
+| Rename for clarity     | ## Implementation Patterns → Pattern 1 |
+| Examples               | examples/                              |
+
+## Implementation Patterns
+
+### Pattern 1: Rename for Clarity
+
+```typescript
+// Before: Names require mental translation
+const d = data.filter((x) => x.active);
+const h = handleUser(u);
+
+// After: Names describe purpose
+const activeUsers = data.filter((user) => user.isActive);
+const handleAuthenticatedUser = (user: User) =>
+  UserAuthenticator.authenticate(user);
+```
+
+### Pattern 2: Extract Function
+
+```typescript
+// Before: Function does too many things
+function processOrder(order) {
+  if (!order.id || !order.items) return null;
+  let total = 0;
+  for (const item of order.items) {
+    total += item.price * item.quantity;
+  }
+  return db.save({ ...order, total });
+}
+
+// After: Each function has single responsibility
+function processOrder(order: Order): ProcessedOrder | null {
+  if (!isValidOrder(order)) return null;
+  const total = calculateOrderTotal(order.items);
+  return saveOrder({ ...order, total });
+}
+```
+
+### Pattern 3: Flatten Nesting
+
+```typescript
+// Before: Deep nesting obscures control flow
+function processUser(user) {
+  if (user) {
+    if (user.isActive) {
+      if (user.hasPermission) {
+        // Do the thing
+      }
+    }
+  }
+}
+
+// After: Early returns clarify path
+function processUser(user: User | null) {
+  if (!user) return;
+  if (!user.isActive) return;
+  if (!user.hasPermission) return;
+  // Do the thing
+}
+```
+
+### Pattern 4: Remove Duplication
+
+```typescript
+// Before: Same logic repeated
+const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+
+// After: Single source of truth
+export function formatDateISO(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+```
+
+### Pattern 5: Replace Magic Values
+
+```typescript
+// Before: Unclear values
+if (retryCount > 3 && elapsed > 5000) {
+}
+
+// After: Named constants
+const MAX_RETRIES = 3;
+const REQUEST_TIMEOUT_MS = 5000;
+if (retryCount > MAX_RETRIES && elapsed > REQUEST_TIMEOUT_MS) {
+}
+```
+
+## Troubleshooting
+
+### Issue: Shotgun Refactoring
+
+| Symptom                     | Solution                                 |
+| --------------------------- | ---------------------------------------- |
+| Changing everything at once | Focus on one pattern at a time           |
+| Tests fail after refactor   | Revert and make smaller, focused changes |
+| Hard to isolate what broke  | One change at a time, verify after each  |
+
+### Issue: Refactoring Without Tests
+
+| Symptom             | Solution                                |
+| ------------------- | --------------------------------------- |
+| No test coverage    | Create tests before refactoring         |
+| Fear of breaking    | Write behavioral tests first            |
+| Manual verification | Document expected behavior, then verify |
+
+### Issue: Premature Abstraction
+
+| Symptom                     | Solution                                    |
+| --------------------------- | ------------------------------------------- |
+| Abstracting "just in case"  | Wait until pattern appears 2+ times         |
+| Over-engineered solution    | Solve the actual problem, not hypotheticals |
+| Indirection without benefit | Inline simple code that isn't reused        |
+
+### Issue: Behavior Change
+
+| Symptom                       | Solution                                    |
+| ----------------------------- | ------------------------------------------- |
+| Output differs after refactor | Revert immediately, preserve behavior first |
+| Tests fail                    | Fix the refactor, not the tests             |
+| Edge cases broken             | Ensure edge cases are handled identically   |
+
+## Editing Protocol
+
+**Principle**: Minimal Disruption.
+
+| Pattern                             | Result                        |
+| ----------------------------------- | ----------------------------- |
+| Rewriting whole file for one change | BAD - breaks context/RSID     |
+| Targeted search/replace for lines   | GOOD - preserves RSID context |
+| Verifying RSID around edit          | REQUIRED                      |
+
+**RSID Preservation**: When editing code:
+
+1. Identify exact lines to change
+2. Use targeted replace, not broad rewrites
+3. Verify surrounding context remains unchanged
+
+## workflows
+
+### Refactoring Workflow
+
+1. **UNDERSTAND** → Read code and trace current behavior
+2. **IDENTIFY** → What specifically obscures intent?
+3. **APPLY** → Use targeted pattern (rename, extract, flatten, deduplicate)
+4. **VERIFY** → Tests pass, behavior unchanged
+
+### TDD Integration
+
+- **RED phase**: Do NOT refactor (focus on making tests pass)
+- **GREEN phase**: Safe to refactor (tests provide safety net)
+- **Refactor in small steps**: One pattern at a time
+
+### Code Review Integration
+
+1. **IDENTIFY** → Comment flags unclear code
+2. **ACCEPT** → Agreement on refactoring approach
+3. **REFACTOR** → Apply patterns with safety net
+4. **VERIFY** → Review passes, behavior preserved
+
 ---
 
-<absolute_constraints>
+## Core Invariants
 
-- NEVER refactor without first reading and understanding the existing code
-- NEVER apply refactoring patterns dogmatically—context matters more than rules
-- ALWAYS preserve existing behavior—refactoring changes structure, not function
-- ALWAYS verify after refactoring with tests or manual validation
-  </absolute_constraints>
+Two principles guide every refactoring decision. First, preservation: the existing behavior must remain identical after any change. Second, clarity: the code's intent must become more obvious, not more obscured.
+
+Understanding what code currently does matters more than any pattern. Dogma serves the code, not the other way around. Verify changes through tests or manual checks before proceeding.
 
 ---
 
@@ -81,19 +275,7 @@ Apply these patterns based on what obscures intent in the specific code you're w
 
 **Solution**: Rename variables and functions to describe their purpose.
 
-**Before**:
-
-```typescript
-const d = data.filter((x) => x.active);
-const h = handleUser(u);
-```
-
-**After**:
-
-```typescript
-const activeUsers = data.filter((user) => user.isActive);
-const handleAuthenticatedUser = (user: User) => {};
-```
+**Reference**: See `examples/01-rename-before-after.ts`
 
 **Recognition**: "Does this name explain WHAT it is, not just its data type?"
 
@@ -103,54 +285,7 @@ const handleAuthenticatedUser = (user: User) => {};
 
 **Solution**: Extract logical chunks into named functions.
 
-**Before**:
-
-```typescript
-function processOrder(order) {
-  // Validate
-  if (!order.id || !order.items) return null;
-
-  // Calculate total
-  let total = 0;
-  for (const item of order.items) {
-    total += item.price * item.quantity;
-  }
-
-  // Apply discount
-  if (order.couponCode === "SAVE10") {
-    total *= 0.9;
-  }
-
-  // Save
-  const saved = db.save({ ...order, total });
-  return saved;
-}
-```
-
-**After**:
-
-```typescript
-function processOrder(order: Order): ProcessedOrder | null {
-  if (!isValidOrder(order)) return null;
-
-  const total = calculateOrderTotal(order.items);
-  const discountedTotal = applyCouponDiscount(total, order.couponCode);
-
-  return saveOrder({ ...order, total: discountedTotal });
-}
-
-function isValidOrder(order: Order): boolean {
-  return !!(order.id && order.items?.length);
-}
-
-function calculateOrderTotal(items: OrderItem[]): number {
-  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-}
-
-function applyCouponDiscount(total: number, couponCode?: string): number {
-  return couponCode === "SAVE10" ? total * 0.9 : total;
-}
-```
+**Reference**: See `examples/02-extract-before-after.ts`
 
 **Recognition**: "Can I describe what this code block does in a simple function name?"
 
@@ -160,31 +295,7 @@ function applyCouponDiscount(total: number, couponCode?: string): number {
 
 **Solution**: Use early returns and guard clauses.
 
-**Before**:
-
-```typescript
-function processUser(user) {
-  if (user) {
-    if (user.isActive) {
-      if (user.hasPermission) {
-        // Do the thing
-      }
-    }
-  }
-}
-```
-
-**After**:
-
-```typescript
-function processUser(user: User | null) {
-  if (!user) return;
-  if (!user.isActive) return;
-  if (!user.hasPermission) return;
-
-  // Do the thing
-}
-```
+**Reference**: See `examples/03-flatten-before-after.ts`
 
 **Recognition**: "Am I indenting more than 3 levels? Time to flatten."
 
@@ -194,21 +305,7 @@ function processUser(user: User | null) {
 
 **Solution**: Extract to a named function.
 
-**Before**:
-
-```typescript
-// In three different files:
-const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-```
-
-**After**:
-
-```typescript
-// In utils/date.ts:
-export function formatDateISO(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
-```
+**Reference**: See `examples/05-duplicate-before-after.ts`
 
 **Recognition**: "Have I seen this logic before? Extract it."
 
@@ -218,24 +315,21 @@ export function formatDateISO(date: Date): string {
 
 **Solution**: Name the values.
 
-**Before**:
-
-```typescript
-if (retryCount > 3 && elapsed > 5000) {
-}
-```
-
-**After**:
-
-```typescript
-const MAX_RETRIES = 3;
-const REQUEST_TIMEOUT_MS = 5000;
-
-if (retryCount > MAX_RETRIES && elapsed > REQUEST_TIMEOUT_MS) {
-}
-```
+**Reference**: See `examples/04-magic-before-after.ts`
 
 **Recognition**: "Would I understand this value in 6 months without context?"
+
+---
+
+## Before/After Examples
+
+| Example File                   | Shows...                                                 |
+| ------------------------------ | -------------------------------------------------------- |
+| `01-rename-before-after.ts`    | Obscure names → Self-documenting code                    |
+| `02-extract-before-after.ts`   | Multi-purpose function → Single-responsibility functions |
+| `03-flatten-before-after.ts`   | Deep nesting → Early returns                             |
+| `04-magic-before-after.ts`     | Magic numbers → Named constants                          |
+| `05-duplicate-before-after.ts` | Duplicated logic → Single source of truth                |
 
 ---
 
@@ -248,7 +342,7 @@ if (retryCount > MAX_RETRIES && elapsed > REQUEST_TIMEOUT_MS) {
 - Performance constraints (sometimes clarity must yield to efficiency)
 - Team preferences
 
-**Low freedom**: NEVER violate these:
+**System Physics** (non-negotiable):
 
 - Behavior preservation (refactoring must not change output)
 - Test coverage (if tests exist, they must still pass)
@@ -257,65 +351,11 @@ if (retryCount > MAX_RETRIES && elapsed > REQUEST_TIMEOUT_MS) {
 
 ---
 
-## Workflow
+## The Refactoring Discipline
 
-Follow this sequence when refactoring:
+Begin with understanding. Before changing anything, trace what the code currently does. Then ask: what specifically obscures its intent? The patterns follow naturally from the diagnosis.
 
-1. **Read first**: Understand what the code does before changing anything
-2. **Identify the smell**: What specifically makes this code hard to understand?
-3. **Choose the pattern**: Select the refactoring that addresses the smell
-4. **Make the change**: Apply the refactoring in small, verifiable steps
-5. **Verify behavior**: Run tests or manually verify that nothing changed
-6. **Commit separately**: Refactoring commits should be isolated from feature changes
-
-**Recognition**: "Did I understand the code before I changed it?"
-
----
-
-## Anti-Patterns to Avoid
-
-### Anti-Pattern: Shotgun Refactoring
-
-**❌ BAD**: Changing everything at once without understanding
-
-```
-"I'll just clean up this whole file while I'm here"
-```
-
-**✅ GOOD**: Focused, targeted changes
-
-```
-"This function is hard to understand—I'll extract the validation logic"
-```
-
-### Anti-Pattern: Refactoring Without Tests
-
-**❌ BAD**: Hoping nothing breaks
-
-**✅ GOOD**: Verify behavior is preserved
-
-```
-- Run tests first (they should pass)
-- Make the refactoring change
-- Run tests again (they should still pass)
-```
-
-### Anti-Pattern: Premature Abstraction
-
-**❌ BAD**: Extracting things "just in case"
-
-```typescript
-// Don't create abstractions for code that's only used once
-const getUserByIdFromDatabaseWithCache = abstractUserGetter("user");
-```
-
-**✅ GOOD**: Abstract when duplication actually exists
-
-```typescript
-// Wait until you see the pattern twice
-const getUser = getById("users");
-const getProduct = getById("products");
-```
+Change one thing at a time. Run tests after each change. Verify behavior remains unchanged. The sequence emerges from the problem, not from a checklist.
 
 ---
 
@@ -347,16 +387,8 @@ This skill works alongside:
 
 ## Genetic Code
 
-This component carries essential Seed System principles for context: fork isolation:
-
 <critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
+This component carries essential Seed System principles for context: fork isolation. All components must be self-contained with zero .claude/rules dependency. Descriptions use What-When-Not-Includes format in third person. Progressive disclosure applies—core in SKILL.md, details in references/. XML provides control (mission_control, critical_constraint), Markdown provides data. No exceptions. Portability invariant must be maintained.
 </critical_constraint>
 
 **Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
@@ -369,10 +401,15 @@ No exceptions. Portability invariant must be maintained.
 
 ---
 
+## Final Reminder
+
+Refactoring without understanding the current behavior invites bugs. The goal is cleaner structure, not new behavior. Run tests to confirm nothing changed. In TDD workflows, wait for the GREEN phase—refactoring during RED breaks the feedback loop.
+
+---
+
 <critical_constraint>
-MANDATORY: Read and understand code before refactoring
-MANDATORY: Preserve existing behavior (refactor structure, not function)
-MANDATORY: Run tests to verify behavior is unchanged
-MANDATORY: Never refactor during RED phase (TDD workflow)
-No exceptions. Refactoring without understanding breaks things.
+This skill carries its own genetic code. It works in isolation from .claude/rules/.
+The description uses What-When-Not-Includes format in third person.
+Progressive disclosure applies: core philosophy in SKILL.md, details in references/.
+XML tags provide control (mission_control, critical_constraint), Markdown provides data.
 </critical_constraint>```

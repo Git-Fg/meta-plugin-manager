@@ -1,6 +1,5 @@
 ---
 description: "List all available skills with their names and descriptions. Use when user asks to list skills, show all skills, or see what skills are available."
-disable-model-invocation: true
 ---
 
 <mission_control>

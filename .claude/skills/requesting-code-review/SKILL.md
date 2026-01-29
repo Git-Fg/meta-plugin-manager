@@ -1,28 +1,204 @@
 ---
 name: requesting-code-review
-description: "Request code reviews when preparing code for review or verifying readiness. Not for actual reviewing or incomplete work."
+description: "Request code reviews through pre-review checklist and two-stage review process. Use when preparing code for review, verifying readiness, or requesting formal review. Includes checklist completion, review formatting, and feedback incorporation. Not for actual reviewing, incomplete work, or post-merge review."
 ---
+
+<mission_control>
+<objective>Prepare code for review through pre-review checklist and two-stage review process.</objective>
+<success_criteria>Pre-review checklist complete, two-stage review passed, review request formatted correctly</success_criteria>
+</mission_control>
 
 # Requesting Code Review
 
-## Overview
+<guiding_principles>
 
-Request code review with systematic preparation. Ensures all code is reviewed through spec compliance and quality stages before merging.
+## The Path to High-Quality Review Success
 
-**Core principle:** Spec compliance first + quality review second = systematic code review.
+### 1. Pre-Review Preparation Creates Efficiency
 
-## When to Use
+Investing time in self-review before requesting review reduces back-and-forth cycles. When tests pass, lint is clean, and code is self-audited, reviewers focus on substantive issues rather than catching basic problems. This preparation shows respect for reviewers' time and accelerates the merge process.
 
-**Use when:**
+### 2. Two-Stage Review Prevents Context Switching
 
-- Requesting code review for implementation
-- Preparing code for merge/PR
-- Ensuring systematic review process
+Separating spec compliance from quality review creates focused, efficient feedback loops. When reviewers verify requirements match specifications first (Stage 1), they provide clear direction before investing in architectural analysis (Stage 2). This order prevents wasted effort reviewing code that doesn't meet requirements.
 
-**Don't use when:**
+### 3. Evidence-Based Feedback Builds Trust
 
-- Emergency fixes (use emergency workflow)
-- Trivial changes (use judgment)
+Citing specific file:line references for issues enables precise fixes and demonstrates thorough review. When feedback includes exact locations, authors can address points efficiently without guessing or searching. This precision builds confidence in the review process.
+
+### 4. Severity Categorization Prioritizes Effectively
+
+Distinguishing Critical, Important, and Minor issues helps authors focus fixes where they matter most. Critical issues block merge; Important issues affect quality but allow discussion; Minor issues represent preferences. Clear categorization prevents merge delays from nitpicks while ensuring quality standards.
+
+</guiding_principles>
+
+## Workflow
+
+**Pre-review checklist:** Verify tests pass, lint clean, no TODOs left
+
+**Stage 1 review:** Spec compliance check (requirements met, no extra features)
+
+**Stage 2 review:** Architecture and quality review (patterns, consistency)
+
+**Format request:** Generate structured review request with context
+
+**Why:** Two-stage review catches spec issues first—reviewers focus on quality, not requirements.
+
+## Navigation
+
+| If you need...       | Read...                            |
+| :------------------- | :--------------------------------- |
+| Pre-review checklist | ## Workflow → Pre-review checklist |
+| Stage 1 review       | ## Workflow → Stage 1 review       |
+| Stage 2 review       | ## Workflow → Stage 2 review       |
+| Format request       | ## Workflow → Format request       |
+| Review process flow  | ## Review Process Flow             |
+| Submit review        | Use `/review` command              |
+
+## Review Process Flow
+
+```mermaid
+graph TD
+    A[Prepare Code] --> B[Pre-Review Checklist]
+    B --> C{All Checks Pass?}
+    C -->|No| D[Fix Issues]
+    C -->|Yes| E[Stage 1: Spec Compliance]
+    E --> F{Requirements Met?}
+    F -->|No| G[Update Code]
+    F -->|Yes| H[Stage 2: Quality Review]
+    H --> I{Quality Standards Met?}
+    I -->|No| G
+    I -->|Yes| J[Submit Review Request]
+    D --> B
+```
+
+## Operational Patterns
+
+This skill follows these behavioral patterns:
+
+- **Tracking**: Maintain a visible task list for review preparation
+- **Verification**: Verify code quality before requesting review
+- **Management**: Manage task lifecycle for review stages
+
+## Implementation Patterns
+
+### Pattern 1: Pre-Review Checklist
+
+```bash
+# Run verification before requesting review
+npm test  # All tests passing
+npm run lint  # No lint errors
+git diff --stat  # Review changes summary
+
+# Self-review checklist
+Grep: Search for "TODO\|FIXME\|XXX"  # Remove or address
+Grep: Search for console.log\|debugger  # Clean up
+```
+
+### Pattern 2: Two-Stage Review Template
+
+```markdown
+## Stage 1: Spec Compliance
+
+- [ ] All requirements implemented?
+- [ ] No extra features added?
+- [ ] Blueprint/spec followed?
+- [ ] Acceptance criteria met?
+
+## Stage 2: Quality Review
+
+- [ ] Code quality standards met?
+- [ ] Tests comprehensive?
+- [ ] Documentation complete?
+- [ ] Error handling proper?
+```
+
+### Pattern 3: Review Response Format
+
+```markdown
+## Spec Compliance Response
+
+✅ **PASS** or ❌ **ISSUES FOUND**
+
+Issues:
+
+- [Critical/Important/Minor]: [Description] (file:line)
+```
+
+### Pattern 4: CI Integration
+
+```bash
+# Verify all checks pass before requesting review
+npm run test:ci  # CI-style test run
+npm run type-check  # TypeScript type check
+npx knip  # Check for unused files/deps
+```
+
+## Troubleshooting
+
+### Issue: Tests Failing
+
+| Symptom                  | Solution                                       |
+| ------------------------ | ---------------------------------------------- |
+| Unit tests failing       | Fix failing tests before requesting review     |
+| Integration tests        | Ensure test environment is properly configured |
+| Coverage below threshold | Add missing tests or adjust threshold          |
+
+### Issue: Missing Requirements
+
+| Symptom                   | Solution                                  |
+| ------------------------- | ----------------------------------------- |
+| Feature not implemented   | Complete implementation before requesting |
+| Acceptance criteria unmet | Verify each criterion is addressed        |
+| Edge cases not covered    | Add tests for edge cases                  |
+
+### Issue: Quality Issues Found
+
+| Symptom                | Solution                                   |
+| ---------------------- | ------------------------------------------ |
+| Poor naming            | Rename variables/functions for clarity     |
+| Missing error handling | Add proper try/catch and error propagation |
+| Low test coverage      | Add unit tests for uncovered code paths    |
+
+### Issue: Wrong Review Order
+
+| Symptom                      | Solution                                  |
+| ---------------------------- | ----------------------------------------- |
+| Quality reviewed before spec | Always do spec compliance first           |
+| Skipped spec compliance      | Verify requirements before quality checks |
+
+## workflows
+
+### Before Requesting Review
+
+1. **RUN TESTS** → All tests pass
+2. **RUN LINT**
+3. **SELF-REVIEW** → Check → No lint errors for TODOs, debug statements
+4. **VERIFY CHANGES** → git diff --stat to confirm scope
+
+### Two-Stage Review Process
+
+```
+Stage 1: Spec Compliance
+├─ Verify all requirements implemented
+├─ Check no extra features added
+└─ Confirm blueprint/spec followed
+
+Stage 2: Quality Review
+├─ Check code quality standards
+├─ Verify test coverage
+├─ Ensure documentation complete
+└─ Categorize issues by severity
+```
+
+### Review Response Workflow
+
+1. **STAGE 1** → Spec compliance check
+2. **REPORT** → Pass or list issues with file:line
+3. **STAGE 2** → Quality review (only if Stage 1 passes)
+4. **REPORT** → Approved or needs fixes with severity
+
+---
 
 ## Pre-Review Checklist
 
@@ -290,74 +466,6 @@ OR
 Please fix Critical and Important issues before merge.
 ```
 
-## Common Issues
-
-### Spec Compliance Issues
-
-**Missing Requirements:**
-
-- Implementation doesn't include all features
-- Acceptance criteria not met
-- Edge cases not handled
-
-**Extra Work:**
-
-- Features not in requirements
-- Scope creep
-- "Nice to have" additions
-
-**Misunderstanding:**
-
-- Requirements interpreted incorrectly
-- Wrong approach taken
-- Blueprint not followed
-
-### Quality Issues
-
-**Code Quality:**
-
-- Poor naming conventions
-- Complex logic not simplified
-- No error handling
-- Inconsistent formatting
-
-**Testing:**
-
-- Low coverage
-- Missing edge cases
-- Brittle tests
-- No integration tests
-
-**Documentation:**
-
-- Unclear descriptions
-- Missing examples
-- No troubleshooting guide
-- Outdated information
-
-## Red Flags
-
-**Before Requesting Review:**
-
-- [ ] Tests not all passing
-- [ ] Self-review skipped
-- [ ] Requirements not verified
-- [ ] Documentation incomplete
-
-**During Review:**
-
-- [ ] Spec compliance not verified first
-- [ ] Quality reviewed before spec compliance
-- [ ] Issues ignored or deferred
-- [ ] "Good enough" accepted
-
-## Key Principles
-
-1. **Spec first, quality second** - Order matters
-2. **Systematic verification** - Checklists ensure nothing missed
-3. **Evidence-based** - Cite file:line references
-4. **Categorize issues** - Critical, Important, Minor
-
 ## Quick Reference
 
 | Stage               | Purpose            | Checks                                     |
@@ -369,34 +477,18 @@ Requesting code review systematically ensures high-quality implementations throu
 
 ---
 
-## Genetic Code
+## Recognition Questions
 
-This component carries essential Seed System principles for context: fork isolation:
-
-<critical_constraint>
-MANDATORY: All components MUST be self-contained (zero .claude/rules dependency)
-MANDATORY: Achieve 80-95% autonomy (0-5 AskUserQuestion rounds per session)
-MANDATORY: Description MUST use What-When-Not format in third person
-MANDATORY: No component references another component by name in description
-MANDATORY: Progressive disclosure - references/ for detailed content
-MANDATORY: Use XML for control (mission_control, critical_constraint), Markdown for data
-No exceptions. Portability invariant must be maintained.
-</critical_constraint>
-
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
-
-**Recognition Questions**:
+Self-verification questions for review quality:
 
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
+- "Is spec compliance verified before quality review?" → Follow two-stage process
+- "Are tests passing and lint clean?" → Complete pre-review checklist first
 
 ---
 
 <critical_constraint>
-MANDATORY: Complete spec compliance review BEFORE quality review
-MANDATORY: Verify all tests pass before requesting review
-MANDATORY: Cite specific file:line references for issues
-MANDATORY: Categorize issues by severity (Critical/Important/Minor)
-No exceptions. Systematic review prevents merge of substandard code.
+**Portability Invariant:** This skill must work with zero .claude/rules dependencies (self-contained genetic code for context: fork isolation)
 </critical_constraint>
