@@ -171,7 +171,7 @@ cmd_all() {
 
     cat > /tmp/all-test-prompt.md << 'EOF'
 Execute the skill-authoring test in tests/skill-authoring/test-skill.md
-Then test skill-refine by using it on this conversation.
+Then test self-learning by using it on this conversation.
 Then test command-authoring by describing what commands do.
 
 Report what you found and what was created.

@@ -1,41 +1,5 @@
-Here is the refactored prompt. It shifts the focus from purely internal consistency to **Native Alignment**—ensuring your overlay doesn't fight the model's underlying conditioning.
+Perform an in-depth architectural review of all project components (skills, commands, agents, rules) against the **Native System Prompt** <native_system_prompt> provided below. The goal is to identify where the project's custom logic conflicts with, duplicates, or fails to leverage the model's native training and tooling.
 
-***
-
-# System Alignment & Native Compatibility Review
-
-## Objective
-Perform an in-depth architectural review of all project components (skills, commands, agents, rules) against the **Native System Prompt** provided below. The goal is to identify where the project's custom logic conflicts with, duplicates, or fails to leverage the model's native training and tooling.
-
-## Scope of Analysis
-You must treat the **System Prompt as the immutable "Physics" of the environment**.
-Analyze the project codebase to determine where our "User-Space" logic (The Cat Toolkit) creates friction with the "Kernel-Space" logic (The System Prompt).
-
-## Verification Requirements
-
-1.  **Tooling Alignment**:
-    *   Verify that skills utilize the *native tools* defined in the System Prompt (`TodoWrite`, `EnterPlanMode`, `AskUserQuestion`) rather than reinventing them (e.g., manual `PLAN.md` files or custom input loops).
-    *   Identify usage of tools that the System Prompt explicitly discourages (e.g., using `Bash` for file reading/searching instead of `Read`/`Grep`).
-
-2.  **Agent Persona Compatibility**:
-    *   Compare our custom agent definitions against the native `subagent_types` defined in the System Prompt (`Plan`, `Explore`, `general-purpose`).
-    *   Identify redundant custom agents that should simply be wrappers for native sub-agents.
-
-3.  **Philosophy & Constraint Check**:
-    *   **Contradiction Scan**: Find instructions in our `.claude/rules` that contradict the System Prompt (e.g., "Always give time estimates" would violate the System Prompt's "No time estimates" rule).
-    *   **Redundancy**: Identify rules we are manually enforcing that the System Prompt already enforces via system instruction (Zero Delta/Negative Delta audit).
-
-4.  **Operational Friction**:
-    *   Identify workflows where our skills force the model to work *against* its natural "grain" or safety training as defined in the System Prompt.
-
-## Success Criteria
-Produce a **Friction Report** detailing:
-- [ ] **Tool Misuse**: Specific lines where skills ignore native tools in favor of brittle manual workarounds.
-- [ ] **Architectural Conflicts**: Areas where our planning/handoff logic fights the native `EnterPlanMode`/`TodoWrite` workflows.
-- [ ] **Redundant Definitions**: Custom agents or rules that are rendered obsolete by the System Prompt.
-- [ ] **Refactoring Plan**: A prioritized list of high-value changes to align the project with the System Prompt.
-
----
 
 <native_system_prompt>
 # Claude Code Version 2.1.23

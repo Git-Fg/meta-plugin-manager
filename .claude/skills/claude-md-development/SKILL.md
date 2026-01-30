@@ -1,24 +1,20 @@
 ---
 name: claude-md-development
-description: "Manage CLAUDE.md documentation as the project's single source of truth. Use when updating seed system documentation, project overview, or synchronizing with .claude/rules/. Includes CLAUDE.md structure, evergreen content principles, and cross-reference maintenance. Not for creating specific skills, commands, or agent configurations."
+description: "Manage CLAUDE.md documentation as the project's single source of truth. Use when updating seed system documentation, project overview, or synchronizing with actual skills. Includes CLAUDE.md structure, evergreen content principles, and cross-reference maintenance. Not for creating specific skills, commands, or agent configurations."
 ---
 
 # Claude.md Development
 
 <mission_control>
 <objective>Maintain CLAUDE.md as the project's single source of truth for session behavior and component architecture</objective>
-<success_criteria>CLAUDE.md remains concise, evergreen, and synchronized with .claude/rules/ and component meta-skills</success_criteria>
+<success_criteria>CLAUDE.md remains concise, evergreen, and synchronized with actual skills</success_criteria>
 </mission_control>
 
 ---
 
 ## Quick Start
 
-**Archive learning:** `/learning:archive` → Capture session discoveries to CLAUDE.md
-
 **Full audit:** `/claude-md-management:claude-md-improver` → Comprehensive review and update
-
-**Refine rules:** `/learning:refine-rules` → Synchronize with `.claude/rules/`
 
 **Why:** CLAUDE.md is single source of truth—maintains session behavior and component architecture.
 
@@ -26,17 +22,8 @@ description: "Manage CLAUDE.md documentation as the project's single source of t
 
 | If you need...          | Read...                                                     |
 | :---------------------- | :---------------------------------------------------------- |
-| Archive learning        | ## Quick Start → `/learning:archive`                        |
 | Full CLAUDE.md audit    | ## Quick Start → `/claude-md-management:claude-md-improver` |
-| Refine rules            | ## Quick Start → `/learning:refine-rules`                   |
-| Update rules            | ## Quick Start → ### Updating Rules?                        |
 | Implementation patterns | ## Implementation Patterns                                  |
-
-### Updating Rules?
-
-1. **Refine Existing Rules** → Use `/learning:refine-rules`
-2. **Check Consistency** → Manual review with `.claude/rules/` files
-3. **Add New Rule** → Add to appropriate rules file + sync CLAUDE.md
 
 ## Operational Patterns
 
@@ -76,7 +63,7 @@ For detailed guidance, see: `docs/detailed-guide.md`
 1. Add entry to Key Meta-Skills table
 2. Add navigation entry in Quick Navigation section
 3. Verify link points to correct skill location
-4. Update `.claude/rules/` if architectural change
+4. Update CLAUDE.md directly for architectural changes
 
 **Maintaining progressive disclosure**:
 
@@ -104,11 +91,6 @@ Brief overview (2-3 sentences).
 
 - **Symptom**: 404 errors or missing references
 - **Solution**: Verify skill location; check command naming convention
-
-**Issue**: Out of sync with .claude/rules/
-
-- **Symptom**: Contradictory guidance between files
-- **Solution**: Run `/claude-md-management:claude-md-improver` for audit
 
 **Issue**: Meta-skill table stale
 
@@ -156,39 +138,7 @@ Brief overview (2-3 sentences).
 
 ---
 
-## Content Synchronization
-
-### Critical Synchronization Points
-
-**CLAUDE.md ↔ .claude/rules/**
-
-| CLAUDE.md Section | Rules File      | Sync Action                                |
-| ----------------- | --------------- | ------------------------------------------ |
-| Philosophy table  | principles.md   | Update table when principles change        |
-| Key Meta-Skills   | All meta-skills | Add/remove entries when meta-skills change |
-| Navigation        | patterns.md     | Ensure consistent terminology              |
-
-**CLAUDE.md ↔ Meta-Skills**
-
-| CLAUDE.md Reference | Meta-Skill                  | Sync Action                                    |
-| ------------------- | --------------------------- | ---------------------------------------------- |
-| Component Guidance  | invocable-development, etc. | Update links when meta-skill structure changes |
-| Quality Standards   | quality-standards           | Align Success Criteria descriptions            |
-
----
-
----
-
 ## Common CLAUDE.md Patterns
-
-### Philosophy Table Format
-
-```markdown
-| File          | Layer    | Content                                        |
-| ------------- | -------- | ---------------------------------------------- |
-| principles.md | **Both** | Dual-layer architecture, Portability Invariant |
-| patterns.md   | **Both** | Implementation patterns, Degrees of Freedom    |
-```
 
 ### Meta-Skill Table Format
 
@@ -197,28 +147,6 @@ Brief overview (2-3 sentences).
 | ------------------------- | ------------------------ | -------------------------------- |
 | **invocable-development** | Creating portable skills | Tutorial → Architectural refiner |
 ```
-
-### Component Guidance Format
-
-```markdown
-## Component-Specific Guidance
-
-For detailed guidance on creating portable components, consult the appropriate meta-skill:
-
-| Component | Meta-Skill            | Output Traits             |
-| --------- | --------------------- | ------------------------- |
-| Skills    | invocable-development | Portable, self-sufficient |
-```
-
----
-
-## Navigation
-
-For hybrid format standards (Markdown + XML), see the **hybrid-format rule**.
-
-For architectural philosophy, see: `docs/philosophy/deep-dives.md`
-
-For development guidance, see: `invocable-development` skill
 
 ---
 
@@ -257,19 +185,22 @@ CLAUDE.md is evergreen documentation, not a scratchpad. Transient or TODO conten
 // Focus on project-specific conventions only
 ```
 
-### Mistake 2: Duplicating Content from .claude/rules/
+### Mistake 2: Over-Archiving (Context Rot)
 
 ❌ **Wrong:**
 ```markdown
-## Principles
-[Full copy of principles.md content]
+// Archiving every decision and working command
+- npm install (standard dependency install)
+- git commit (standard version control)
+- "Remember to run tests" (obvious)
 ```
 
 ✅ **Correct:**
 ```markdown
-## Principles
-
-For full philosophy, see: `principles.md`
+// Only archive non-obvious decisions
+- Why we chose PostgreSQL over MySQL (project-specific trade-off)
+- Custom auth middleware pattern (non-obvious architecture)
+- "Gotcha": API returns 200 on partial failure (historical bug)
 ```
 
 ### Mistake 3: Adding Transient Notes
@@ -299,17 +230,33 @@ See: `docs/non-existent-file.md`
 // Use grep or glob to confirm file paths
 ```
 
+## Negative Delta Rule: What NOT to Archive
+
+Claude already knows:
+- Standard commands (npm install, pnpm dev, git commit, etc.)
+- Basic Git operations (commit, push, branch, merge)
+- Common patterns (REST APIs, CRUD operations, auth flows)
+- Programming language basics and standard library
+
+Only archive if non-obvious:
+- Project-specific conventions not in training data
+- Non-obvious trade-offs (why X over Y in THIS project)
+- Architecture decisions with specific rationale
+- "Gotchas" that caused bugs in the past
+- Custom tooling or scripts unique to this project
+
+**Rule of thumb:** If a new developer could figure this out by reading the code, don't archive it.
+
 ## Validation Checklist
 
 Before claiming CLAUDE.md maintenance complete:
 
 - [ ] Links verified to exist (no 404s)
 - [ ] Meta-skill table synchronized with actual skills
-- [ ] Cross-references consistent with .claude/rules/
 - [ ] No transient/TODO content included
 - [ ] File under 500 lines (or progressive disclosure applied)
-- [ ] Evergreen content only (no session-specific ] No duplication of notes)
-- [ .claude/rules/ content
+- [ ] Evergreen content only (no session-specific notes)
+- [ ] Delta Standard applied (Claude already knows this?)
 
 ## Best Practices Summary
 
@@ -322,7 +269,7 @@ Before claiming CLAUDE.md maintenance complete:
 
 ❌ **DON'T:**
 - Include generic Markdown/YAML/Git explanations
-- Duplicate content from .claude/rules/
+- Archive standard commands or obvious decisions
 - Add transient session notes or TODO items
 - Create broken links to non-existent files
 - Make CLAUDE.md a scratchpad for work-in-progress

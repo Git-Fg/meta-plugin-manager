@@ -4,54 +4,20 @@ Meta-toolkit for Claude Code focused on `.claude/` configuration with dual-role 
 
 ---
 
-## 1. The Constitution (Global Rules)
-
-Behavioral rules are defined in `.claude/rules/`. These files are load together with CLAUDE.md at session start.
-
----
-
-## 2. Project Navigation (Local Map)
+## 1. Quick Reference
 
 ### Quick Actions
 
-| Intent       | Command               |
-| :----------- | :-------------------- |
-| Build        | `/create`             |
-| Analyze      | `/analyze`            |
-| Verify       | `/verify`             |
-| Plan         | `/strategy:architect` |
-| Execute Plan | `/strategy:execute`   |
-| Phase Verify | `/qa:verify-phase`    |
+| Intent | Command |
+| :----- | :------ |
+| Build | `/create` |
+| Analyze | `/analyze` |
+| Verify | `/verify` |
+| Phase Verify | `/qa:verify-phase` |
 
-### Skills vs Commands: Structure, Not Capability
+### Native Planning
 
-<critical_constraint>
-ARCHITECTURAL FACT: Skills and commands have IDENTICAL capabilities under the hood.
-The ONLY difference is structure/syntax for cognitive load management.
-</critical_constraint>
-
-**Functional Equivalence:**
-
-| Aspect                      | Skills | Commands |
-| :-------------------------- | :----- | :------- |
-| **User invocable**          | ✅ Yes | ✅ Yes   |
-| **Model invocable**         | ✅ Yes | ✅ Yes   |
-| **Can invoke tools**        | ✅ Yes | ✅ Yes   |
-| **Can delegate**            | ✅ Yes | ✅ Yes   |
-| **Can use AskUserQuestion** | ✅ Yes | ✅ Yes   |
-
-**Structural Differences Only:**
-
-| Aspect                     | Skills                                      | Commands                                            |
-| :------------------------- | :------------------------------------------ | :-------------------------------------------------- |
-| **Format**                 | Folder with SKILL.md + optional references/ | Single file                                         |
-| **Progressive disclosure** | Yes (Tier 2/Tier 3)                         | No (single-file loads full content)                 |
-| **Naming**                 | Flat structure                              | Nested with `:` separator (e.g., `/folder:command`) |
-
-**When to Use Which:**
-
-- **Choose Skill** when content benefits from progressive disclosure (complex domain knowledge), need references/ folder for detailed lookup tables, or content may be invoked by other components
-- **Choose Command** when quick intent-based invocation is primary use case, content fits comfortably in single file, or direct user interaction is the main pattern
+When in Plan Mode, prefer a phase-based dependency graph. Use `EnterPlanMode` for non-trivial implementation tasks.
 
 ### Component Index
 
@@ -59,545 +25,478 @@ The ONLY difference is structure/syntax for cognitive load management.
 - **Commands**: `.claude/commands/` - Intent aliases and shortcuts
 - **Agents**: `.claude/agents/` - Autonomous workers
 
-### Skill Library Index
+### Factory Reference
 
-44 skills organized by purpose. Skills marked with `(*)` have navigation tables.
-
-#### Factory (Building the toolkit)
-
-| Skill                   | Description                                             |
-| :---------------------- | :------------------------------------------------------ |
-| `skill-authoring`       | Create portable skills with SKILL.md and references/    |
-| `skill-refine`         | Analyze conversation to refine skills with evidence-based findings |
-| `command-authoring`     | Create single-file commands with @/! injection patterns |
-| `command-refine`       | Analyze conversation to refine commands with injection patterns |
-| `agent-development`     | Create, validate, and audit autonomous agents           |
-| `hook-development`      | Create, validate, and audit event-driven hooks          |
-| `mcp-development`       | Create, test, and audit MCP servers and tools           |
-| `claude-md-development` | Manage CLAUDE.md as project's single source of truth    |
-
-<deprecated>
-`invocable-development` has been split into 4 granular skills above.
-</deprecated>
-
-#### Software Lifecycle (The "Big Skills")
-
-| Skill                            | Description                                                   |
-| :------------------------------- | :------------------------------------------------------------ |
-| `engineering-lifecycle`          | Plan, implement, and verify software with TDD discipline      |
-| `quality-standards`              | Verify completion with evidence using 6-phase gates           |
-| `pr-reviewer`                    | Review pull requests for spec, security, performance, quality |
-| `requesting-code-review`         | Request code reviews through pre-review checklist             |
-| `finishing-a-development-branch` | Finish development branches for merge or PR                   |
-
-#### Analysis & Thinking (Cognitive Tools)
-
-| Skill                       | Description                                        |
-| :-------------------------- | :------------------------------------------------- |
-| `analysis-diagnose`         | Perform systematic root cause investigation        |
-| `brainstorming`             | Turn ideas into validated designs                  |
-| `discovery`                 | Conduct discovery interviews for requirements      |
-| `first-principles-thinking` | Break down problems to fundamental truths          |
-| `inversion-thinking`        | Solve problems backwards to identify failure modes |
-| `premortem`                 | Identify failure modes before they occur           |
-| `simplification-principles` | Apply simplification principles to debug issues    |
-
-#### Operations & Environment
-
-| Skill                 | Description                                             |
-| :-------------------- | :------------------------------------------------------ |
-| `filesystem-context`  | Manage filesystem context for large data offloading     |
-| `using-git-worktrees` | Manage git worktrees for isolated workspaces            |
-| `uv`                  | Manage Python packages and projects using uv            |
-| `file-search`         | Search files and content in a codebase                  |
-| `iterative-retrieval` | Execute 4-phase loop for progressive context refinement |
-
-#### Specialized Orchestration
-
-| Skill                         | Description                                             |
-| :---------------------------- | :------------------------------------------------------ |
-| `dispatching-parallel-agents` | Dispatch parallel agents for concurrent problem-solving |
-| `distributed-processor`       | Distribute work across multiple contexts                |
-| `jules-api`                   | Programmatic interface to Google's Jules API            |
-| `create-meta-prompts`         | Generate meta-prompts for Claude-to-Claude pipelines    |
-| `ops/reflect-and-patch`       | Review conversation for improvement opportunities       |
-
-#### API Integrations
-
-| Skill                        | Description                                             |
-| :--------------------------- | :------------------------------------------------------ |
-| `google-genai-typescript`    | Integrate Google GenAI SDK for Gemini models            |
-| `perplexity-typescript`      | Integrate Perplexity AI APIs in TypeScript              |
-| `memory-persistence`         | Provide session lifecycle hooks for context persistence |
-| `multi-session-orchestrator` | Orchestrate multi-session workflows                     |
-
-#### Evaluation & Decision-Making
-
-| Skill                       | Description                                           |
-| :-------------------------- | :---------------------------------------------------- |
-| `evaluation`                | Evaluate agent systems with quality gates             |
-| `swot-analysis`             | Analyze Strengths, Weaknesses, Opportunities, Threats |
-| `deviation-rules`           | Handle unexpected work during execution               |
-| `refactor-elegant-teaching` | Refactor code to be cleaner and self-documenting      |
-| `refine-prompts`            | Refine vague prompts into precise instructions        |
-
-#### Development Tools
-
-| Skill                     | Description                                      |
-| :------------------------ | :----------------------------------------------- |
-| `agent-browser`           | Automate browser interactions                    |
-| `exploration-guide`       | Exploration philosophy and verification practice |
-| `planning-guide`          | Planning philosophy, patterns, and practices     |
-| `typescript-conventions`  | Apply TypeScript conventions for type safety     |
-| `meta-learning-extractor` | Analyze session history to auto-refine rules     |
+| To Build... | Invoke Skill... |
+| :---------- | :-------------- |
+| Skill | `skill-authoring` |
+| Command | `command-authoring` |
+| Audit Skill | `system-refiner` |
+| Audit Command | `command-refine` |
+| Agent | `agent-development` |
+| MCP Server | `mcp-development` |
+| Hook | `hook-development` |
 
 ---
 
-### Self-Maintenance (ops namespace)
-
-| Intent               | Command        |
-| :------------------- | :------------- |
-| Extract patterns     | `/ops:extract` |
-| Detect context drift | `/ops:drift`   |
-| Review session       | `/ops:reflect` |
-
----
-
-## 3. The Factory Protocols
+## 2. Skills vs Commands: Structure, Not Capability
 
 <critical_constraint>
-MANDATORY: Produced components must work in a vacuum (Zero CLAUDE.md/.claude/rules/ dependency).
+Skills and commands have IDENTICAL capabilities. The ONLY difference is structure for cognitive load management.
 </critical_constraint>
 
-### Factory Reference Table
+### Functional Equivalence
 
-| To Build...   | Invoke Skill...     |
-| :------------ | :------------------ |
-| Skill         | `skill-authoring`   |
-| Command       | `command-authoring` |
-| Audit Skill   | `skill-refine`     |
-| Audit Command | `command-refine`   |
-| Agent         | `agent-development` |
-| MCP Server    | `mcp-development`   |
-| Hook          | `hook-development`  |
+| Aspect | Skills | Commands |
+| :----- | :----- | :------- |
+| User invocable | ✅ Yes | ✅ Yes |
+| Model invocable | ✅ Yes | ✅ Yes |
+| Can invoke tools | ✅ Yes | ✅ Yes |
+| Can delegate | ✅ Yes | ✅ Yes |
+| Can use AskUserQuestion | ✅ Yes | ✅ Yes |
 
-### Build Commands
+### Structural Differences
 
-| Command                  | Purpose                                   |
-| :----------------------- | :---------------------------------------- |
-| `/create`                | Unified entry - auto-routes to builder    |
-| `/toolkit:build:command` | Create one-file commands                  |
-| `/toolkit:build:skill`   | Create skills with SKILL.md + references/ |
-| `/toolkit:build:package` | Create complete packages                  |
+| Aspect | Skills | Commands |
+| :----- | :----- | :------- |
+| Format | Folder with SKILL.md + optional references/ | Single file |
+| Progressive disclosure | Yes (Tier 2/Tier 3) | No |
+| Naming | Flat structure | Nested with `:` separator |
 
-### Audit & Critique
+### When to Choose Which
 
-| Command             | Purpose                             |
-| :------------------ | :---------------------------------- |
-| `/toolkit:audit`    | Universal auditor (auto-routes)     |
-| `/toolkit:critique` | Quality audit via quality-standards |
+**Choose Skill** when content benefits from progressive disclosure, need references/ for detailed lookup tables, or content may be invoked by other components.
 
----
+**Choose Command** when quick intent-based invocation is primary, content fits in single file, or direct user interaction is the main pattern.
 
-## 4. System Discoveries (2026-01-29)
+### Command Dual-Mode Pattern
 
-Key findings from internal system review and their resolutions:
-
-### mission_control Requirement
-
-**Discovery**: Not all skills had `<mission_control>` and `<critical_constraint>` XML tags as mandated by `invocable-development`.
-
-**Resolution**: Added `<mission_control>` with `<objective>` and `<success_criteria>` to all 39 skills.
-
-### Progressive Disclosure Scope
-
-**Discovery**: `principles.md` stated progressive disclosure applies ONLY to skills, but `architecture.md` referenced `references/` for commands.
-
-**Resolution**: Commands can reference `references/` for ultra-situational lookup. Progressive disclosure primarily applies to skills.
-
-### SUMMARY.md Pattern Removed
-
-**Discovery**: Several skills used `SUMMARY.md` pattern but it was never documented in rules.
-
-**Resolution**: Deleted all SUMMARY.md files. Skills must be self-contained in SKILL.md.
-
-### Portability Invariant Enforcement
-
-**Discovery**: Skills contained explicit file paths creating portability violations.
-
-**Resolution**: Removed explicit file path references from skill headers. Skills are self-contained.
-
-### AskUserQuestion Integration Pattern
-
-**Discovery**: Commands should present concrete placement options with AskUserQuestion before applying changes, rather than using abstract syntax examples.
-
-**Example**:
-
-- Instead of: `[Ask user for approval before applying]`
-- Use: "I found X placements: Append to ## Gotchas, Create new section ## Commands, etc."
-
-**Rationale**: Concrete options are actionable; abstract syntax guidance wastes context.
-
-### Dual-Mode Command Pattern
-
-**Discovery**: Commands can operate in two modes based on arguments:
-
-- **Implicit Mode**: Infer from conversation context when no explicit arguments provided
-- **Explicit Mode**: Use user-provided content when arguments are specified
-
-**Example**: `/learning:archive` now scans conversation for discoveries, then asks where to place them.
-
-**Rationale**: Zero-argument commands feel more natural; explicit arguments remain available for precise control.
-
-### Agent Structure Enforcement
-
-**Discovery**: Agent files in `.claude/agents/` were missing sections mandated by `agent-development` skill.
-
-**Required agent sections**:
-
-- `<mission_control>` with objective and success_criteria
-- `## Overview` - What the agent does
-- `## Autonomous Capability` - How it operates independently
-- `## Trigger Conditions` - When to spawn and when NOT to
-- `## Philosophy Bundle` - Behavioral guidance for context fork
-
-**Resolution**: Added missing sections to agents.
-
-### Command Description Convention
-
-**Discovery**: Commands were using non-infinitive voice in descriptions, violating What-When-Not-Includes format.
-
-**Required pattern**: "Verb + object. Use when [condition]. Includes [key features]. Not for [exclusion]."
-
-**Examples**:
-
-```
-✅ Correct: "Analyze issues, explore context, or reason through problems. Use when user needs diagnosis, investigation, or decision framework. Includes pattern matching, evidence gathering, and structured output. Not for simple lookups or well-understood issues."
-❌ Incorrect: "Unified analysis command that routes to appropriate workflow..."
-
-✅ Correct: "Execute quality verification with flexible modes. Use when validating code changes before commit."
-❌ Incorrect: "Comprehensive verification workflow..."
-```
-
-**Resolution**: Updated `commands/analyze.md` and `commands/verify.md` to use infinitive voice.
-
-### Reference File Navigation
-
-**Discovery**: Reference files in skill folders lacked "Use when" navigation tables required by progressive disclosure patterns.
-
-**Required structure for each reference file**:
-
-- "If you need..." navigation table (section lookup)
-- "Context Condition" table (when to load)
-
-**Resolution**: Added navigation tables to:
-
-- `agent-development/references/copy_agent_patterns.md`
-- `hook-development/references/quality.md`
-
-### Content Injection Patterns
-
-**Discovery**: Commands were using bash file existence checks (`[ -f file ] && echo`) and explicit bash calls for git state, cluttering the command body.
-
-**Resolution**: Implemented content injection patterns:
-
-- `@path` - Auto-injects file content at invocation time
-- `!`command`` - Auto-executes bash and inlines output
-- `<injected_content>` - Semantic wrapper for @ references
-- "(if exists)" headers - Graceful handling of non-existent files
-
-**Affected commands**: handoff:resume, handoff:diagnostic, plan:create, ops:reflect, ops:drift, learning:archive, learning:refine-rules, jules:docsync
-
-### Reference Lookup Pattern
-
-**Discovery**: Long reference files needed better internal navigation without spoiling content.
-
-**Resolution**: Added navigation tables to reference files:
-
-```markdown
-| If you need... | Read this section... |
-| :------------- | :------------------- |
-| Topic A        | Section X            |
+| Mode | Behavior | Example |
+| :--- | :------- | :------ |
+| Implicit | Infer from context when no arguments provided | `/handoff:resume` → scans directory |
+| Explicit | Use provided argument | `/handoff:resume session-x` → loads specific |
 
 ---
 
-| Context Condition | Action |
-| :---------------- | :----- |
-| Situation A       | Do X   |
+## 3. The Map: Architecture
+
+Provide boundaries and invariants. Trust the Pilot to navigate.
+
+### Commander's Intent
+
+Define the destination, not the turn-by-turn mechanics.
+
+```
+❌ Script: "Run `npm test`, then if it passes, run `git add .`, then `git commit`."
+✅ Intent: "Commit the changes once the test suite passes."
+
+❌ Script: "First create the directory. Then create the SKILL.md file. Then add frontmatter."
+✅ Intent: "Here is the directory structure, quality standards, and where patterns live."
 ```
 
-**Resolution**: Created `invocable-development/references/lookup_content_injection.md` with full patterns.
+### Unified Hybrid Protocol (UHP)
 
-### XML Simplification Refactor (2026-01-29)
+**XML for control, Markdown for data.**
 
-**Discovery:** Excessive XML tags created technical documentation feel rather than architectural success framework.
+| Use XML | Use Markdown |
+| :------ | :----------- |
+| Critical constraints | Bulk data content |
+| Rules that must not be ignored | Informational prose |
+| Semantic anchoring needed | Tables and structured data |
 
-**Resolution:**
+**Standard tags (minimal):**
 
-- Kept only 2 XML tags: `<mission_control>` and `<critical_constraint>` (for low-freedom workflows)
-- Removed: `<guiding_principles>`, `<trigger>`, `<philosophy_bundle>`, `<interaction_schema>`, `<thinking>`, `<execution_plan>`, `<router>`, `<rule_category>`, `<anti_pattern>`, `<pattern>`
-- Replaced XML wrappers with Markdown sections
-- Adopted skill-creator patterns: ✅/❌ emoji anchors, recognition questions, navigation tables
+| Tag | Purpose | When to Use |
+| :-- | :------ | :---------- |
+| `<mission_control>` | Objective and success criteria | Low-freedom workflows |
+| `<critical_constraint>` | System invariants | Non-negotiables only |
+| `<injected_content>` | Wrapped @ references | Command content injection |
 
-**Style Changes:**
-| Before | After |
-| :----- | :---- |
-| `<guiding_principles>` sections | `## The Path to...` Markdown sections |
-| `<trigger>` tags | Inline `> **When:**` callouts |
-| `<philosophy_bundle>` | Inline critical content only |
-| Long XML tables | Markdown tables with ✅/❌ examples |
+### L'Entonnoir: The Funnel Pattern
 
-**New Skills Created:**
+Iteratively narrow problem space through intelligent batching.
 
-- `skill-authoring` - Create portable skills with SKILL.md + references/
-- `skill-refine` - Analyze conversation to refine skills
-- `command-authoring` - Create single-file commands with @/! injection
-- `command-refine` - Analyze conversation to refine commands
+```
+AskUserQuestion (2-4 options, recognition-based)
+     ↓
+User selects from options
+     ↓
+Explore based on selection → AskUserQuestion (narrower)
+     ↓
+Repeat until ready → Execute
+```
 
-### Semantic Bridge Refactoring (2026-01-29)
+**Continuous Exploration:** Investigate at ANY time—before first question, between questions.
 
-**Discovery**: Bridge file and hardcoded tool syntax created portability issues and potential confusion.
+### Progressive Disclosure
 
-**Resolution**:
+Manage cognitive load through layered information.
 
-- Deleted `bridge.md` entirely
-- Replaced with semantic directives in principles.md
-- Skills use "Delegate to X specialist" patterns
-- Commands keep Claude-specific syntax
-- Agents provide philosophy without Task() calls
+| Tier | Content | Tokens |
+| :--- | :------ | :----- |
+| Tier 1 | YAML metadata | ~100 |
+| Tier 2 | Core workflows, mission, patterns | 1.5k-2k words |
+| Tier 3 | Deep patterns, API specs, examples | Unlimited |
 
-**Key insight**: Commands are Claude infrastructure—specific syntax is appropriate. Skills must be portable—semantic patterns required. Agents must not spawn other agents—philosophy only.
+### Recency Bias: The Final Token Rule
+
+Place critical content at file bottoms. Models attend more strongly to recent tokens.
+
+### The Attic Pattern
+
+Archive retired components, never delete. Use `trash` command. Add `<deprecated>` tags at file top.
 
 ---
 
-## 4b. Iterative Prompting Framework (2026-01-29)
+## 4. The Pilot: Principles
 
-A self-improving framework for compensating AI agent tool/skill invocation reluctance through explicit mechanisms, quantitative thresholds, and structured reasoning.
+### High Trust Mandate
 
-### The Core Problem
+| Script (Low Trust) | Intent (High Trust) |
+| :----------------- | :------------------ |
+| Assumes agent cannot manage basic operations | Respects the agent's capability |
+| Brittle—breaks when context shifts | Flexible—adapts to context |
+| Consumes tokens on implementation details | Focuses on outcome |
 
-AI agents exhibit **natural reluctance** to invoke tools/skills. Research shows explicit quantitative enforcement significantly improves tool usage rates (30-50% reduction in unnecessary calls, increased accuracy on complex tasks).
+### Semantic Tool Patterns
 
-### Framework Components
+| Semantic Directive | Maps To Native |
+| :----------------- | :------------- |
+| "Consult the user" | AskUserQuestion |
+| "Maintain a visible task list" | TodoWrite |
+| "Delegate to specialized worker" | Task() |
+| "Locate files matching patterns" | Glob |
+| "Search file contents" | Grep |
+| "Navigate code structure" | LSP |
+| "Switch to planning mode" | EnterPlanMode |
 
-#### 1. Confidence Rating (0-100)
+### Voice: Commander's Intent
+
+**Use the imperative/infinitive form:**
+
+```
+✅ Correct: "Validate inputs before processing."
+✅ Correct: "Create the skill directory and SKILL.md file."
+❌ Incorrect: "You should validate inputs..."
+❌ Incorrect: "Let's create the skill directory..."
+```
+
+### Voice Strength
+
+| Strength | When to Use | Markers | Example |
+| :------- | :---------- | :------ | :------ |
+| **Gentle** | Best practices | Consider, prefer | "Consider running in tmux" |
+| **Standard** | Default patterns | Create, use, follow | "Create the skill directory" |
+| **Strong** | Quality gates | ALWAYS, NEVER | "ALWAYS validate before save" |
+| **Critical** | Security, safety | MANDATORY, CRITICAL | "CRITICAL: Back up first" |
+
+### Degrees of Freedom
+
+**Default to HIGH FREEDOM unless a clear constraint exists.**
+
+| Freedom | When to Use | Example |
+| :------ | :---------- | :------ |
+| **High** | Multiple valid approaches | "Consider using immutable data structures" |
+| **Medium** | Some guidance needed | "Use this pattern, adapting as needed" |
+| **Low** | Fragile/error-prone | "Execute steps 1-3 precisely" |
+
+### Agent Recursion Prohibition
+
+Agents can NOT spawn other agents.
+
+| Pattern | Status |
+| :------ | :----- |
+| Agent → Task(subagent_type="...") | Forbidden |
+| Agent → Delegate to specialist | Forbidden |
+| Agent → Provide philosophy + context | Required |
+
+---
+
+## 5. Component Structure
+
+### Frontmatter (Required)
+
+```yaml
+---
+name: component-name
+description: "Verb + object. Use when [triggers] {with optional keywords}. Not for [exclusions]."
+---
+```
+
+**Format breakdown:**
+
+| Part | Purpose |
+| :--- | :------ |
+| What | Action verb + object |
+| When | Triggers (when to use) |
+| Includes | Key features |
+| Not | Exclusions |
+
+### Skill Opening Section
+
+Every skill MUST open with either `## Quick Start` or `## Workflow`:
+
+| Section Type | Use When | Pattern |
+| :----------- | :------- | :------ |
+| `## Quick Start` | Tool-like skills with scenarios | "If you need X: Do Y → Result:" |
+| `## Workflow` | Process skills with phases | "Phase → What happens → Result:" |
+
+### Reference File Structure
+
+| Element | Purpose | Placement |
+| :------ | :------ | :-------- |
+| Navigation table | Quick lookup via recognition | File top, after frontmatter |
+| Greppable headers | PATTERN:, EDGE:, ANTI-PATTERN: | Throughout body |
+| Constraints footer | Recency bias compliance | File bottom |
+
+---
+
+## 6. Content Injection (Commands Only)
+
+| Pattern | Component | Purpose |
+| :------ | :-------- | :------- |
+| `@path` | Commands only | File injection at invocation time |
+| `` !`command` `` | Commands only | Execute bash, inline output |
+| `<injected_content>` | Commands only | Semantic wrapper |
+
+### Three Boundaries
+
+| Boundary | Commands (Adapter) | Skills (Logic Core) |
+| :------- | :----------------- | :------------------ |
+| Context | Active injection (@, !) | Passive reading |
+| Tooling | Hard binding (Bash, MCP) | Semantic intent |
+| Interaction | Negotiator (AskUserQuestion) | Executor (headless) |
+
+<critical_constraint>
+Skills MUST NEVER use `@` or `!` syntax.
+</critical_constraint>
+
+---
+
+## 7. Quality: Trust but Verify
+
+### The Iron Law
+
+Execute independently (Trust). Provide evidence before claiming done (Verify).
+
+### Confidence Markers
+
+| Marker | Meaning |
+| :----- | :------ |
+| **✓ VERIFIED** | Read file, traced logic—safe to assert |
+| **? INFERRED** | Based on grep/search—needs verification |
+| **✗ UNCERTAIN** | Haven't checked—must investigate |
+
+### Evidence-Based Claims
+
+| Instead of... | Use This Evidence... |
+| :------------ | :------------------- |
+| "I fixed the bug" | `Test auth_login_test.ts passed (Exit Code 0)` |
+| "TypeScript is happy" | `tsc --noEmit: 0 errors, 0 warnings` |
+| "File exists" | `Read /path/to/file.ts:47 lines verified` |
+
+### Anti-Patterns
+
+| Pattern | Recognition Question |
+| :------ | :------------------- |
+| Command wrapper | "Could the description alone suffice?" |
+| Non-self-sufficient | "Can this work standalone?" |
+| Context fork misuse | "Is the overhead justified?" |
+| Zero/negative delta | "Would Claude know this without being told?" |
+| Content drift | "Is this concept documented elsewhere?" |
+| False claims | "Did I read the actual file, or just see it in grep?" |
+| External paths | "Does this reference files outside the component?" |
+| Non-greppable ref | "Does reference lack navigation table?" |
+
+### Verification Checklist
+
+Before claiming completion:
+
+- **Frontmatter valid** — Component loads without silent failures
+- **Claims verified** — All assertions backed by file reads
+- **Portability confirmed** — Zero external dependencies
+- **Invocation tested** — Discovered from description alone
+
+---
+
+## 8. Iterative Prompting Framework
+
+### Confidence Rating (0-100)
 
 Before any significant action, explicitly rate confidence:
 
-```
-Confidence Scale:
-100-95: Certain - proceed without tools
-94-90: High - consider tools, likely not needed
-89-80: Moderate - invoke tools if relevant
-79-70: Low - invoke tools
-<70:  Insufficient - invoke tools, gather context
-```
+| Confidence | Level | Action |
+| :--------- | :---- | :----- |
+| 100-95 | Certain | Proceed without tools |
+| 94-90 | High | Consider tools, likely not needed |
+| 89-80 | Moderate | Invoke tools if relevant |
+| 79-70 | Low | Invoke tools |
+| <70 | Insufficient | Invoke tools, gather context |
 
-**Recognition Question**: "Did I read the actual file, or just see it in grep?"
-
-#### 2. Quantitative Thresholds
-
-Use explicit numbers to reduce ambiguity:
-
-| Threshold           | Meaning                 | Action                       |
-| :------------------ | :---------------------- | :--------------------------- |
-| **<90% confidence** | Below high confidence   | Invoke tools/skills          |
-| **1% chance**       | Even marginal relevance | Absolute rule, no exceptions |
-| **10x sensitivity** | Aggressive threshold    | Lower threshold 10x          |
-
-#### 3. The 1% Rule (ABSOLUTE)
+### The 1% Rule (ABSOLUTE)
 
 > "If there is even the remotest chance a tool/skill applies, invoke it. No exceptions."
 
-This is not guidance—it is enforcement.
-
-#### 4. Chain-of-Thought Enforcement
-
-Force explicit reasoning before actions:
+### Mandatory Loop
 
 ```
-BEFORE ACTING:
-1. What is the goal?
-2. Rate confidence (0-100)
-3. What tools/skills might help?
-4. Is threshold met?
-5. Execute with evidence
-```
-
-#### 5. Anti-Laziness Triggers
-
-| Stop Thinking             | Do Instead                  |
-| :------------------------ | :-------------------------- |
-| "Simple, no tool needed"  | Check for tools first       |
-| "I'll just explore first" | Tools tell you HOW          |
-| "I know what to do"       | Use tool for best practices |
-| "Tools take too long"     | Tools SAVE time             |
-
-### The Mandatory Loop
-
-```
-MANDATORY LOOP: CONTEXT → CHECK → EXECUTE
+CONTEXT → CHECK → EXECUTE
 
 Before EVERY action:
 1. Gather relevant context
 2. ASK YOURSELF: "Does a tool/skill exist?"
 3. If 1% chance applies, invoke it
 4. Execute with evidence
-5. Loop continues with every new action
 ```
 
-### Reference Implementation
+### Anti-Laziness Triggers
 
-**SessionStart Hook** (`.claude/scripts/session-start.sh`):
-
-```bash
-SKILL SENSITIVITY: 10x ELEVATED
-
-Your skill invocation threshold is now 10x LOWER than normal.
-Before EVERY action:
-
-1. Rate confidence (0-100) in completing without a skill
-2. If confidence <90%, ASK YOURSELF: "Does a skill exist for this?"
-3. If 1% chance applies, invoke it
-
-CONTEXT FIRST. CHECK SKILL. EXECUTE.
-```
-
-**Anti-Laziness Reference** (`.claude/skills/skill-refine/SKILL.md` - search for "Anti-Laziness"):
-
-Comprehensive reference with 8 sections:
-
-- Quick Reference
-- Confidence Rating
-- Evidence Protocol
-- CoT Patterns
-- Threshold Gates
-- Anti-Laziness Triggers
-- Meta-Cognitive Checkpoints
-- Uncertainty Protocol
-
-### Iterative Refinement
-
-The framework evolves through observation:
-
-1. **Monitor**: Track tool invocation rates
-2. **Measure**: Compare against thresholds
-3. **Adjust**: Refine confidence ratings and thresholds
-4. **Validate**: Test enforcement effectiveness
-
-**Key Metrics**:
-
-- Tool invocation frequency
-- Confidence rating accuracy
-- Error rate in tool selection
-- Rationalization detection rate
-
-### Integration Points
-
-| Component             | How It Uses the Framework                                                 |
-| :-------------------- | :------------------------------------------------------------------------ |
-| **SessionStart hook** | Injects discipline content at session start                               |
-| **Skills**            | Reference `lookup_anti_laziness_patterns.md` in Dynamic Knowledge Loading |
-| **MCP tools**         | Apply confidence rating before tool calls                                 |
-| **Agents**            | Include philosophy bundle with threshold enforcement                      |
-
-### Evidence-Based Verification
-
-<critical_constraint>
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-</critical_constraint>
-
-| Instead of...         | Use This Evidence...                           |
-| :-------------------- | :--------------------------------------------- |
-| "I fixed the bug"     | `Test auth_login_test.ts passed (Exit Code 0)` |
-| "TypeScript is happy" | `tsc --noEmit: 0 errors, 0 warnings`           |
-| "File exists"         | `Read /path/to/file.ts:47 lines verified`      |
-
-### Confidence Markers
-
-| Marker          | Meaning                 | Action Required        |
-| :-------------- | :---------------------- | :--------------------- |
-| **✓ VERIFIED**  | Read file, traced logic | Safe to assert         |
-| **? INFERRED**  | Based on grep/search    | Verify before claiming |
-| **✗ UNCERTAIN** | Haven't checked         | Must investigate       |
-
-### Why This Works
-
-Research (CoT prompting, threshold-based scoring) shows:
-
-1. **Quantitative framing** reduces ambiguity—LLMs respond to explicit numbers
-2. **Self-reflection triggers** force reconsideration before action
-3. **Anti-laziness tables** catch rationalization patterns
-4. **Evidence requirements** prevent false claims
-5. **Loop structure** ensures consistent enforcement
-
-### Evolution Pattern
-
-The framework improves through iteration:
-
-1. **Initial**: Strong enforcement language
-2. **Observation**: What gets skipped?
-3. **Refinement**: Add specific triggers for observed gaps
-4. **Validation**: Test and measure improvement
-5. **Repeat**: Continuous refinement cycle
+| Stop Thinking | Do Instead |
+| :------------ | :--------- |
+| "Simple, no tool needed" | Check for tools first |
+| "I'll just explore first" | Tools tell you HOW |
+| "I know what to do" | Use tool for best practices |
 
 ---
 
-## 5. Native Integration
+## 9. The Delta Standard
 
-The Seed System aligns with Claude Code native capabilities:
+**Good Component = Expert Knowledge − What Claude Already Knows**
 
-| Native Capability                  | Seed System Pattern                                 |
-| ---------------------------------- | --------------------------------------------------- |
-| `EnterPlanMode`                    | `/strategy:architect` wraps with parallel detection |
-| `TodoWrite`                        | Primary task tracking (phase-level)                 |
-| `Task()` batching                  | `/strategy:execute` batches parallel tasks          |
-| Delegate to exploration specialist | `exploration-guide.md` provides context             |
-| Delegate to planning specialist    | `planning-guide.md` provides philosophy             |
-| `qa:verify-phase`                  | Build + Type + Test + Conflict gates                |
+### Positive Delta (Keep)
 
-**Key Principle**: Native tools execute; Seed System provides philosophy and context.
+- Best practices (not just possibilities)
+- Modern conventions Claude might not default to
+- Explicit project-specific decisions
+- Domain expertise not in general training
+- Non-obvious trade-offs (why X over Y)
+- Anti-patterns (what to avoid)
 
-### Guide System
+### Zero/Negative Delta (Remove)
 
-Philosophy guides provide context to native agents:
+- Basic programming concepts
+- Standard library documentation
+- Generic tutorials
+- Claude-obvious operations
 
-| Guide               | Purpose                | Provides                                                |
-| ------------------- | ---------------------- | ------------------------------------------------------- |
-| `planning-guide`    | Planning philosophy    | L'Entonnoir, 2-3 task rule, parallel detection          |
-| `exploration-guide` | Exploration philosophy | Verification practice, output standards, tool selection |
+### Self-Containment
 
-### Strategy Orchestration
+Every component must work in a project with ZERO config files. Carry condensed philosophy within the component.
 
-The Strategic Orchestrator enables parallel execution:
+---
 
-| Command               | Purpose                                         |
-| :-------------------- | :---------------------------------------------- |
-| `/strategy:architect` | Create STRATEGY.md with parallel detection      |
-| `/strategy:execute`   | Execute with parallel Task() batching           |
-| `/qa:verify-phase`    | Phase gatekeeper (build, type, test, conflicts) |
+## 10. Portability Invariant
 
-**STRATEGY.md Schema**:
+<critical_constraint>
+Every component (Skill, Command, Agent, Hook, MCP) MUST be functionally complete and executable in a vacuum.
 
-```markdown
-## Phase 2: Feature Implementation
+1. It must work in a project containing ZERO config files
+2. It must carry its own "Genetic Code" within its own structure
+3. It must NOT reference global rules via text or links
+</critical_constraint>
 
-<phase id="phase-2" type="parallel" gate="qa:verify-phase">
-  <task id="2.1" name="API" style="tdd" agent="implementation">...</task>
-  <task id="2.2" name="UI" style="tdd">...</task>
-</phase>
-```
+### Rule Scope
+
+| Component | Can Reference Paths? |
+| :-------- | :------------------- |
+| Rules files | YES (source of truth) |
+| CLAUDE.md | YES (project-specific) |
+| Skills/Commands/Agents | NO (portable) |
+
+---
+
+## 11. Skill Library Index
+
+### Factory (Building the toolkit)
+
+| Skill | Description |
+| :---- | :---------- |
+| `skill-authoring` | Create portable skills with SKILL.md and references/ |
+| `system-refiner` | Refine system based on corrections and friction |
+| `command-authoring` | Create single-file commands with @/! injection patterns |
+| `command-refine` | Analyze conversation to refine commands |
+| `agent-development` | Create, validate, and audit autonomous agents |
+| `hook-development` | Create, validate, and audit event-driven hooks |
+| `mcp-development` | Create, test, and audit MCP servers and tools |
+| `claude-md-development` | Manage CLAUDE.md as project's single source of truth |
+
+### Software Lifecycle (The "Big Skills")
+
+| Skill | Description |
+| :---- | :---------- |
+| `engineering-lifecycle` | Plan, implement, and verify software with TDD discipline |
+| `quality-standards` | Verify completion with evidence using 6-phase gates |
+| `pr-reviewer` | Review pull requests for spec, security, performance, quality |
+| `requesting-code-review` | Request code reviews through pre-review checklist |
+| `finishing-a-development-branch` | Finish development branches for merge or PR |
+
+### Analysis & Thinking (Cognitive Tools)
+
+| Skill | Description |
+| :---- | :---------- |
+| `analysis-diagnose` | Systematic root cause investigation with evidence-based hypothesis testing |
+| `brainstorming` | Collaborative design exploration using l'entonnoir pattern and YAGNI |
+| `discovery` | Requirements gathering with context exploration and research loops |
+| `premortem` | Proactive risk identification with tiger/paper/elephant categorization |
+| `simplification-principles` | Apply simplification principles to debug issues |
+| `think-tank` | Unified reasoning framework: 5 Whys, Pareto, Inversion, SWOT, 10/10/10, First Principles, and more |
+
+### Operations & Environment
+
+| Skill | Description |
+| :---- | :---------- |
+| `filesystem-context` | Manage filesystem context for large data offloading |
+| `using-git-worktrees` | Manage git worktrees for isolated workspaces |
+| `uv` | Manage Python packages and projects using uv |
+
+### Specialized Orchestration
+
+| Skill | Description |
+| `jules-api` | Programmatic interface to Google's Jules API |
+| `create-meta-prompts` | Generate meta-prompts for Claude-to-Claude pipelines |
+| `system-refiner` | Refine system based on corrections and friction |
+
+### API Integrations
+
+| Skill | Description |
+| :---- | :---------- |
+| `google-genai-typescript` | Integrate Google GenAI SDK for Gemini models |
+| `perplexity-typescript` | Integrate Perplexity AI APIs in TypeScript |
+| `memory-persistence` | Provide session lifecycle hooks for context persistence |
+
+### Evaluation & Decision-Making
+
+| Skill | Description |
+| :---- | :---------- |
+| `deviation-rules` | Handle unexpected work during execution |
+| `evaluation` | Evaluate agent systems with quality gates |
+| `refactor-elegant-teaching` | Refactor code to be cleaner and self-documenting |
+| `refine-prompts` | Refine vague prompts into precise instructions |
+
+### Development Tools
+
+| Skill | Description |
+| :---- | :---------- |
+| `agent-browser` | Automate browser interactions |
+| `exploration-guide` | Exploration philosophy and verification practice |
+| `planning-guide` | Planning philosophy, patterns, and practices |
+| `typescript-conventions` | Apply TypeScript conventions for type safety |
+
+### Self-Maintenance (ops namespace)
+
+| Intent | Command |
+| :----- | :------ |
+| Extract patterns | `/ops:extract` |
+| Detect context drift | `/ops:drift` |
+| Review session | `/ops:reflect` |
 
 ---
 
 <critical_constraint>
-MANDATORY: No completion claims without fresh verification evidence
-</critical_constraint>
+**Absolute Constraints:**
 
-<critical_constraint>
-MANDATORY: Use ExitPlanMode before implementation
-</critical_constraint>
-
-<critical_constraint>
-MANDATORY: Every component MUST work with zero .claude/rules dependencies
+1. No completion claims without fresh verification evidence
+2. Every component MUST work with zero .claude/rules dependencies
+3. MANDATORY: Use ExitPlanMode before implementation
+4. MANDATORY: Produced components must work in a vacuum
 </critical_constraint>

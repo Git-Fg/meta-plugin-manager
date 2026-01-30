@@ -1,4 +1,0 @@
-{"payload":{"issues_fixed":12,"issues_found":12,"status":"completed","summary":"Fixed duplicate XML tags, wrong skill references, template variable formatting, and extra separators in skills and commands"},"topic":"review.done","ts":"2026-01-28T04:09:46.486281+00:00"}
-{"payload":"{\"skills\": \"48 verified, 2 fixed\", \"commands\": \"55 verified, 3 archived\", \"interactions\": \"50 tested - all passed\"}","topic":"review.complete","ts":"2026-01-28T04:26:39.120625+00:00"}
-{"payload":"All error handling review tasks completed: skills reviewed, commands reviewed, integration tested","topic":"task.resume","ts":"2026-01-28T04:29:53.349522+00:00"}
-{"payload":"All 3 tasks completed: skills reviewed, commands reviewed, interactions tested","topic":"task.resume","ts":"2026-01-28T04:35:04.387610+00:00"}

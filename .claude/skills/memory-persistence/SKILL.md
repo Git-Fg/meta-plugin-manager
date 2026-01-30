@@ -52,11 +52,11 @@ Session logging creates a searchable history of what happened during each sessio
 
 **Why it works:** Written logs enable pattern recognition—repeated successful workflows become reusable knowledge.
 
-### 4. Maintain Task List Continuity
+### 4. Trust Native Task Tracking
 
-TaskList IDs tracked across sessions enable resuming work without losing progress. When the ID persists, future sessions can pick up exactly where the previous session left off.
+TodoWrite handles task tracking natively with CLI status line visibility. Sessions should use TodoWrite for progress tracking rather than custom ID persistence.
 
-**Why it works:** Persistent task tracking prevents duplicate work—sessions continue the same workflow rather than restarting.
+**Why it works:** Native tool integration provides better visibility—CLI status line shows progress without hidden state files.
 
 ## Navigation
 
@@ -147,7 +147,6 @@ next_steps: [What to do next]
 | Symptom                     | Solution                               |
 | --------------------------- | -------------------------------------- |
 | Next session has no context | Check handoff document format          |
-| TaskList ID lost            | Verify TaskList ID captured in session |
 
 ### Issue: Cross-Platform Compatibility
 
@@ -341,13 +340,13 @@ Session ends without summary → No handoff document created
 ✅ **Correct:**
 Configure SessionEnd hook to generate summary and handoff
 
-### Mistake 3: TaskList ID Not Persisted
+### Mistake 3: Custom Task Tracking
 
 ❌ **Wrong:**
-Task tracking reset each session → Duplicate work
+Implementing custom TaskList ID persistence → Hidden state, no CLI visibility
 
 ✅ **Correct:**
-Capture TaskList ID in session metadata for cross-session continuity
+Use TodoWrite natively → CLI status line tracks progress automatically
 
 ### Mistake 4: Cross-Platform Incompatibility
 
@@ -375,7 +374,6 @@ Before claiming memory persistence configured:
 - [ ] Handoff document created correctly
 
 **Context Preservation:**
-- [ ] TaskList IDs tracked across sessions
 - [ ] Previous session context can be loaded
 - [ ] Files modified list captured
 
@@ -391,7 +389,7 @@ Before claiming memory persistence configured:
 - Configure both SessionStart and SessionEnd hooks for full lifecycle
 - Use POSIX-compliant bash scripts for cross-platform support
 - Capture all required metadata (timestamp, branch, working directory)
-- Preserve TaskList IDs for task continuity
+- Use TodoWrite for native task tracking
 - Review session summaries before starting new sessions
 - Archive important sessions for future reference
 - Clean old sessions periodically to manage disk space
@@ -399,7 +397,7 @@ Before claiming memory persistence configured:
 ❌ **DON'T:**
 - Skip SessionStart or SessionEnd hooks (loses context)
 - Use platform-specific scripts (breaks portability)
-- Forget to capture TaskList IDs (loses task continuity)
+- Implement custom task tracking (use TodoWrite natively)
 - Skip handoff generation (breaks session continuity)
 - Ignore cross-platform path handling
 - Leave old sessions unarchived (disk space bloat)

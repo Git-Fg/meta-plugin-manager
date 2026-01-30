@@ -74,7 +74,7 @@ fi
 
 # Check 4: Wrong skill/command mentioned
 # Claude should reference correct component names
-if grep -qi "skill-refine\|skill-authoring\|command-refine" "$LOG_FILE" 2>/dev/null; then
+if grep -qi "self-learning\|skill-authoring\|command-refine" "$LOG_FILE" 2>/dev/null; then
     # Check if Claude is confused about which skill to use
     WRONG_CONTEXT=$(grep -c "instead of\|rather than\|instead use" "$LOG_FILE" 2>/dev/null || echo "0")
     if [ "$WRONG_CONTEXT" -gt 0 ]; then

@@ -386,12 +386,12 @@ claude -p "..." | tee .claude/skills/testing-e2e/logs/test-$(date +%s).log
 ### Integration Test Example
 
 ```markdown
-# Test: Skill-Authoring with skill-refine
+# Test: Skill-Authoring with self-learning
 
 ## Use Cases
 | Scenario | Trigger | Expected |
 |----------|---------|----------|
-| Create and refine | skill-authoring + skill-refine | Valid skill + refinements |
+| Create and refine | skill-authoring + self-learning | Valid skill + refinements |
 
 ## Validation
 | Check | Command | Pass |
