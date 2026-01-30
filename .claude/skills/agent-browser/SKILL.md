@@ -207,26 +207,136 @@ agent-browser record stop              # Stop recording
 
 ---
 
-## Genetic Code
+## Common Mistakes to Avoid
 
-This component carries essential Seed System principles for context: fork isolation:
+### Mistake 1: Using CSS Selectors Instead of Element Refs
 
-<critical_constraint>
-**System Physics:**
+❌ **Wrong:**
+```bash
+agent-browser click ".login-form > div:nth-child(2) > input"
+```
+Fragile: Breaks when CSS classes change
 
-1. Zero external dependencies for portable components
-2. Description uses What-When-Not-Includes format in third person
-3. Progressive disclosure - core in SKILL.md, details in references/
-4. XML for control (mission_control, critical_constraint), Markdown for data
-   </critical_constraint>
+✅ **Correct:**
+```bash
+agent-browser snapshot -i  # Gets refs like @e1, @e2
+agent-browser click @email_field
+```
+Stable: Refs based on semantic role, not CSS
 
-**Delta Standard**: Good Component = Expert Knowledge − What Claude Already Knows
+### Mistake 2: No State Save Between Sessions
 
-**Recognition Questions**:
+❌ **Wrong:**
+Close browser → Re-authenticate next time → Wasted time on login flows
 
-- "Would Claude know this without being told?" → Delete (zero delta)
-- "Can this work standalone?" → Fix if no (non-self-sufficient)
-- "Did I read the actual file, or just see it in grep?" → Verify before claiming
+✅ **Correct:**
+```bash
+agent-browser state save auth.json  # Before closing
+# Next session:
+agent-browser state load auth.json  # Skip login
+```
+
+### Mistake 3: Not Re-snapshotting After Actions
+
+❌ **Wrong:**
+Click button → Immediately try to click another element → Element not found error
+
+✅ **Correct:**
+```bash
+agent-browser click @submit_button
+agent-browser snapshot -i  # Get fresh refs after DOM change
+agent-browser click @next_element  # Now works
+```
+
+### Mistake 4: Missing Screenshot Evidence
+
+❌ **Wrong:**
+Test failed → Only have text logs → Can't see what browser actually showed
+
+✅ **Correct:**
+```bash
+agent-browser open https://example.com
+agent-browser snapshot -i
+agent-browser screenshot before.png
+# ... perform actions ...
+agent-browser screenshot after.png
+# Review visuals for debugging
+```
+
+### Mistake 5: Running Headed in CI/Automation
+
+❌ **Wrong:**
+CI pipeline fails → No display available → Browser can't start
+
+✅ **Correct:**
+```bash
+agent-browser open https://example.com  # Headless by default
+# For debugging only:
+agent-browser open --headed https://example.com
+```
+
+### Mistake 6: Not Waiting for Page Load
+
+❌ **Wrong:**
+Open URL → Immediately interact → Element not found (page still loading)
+
+✅ **Correct:**
+```bash
+agent-browser open https://example.com
+agent-browser snapshot -i  # Wait for page to be interactive
+# Now safe to interact
+```
+
+---
+
+## Validation Checklist
+
+Before claiming browser automation complete:
+
+**Browser State:**
+- [ ] Browser opened successfully
+- [ ] Page loaded (snapshot returns elements)
+- [ ] Element refs obtained (@e1, @e2, etc.)
+
+**Interactions:**
+- [ ] Element references valid (snapshot obtained fresh)
+- [ ] Click/fill actions performed successfully
+- [ ] Form submission worked (if applicable)
+
+**State Management:**
+- [ ] State saved if authentication performed
+- [ ] Session can be restored with state load
+
+**Verification:**
+- [ ] Re-snapshot after actions to verify state change
+- [ ] Screenshot captured for key steps (debugging evidence)
+- [ ] No timeout errors or element not found errors
+
+**Cleanup:**
+- [ ] Browser closed properly
+- [ ] No hanging browser processes
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use `snapshot -i` to get element refs (@e1, @e2) instead of CSS selectors
+- Re-snapshot after DOM changes to get fresh refs
+- Save state with `state save` to avoid re-authentication
+- Take screenshots at key points for debugging evidence
+- Run headless by default (no display required)
+- Use `--headed` flag only for debugging visible issues
+- Follow workflow: open → snapshot → interact → re-snapshot → close
+
+❌ **DON'T:**
+- Use fragile CSS selectors instead of stable refs
+- Skip re-snapshotting after page navigation or DOM changes
+- Forget to save state (lose authentication on close)
+- Skip screenshots (lose visual debugging evidence)
+- Run headed mode in CI/CD or server environments
+- Interact before page fully loads (wait for snapshot)
+- Leave browser open without proper close
 
 ---
 

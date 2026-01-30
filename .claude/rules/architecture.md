@@ -65,12 +65,12 @@ Use consistent, searchable prefixes that agents can find via grep:
 
 | Prefix             | Purpose                     | When to Use               |
 | :----------------- | :-------------------------- | :------------------------ |
-| `## PATTERN:`      | Core implementation pattern | Default for main content  |
+| `## PATTERN:`      | Core implementation pattern | Default for all patterns  |
 | `## ANTI-PATTERN:` | What to avoid               | Warnings, common mistakes |
 | `## EDGE:`         | Edge case handling          | Special conditions        |
-| `## REFERENCE:`    | API signatures, specs       | Technical details         |
-| `## EXAMPLE:`      | Complete working code       | Runnable demonstrations   |
 | `## TL;DR:`        | Executive summary           | Quick context             |
+
+**Removed:** `## REFERENCE:` and `## EXAMPLE:` — merge into `## PATTERN:` with embedded code examples.
 
 ### Reference File Template
 
@@ -91,7 +91,7 @@ Use consistent, searchable prefixes that agents can find via grep:
 
 ## PATTERN: Core Pattern
 
-[Main content]
+[Main content with embedded examples via ``` code blocks ```]
 
 ## ANTI-PATTERN: Common Mistakes
 

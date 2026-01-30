@@ -426,6 +426,49 @@ After analysis, produce structured output:
 **❌ Wrong**: Treating all factors as equal
 **✅ Correct**: Prioritize by impact and feasibility
 
+## Validation Checklist
+
+Before claiming SWOT analysis complete:
+
+**Analysis Scope:**
+- [ ] All four quadrants populated (S, W, O, T)
+- [ ] Internal factors distinguished from external factors
+- [ ] Factors are specific, not vague/generic
+- [ ] Evidence or reasoning supports each factor
+
+**Strategic Depth:**
+- [ ] Quadrant intersections analyzed (SO, ST, WO, WT)
+- [ ] Actionable strategies derived from analysis
+- [ ] Priorities assigned by impact and feasibility
+- [ ] Honest assessment of weaknesses and threats
+
+**Quality:**
+- [ ] No factor listed in multiple quadrants
+- [ ] Factors are actionable (can be leveraged or addressed)
+- [ ] Analysis leads to concrete next steps
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Be specific and evidence-based in each factor
+- Distinguish internal (S/W) from external (O/T) factors
+- Analyze quadrant intersections for strategic insights
+- Prioritize by impact and feasibility
+- Be honest about weaknesses and threats
+- Derive actionable strategies from the analysis
+
+❌ **DON'T:**
+- Use vague statements ("good team", "strong culture")
+- List factors in wrong quadrants
+- Stop at listing without developing strategies
+- Treat all factors as equally important
+- Overoptimize strengths while minimizing weaknesses
+- Ignore threats or pretend they don't exist
+
+---
+
 ## Advanced: TOWS Analysis
 
 For deeper analysis, consider all four strategic combinations:

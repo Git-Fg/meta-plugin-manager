@@ -8,8 +8,6 @@ description: "Dispatch parallel agents for concurrent problem-solving. Use when 
 <success_criteria>All agents complete, results aggregated, no state conflicts</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Efficiency Parallel Execution
 
 ### 1. Independence First, Then Parallelize
@@ -41,8 +39,6 @@ Review all agent summaries together, check for conflicts, then run the full suit
 Independent problems → parallel agents. Related failures → sequential investigation. Shared state → single agent or careful coordination.
 
 **Why this works**: Not all problems benefit from parallelization. Choosing the right strategy avoids the overhead of parallel coordination when it won't help.
-
-</guiding_principles>
 
 ## Quick Start
 
@@ -252,19 +248,39 @@ Do NOT just increase timeouts - find the real issue.
 Return: Summary of what you found and what you fixed.
 ```
 
-## Common Mistakes
+## Common Mistakes to Avoid
 
-**❌ Too broad:** "Fix all the tests" - agent gets lost
-**✅ Specific:** "Fix agent-tool-abort.test.ts" - focused scope
+### Mistake 1: Overly Broad Scope
 
-**❌ No context:** "Fix the race condition" - agent doesn't know where
-**✅ Context:** Paste the error messages and test names
+❌ **Wrong:**
+"Fix all the tests" → Agent gets lost in scope
 
-**❌ No constraints:** Agent might refactor everything
-**✅ Constraints:** "Do NOT change production code" or "Fix tests only"
+✅ **Correct:**
+"Fix agent-tool-abort.test.ts" → Focused scope
 
-**❌ Vague output:** "Fix it" - you don't know what changed
-**✅ Specific:** "Return summary of root cause and changes"
+### Mistake 2: Missing Context
+
+❌ **Wrong:**
+"Fix the race condition" → Agent doesn't know where to look
+
+✅ **Correct:**
+Provide error messages, test names, and relevant code snippets
+
+### Mistake 3: No Constraints
+
+❌ **Wrong:**
+"Fix the tests" → Agent might refactor production code
+
+✅ **Correct:**
+"Fix tests only. Do NOT change production code."
+
+### Mistake 4: Vague Output Request
+
+❌ **Wrong:**
+"Fix it" → You don't know what changed
+
+✅ **Correct:**
+"Return summary of root cause and changes made"
 
 ## When NOT to Use
 
@@ -337,12 +353,11 @@ START: Multiple failures to investigate?
 └─ No → Single agent handles it
 ```
 
-## Quality Guidelines
-
-### Agent Prompt Checklist
+## Validation Checklist
 
 Before dispatching agents:
 
+**Pre-Dispatch:**
 - [ ] Clear problem domain identified
 - [ ] Specific scope defined (file, subsystem)
 - [ ] All context provided (error messages, test names)
@@ -350,15 +365,34 @@ Before dispatching agents:
 - [ ] Expected output defined (summary format)
 - [ ] Independence verified (no shared state)
 
-### Integration Checklist
-
 After agents return:
 
+**Post-Dispatch:**
 - [ ] All summaries reviewed
 - [ ] Fixes verified (no conflicts)
 - [ ] Full test suite run
 - [ ] Changes integrated
 - [ ] Documentation updated
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Verify independence before dispatching (no shared state/files)
+- Create focused agent prompts with specific scope
+- Provide all context upfront (error messages, test names, relevant code)
+- Set clear constraints on what agents should NOT change
+- Dispatch multiple agents in parallel for independent problems
+- Review all summaries and run full test suite after agents return
+
+❌ **DON'T:**
+- Dispatch agents for related failures (fix one might fix others)
+- Use parallel agents when shared state exists
+- Give overly broad scope ("Fix all tests")
+- Skip providing context or constraints
+- Skip verification after agents return
+- Assume no conflicts without checking
 
 ## Real-World Impact
 

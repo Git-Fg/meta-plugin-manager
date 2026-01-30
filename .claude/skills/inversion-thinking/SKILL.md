@@ -8,8 +8,6 @@ description: "Solve problems by thinking backwards to identify failure modes and
 <success_criteria>Failure modes identified, inverse solutions found, risks documented</success_criteria>
 </mission_control>
 
-<trigger>When forward thinking is stuck, risks need identification, or non-obvious solutions are required</trigger>
-
 # Inversion Thinking
 
 Solve problems by working backwards - think about what guarantees failure, then avoid those things.
@@ -331,6 +329,51 @@ After analysis, produce structured output:
 
 - "Are these strategies more actionable than forward-thinking solutions?"
 - "Did I discover anything non-obvious?"
+
+## Validation Checklist
+
+Before claiming inversion analysis complete:
+
+**Failure Mode Identification:**
+- [ ] Original goal clearly stated
+- [ ] Genuine, realistic failure modes identified (not abstract opposites)
+- [ ] Failure modes based on actual experience or realistic scenarios
+- [ ] Multiple failure modes listed (at least 3-5)
+
+**Inversion Quality:**
+- [ ] Each failure mode inverted to actionable strategy
+- [ ] Strategies are more actionable than forward-thinking alone
+- [ ] Non-obvious insights discovered through inversion
+
+**Strategic Value:**
+- [ ] Combined with forward thinking for complete picture
+- [ ] Risks documented and actionable
+- [ ] Clear guidance on what to avoid
+
+**Output:**
+- [ ] Structured output format followed
+- [ ] Each failure mode has corresponding avoidance strategy
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Identify genuine, realistic failure modes (not abstract opposites)
+- Base failures on actual experience or realistic scenarios
+- Combine inversion with forward thinking for completeness
+- Derive actionable avoidance strategies from each failure
+- Use inversion when forward thinking is stuck
+- Surface hidden assumptions through failure analysis
+
+❌ **DON'T:**
+- Just invert good ideas (not genuine failure modes)
+- List theoretical failures that don't actually happen
+- Use inversion alone without forward thinking
+- Stop at abstract "what to avoid" without actionable strategies
+- Ignore realistic failure modes due to optimism bias
+
+---
 
 ## Common Mistakes
 

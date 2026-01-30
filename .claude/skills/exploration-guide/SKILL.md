@@ -276,6 +276,100 @@ Trust native tools to fulfill these patterns. The System Prompt selects the corr
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Grep ≠ Evidence
+
+❌ **Wrong:**
+"Found 50 matches, pattern exists" → No file reads
+
+✅ **Correct:**
+"Read auth.ts:47-89, traced the login logic, pattern verified"
+
+### Mistake 2: Empty Search Means Wrong Directory
+
+❌ **Wrong:**
+"No results found" → Pattern doesn't exist
+
+✅ **Correct:**
+"No results in current scope, check directory/extension variations"
+
+### Mistake 3: Different Naming Hides Matches
+
+❌ **Wrong:**
+"auth.ts" not found → No auth pattern exists
+
+✅ **Correct:**
+"Named login.ts instead of auth.ts, found in src/auth/"
+
+### Mistake 4: Comments ≠ Implementation
+
+❌ **Wrong:**
+"Found TODO comment, feature exists" → No actual code
+
+✅ **Correct:**
+"TODO exists at line 23, no implementation found"
+
+### Mistake 5: Not Marking Confidence
+
+❌ **Wrong:**
+"Auth is implemented this way" → No confidence marker
+
+✅ **Correct:**
+"✅ VERIFIED: Read file, traced logic" or "? INFERRED: Based on grep"
+
+---
+
+## Validation Checklist
+
+Before claiming exploration complete:
+
+**Directory Structure:**
+- [ ] Root directories identified and mapped
+- [ ] Key folders understood (src/, tests/, etc.)
+
+**Patterns Identified:**
+- [ ] File naming conventions identified (kebab, camel, Pascal)
+- [ ] Code organization patterns understood
+- [ ] Recurring structures documented
+
+**Specific Questions Answered:**
+- [ ] Each exploration question answered
+- [ ] Evidence provided for claims (file:line)
+- [ ] Confidence markers applied (VERIFIED/INFERRED/UNCERTAIN)
+
+**Quality:**
+- [ ] Actual files read, not just grep results
+- [ ] Logic traced, not just pattern matched
+- [ ] Empty searches followed up with alternative patterns
+
+**Report:**
+- [ ] Exploration report structured properly
+- [ ] Key findings documented
+- [ ] Recommendations actionable
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Read actual files, not just trust grep results
+- Trace logic flow, don't skim
+- Mark confidence with VERIFIED/INFERRED/UNCERTAIN
+- Provide file:line evidence for claims
+- Follow up empty searches with alternative patterns
+- Document conventions and patterns discovered
+
+❌ **DON'T:**
+- Claim based on grep results alone
+- Trust comments as evidence of implementation
+- Conclude pattern doesn't exist from single search
+- Skip file reads when verifying patterns
+- Forget to apply confidence markers
+- Make claims without file:line evidence
+
+---
+
 ## Genetic Code
 
 This component carries essential Seed System principles for context fork isolation:

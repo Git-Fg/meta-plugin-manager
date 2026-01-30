@@ -10,8 +10,6 @@ description: "Programmatic interface to Google's Jules API for asynchronous codi
 <success_criteria>Jules session created with proper TDD prompt, session ID returned to user, async workflow established</success_criteria>
 </mission_control>
 
-<trigger>When user mentions code review, refactoring, adding tests, bug fixes, or when code is pushed to remote branch</trigger>
-
 ## The Path to High-Impact Async Delegation
 
 ### 1. TDD First Ensures Correctness Before Implementation
@@ -49,8 +47,6 @@ Jules monitors PRs and automatically resumes sessions when you comment. This cre
 Clear, actionable prompts with TDD instructions produce better outcomes than vague requests. Jules needs context about what you want, how to validate it (tests), and any constraints or preferences.
 
 **Why this works**: AI agents execute instructions precisely. Ambiguity creates uncertainty—specific prompts channel that precision toward your desired outcome.
-
-</guiding_principles>
 
 > **API Status**: Alpha (v1alpha) - specifications may stabilize
 
@@ -510,8 +506,7 @@ uv run scripts/feed_feedback.py --author my-bot-name
 
 ## Dynamic Sourcing
 
-<fetch_protocol>
-**Syntax Source**: This skill focuses on *patterns* and *philosophy*. For raw Jules API syntax (endpoints, request/response schemas):
+This skill focuses on *patterns* and *philosophy*. For raw Jules API syntax (endpoints, request/response schemas):
 
 1. **Fetch**: `https://developers.google.com/jules/api/reference/rest`
 2. **Extract**: The specific endpoint or schema you need
@@ -521,7 +516,97 @@ uv run scripts/feed_feedback.py --author my-bot-name
 
 - Changelog → `https://jules.google.com/docs/changelog/`
 - API key setup → `https://jules.google.com/settings#api`
-</fetch_protocol>
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Waiting Synchronously for Jules
+
+❌ **Wrong:**
+Created session → "I'll wait here for Jules to complete" → Wasted 10 minutes
+
+✅ **Correct:**
+Create session → "Jules will complete in ~10 minutes. Continue other work while it processes."
+
+### Mistake 2: Vague Prompts
+
+❌ **Wrong:**
+"Improve the authentication code" → Unclear what "improve" means
+
+✅ **Correct:**
+"Add comprehensive tests for the login endpoint using TDD. Include: successful login, invalid credentials, token expiration, rate limiting."
+
+### Mistake 3: No TDD Instructions
+
+❌ **Wrong:**
+"Fix the timezone bug" → Jules implements without tests
+
+✅ **Correct:**
+"Fix the timezone bug using TDD: 1) Write reproduction test first, 2) Implement fix, 3) Verify test passes."
+
+### Mistake 4: Creating New Session Instead of Resuming
+
+❌ **Wrong:**
+PR feedback received → Create entirely new session → Lost context
+
+✅ **Correct:**
+Comment on Jules' PR with feedback → Jules auto-resumes existing session → Better context preservation
+
+### Mistake 5: Not Using AUTO_CREATE_PR
+
+❌ **Wrong:**
+Session completes → Jules created artifacts → You must manually create PR
+
+✅ **Correct:**
+Set `"automationMode": "AUTO_CREATE_PR"` → Jules creates PR automatically → Full async workflow
+
+---
+
+## Validation Checklist
+
+Before claiming Jules API integration complete:
+
+**Session Creation:**
+- [ ] Prompt includes clear, actionable instructions
+- [ ] TDD approach specified in prompt
+- [ ] Automation mode set appropriately (AUTO_CREATE_PR)
+- [ ] SourceContext provided (for repo-based) or omitted (repoless)
+
+**TDD Requirements:**
+- [ ] Tests cover expected behavior, edge cases, error conditions
+- [ ] Tests have meaningful assertions (not just "expect true")
+- [ ] Tests validate behavior, not implementation details
+
+**Async Workflow:**
+- [ ] Session ID returned to user
+- [ ] User informed of typical completion time (~10 minutes)
+- [ ] Suggestion to continue other work
+
+**PR Integration:**
+- [ ] PR comment resume pattern understood
+- [ ] User knows to comment on PR for iteration
+- [ ] Auto-PR enabled for full automation
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use TDD in every Jules prompt (write tests first)
+- Be specific: "Add tests for login, logout, token refresh" not "add auth tests"
+- Return session ID and URL to user
+- Suggest continuing work while Jules executes
+- Comment on PRs to trigger auto-resume
+- Use `jules_client.py` script for all API operations
+
+❌ **DON'T:**
+- Wait synchronously for Jules to complete
+- Use vague prompts without specific instructions
+- Skip TDD instructions (results in untested code)
+- Create new sessions when PR comments can resume
+- Hardcode API keys (use environment variable)
+- Use raw HTTP calls (use jules_client.py script)
 
 ---
 

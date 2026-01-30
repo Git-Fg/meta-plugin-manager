@@ -241,6 +241,102 @@ The goal is to turn a vague idea into a concrete, validated design through colla
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Too Many Questions
+
+❌ **Wrong:**
+"5+ questions at once" → User overwhelmed, confused
+
+✅ **Correct:**
+Present 2-4 questions maximum using l'entonnoir pattern
+
+### Mistake 2: Leading Questions
+
+❌ **Wrong:**
+"You want to use React, right?" → Biases user's choice
+
+✅ **Correct:**
+Present options neutrally with tradeoffs: "What frontend framework? (a) React, (b) Vue, (c) Svelte"
+
+### Mistake 3: Skipping Context Check
+
+❌ **Wrong:**
+"What database?" without checking existing stack
+
+✅ **Correct:**
+First check project state (package.json, existing patterns, recent commits)
+
+### Mistake 4: Skipping YAGNI
+
+❌ **Wrong:**
+"While we're at it, let's add..." → Feature creep
+
+✅ **Correct:**
+Apply YAGNI ruthlessly - build only what's needed now
+
+### Mistake 5: Presenting Full Design at Once
+
+❌ **Wrong:**
+Present complete design → "No, start over" feedback
+
+✅ **Correct:**
+Validate incrementally: present 200-300 word sections, confirm each
+
+---
+
+## Validation Checklist
+
+Before claiming design complete:
+
+**Intent Clarified:**
+- [ ] User intent narrowed through l'entonnoir questions
+- [ ] Recognition-based options provided (2-4 per question)
+- [ ] Each answer informed the next question
+
+**Context Explored:**
+- [ ] Project state checked (git log, existing patterns)
+- [ ] Existing stack understood before proposing solutions
+- [ ] No duplication with established approaches
+
+**Design Validated:**
+- [ ] Design presented in sections (200-300 words each)
+- [ ] Each section validated before proceeding
+- [ ] User confirmed each section before moving on
+
+**YAGNI Applied:**
+- [ ] Unnecessary features stripped
+- [ ] Only core value proposition included
+- [ ] "Might be useful later" rejected
+
+**Autonomy Achieved:**
+- [ ] 0-5 AskUserQuestion rounds total (80-95% autonomy)
+- [ ] Questions batched efficiently
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use l'entonnoir pattern to narrow scope through sequential questions
+- Present 2-4 recognition-based options (users select faster than typing)
+- Check project context before proposing solutions
+- Validate design incrementally (sections of 200-300 words)
+- Apply YAGNI - strip speculative features
+- Batch related questions to reduce rounds
+- Document validated design to file
+
+❌ **DON'T:**
+- Present too many questions at once
+- Use leading questions that bias toward specific answers
+- Skip checking existing patterns before proposing
+- Accept "might be useful later" as requirements
+- Present complete design at once (leads to "start over")
+- Skip incremental validation
+- Allow scope creep during design
+
+---
+
 ## Recognition Patterns
 
 When you notice these thought patterns, return to core principles:

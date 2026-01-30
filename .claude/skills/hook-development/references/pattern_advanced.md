@@ -2,6 +2,18 @@
 
 This reference covers advanced hook patterns and techniques for sophisticated automation workflows in local projects.
 
+## Navigation
+
+| If you need... | Read... |
+| :------------- | :------ |
+| Core best practices | SKILL.md ## Advanced Hooks Best Practices |
+| Common pitfalls | SKILL.md ## Common Pitfalls to Avoid |
+| Multi-stage validation | ## Multi-Stage Validation |
+| Conditional execution | ## Conditional Hook Execution |
+| Performance optimization | ## Performance Optimization |
+
+---
+
 ## Multi-Stage Validation
 
 Combine command and prompt hooks for layered validation:
@@ -554,51 +566,21 @@ rm -rf "$TEST_DIR"
 
 ## Best Practices for Advanced Hooks
 
-1. **Keep hooks independent**: Don't rely on execution order
-2. **Use timeouts**: Set appropriate limits for each hook type
-3. **Handle errors gracefully**: Provide clear error messages
-4. **Document complexity**: Explain advanced patterns in project README
-5. **Test thoroughly**: Cover edge cases and failure modes
-6. **Monitor performance**: Track hook execution time
-7. **Version configuration**: Commit hook configs to git
-8. **Provide escape hatches**: Allow bypass via flag files when needed
+**These guardrails have been moved to SKILL.md to ensure agents don't skip them.**
 
-## Common Pitfalls
+See `SKILL.md ## Advanced Hooks Best Practices` and `SKILL.md ## Common Pitfalls to Avoid` for:
 
-### ❌ Assuming Hook Order
+- Keep hooks independent
+- Use timeouts
+- Handle errors gracefully
+- Document complexity
+- Test thoroughly
+- Monitor performance
+- Version configuration
+- Provide escape hatches
+- Common pitfalls with ❌/✅ examples
 
-```bash
-# BAD: Assumes hooks run in specific order
-# Hook 1 saves state, Hook 2 reads it
-# This can fail because hooks run in parallel!
-```
-
-### ❌ Long-Running Hooks
-
-```bash
-# BAD: Hook takes 2 minutes to run
-sleep 120
-# This will timeout and block the workflow
-```
-
-### ❌ Uncaught Exceptions
-
-```bash
-# BAD: Script crashes on unexpected input
-file_path=$(echo "$input" | jq -r '.tool_input.file_path')
-cat "$file_path"  # Fails if file doesn't exist
-```
-
-### ✅ Proper Error Handling
-
-```bash
-# GOOD: Handles errors gracefully
-file_path=$(echo "$input" | jq -r '.tool_input.file_path')
-if [ ! -f "$file_path" ]; then
-  echo '{"continue": true, "systemMessage": "File not found, skipping check"}' >&2
-  exit 0
-fi
-```
+---
 
 ## Conclusion
 

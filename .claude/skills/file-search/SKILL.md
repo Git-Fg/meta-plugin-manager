@@ -11,8 +11,6 @@ user-invocable: true
 <success_criteria>Correct tool for each task: ripgrep for 90% content search, fd for 8% file discovery, fzf for 2% interactive</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Speed Codebase Discovery
 
 ### 1. Tool Selection Predicts Success (90-8-2 Rule)
@@ -46,8 +44,6 @@ When you use structured output modes, you enable complex workflows like cross-re
 Start broad with case-insensitive search (`-i`), then refine with specific patterns. Use file type filters (`-t py`) to scope results. Add context (`-C 3`) to understand matches. When simple search insufficient, iterative-retrieval provides 4-phase progressive refinement.
 
 When you refine iteratively, you discover patterns that single-shot searches miss—especially with unknown terminology or vague requirements.
-
-</guiding_principles>
 
 ## Quick Start
 
@@ -426,6 +422,118 @@ rg "authentication"
 
 For simple searches: Use this skill (file-search) directly.
 For complex searches: Use iterative-retrieval (uses file-search as initial dispatch).
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Wrong Tool for the Task
+
+❌ **Wrong:**
+Need file by name → Use ripgrep to search all file contents → Slow, misses files without content
+
+✅ **Correct:**
+Need file by name → Use fd (fd config) → Fast, .gitignore aware
+
+### Mistake 2: Skipping Performance Optimizations
+
+❌ **Wrong:**
+Search 10,000 file codebase with `grep "pattern"` → 30+ seconds per search
+
+✅ **Correct:**
+Use ripgrep with SIMD optimization: `rg "pattern" --threads auto` → 0.1-1 second per search
+
+### Mistake 3: No Structured Output for AI
+
+❌ **Wrong:**
+Parse human-readable output with regex → Fragile, breaks on edge cases
+
+✅ **Correct:**
+Use structured output: `rg --json "pattern"` → Parseable JSON for reliable AI processing
+
+### Mistake 4: Searching Too Narrow Initially
+
+❌ **Wrong:**
+Search for "UserAuthenticationServiceImpl" → No results (different naming)
+
+✅ **Correct:**
+Start broad: `rg -i "auth"` → Find actual terminology → Refine based on results
+
+### Mistake 5: Missing Hidden Files
+
+❌ **Wrong:**
+Config files not found → .env, .gitignore, .eslintrc missing from results
+
+✅ **Correct:**
+Add hidden flag: `rg --hidden "pattern"` for ripgrep, `fd -H` for fd
+
+### Mistake 6: Overlooking Ignored Directories
+
+❌ **Wrong:**
+Search in node_modules/.git → Wasted time, irrelevant results
+
+✅ **Correct:**
+Respect .gitignore automatically: `rg "pattern"` (ripgrep does this) or use `-I` flag
+
+### Mistake 7: Using fzf When Not Needed
+
+❌ **Wrong:**
+Need list of auth files for processing → Open fzf, manually select files → No batch operation
+
+✅ **Correct:**
+Get file list: `rg -l "auth"` → Pass directly to next tool for processing
+
+---
+
+## Validation Checklist
+
+Before claiming file search complete:
+
+**Tool Selection:**
+- [ ] ripgrep for content search (90% of tasks)
+- [ ] fd for file discovery (8% of tasks)
+- [ ] fzf only for interactive selection (2% of tasks)
+
+**Search Quality:**
+- [ ] Appropriate flags used (-i for case-insensitive, -F for literal)
+- [ ] File type filters applied (-t py, -e ts)
+- [ ] Hidden files included if needed (--hidden)
+- [ ] .gitignore respected (automatic in ripgrep/fd)
+
+**Output Format:**
+- [ ] Structured output for AI processing (--json)
+- [ ] Line numbers included (-n) for navigation
+- [ ] Context provided when needed (-C 3)
+
+**Performance:**
+- [ ] Multi-threading enabled (--threads auto)
+- [ ] Large directories excluded (node_modules, .git)
+- [ ] Results scoped appropriately (not too broad, not too narrow)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Start with ripgrep for content search (covers 90% of use cases)
+- Use fd for file discovery by name/extension (8% of use cases)
+- Use fzf only when human interaction is essential (2% of use cases)
+- Use `--json` for structured output in AI workflows
+- Enable multi-threading for large codebases (--threads auto)
+- Add `--hidden` to find dotfiles
+- Start broad, refine based on results
+- Use `-t py` or `-e py` to filter by file type
+- Combine tools: `fd -e py -x rg "pattern" {}`
+
+❌ **DON'T:**
+- Use grep instead of ripgrep (10-100x slower)
+- Skip performance flags on large codebases
+- Use human-readable output for AI processing (fragile parsing)
+- Start too narrow (misses unknown terminology)
+- Forget `--hidden` for dotfiles (.env, .gitignore)
+- Search node_modules/.git without exclusion
+- Use fzf when file list suffices (prevents automation)
+- Skip `-C` context when understanding matches
 
 ---
 

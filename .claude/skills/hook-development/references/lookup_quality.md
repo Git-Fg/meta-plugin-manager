@@ -10,21 +10,21 @@ This reference contains only unique Seed System quality patterns not covered in 
 
 ---
 
+## Navigation
+
 | If you need...                  | Read this section...            |
 | ------------------------------- | ------------------------------- |
-| Security anti-patterns          | Security Anti-Patterns          |
-| Script quality patterns         | Script Quality Anti-Patterns    |
-| Hook validation checklist       | Hook Validation Checklist       |
-| Timeout and blocking prevention | Timeout and Blocking Prevention |
+| Security anti-patterns          | SKILL.md ## Security Anti-Patterns (in ## Common Mistakes) |
+| Hook validation checklist       | SKILL.md ## Validation Checklist |
+| Team collaboration              | SKILL.md ## Team Collaboration Best Practices |
 
 ---
 
 | Context Condition       | Action                            |
 | :---------------------- | :-------------------------------- |
-| Creating new hook       | Read all sections, apply patterns |
-| Reviewing existing hook | Check against anti-patterns       |
-| Debugging hook issues   | Check Hook Validation Checklist   |
-| Security audit          | Focus on Security Anti-Patterns   |
+| Creating new hook       | Read SKILL.md Quick Start + Implementation Patterns |
+| Team collaboration      | See SKILL.md ## Team Collaboration Best Practices |
+| Advanced patterns       | See `references/pattern_advanced.md` |
 
 ---
 
@@ -144,35 +144,6 @@ fi
 
 ---
 
-## Team Collaboration Best Practices
-
-### Shared vs Personal Hooks
-
-**Team-wide hooks** (`.claude/settings.json`):
-
-- Committed to version control
-- Enforce project standards across team
-- Security policies, quality gates
-- Build/test requirements
-
-**Personal hooks** (`.claude/settings.local.json`):
-
-- Gitignored (add to `.gitignore`)
-- Personal development preferences
-- Local debugging tools
-- Custom workflow automation
-
-### Hook Independence
-
-Design hooks assuming parallel execution:
-
-- Hooks don't see each other's output
-- No ordering guarantees
-- Each hook should be independently useful
-- Avoid duplicate functionality across team and personal hooks
-
----
-
 ## Continuous Improvement
 
 Review and improve hooks periodically:
@@ -182,3 +153,5 @@ Review and improve hooks periodically:
 3. **Test**: Add tests for new edge cases discovered
 4. **Document**: Update comments and documentation
 5. **Refactor**: Remove outdated or redundant hooks
+
+**Note:** Team Collaboration Best Practices are now in SKILL.md to ensure agents don't skip them.

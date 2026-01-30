@@ -11,7 +11,7 @@
 | Git integration patterns               | ## PATTERN: Git Integration             |
 | Shell functions                        | ## PATTERN: Shell Functions             |
 | Project-specific patterns              | ## PATTERN: Project-Specific            |
-| Performance optimization facts         | ## REFERENCE: Performance Facts         |
+| Performance optimization facts         | ## PATTERN: Performance Facts         |
 
 ## Critical Read
 
@@ -143,7 +143,7 @@ fd -t d -p "package" | fzf | xargs -I {} rg "pattern" {}
 fd "app.js" | xargs -I {} fd "{}.test.js"
 ```
 
-## REFERENCE: Performance Facts
+## PATTERN: Performance Facts
 
 **2025-2026 Performance Facts:**
 
@@ -176,7 +176,7 @@ rg --threads auto "pattern"
 sysctl -n machdep.cpu.brand_string
 ```
 
-## REFERENCE: Benchmark Results
+## PATTERN: Benchmark Results
 
 ```bash
 time rg "TODO" .

@@ -580,31 +580,106 @@ If you catch yourself thinking "we might need this later", remove it. The discov
 
 ---
 
-<guiding_principles>
+## Common Mistakes to Avoid
 
-## The Path to High-Quality Discovery
+### Mistake 1: Skipping Questions Due to Time Pressure
 
-### 1. Thorough Exploration
+❌ **Wrong:**
+"We only have 10 minutes, skip detailed questions"
 
-Quality specs emerge from minimum 10-15 questions across categories. L'Entonnoir pattern prevents slop and ensures comprehensive understanding.
+✅ **Correct:**
+Prioritize core areas, note uncovered areas as risks, still ask minimum questions
 
-### 2. Research Discipline
+### Mistake 2: Accepting Solution Descriptions
 
-Non-trivial projects require investigation loops. Knowledge gaps fill through research, preventing assumptions.
+❌ **Wrong:**
+"Build a React app" → Accept as requirement
 
-### 3. Completeness Protocol
+✅ **Correct:**
+"What problem does React solve for you?" → Focus on problem, not solution
 
-Completeness check before spec writing catches missing areas. Surface gaps and offer research to maintain quality.
+### Mistake 3: Skipping Research Loops
 
-### 4. Problem-Focused
+❌ **Wrong:**
+"I understand" → Skip investigating knowledge gaps
 
-Solution descriptions indicate unclear understanding. Problem statements reveal true requirements.
+✅ **Correct:**
+Non-trivial projects require at least 1 research loop
 
-### 5. YAGNI Principle
+### Mistake 4: Writing Spec Without Completeness Check
 
-Specs document what was asked, not what might be useful someday. Remove "might need later" items ruthlessly.
+❌ **Wrong:**
+"Questions done, write the spec"
 
-</guiding_principles>
+✅ **Correct:**
+Completeness check required - verify all categories covered before spec
+
+### Mistake 5: Accepting "Whatever You Think"
+
+❌ **Wrong:**
+User says "whatever you think" → Proceed without probing
+
+✅ **Correct:**
+"That's uncertainty, not delegation. Probe deeper."
+
+---
+
+## Validation Checklist
+
+Before claiming discovery complete:
+
+**Question Count:**
+- [ ] Minimum 10-15 questions for real projects
+- [ ] At least 2 questions per relevant category
+- [ ] Initial orientation (2-3 questions) completed
+
+**Categories Covered:**
+- [ ] Problem & Goals (A)
+- [ ] User Experience & Journey (B)
+- [ ] Data & State (C)
+- [ ] Technical Landscape (D)
+- [ ] Scale & Performance (E)
+- [ ] Integrations & Dependencies (F)
+- [ ] Security & Access Control (G)
+- [ ] Deployment & Operations (H)
+
+**Research:**
+- [ ] At least 1 research loop for non-trivial projects
+- [ ] Knowledge gaps investigated and documented
+
+**Completeness:**
+- [ ] Completeness check passed before spec
+- [ ] All tradeoffs explicitly chosen
+- [ ] No "TBD" items remaining
+- [ ] User confirmed understanding
+
+**Output:**
+- [ ] Spec generated to file
+- [ ] Handoff documented
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use l'entonnoir pattern to narrow scope through sequential questions
+- Present 2-4 recognition-based options per question
+- Probe for knowledge gaps and offer research
+- Apply YAGNI - only document what's actually needed
+- Complete minimum 10-15 questions for real projects
+- Do completeness check before writing spec
+- Surface conflicts and impossible requirements
+
+❌ **DON'T:**
+- Accept solution descriptions instead of problems
+- Skip research loops for non-trivial projects
+- Write spec without completeness check
+- Accept "whatever you think" as delegation
+- Skip categories due to time pressure
+- Leave "TBD" items in spec
+- Ignore knowledge gap signals ("I think...", "Maybe...")
+
+---
 
 ## Genetic Code
 

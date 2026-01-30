@@ -8,8 +8,6 @@ description: "Break down problems to fundamental truths and rebuild innovative s
 <success_criteria>Problem stripped to fundamentals, novel solution rebuilt from truths, assumptions challenged</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Impact Innovation Success
 
 ### 1. Challenge Before Building
@@ -41,8 +39,6 @@ First principles thinking is cognitively expensive but yields insights that assu
 Writing down assumptions and why they might be wrong makes hidden constraints visible. This documentation isn't bureaucracy—it's a tool for revealing what you've unconsciously accepted as immutable.
 
 **Practice**: List every assumption alongside the question "why might this be wrong?" to expose hidden constraints.
-
-</guiding_principles>
 
 Break down complex problems to their fundamental truths and rebuild from scratch. Strip away assumptions and existing solutions to find root causes and innovative approaches.
 
@@ -390,6 +386,56 @@ After analysis, produce structured output:
 1. [Action to explore solution 1]
 2. [Experiment to test assumption]
 ```
+
+## Validation Checklist
+
+Before claiming first principles analysis complete:
+
+**Problem Definition:**
+- [ ] Problem clearly stated and stripped to essentials
+- [ ] Scope bounded without assumption creep
+
+**Assumption Stripping:**
+- [ ] All assumptions explicitly listed
+- [ ] Each assumption challenged with "why might this be wrong?"
+- [ ] Distinguishing between real constraints and self-imposed ones
+
+**Truth Identification:**
+- [ ] Fundamental truths identified (cannot be questioned further)
+- [ ] Truths are physics-based, not opinion-based
+- [ ] No conventional wisdom or industry standards in truths
+
+**Solution Rebuilding:**
+- [ ] Solutions built ONLY from fundamental truths
+- [ ] Novel approaches that challenge conventional thinking
+- [ ] Solutions are genuinely different, not variations of existing
+
+**Output:**
+- [ ] Structured output format followed
+- [ ] Key insights documented
+- [ ] Non-obvious discoveries highlighted
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Challenge every assumption before accepting it
+- Distinguish fundamental truths from conventional wisdom
+- Continue breaking down until truths cannot be decomposed further
+- Rebuild solutions ONLY from first principles
+- Document assumptions to surface hidden constraints
+- Ask "what becomes possible?" after identifying truths
+
+❌ **DON'T:**
+- Accept industry constraints as fundamental truths
+- Stop at "best practices" without questioning why
+- Rebuild with same assumptions in different words
+- Use superficial analysis for complex problems
+- Mistake conventional approaches for optimal solutions
+- Skip the "rebuild" phase and just optimize existing solutions
+
+---
 
 ## Recognition Questions
 

@@ -499,6 +499,162 @@ Before fetching any URL:
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Not Using Streaming for Interactive UX
+
+❌ **Wrong:**
+```ts
+const response = await ai.models.generateContent({ /* ... */ });
+console.log(response.text); // User waits for complete response
+```
+
+✅ **Correct:**
+```ts
+const stream = await ai.models.generateContentStream({ /* ... */ });
+for await (const chunk of stream) {
+  process.stdout.write(chunk.text); // Immediate feedback
+}
+```
+
+### Mistake 2: Manually Parsing JSON Responses
+
+❌ **Wrong:**
+```ts
+const response = await ai.models.generateContent({ contents: "Return JSON" });
+const data = JSON.parse(response.text || "{}"); // Fragile parsing
+```
+
+✅ **Correct:**
+```ts
+const response = await ai.models.generateContent({
+  contents: "Return data",
+  config: {
+    responseMimeType: "application/json",
+    responseSchema: { /* schema */ },
+  },
+});
+const data = JSON.parse(response.text); // Guaranteed format
+```
+
+### Mistake 3: Using Wrong Error Handling
+
+❌ **Wrong:**
+```ts
+} catch (err) {
+  if (err.message.includes("401")) { /* handle */ } // Fragile
+}
+```
+
+✅ **Correct:**
+```ts
+} catch (err) {
+  if (err instanceof AuthenticationError) { /* handle */ } // Type-stable
+}
+```
+
+### Mistake 4: Embedding Large Files as Base64
+
+❌ **Wrong:**
+```ts
+const image = await readFile("image.pdf", "base64");
+const response = await ai.models.generateContent({
+  contents: { inlineData: { data: image, mimeType: "application/pdf" } }
+});
+```
+
+✅ **Correct:**
+```ts
+const file = await ai.files.upload({ path: "document.pdf" });
+const response = await ai.models.generateContent({
+  contents: { fileData: { fileUri: file.uri, mimeType: file.mimeType } }
+});
+```
+
+### Mistake 5: Hardcoding API Keys
+
+❌ **Wrong:**
+```ts
+const ai = new GoogleGenAI({ apiKey: "AIza-xxx-xxx-xxx" });
+```
+
+✅ **Correct:**
+```ts
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+```
+
+### Mistake 6: Over-Configuring Model Parameters
+
+❌ **Wrong:**
+```ts
+config: {
+  maxOutputTokens: 1000,
+  topP: 0.8,
+  topK: 40,
+  temperature: 0.7,
+}
+```
+
+✅ **Correct:**
+```ts
+// Use defaults unless specific requirement exists
+config: { /* only what you need */ }
+```
+
+---
+
+## Validation Checklist
+
+Before claiming Google GenAI integration complete:
+
+**SDK Setup:**
+- [ ] `@google/genai` installed via package manager
+- [ ] Client initialized correctly (API key or Vertex AI)
+- [ ] Environment variables used for secrets (no hardcoded keys)
+
+**API Usage:**
+- [ ] Correct API chosen (Models/Chats/Interactions/Files/Caches/Live)
+- [ ] Streaming used for interactive applications
+- [ ] Structured outputs (JSON Schema) used when JSON required
+
+**Error Handling:**
+- [ ] Typed error handling (`instanceof ApiError` subclasses)
+- [ ] Appropriate recovery strategies per error type
+
+**Resource Management:**
+- [ ] Large files uploaded via `ai.files` (not base64)
+- [ ] Repeated large prompts cached via `ai.caches`
+- [ ] Cost monitored via `Usage` metadata
+
+**Type Safety:**
+- [ ] Response schemas defined for structured outputs
+- [ ] TypeScript strict mode enabled
+- [ ] No `any` types in integration code
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use `generateContentStream` for interactive UX (immediate feedback)
+- Use `responseMimeType + responseSchema` for guaranteed JSON output
+- Use `instanceof` checks for error handling (type-stable across versions)
+- Use `ai.files.upload()` for large media (avoids base64 bloat)
+- Use `ai.caches.create()` for repeated large system prompts
+- Use the correct API for your use case (Models/Chats/Interactions/Files/Caches/Live)
+- Store API keys in environment variables, never hardcoded
+
+❌ **DON'T:**
+- Wait for complete responses without streaming (bad UX)
+- Manually parse JSON without structured outputs (fragile)
+- Match error messages by string (message format changes between versions)
+- Embed large files as base64 inline (bloats requests, slower uploads)
+- Skip caching for repeated large prompts (wastes tokens)
+- Over-configure model parameters (defaults work well)
+- Hardcode API keys (security risk)
+
+---
+
 <critical_constraint>
 **Portability Invariant:** This skill must work in a project with ZERO .claude/rules/ access. All patterns and examples are self-contained.
 

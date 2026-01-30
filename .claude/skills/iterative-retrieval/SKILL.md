@@ -8,8 +8,6 @@ description: "Execute 4-phase loop for progressive context refinement. Use when 
 <success_criteria>DISPATCH → EVALUATE → REFINE → LOOP completes with sufficient context (max 3 iterations)</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to High-Quality Retrieval Success
 
 ### 1. Progressive Refinement Yields Higher Relevance
@@ -41,8 +39,6 @@ Clear stopping conditions (max 3 iterations, 3+ high-relevance files, diminishin
 Combining pattern-based discovery (Glob) with content-based search (Grep) captures files that match either naming conventions or actual usage patterns.
 
 **Why this works:** Some relevant files have clear naming (auth.ts) while others reveal relevance only through content. Multi-modal discovery ensures neither category is missed.
-
-</guiding_principles>
 
 ## Workflow
 
@@ -419,13 +415,110 @@ Return results as:
 Use high-relevance files as context for understanding React context patterns in this codebase.
 ```
 
-## Best Practices
+## Common Mistakes to Avoid
 
-1. **Start broad, narrow progressively** - Don't over-constrain initial query
-2. **Score objectively** - Use consistent criteria across iterations
-3. **Track query evolution** - Document how search terms change
-4. **Know when to stop** - Don't iterate beyond 3 cycles
-5. **Combine with other patterns** - Use filesystem-context for storage
+### Mistake 1: Skipping Iterative Refinement
+
+❌ **Wrong:**
+Found 50 files matching "context" → Read all 50 → Context overflow, missed actual patterns
+
+✅ **Correct:**
+Found 50 files → Score relevance → 15 medium relevance → Refine to "React createContext" → 8 files, 4 high relevance → Stop at iteration 2
+
+### Mistake 2: No Scoring Criteria
+
+❌ **Wrong:**
+"Looks relevant" → Include file → Inconsistent decisions, can't compare files
+
+✅ **Correct:**
+Use consistent scoring: Filename match (+0.3), Content match (+0.4), Multiple occurrences (+0.2), Recent (+0.1) → Objective ranking
+
+### Mistake 3: Infinite Loop
+
+❌ **Wrong:**
+Continue refining indefinitely → 10+ iterations → No convergence, wasted cycles
+
+✅ **Correct:**
+Set explicit gates: Max 3 iterations OR 3+ files with 0.8+ score OR diminishing returns → Stop when reached
+
+### Mistake 4: Single-Pass Search for Unknown Terminology
+
+❌ **Wrong:**
+Query "authentication" returned 0 results → "Must not exist" → Actually used different term
+
+✅ **Correct:**
+Start broad ("auth", "login", "signup") → Find what vocabulary codebase uses → Refine based on evidence
+
+### Mistake 5: Ignoring Diminishing Returns
+
+❌ **Wrong:**
+Iteration 1: 5 new high-relevance files
+Iteration 2: 2 new high-relevance files
+Iteration 3: 1 new high-relevance file → Continue to iteration 4
+
+✅ **Correct:**
+Recognize diminishing returns (fewer new files each iteration) → Stop at 3 iterations even if < 3 high-relevance files
+
+### Mistake 6: Not Documenting Query Evolution
+
+❌ **Wrong:**
+Query changed: "context" → "React" → "useContext" → "createContext" → Lost trace of reasoning
+
+✅ **Correct:**
+Track evolution: "Initial: context → Refined 1: React useContext → Refined 2: createContext" → Reveals codebase vocabulary
+
+---
+
+## Validation Checklist
+
+Before claiming iterative retrieval complete:
+
+**Phase 1: DISPATCH**
+- [ ] Broad initial query cast (not too narrow)
+- [ ] Multiple search patterns used (Glob + Grep)
+- [ ] Candidate files gathered (10-50 candidates)
+
+**Phase 2: EVALUATE**
+- [ ] Relevance scoring applied consistently (0-1 scale)
+- [ ] Scoring criteria documented (filename, content, occurrences, etc.)
+- [ ] High/medium/low categories defined
+
+**Phase 3: REFINE**
+- [ ] Refinement based on evaluation, not assumptions
+- [ ] Query vocabulary adapted to codebase terminology
+- [ ] Domain-specific terms added when needed
+
+**Phase 4: LOOP**
+- [ ] Max 3 iterations enforced
+- [ ] Convergence criteria met (3+ files with 0.8+ score) OR termination gates hit
+- [ ] Query evolution documented
+
+**Output:**
+- [ ] High-relevance files identified (0.8+ score)
+- [ ] Summary includes: iterations, total files evaluated, high-relevance count, query evolution
+- [ ] Context gap analysis completed
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Start broad, narrow progressively through iterations
+- Use consistent scoring criteria (0-1 scale with specific weights)
+- Track query evolution to reveal codebase vocabulary
+- Set explicit termination gates (max 3 iterations, 3+ high-relevance files)
+- Combine Glob + Grep for multi-modal discovery
+- Document each iteration's findings and refined query
+- Stop when converged (3+ files at 0.8+) or gates hit
+
+❌ **DON'T:**
+- Skip iterative refinement for complex searches
+- Use subjective "looks relevant" without scoring criteria
+- Continue indefinitely without max iteration limit
+- Over-constrain initial query (misses unknown terminology)
+- Skip query evolution tracking (loses audit trail)
+- Include all candidates without relevance scoring
+- Continue when diminishing returns are clear
 
 ## Integration with Seed System
 

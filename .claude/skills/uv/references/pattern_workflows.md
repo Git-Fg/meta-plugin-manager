@@ -17,7 +17,7 @@
 | Production deployment          | ## WORKFLOW: Production Deployment |
 | Troubleshooting session        | ## WORKFLOW: Troubleshooting       |
 | Dependency update workflow     | ## WORKFLOW: Dependency Update     |
-| Quick reference                | ## REFERENCE: Quick Reference      |
+| Quick reference                | ## PATTERN: Quick Reference      |
 
 ## Critical Read
 
@@ -438,7 +438,7 @@ uv python pin 3.11
 uv add numpy
 ```
 
-## REFERENCE: Quick Reference
+## PATTERN: Quick Reference
 
 ```bash
 # Project lifecycle

@@ -174,78 +174,75 @@ Hooks provide:
 
 ---
 
-## Hook Anti-Patterns
+## Common Mistakes to Avoid
 
-Avoid these common vulnerabilities:
+### Mistake 1: The Broad Match
 
-### 1. The Broad Match
-
+❌ **Wrong:**
 ```json
-// BAD: Matcher catches everything
 "matcher": "*"
 ```
+Generates noise and blocks legitimate operations.
 
-This generates noise and blocks legitimate operations.
-
+✅ **Correct:**
 ```json
-// GOOD: Target specific tool and dangerous args
 "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf\""
 ```
 
-### 2. The Silent Block
+### Mistake 2: The Silent Block
 
+❌ **Wrong:**
 ```json
-// BAD: User has no idea why operation failed
 "type": "command",
 "command": "exit 1"
 ```
+User sees generic failure with no guidance.
 
-The user sees a generic failure with no guidance.
-
+✅ **Correct:**
 ```json
-// GOOD: Fail loudly with explanation
 "type": "prompt",
 "prompt": "Destructive rm -rf detected. This cannot be undone. Type 'DELETE' to confirm.",
 "timeout": 30
 ```
 
-### 3. The Missing Timeout
+### Mistake 3: The Missing Timeout
 
+❌ **Wrong:**
 ```json
-// BAD: No timeout - hook could block forever
 "type": "prompt"
 ```
-
 Operations without timeouts can deadlock the system.
 
+✅ **Correct:**
 ```json
-// GOOD: Timeout prevents blocking
 "type": "prompt",
 "prompt": "Confirm destructive operation",
 "timeout": 30
 ```
 
-### 4. The Hardcoded Path
+### Mistake 4: The Hardcoded Path
 
+❌ **Wrong:**
 ```json
-// BAD: Not portable across environments
 "command": "/home/user/scripts/validate.sh"
 ```
-
 Fails when team members have different home directories.
 
+✅ **Correct:**
 ```json
-// GOOD: Use project-relative paths
 "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/scripts/validate.sh"
 ```
 
-### 5. The Unquoted Variable
+### Mistake 5: The Unquoted Variable
 
+❌ **Wrong:**
 ```bash
-# BAD: Injection risk with spaces or special chars
 rm -rf $file_path
+```
+Injection risk with spaces or special chars.
 
-# GOOD: Always quote variables
+✅ **Correct:**
+```bash
 rm -rf "$file_path"
 ```
 
@@ -294,6 +291,133 @@ fi
 
 ---
 
+## Validation Checklist
+
+Before claiming hook development complete:
+
+**Matcher Design:**
+- [ ] Matcher targets specific tool + dangerous operation
+- [ ] Avoided broad matches like `"*"`
+- [ ] Tested to catch intended operations without false positives
+
+**Action Configuration:**
+- [ ] Used `prompt` type for destructive operations requiring confirmation
+- [ ] Used `command` type for clear blocking with explanation
+- [ ] Timeout set on prompt hooks (prevents blocking)
+
+**Security:**
+- [ ] Destructive operations require explicit confirmation
+- [ ] Protected files (`.env`, credentials) have special handling
+- [ ] Variables properly quoted to prevent injection
+
+**Portability:**
+- [ ] Used project-relative paths with `${CLAUDE_PROJECT_DIR}`
+- [ ] No hardcoded environment paths
+- [ ] Works across different team member environments
+
+---
+
+## Team Collaboration Best Practices
+
+### Shared vs Personal Hooks
+
+**Team-wide hooks** (`.claude/settings.json`):
+
+- Committed to version control
+- Enforce project standards across team
+- Security policies, quality gates
+- Build/test requirements
+
+**Personal hooks** (`.claude/settings.local.json`):
+
+- Gitignored (add to `.gitignore`)
+- Personal development preferences
+- Local debugging tools
+- Custom workflow automation
+
+### Hook Independence
+
+Design hooks assuming parallel execution:
+
+- Hooks don't see each other's output
+- No ordering guarantees
+- Each hook should be independently useful
+- Avoid duplicate functionality across team and personal hooks
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Target specific tool + dangerous args in matchers
+- Use `prompt` type for destructive operations
+- Set `timeout: 30` on all prompt hooks
+- Use project-relative paths with `${CLAUDE_PROJECT_DIR}`
+- Quote all variables in bash commands
+- Explain clearly what was detected and why
+
+❌ **DON'T:**
+- Use broad matches like `"*"` that block everything
+- Use silent `command` blocks without explanation
+- Omit timeout values on prompt hooks
+- Hardcode paths like `/home/user/`
+- Leave variables unquoted
+- Skip confirmation for destructive operations
+
+---
+
+## Advanced Hooks Best Practices
+
+1. **Keep hooks independent**: Don't rely on execution order
+2. **Use timeouts**: Set appropriate limits for each hook type
+3. **Handle errors gracefully**: Provide clear error messages
+4. **Document complexity**: Explain advanced patterns in project README
+5. **Test thoroughly**: Cover edge cases and failure modes
+6. **Monitor performance**: Track hook execution time
+7. **Version configuration**: Commit hook configs to git
+8. **Provide escape hatches**: Allow bypass via flag files when needed
+
+---
+
+## Common Pitfalls to Avoid
+
+### ❌ Assuming Hook Order
+
+```bash
+# BAD: Assumes hooks run in specific order
+# Hook 1 saves state, Hook 2 reads it
+# This can fail because hooks run in parallel!
+```
+
+### ❌ Long-Running Hooks
+
+```bash
+# BAD: Hook takes 2 minutes to run
+sleep 120
+# This will timeout and block the workflow
+```
+
+### ❌ Uncaught Exceptions
+
+```bash
+# BAD: Script crashes on unexpected input
+file_path=$(echo "$input" | jq -r '.tool_input.file_path')
+cat "$file_path"  # Fails if file doesn't exist
+```
+
+### ✅ Proper Error Handling
+
+```bash
+# GOOD: Handles errors gracefully
+file_path=$(echo "$input" | jq -r '.tool_input.file_path')
+if [ ! -f "$file_path" ]; then
+  echo '{"continue": true, "systemMessage": "File not found, skipping check"}' >&2
+  exit 0
+fi
+```
+
+---
+
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:
@@ -315,8 +439,6 @@ Use XML for control (mission_control, critical_constraint), Markdown for data.
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---
-
-<guiding_principles>
 
 ## The Path to High-Quality Hooks
 
@@ -367,7 +489,6 @@ Hooks protect systems when safety mechanisms are properly implemented.
 - **Destructive operation confirmation**: `rm -rf`, `sudo`, and similar commands require explicit approval
 - **Protected file guards**: `.env`, credentials, and config files need special handling
 - **Escape hatches**: Provide emergency override mechanisms for legitimate operations
-  </guiding_principles>
 
 ---
 

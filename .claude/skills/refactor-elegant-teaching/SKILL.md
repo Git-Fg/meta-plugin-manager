@@ -399,6 +399,86 @@ Refactoring without understanding the current behavior invites bugs. The goal is
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Refactoring Without Understanding First
+
+❌ **Wrong:**
+Read function → "This looks messy" → Refactor → Tests fail → Bug introduced
+
+✅ **Correct:**
+Read function → Trace every code path → Understand behavior → Refactor → Tests pass → Success
+
+### Mistake 2: Changing Behavior While Refactoring
+
+❌ **Wrong:**
+"This condition looks wrong, let me fix it too" → Behavior changed → Bug introduced
+
+✅ **Correct:**
+Refactor structure only → Keep behavior identical → Create separate task for bug fixes
+
+### Mistake 3: Premature Abstraction
+
+❌ **Wrong:**
+"This might be used elsewhere someday" → Create generic abstraction → Over-engineered
+
+✅ **Correct:**
+Extract only when duplication exists (Rule of 3: appear 3 times before abstracting)
+
+### Mistake 4: Renaming Without Improving Clarity
+
+❌ **Wrong:**
+`const x = data.process()` → `const processedData = data.process()`
+// Name changed, but still unclear what process() does
+
+✅ **Correct:**
+`const validatedOrders = data.filter(order => isValid(order))`
+// Name describes WHAT and HOW
+
+### Mistake 5: Refactoring During RED Phase (TDD)
+
+❌ **Wrong:**
+RED phase → Tests failing → "While I'm here, let me refactor" → TDD cycle broken
+
+✅ **Correct:**
+Wait for GREEN phase → Tests passing → Refactor → Maintain GREEN
+If you see refactoring opportunities during RED, note them and return later.
+
+### Mistake 6: Breaking Single Responsibility
+
+❌ **Wrong:**
+Extract function that still does multiple things → Just moved the problem
+
+✅ **Correct:**
+Each extracted function should do ONE thing and do it well
+`calculateTotal()` should only calculate total, not validate or save
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Understand current behavior before changing anything
+- Run tests after each individual change
+- Preserve behavior exactly (refactoring = structure change, not behavior change)
+- Use TDD GREEN phase for refactoring
+- Rename to describe WHAT and WHY, not just data type
+- Extract when logic appears 3+ times (Rule of 3)
+- Flatten nesting with early returns
+- Replace magic numbers with named constants
+
+❌ **DON'T:**
+- Refactor without tracing all code paths first
+- Change behavior while refactoring (create separate bug-fix tasks)
+- Abstract too early ("just in case" is not a reason)
+- Create functions that still do multiple things
+- Rename without improving clarity
+- Refactor during TDD RED phase
+- Leave magic numbers un-named
+- Break working code to make it "cleaner"
+
+---
+
 <critical_constraint>
 This skill carries its own genetic code. It works in isolation from .claude/rules/.
 The description uses What-When-Not-Includes format in third person.

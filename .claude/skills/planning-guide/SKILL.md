@@ -245,6 +245,102 @@ Trust native tools to fulfill these patterns. The System Prompt selects the corr
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: More Than 3 Tasks
+
+❌ **Wrong:**
+"Plan has 10 tasks covering 5 features" → Context overflow, confusion
+
+✅ **Correct:**
+"Plan has 2-3 tasks for one feature" → Clear scope, focused execution
+
+### Mistake 2: Vague Task Descriptions
+
+❌ **Wrong:**
+"Implement authentication" → Unclear what exactly to do
+
+✅ **Correct:**
+"Create auth service with login/logout, add unit tests" → Specific, measurable
+
+### Mistake 3: Skipping Evidence
+
+❌ **Wrong:**
+"Changes look complete" → No file:line verification
+
+✅ **Correct:**
+"Modified auth.ts:47-89, verified tests at auth.test.ts:23-156"
+
+### Mistake 4: Ignoring Verification Criteria
+
+❌ **Wrong:**
+Tasks without completion criteria → Never know when done
+
+✅ **Correct:**
+Each task has explicit verification criteria (test passes, type check succeeds)
+
+### Mistake 5: Scattered Questions
+
+❌ **Wrong:**
+"Ask multiple unrelated questions at once" → User overwhelmed
+
+✅ **Correct:**
+ONE focused question at a time using L'Entonnoir pattern
+
+---
+
+## Validation Checklist
+
+Before claiming plan complete:
+
+**Scope:**
+- [ ] Feature scope clearly defined with boundaries
+- [ ] L'Entonnoir applied for scope narrowing
+- [ ] Out-of-scope items documented
+
+**Tasks:**
+- [ ] Maximum 3 tasks (2-3 task rule)
+- [ ] Each task atomic and independently verifiable
+- [ ] Task descriptions specific and actionable
+- [ ] Each task has clear completion criteria
+
+**Evidence:**
+- [ ] File locations identified with file:line references
+- [ ] Code changes traced to specific locations
+- [ ] Existing patterns identified for consistency
+
+**Quality:**
+- [ ] Dependencies documented between tasks
+- [ ] Risks identified upfront
+- [ ] Verification criteria explicit for each task
+
+**Format:**
+- [ ] Plan uses standard template
+- [ ] Tasks are executable prompts
+- [ ] Progressive disclosure appropriate to complexity
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Apply L'Entonnoir for iterative scope narrowing
+- Limit plans to 2-3 tasks maximum
+- Provide file:line evidence for all claims
+- Define clear completion criteria for each task
+- Document dependencies and risks upfront
+- Use recognition-based questions (2-4 options)
+
+❌ **DON'T:**
+- Create plans with >3 tasks
+- Use vague task descriptions without specifics
+- Skip verification criteria
+- Ask scattered questions without focus
+- Ignore evidence-based claims
+- Create documentation instead of executable prompts
+
+---
+
 ## Genetic Code
 
 This component carries essential Seed System principles for context fork isolation:

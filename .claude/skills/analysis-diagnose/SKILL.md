@@ -566,6 +566,99 @@ For related diagnostic capabilities:
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping Root Cause Investigation
+
+❌ **Wrong:**
+"It's obviously just a missing semicolon" → Apply fix immediately
+
+✅ **Correct:**
+Document symptom, trace to root cause, verify with evidence before fixing.
+
+### Mistake 2: Testing Multiple Hypotheses at Once
+
+❌ **Wrong:**
+"Multiple theories could explain this, test them all simultaneously"
+
+✅ **Correct:**
+Form single hypothesis based on evidence. Test with minimal reproduction. Confirm or reject before next hypothesis.
+
+### Mistake 3: Fixing Without Verification
+
+❌ **Wrong:**
+"Fix applied, seems to work" → Skip verification test
+
+✅ **Correct:**
+Test hypothesis with minimal reproduction before full fix. Verify no regressions.
+
+### Mistake 4: Ignoring Systemic Patterns
+
+❌ **Wrong:**
+"Treat each bug individually" → Miss architectural issues
+
+✅ **Correct:**
+3+ similar failures indicate systemic problem. Address architecture, not symptoms.
+
+### Mistake 5: Sunk Cost Rationalization
+
+❌ **Wrong:**
+"Already spent 2 hours, can't abandon this approach"
+
+✅ **Correct:**
+Return to root cause with fresh perspective. Wrong approach wastes more time.
+
+---
+
+## Validation Checklist
+
+Before claiming diagnosis complete:
+
+**Phase 1 - Problem Statement:**
+- [ ] Symptom documented with exact error messages
+- [ ] Reproduction steps verified
+- [ ] Frequency and conditions identified
+
+**Phase 2 - Evidence Gathering:**
+- [ ] Logs and error output collected
+- [ ] Recent changes reviewed (git history)
+- [ ] Environment data documented
+
+**Phase 3 - Hypothesis Formation:**
+- [ ] Single hypothesis based on evidence
+- [ ] Hypothesis is falsifiable
+- [ ] Confidence level assigned (High/Medium/Low)
+
+**Phase 4 - Test & Conclude:**
+- [ ] Minimal reproduction test created
+- [ ] Hypothesis confirmed or rejected
+- [ ] Root cause identified with file:line evidence
+- [ ] Fix strategy documented
+
+**Pattern Recognition:**
+- [ ] Isolated vs systemic determined
+- [ ] 3+ failures = architectural flag raised
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Gather concrete evidence before forming conclusions
+- Test one hypothesis at a time
+- Use 5 Whys technique to reach root cause
+- Document root cause for future reference
+- Resist pressure to skip systematic approach
+
+❌ **DON'T:**
+- Apply fixes without root cause investigation
+- Test multiple hypotheses simultaneously
+- Assume obvious = correct
+- Ignore patterns (3+ failures = systemic)
+- Fall for sunk cost rationalization
+
+---
+
 ## Genetic Code
 
 This component carries essential Seed System principles for context: fork isolation:

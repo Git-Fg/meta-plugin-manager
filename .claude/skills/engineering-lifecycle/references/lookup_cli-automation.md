@@ -1,6 +1,20 @@
 # CLI Automation Reference
 
-**Core principle:** If it has a CLI or API, Claude does it.
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Quick reference | ## Quick Reference |
+| Claude automates | ## What Claude Automates |
+| Authentication gates | ## Authentication Gates |
+| Human action required | ## When Human Action is Required |
+| Summary | ## Summary |
+
+## TL;DR
+
+Claude automates ALL CLI/API operations. Only manual human actions are email links, SMS codes, manual approvals, and 3D Secure flows.
+
+---
 
 ## Quick Reference
 
@@ -63,7 +77,7 @@ When Claude tries to use CLI/API and gets authentication error:
 4. Verify after authentication
 5. Retry the original task
 
-## When checkpoint:human-action is REQUIRED (Rare)
+## EDGE: When Human Action is Required
 
 - Email verification links (no API)
 - SMS 2FA codes (no API)
@@ -73,3 +87,25 @@ When Claude tries to use CLI/API and gets authentication error:
 ## Summary
 
 The rule: If Claude CAN do it, Claude MUST do it.
+
+---
+
+## ANTI-PATTERN: Common Mistakes
+
+❌ **Wrong:**
+"I can't run this command, it needs authentication" → Ask user to do it
+
+✅ **Correct:**
+Run command → Get auth error → Create checkpoint:human-action with exact steps → Verify → Retry
+
+❌ **Wrong:**
+"This requires a browser" → Skip operation
+
+✅ **Correct:**
+Check if browser automation is possible → Use MCP tools → Escalate only if truly required
+
+❌ **Wrong:**
+"Manual process required" → Assume no automation exists
+
+✅ **Correct:**
+Research API/CLI options → Try automation → Document gate if truly required

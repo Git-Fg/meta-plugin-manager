@@ -11,9 +11,7 @@ user-invocable: true
 <success_criteria>Risks categorized (Tiger/Paper/Elephant) with specific verification evidence, HIGH severity risks addressed before proceeding</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
-## The Path to High-Impact Risk Analysis
+<mission_control>
 
 1. **Imagined Failure Beats Real Failure**: When you envision failure scenarios BEFORE implementation, you catch risks at 1/100th the cost of post-deployment fixes. This mental time-travel surfaces blind spots that optimism hides.
 
@@ -24,7 +22,7 @@ user-invocable: true
 4. **Collaboration Surfaces Elephants**: Some risks live in silence—not technical impossibility, but organizational reluctance. The premortem creates psychological safety to name what everyone sees but no one says.
 
 5. **HIGH Risks Demand Decisions**: When severity is HIGH, stop and require user acknowledgment. Proceeding without explicit acceptance creates "I told you so" moments that destroy trust.
-   </guiding_principles>
+
 
 Identify failure modes before they occur by systematically questioning plans, designs, and implementations. Based on Gary Klein's technique, popularized by Shreyas Doshi (Stripe).
 
@@ -362,6 +360,117 @@ Run quick premortem on diff scope:
 
 - [Pre-Mortems by Shreyas Doshi](https://coda.io/@shreyas/pre-mortems)
 - [Gary Klein's Original Research](https://hbr.org/2007/09/performing-a-project-premortem)
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Flagging Tigers Without Evidence
+
+❌ **Wrong:**
+```markdown
+TIGER: No error handling for API calls
+```
+
+✅ **Correct:**
+```markdown
+TIGER: [HIGH] No error handling for API calls
+- Location: api.ts:42
+- mitigation_checked: "No try/catch, no if (response.ok), no early return on error"
+```
+
+### Mistake 2: Ignoring Paper Tigers
+
+❌ **Wrong:**
+Found 3 tigers, flagged all as high risk without checking if they already have mitigations.
+
+✅ **Correct:**
+- Check for existing try/catch, exists() checks, else branches before flagging
+- If mitigations exist, categorize as [PAPER] with explanation of why it's fine
+
+### Mistake 3: Skipping Context Reading
+
+❌ **Wrong:**
+Flagged line 42 as risky without reading lines 22-62 to understand the full context.
+
+✅ **Correct:**
+Always read ±20 lines around any potential finding to understand:
+- Is this in an error handler path?
+- Is there fallback logic nearby?
+- Is this a deliberate design choice?
+
+### Mistake 4: Missing Elephants
+
+❌ **Wrong:**
+Only finding technical tigers, never surfacing organizational or process concerns.
+
+✅ **Correct:**
+Ask "What's nobody talking about?" explicitly:
+- Team has no experience with this technology
+- Timeline is unrealistic but nobody wants to say so
+- Stakeholder alignment is unclear
+
+### Mistake 5: Proceeding Past HIGH Risks
+
+❌ **Wrong:**
+Found 2 HIGH severity tigers, proceeded anyway because "user will handle it."
+
+✅ **Correct:**
+Use AskUserQuestion to present HIGH severity risks and require explicit acknowledgment:
+1. Accept risks and proceed
+2. Add mitigations to plan
+3. Research mitigation options
+4. Discuss specific risks
+Never proceed past HIGH risks without user decision.
+
+---
+
+## Validation Checklist
+
+Before claiming premortem analysis complete:
+
+**Identification:**
+- [ ] Imagined failure scenarios from multiple perspectives
+- [ ] Considered technical, integration, and process risks
+- [ ] Asked "What's nobody talking about?" for elephants
+
+**Categorization:**
+- [ ] Risks classified as Tiger, Paper Tiger, or Elephant
+- [ ] Tigers have clear evidence of missing mitigations
+- [ ] Paper Tigers have explanation of existing safeguards
+
+**Verification:**
+- [ ] ±20 lines read around every tiger finding
+- [ ] Every tiger has `mitigation_checked` field documenting what was NOT found
+- [ ] Scope verified (in scope for this plan/PR)
+
+**Severity:**
+- [ ] HIGH severity risks require explicit user acknowledgment
+- [ ] MEDIUM/LOW risks documented with recommendations
+
+**Presentation:**
+- [ ] Risks presented with AskUserQuestion for HIGH severity
+- [ ] User decision captured and logged
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Read ±20 lines of context before flagging any finding
+- Use the verification checklist before calling something a tiger
+- Document what mitigations were checked and NOT found
+- Ask "What's nobody talking about?" to surface elephants
+- Block on HIGH severity risks until user acknowledges
+- Categorize as [PAPER] when mitigations already exist
+
+❌ **DON'T:**
+- Flag risks without reading surrounding context
+- Skip the `mitigation_checked` field on tigers
+- Proceed past HIGH severity risks without user decision
+- Flag every pattern-match as a tiger (check scope first)
+- Only find technical tigers, ignore organizational elephants
+- Use HIGH severity for non-blocking issues
 
 ---
 

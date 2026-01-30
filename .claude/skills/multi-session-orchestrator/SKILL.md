@@ -167,3 +167,84 @@ No exceptions. Portability invariant must be maintained.
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
 
 ---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Not Persisting TaskList ID
+
+❌ **Wrong:**
+Started migration, completed phase 1, session ends without saving TaskList ID → State lost
+
+✅ **Correct:**
+After creating TaskList, immediately save the ID to a file or handoff document for Session 2
+
+### Mistake 2: Assuming State Persists Automatically
+
+❌ **Wrong:**
+"Session 2 will know about Session 1's progress" → TaskList reset, work duplicated
+
+✅ **Correct:**
+Explicitly pass TaskList ID to Session 2 via handoff or user-provided identifier
+
+### Mistake 3: No Verification Before Continuing
+
+❌ **Wrong:**
+Load TaskList, immediately continue without checking state → Wrong phase, incorrect assumptions
+
+✅ **Correct:**
+Verify: "Are previous tasks marked COMPLETE?" before starting next phase
+
+### Mistake 4: Creating New TaskList Instead of Resuming
+
+❌ **Wrong:**
+Lost ID → Create new TaskList → Duplicate work, inconsistent state
+
+✅ **Correct:**
+If ID lost, create handoff document asking user to retrieve previous TaskList ID
+
+---
+
+## Validation Checklist
+
+Before claiming multi-session orchestration complete:
+
+**TaskList Creation:**
+- [ ] TaskList created with all required phases
+- [ ] Each phase has unique ID and clear description
+- [ ] Initial status set to PENDING for all tasks
+
+**State Persistence:**
+- [ ] TaskList ID saved to persistent storage (file/handoff)
+- [ ] TaskList ID communicated to user for Session 2
+- [ ] Handoff document created with TaskList ID
+
+**Session Resume:**
+- [ ] TaskList loaded successfully by ID
+- [ ] Previous task statuses verified (COMPLETE/IN_PROGRESS/PENDING)
+- [ ] Current phase identified correctly
+- [ ] No duplicate work from previous sessions
+
+**Progress Tracking:**
+- [ ] Status updates logged after each phase completion
+- [ ] Progress percentage calculated correctly
+- [ ] Final state reflects all completed work
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Create TaskList immediately when multi-session work begins
+- Save TaskList ID to handoff document before session ends
+- Verify TaskList state before continuing in new session
+- Use descriptive task IDs that indicate purpose
+- Update task status after each phase completion
+
+❌ **DON'T:**
+- Skip saving TaskList ID between sessions
+- Assume Session 2 knows about Session 1's progress
+- Continue without verifying previous task statuses
+- Create new TaskList when existing one can be resumed
+- Use generic task IDs like "task-1" without context
+
+---

@@ -304,6 +304,169 @@ TypeScript >= 4.9 required.
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Hardcoding API Keys in TypeScript
+
+❌ **Wrong:**
+```ts
+const client = new PerplexityClient({
+  apiKey: "pplx-1234567890abcdef",  // Exposed in client-side code!
+});
+```
+
+✅ **Correct:**
+```ts
+const client = new PerplexityClient({
+  apiKey: process.env.PERPLEXITY_API_KEY,
+});
+// Backend proxy handles secret, frontend calls proxy
+```
+
+### Mistake 2: Not Handling API Errors Safely
+
+❌ **Wrong:**
+```ts
+const response = await client.chat.completions.create({...});
+console.log(response.content);  // Might throw if API fails
+```
+
+✅ **Correct:**
+```ts
+try {
+  const response = await client.chat.completions.create({...});
+  console.log(response.content);
+} catch (error) {
+  if (error instanceof PerplexityAPIError) {
+    console.error(`API Error: ${error.message}`);
+  }
+  // Handle gracefully
+}
+```
+
+### Mistake 3: Ignoring Rate Limits
+
+❌ **Wrong:**
+```ts
+// Fire 100 requests in parallel
+const results = await Promise.all(
+  queries.map(q => client.search.create({ query: q }))
+);
+```
+
+✅ **Correct:**
+```ts
+// Respect rate limits with batching
+const batchSize = 5;
+for (let i = 0; i < queries.length; i += batchSize) {
+  const batch = queries.slice(i, i + batchSize);
+  const results = await Promise.all(
+    batch.map(q => client.search.create({ query: q }))
+  );
+  // Process results
+  await delay(1000); // Rate limit buffer
+}
+```
+
+### Mistake 4: Not Using Streaming for Interactive UIs
+
+❌ **Wrong:**
+```ts
+// Wait for full response before showing anything
+const response = await client.chat.completions.create({
+  model: "sonar",
+  messages: [{ role: "user", content: prompt }],
+});
+display(response.content);
+```
+
+✅ **Correct:**
+```ts
+// Stream for real-time feedback
+const stream = await client.chat.completions.create({
+  model: "sonar",
+  messages: [{ role: "user", content: prompt }],
+  stream: true,
+});
+for await (const chunk of stream) {
+  display(chunk.choices[0]?.delta?.content || "");
+}
+```
+
+### Mistake 5: Missing Error Type Checks
+
+❌ **Wrong:**
+```ts
+try {
+  await client.search.create({ query });
+} catch (error) {
+  console.error(error.message);  // Might not have .message
+}
+```
+
+✅ **Correct:**
+```ts
+try {
+  await client.search.create({ query });
+} catch (error) {
+  if (error instanceof PerplexityAPIError) {
+    console.error(`Status ${error.status}: ${error.message}`);
+  } else if (error instanceof PerplexityRateLimitError) {
+    console.error("Rate limited - retry after", error.retryAfter);
+  }
+}
+```
+
+---
+
+## Validation Checklist
+
+Before claiming Perplexity integration complete:
+
+**Security:**
+- [ ] API keys use environment variables, never hardcoded
+- [ ] Client-side code uses backend proxy for API calls
+- [ ] No secrets exposed in source code or logs
+
+**Error Handling:**
+- [ ] API errors caught with instanceof checks
+- [ ] Rate limit errors handled with retry logic
+- [ ] Graceful degradation for failed requests
+
+**User Experience:**
+- [ ] Streaming used for interactive UIs
+- [ ] Loading states shown during API calls
+- [ ] Error messages user-friendly
+
+**API Usage:**
+- [ ] Appropriate model selected (sonar vs sonar-pro)
+- [ ] Search filters applied correctly
+- [ ] Rate limits respected with batching
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Store API keys in environment variables (process.env)
+- Use backend proxy for client-side Perplexity calls
+- Handle errors with instanceof checks
+- Use streaming for interactive user experiences
+- Respect rate limits with request batching
+- Use appropriate search filters (domain, date, recency)
+- Log at warn/error level in production
+
+❌ **DON'T:**
+- Hardcode API keys in TypeScript files
+- Expose secrets in client-side code
+- Skip error type checking (check instanceof PerplexityAPIError)
+- Make parallel requests that hit rate limits
+- Use non-streaming for real-time UIs
+- Log sensitive data or API keys
+- Mix streaming and non-streaming in same flow
+
+---
+
 ## Dynamic Sourcing Protocol
 
 **CONDITIONAL FETCH**: For API questions, fetch from:

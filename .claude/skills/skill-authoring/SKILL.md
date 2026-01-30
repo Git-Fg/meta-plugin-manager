@@ -1,29 +1,35 @@
 ---
 name: skill-authoring
-description: "Create portable skills with SKILL.md, YAML frontmatter, and progressive disclosure. Use when building new components, writing descriptions with trigger phrases, structuring references folders, or creating navigation tables. Includes template patterns, What-When-Not-Includes format, directory conventions, and greppable headers (PATTERN, ANTI-PATTERN, EDGE). Not for auditing existing skills or creating commands."
+description: "Create portable skills with SKILL.md. Use when building new skills or documenting patterns. Includes frontmatter syntax, directory conventions, quality standards. Not for commands or agents."
 ---
+
+<mission_control>
+<objective>Create portable skills with SKILL.md that follow gold standard patterns: YAML frontmatter, progressive disclosure, and self-contained philosophy</objective>
+<success_criteria>Skill created with valid frontmatter, Quick Start section, navigation tables, and critical_constraint footer</success_criteria>
+</mission_control>
 
 ## Quick Start
 
 **If you need to create a new skill:** Create the directory structure first, then write SKILL.md with proper frontmatter.
 
-**If you need to add deep patterns:** Create a references/ folder and add markdown files with navigation tables.
+**If you need to understand frontmatter:** MUST READ ## FRONTMATTER PATTERN first—ALL skill creation depends on this.
 
-**If you need to understand frontmatter:** Read ## REFERENCE: YAML Frontmatter for complete syntax.
+**If you need directory structure:** Read ## DIRECTORY PATTERN after frontmatter.
 
-**If you need progressive disclosure:** Structure content in tiers—Tier 2 (core) in SKILL.md, Tier 3 (deep) in references/.
+**If you need quality standards:** Read ## QUALITY PATTERN last—before claiming completion.
 
 ## Navigation
 
-| If you need...         | Read this section...             |
-| :--------------------- | :------------------------------- |
-| Frontmatter syntax     | ## REFERENCE: YAML Frontmatter   |
-| Directory structure    | ## REFERENCE: Directory Layout   |
-| Progressive disclosure | ## REFERENCE: Tier Structure     |
-| Reference navigation   | ## REFERENCE: Reference Files    |
-| Anti-patterns to avoid | ## ANTI-PATTERN: Common Mistakes |
+| If you need...                  | Read this section...              |
+| :------------------------------ | :-------------------------------- |
+| YAML frontmatter syntax         | ## FRONTMATTER PATTERN (MUST)     |
+| Directory layout                | ## DIRECTORY PATTERN              |
+| Progressive disclosure tiers    | ## TIER PATTERN                   |
+| Navigation tables               | ## NAVIGATION PATTERN             |
+| Anti-patterns to avoid          | ## ANTI-PATTERN: Common Mistakes  |
+| Quality verification            | ## QUALITY PATTERN (MUST)         |
 
-## REFERENCE: YAML Frontmatter
+## FRONTMATTER PATTERN
 
 Every skill MUST begin with YAML frontmatter. This serves as the auto-discovery trigger for the skill system.
 
@@ -32,48 +38,43 @@ Every skill MUST begin with YAML frontmatter. This serves as the auto-discovery 
 ```yaml
 ---
 name: skill-name
-description: "Verb + object. Use when [condition]. Includes [features]. Not for [exclusions]."
+description: "Brief description. Use when [condition]. Keywords: [trigger words]."
 ---
 ```
 
-### All Four Elements
+### Description Elements
 
-| Element       | Purpose                     | Required? |
-| :------------ | :-------------------------- | :-------- |
-| `name`        | Identifier for the skill    | Yes       |
-| `description` | Discovery trigger           | Yes       |
-| `Use when`    | Triggers in description     | Yes       |
-| `Includes`    | Key features in description | Yes       |
-| `Not for`     | Exclusions in description   | Yes       |
+| Element     | Purpose                          | Required? |
+| :---------- | :------------------------------- | :-------- |
+| `name`      | Identifier for the skill         | Yes       |
+| `description` | Discovery trigger                | Yes       |
+| `Use when`  | Trigger conditions               | Yes       |
+| `Keywords`  | User phrases that trigger skill  | Yes       |
+| `Not for`   | Exclusions (optional)            | No        |
 
-### Description Field Format
-
-The description field MUST use What-When-Includes-Not format with infinitive voice.
+### Description Format
 
 ```
-"Verb + object. Use when [triggers]. Includes [features]. Not for [exclusions]."
+"Brief action. Use when [condition]. Keywords: [phrase1], [phrase2], [phrase3]."
 ```
 
 ### Example Breakdown
 
 ```yaml
-description: "Create portable skills with SKILL.md and references.
-Use when building new skills, defining frontmatter with What-When-Not-Includes,
-structuring directories with references/, or writing progressive disclosure content.
-Includes template patterns, YAML frontmatter syntax, directory structure conventions,
-and reference file navigation tables.
-Not for auditing, critiquing, or commands."
+description: "Create portable skills with SKILL.md and YAML frontmatter.
+Use when building new skills or writing trigger phrases.
+Keywords: create skill, write SKILL.md, new skill, make a skill, build skill."
 ```
 
 ### Description Rules
 
-| Rule                           | Example                                           |
-| :----------------------------- | :------------------------------------------------ |
-| Start with infinitive verb     | "Create portable skills", not "You should create" |
-| "Use when" introduces triggers | "Use when building new skills"                    |
-| "Includes" lists key features  | "Includes template patterns..."                   |
-| "Not for" states exclusions    | "Not for auditing..."                             |
-| No skill name references       | Don't say "Use skill-X"                           |
+| Rule                         | Example                                            |
+| :--------------------------- | :------------------------------------------------- |
+| Brief description (1 sentence) | "Create portable skills..."                      |
+| "Use when" introduces triggers | "Use when building new skills"                  |
+| "Keywords:" lists user phrases | "Keywords: create skill, make a skill"          |
+| No spoilers                  | Don't describe what's in the body                 |
+| No skill name references     | Don't say "Use skill-X"                          |
 
 ### Third-Person Voice
 
@@ -131,7 +132,7 @@ name: skills/authoring (nested)
 
 ---
 
-## REFERENCE: Directory Layout
+## DIRECTORY PATTERN
 
 Skills use a flat directory structure with optional references/ folder.
 
@@ -179,15 +180,19 @@ Skills use a flat directory structure with optional references/ folder.
 
 ---
 
-## REFERENCE: Tier Structure
+## TIER PATTERN
 
 Progressive disclosure manages cognitive load through layered information:
 
-| Tier       | Content        | Tokens        | Purpose            |
-| :--------- | :------------- | :------------ | :----------------- |
-| **Tier 1** | YAML metadata  | ~100          | Discovery trigger  |
-| **Tier 2** | Core workflows | 1.5k-2k words | Primary invocation |
-| **Tier 3** | Deep patterns  | Unlimited     | Lookup reference   |
+| Tier       | Content        | Tokens         | Purpose            |
+| :--------- | :------------- | :------------- | :----------------- |
+| **Tier 1** | YAML metadata  | ~100           | Discovery trigger  |
+| **Tier 2** | Core workflows | ~1.5k-2k words | Primary invocation |
+| **Tier 3** | Deep patterns  | Unlimited      | Lookup reference   |
+
+**500 lines is a virtual limit—losing knowledge is worse than verbose SKILL.md.**
+
+Tier 2 (SKILL.md) MUST contain all guardrails, patterns, and anti-patterns that are directly or indirectly relevant when the skill is activated. Agents skip references/—core knowledge must be visible in the main file.
 
 ### Invocation Controls
 
@@ -260,7 +265,7 @@ Reference files contain ONLY lookup content:
 
 ---
 
-## REFERENCE: Reference Files
+## NAVIGATION PATTERN
 
 Reference files MUST have navigation tables for agent discovery:
 
@@ -306,7 +311,7 @@ Reference files MUST have navigation tables for agent discovery:
 
 ---
 
-## REFERENCE: Navigation Patterns
+## NAVIGATION PATTERN (continued)
 
 Navigation tables enable agent discovery through recognition-based lookup.
 
@@ -315,11 +320,11 @@ Navigation tables enable agent discovery through recognition-based lookup.
 ```markdown
 ## Navigation
 
-| If you need...         | Read this section...           |
-| :--------------------- | :----------------------------- |
-| Frontmatter syntax     | ## REFERENCE: YAML Frontmatter |
-| Directory structure    | ## REFERENCE: Directory Layout |
-| Progressive disclosure | ## REFERENCE: Tier Structure   |
+| If you need...         | Read this section...      |
+| :--------------------- | :------------------------ |
+| Frontmatter syntax     | ## FRONTMATTER PATTERN    |
+| Directory structure    | ## DIRECTORY PATTERN      |
+| Progressive disclosure | ## TIER PATTERN           |
 ```
 
 ### Reference File Navigation Table
@@ -327,11 +332,11 @@ Navigation tables enable agent discovery through recognition-based lookup.
 ```markdown
 ## Navigation
 
-| If you need...         | Read this section...            |
-| :--------------------- | :------------------------------ |
-| Complete syntax        | ## REFERENCE: YAML Frontmatter  |
-| Description formatting | ## REFERENCE: Description Field |
-| Common mistakes        | ## ANTI-PATTERN: Errors         |
+| If you need...         | Read this section...       |
+| :--------------------- | :------------------------- |
+| Complete syntax        | ## PATTERN: YAML Frontmatter |
+| Description formatting | ## PATTERN: Description    |
+| Common mistakes        | ## ANTI-PATTERN: Errors    |
 ```
 
 ### Navigation Table Rules
@@ -340,7 +345,7 @@ Navigation tables enable agent discovery through recognition-based lookup.
 | :------------------------- | :------------------------------------ |
 | Place after Quick Start    | ## Navigation follows ## Quick Start  |
 | Use "If you need..."       | "If you need frontmatter syntax"      |
-| Use "Read this section..." | "Read ## REFERENCE: YAML Frontmatter" |
+| Use "Read this section..." | "Read ## FRONTMATTER PATTERN"         |
 | Cover all major sections   | Ensure every section is referenced    |
 
 ### Link to Reference Files
@@ -359,7 +364,7 @@ Navigation tables enable agent discovery through recognition-based lookup.
 Use section references within the same file:
 
 ```markdown
-**For frontmatter syntax,** see ## REFERENCE: YAML Frontmatter above.
+**For frontmatter syntax,** see ## PATTERN: YAML Frontmatter above.
 
 **For common mistakes,** skip to ## ANTI-PATTERN: Errors.
 ```
@@ -403,7 +408,7 @@ Summarizing reference content in navigation:
 ✅ Correct:
 | If you need... | Read... |
 | :------------- | :------ |
-| Frontmatter syntax | ## REFERENCE: YAML Frontmatter |
+| Frontmatter syntax | ## PATTERN: YAML Frontmatter |
 ```
 
 **Fix:** Use blind pointers only. Point to sections, don't summarize them.
@@ -445,7 +450,7 @@ Using generic section headers:
 
 ✅ Correct:
 
-## REFERENCE: YAML Frontmatter
+## PATTERN: YAML Frontmatter
 
 ## ANTI-PATTERN: Common Mistakes
 
@@ -515,6 +520,39 @@ description: "...Use when creating portable skills or refining existing ones..."
     └── ...
 ```
 
+### Anti-Pattern: Time-Sensitive Information
+
+Including information that becomes outdated over time:
+
+```markdown
+❌ Wrong:
+
+If you're doing this before August 2026, use the old API.
+After August 2026, use the new API.
+```
+
+**Fix:** Use an "Old Patterns" section with `<details>` for historical context:
+
+```markdown
+✅ Correct:
+
+## Current Method
+
+Use the v2 API endpoint: `api.example.com/v2/messages`
+
+## Old Patterns
+
+<details>
+<summary>Legacy v1 API (deprecated 2026-08)</summary>
+
+The v1 API used: `api.example.com/v1/messages`
+This endpoint is no longer supported.
+
+</details>
+```
+
+**Why:** Old patterns provide historical context without cluttering main content. Main content stays current; deprecated approaches are hidden but accessible.
+
 ---
 
 ## EDGE: Special Cases
@@ -565,10 +603,11 @@ description: "Create skills. Use when building new skills."
 
 ### Edge Case: Empty "Not for"
 
-If truly no exclusions exist, use a general statement:
+If no exclusions exist, omit the "Not for" clause entirely:
 
 ```yaml
-description: "Create skills. Use when building new skills. Includes all features. Not for command-only workflows."
+✅ Correct:
+description: "Create skills. Use when building new skills. Keywords: create skill, make skill."
 ```
 
 ### Edge Case: Many Reference Files
@@ -599,22 +638,322 @@ references/
 
 ---
 
+## QUALITY PATTERN
+
+**references/ folder is RESERVED for:**
+- Large API specifications (OpenAPI, MCP Protocol spec)
+- Vast amounts of few-shot examples (20+ code snippets)
+- Documentation intended for the user to read, not just the agent
+- Precise workflow files (phases, steps) that MUST be read before specific tasks
+
+**All core knowledge goes in SKILL.md:**
+- 500 lines is a virtual limit, not a hard constraint
+- Losing knowledge is worse than having a longer file
+- Guardrails, patterns, and anti-patterns belong in the main file
+- Agents skip references/—core knowledge must be in SKILL.md
+
+Skills run in a code execution environment with platform-specific limitations:
+
+| Platform | Network Access | Package Installation | Source Access |
+| :------- | :------------- | :------------------- | :------------ |
+| claude.ai | Yes | npm, PyPI, GitHub | Pull from repos |
+| Anthropic API | No | None | Pre-bundled only |
+
+### Document Required Packages
+
+Always list dependencies explicitly:
+
+```markdown
+## Required Packages
+
+Install before using this skill:
+
+```bash
+pip install pdfplumber
+```
+
+For scanned PDFs requiring OCR:
+
+```bash
+pip install pdf2image pytesseract
+```
+
+## Dependency Reference
+
+| Package | Purpose | Install Command |
+| :------ | :------- | :-------------- |
+| pdfplumber | Text extraction from PDFs | `pip install pdfplumber` |
+| pdf2image | PDF to image conversion | `pip install pdf2image` |
+| pytesseract | OCR for scanned PDFs | `pip install pytesseract` |
+```
+
+### Verification Checklist
+
+Before claiming dependency packaging complete:
+
+- [ ] All required packages listed with install commands
+- [ ] Package availability verified for target platforms
+- [ ] Version constraints specified if needed
+- [ ] Alternative packages mentioned for different use cases
+
+---
+
+## EXTERNAL REFERENCES PATTERN
+
+For high-density information that exists elsewhere, use external references with clear context:
+
+### When to Use External References
+
+| Use When | Don't Use When |
+| :------- | :------------- |
+| Official API documentation with examples | Information needed for core functionality |
+| Library documentation (upstream maintained) | Patterns specific to this skill |
+| Comprehensive specifications (100+ pages) | Information that changes frequently |
+| Tool-specific guides (vendor maintained) | Content that should be self-contained |
+
+### External Reference Format
+
+```markdown
+## External Resources
+
+For complete API documentation, see:
+- [Library Name](https://docs.example.com/api): Official API reference with all methods
+- [Tool Documentation](https://tool.example.com/docs): Usage guide and examples
+
+## Quick Reference
+
+| Method | Purpose | Link |
+| :----- | :------- | :--- |
+| `method_a()` | Create resources | [API Docs](https://docs.example.com/a) |
+| `method_b()` | Update resources | [API Docs](https://docs.example.com/b) |
+
+### Key Patterns (External)
+
+**Authentication**: See [Official Docs - Auth](https://docs.example.com/auth)
+
+```python
+# From official documentation
+client = Client(api_key="key")
+```
+
+**Error Handling**: See [Official Docs - Errors](https://docs.example.com/errors)
+
+```python
+# From official documentation
+try:
+    result = client.request()
+except ApiError as e:
+    handle_error(e)
+```
+
+### External Reference Rules
+
+| Rule | Example |
+| :--- | :------- |
+| Always cite official source | [pandas Documentation](https://pandas.pydata.org/docs) |
+| Provide context for link | "For complete API details, see..." |
+| Include key patterns locally | Copy essential examples, link for more |
+| Use stable URLs | Avoid version-specific URLs when possible |
+
+### Anti-Pattern: Missing Context
+
+```markdown
+❌ Wrong:
+
+See https://docs.example.com for more info.
+```
+
+**Fix:** Provide context and purpose:
+
+```markdown
+✅ Correct:
+
+## External Resources
+
+**Official Documentation**: [Library Name](https://docs.example.com)
+
+This skill assumes familiarity with the core concepts documented above.
+Focuses on skill-specific patterns and conventions.
+```
+
+---
+
 ## Recognition Questions
 
 | Question                                         | Answer Should Be...                                  |
 | :----------------------------------------------- | :--------------------------------------------------- |
 | Does frontmatter use infinitive voice?           | Yes: "Create skills", not "You should create skills" |
-| Does frontmatter include What-When-Includes-Not? | All four elements present                            |
+| Does frontmatter use What-When-Keywords format?  | Brief description, Use when, Keywords present        |
+| Is description non-spoiling?                     | Doesn't describe body content                       |
 | Does skill open with ## Quick Start?             | Scenario-based opening section exists                |
 | Do reference files have navigation tables?       | Navigation immediately after frontmatter             |
 | Are section headers greppable?                   | PATTERN:, ANTI-PATTERN:, EDGE: used                  |
-| Is Tier 2 lean with Tier 3 deep?                 | Core content in SKILL.md, details in references/     |
-| Are navigation tables blind pointers?            | No spoilers, just point to references                |
-| Is XML used minimally?                           | Only mission_control and critical_constraint         |
+| Is core knowledge in SKILL.md?                   | All essential knowledge in main file                 |
+| Are references reserved for vast content?        | Only for specs, many examples, or user docs          |
 
 ---
 
-## REFERENCE: Validation Command
+## Common Mistakes to Avoid
+
+### Mistake 1: Duplicate "When to Use" Section
+
+❌ **Wrong:**
+```markdown
+description: "Create skills. Use when building skills."
+
+## When to Use This Skill
+Use when building new skills.
+```
+
+✅ **Correct:**
+```markdown
+description: "Create skills. Use when building new skills."
+
+## Quick Start
+**If you need to create a new skill:** [action]
+```
+
+### Mistake 2: Spoiler Navigation Table
+
+❌ **Wrong:**
+```markdown
+| Frontmatter | See references/frontmatter.md for YAML syntax with name, description, triggers, and examples |
+```
+
+✅ **Correct:**
+```markdown
+| Frontmatter syntax | ## PATTERN: YAML Frontmatter |
+```
+
+### Mistake 3: XML Overload
+
+❌ **Wrong:**
+```markdown
+<quick_start>
+## Scenario 1
+Content
+</quick_start>
+```
+
+✅ **Correct:**
+```markdown
+## Quick Start
+**If you need X:** Do Y
+```
+
+### Mistake 4: Non-Greppable Headers
+
+❌ **Wrong:**
+```markdown
+## How to Write Frontmatter
+## Common Errors
+## Tips and Tricks
+```
+
+✅ **Correct:**
+```markdown
+## PATTERN: YAML Frontmatter
+## ANTI-PATTERN: Common Mistakes
+## EDGE: Edge Cases
+```
+
+### Mistake 5: Skill Name in Description
+
+❌ **Wrong:**
+```yaml
+description: "...Use skill-authoring for creating skills..."
+```
+
+✅ **Correct:**
+```yaml
+description: "...Use when creating portable skills..."
+```
+
+### Mistake 6: Nested Directory Structure
+
+❌ **Wrong:**
+```text
+.claude/skills/skill-authoring/
+├── core/
+│   └── SKILL.md
+└── advanced/
+    └── patterns.md
+```
+
+✅ **Correct:**
+```text
+.claude/skills/skill-authoring/
+├── SKILL.md
+└── references/
+    └── patterns.md
+```
+
+---
+
+## Validation Checklist
+
+Before claiming skill creation complete:
+
+**Frontmatter:**
+- [ ] YAML frontmatter at file top
+- [ ] `name` field uses kebab-case, gerund form
+- [ ] `description` uses What-When-Keywords format (brief, non-spoiling)
+- [ ] Description uses infinitive voice (third person)
+- [ ] Keywords list user phrases that trigger the skill
+
+**Structure:**
+- [ ] Skill opens with ## Quick Start section
+- [ ] Navigation table follows Quick Start
+- [ ] Navigation uses "If you need... Read..." format
+- [ ] SKILL.md is the core file (not README.md or other names)
+
+**References:**
+- [ ] references/ folder (if exists) contains only .md files
+- [ ] Reference files have navigation tables immediately after frontmatter
+- [ ] Navigation tables are blind pointers (no spoilers)
+
+**Content:**
+- [ ] Greppable headers used (PATTERN:, ANTI-PATTERN:, EDGE:)
+- [ ] Tier 2 (SKILL.md) is lean
+- [ ] Tier 3 (references/) contains deep patterns
+- [ ] XML tags used only for mission_control and critical_constraint
+- [ ] No time-sensitive information (or in "Old Patterns" section)
+- [ ] Dependencies listed with install commands
+- [ ] External references include context and purpose
+
+**Footer:**
+- [ ] critical_constraint footer present at file end
+- [ ] Portability invariant stated
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use YAML frontmatter with What-When-Keywords format (brief, non-spoiling)
+- Start description with infinitive verb ("Create", "Build", "Apply")
+- Include Keywords: user phrases that trigger auto-discovery
+- Open skill with ## Quick Start scenario-based section
+- Put ALL core knowledge in SKILL.md (500 lines is soft limit)
+- Use greppable headers: PATTERN:, ANTI-PATTERN:, EDGE:
+- Add critical_constraint footer for recency bias
+- Use MUST-READ language for mandatory references
+
+❌ **DON'T:**
+- Spoil body content in description or navigation
+- Put core knowledge in references/ (causes skip behavior—500 lines is virtual limit, losing knowledge is worse)
+- Use generic headers like "How to" or "Tips"
+- Reference other skills by name in descriptions
+- Create nested folder structures (flat only)
+- Skip navigation tables in reference files
+- Forget critical_constraint at file end
+- Include time-sensitive information (use "Old Patterns" instead)
+- Assume packages are installed (document dependencies)
+- Link to external docs without context or key patterns
+
+---
+
+## VALIDATION COMMAND
 
 Use `skills-ref validate ./my-skill` from the reference library to check frontmatter and naming.
 

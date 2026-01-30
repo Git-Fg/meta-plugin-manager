@@ -177,29 +177,6 @@ Brief overview (2-3 sentences).
 
 ---
 
-## Best Practices
-
-### Structure
-
-- **Keep it concise**: CLAUDE.md should be ~300-500 lines max
-- **Evergreen content**: Avoid transient information
-- **Single source of truth**: Each concept documented once
-- **Progressive disclosure**: High-level in CLAUDE.md, details in references/
-
-### Navigation
-
-- Use tables for structured references
-- Include both file paths and descriptions
-- Mark mandatory references clearly
-- Cross-link to docs/ directory for extended content
-
-### Quality
-
-- Validate all links actually exist
-- Ensure consistency with .claude/rules/
-- Keep meta-skill table current
-- Sync Success Criteria with quality-standards
-
 ---
 
 ## Common CLAUDE.md Patterns
@@ -235,28 +212,6 @@ For detailed guidance on creating portable components, consult the appropriate m
 
 ---
 
-## Anti-Patterns
-
-### DON'T: Include Generic Content
-
-❌ "How to write Markdown"
-❌ "What is YAML"
-❌ "Introduction to Git"
-
-### DON'T: Duplicate Content
-
-❌ Repeating rules from .claude/rules/
-❌ Copying meta-skill content into CLAUDE.md
-❌ Duplicating philosophy explanations
-
-### DON'T: Make It Transient
-
-❌ Including session-specific notes
-❌ Temporary workarounds
-❌ "TODO" items for future work
-
----
-
 ## Navigation
 
 For hybrid format standards (Markdown + XML), see the **hybrid-format rule**.
@@ -266,8 +221,6 @@ For architectural philosophy, see: `docs/philosophy/deep-dives.md`
 For development guidance, see: `invocable-development` skill
 
 ---
-
-<guiding_principles>
 
 ## The Path to High-Quality CLAUDE.md Maintenance
 
@@ -287,7 +240,92 @@ When adding or removing meta-skills, syncing the meta-skill table keeps the comp
 
 CLAUDE.md is evergreen documentation, not a scratchpad. Transient or TODO content belongs in planning files, not in the project documentation.
 
-</guiding_principles>
+## Common Mistakes to Avoid
+
+### Mistake 1: Including Generic Content
+
+❌ **Wrong:**
+```markdown
+"How to write Markdown"
+"What is YAML"
+"Introduction to Git"
+```
+
+✅ **Correct:**
+```markdown
+// Assume Claude knows Markdown/YAML/Git basics
+// Focus on project-specific conventions only
+```
+
+### Mistake 2: Duplicating Content from .claude/rules/
+
+❌ **Wrong:**
+```markdown
+## Principles
+[Full copy of principles.md content]
+```
+
+✅ **Correct:**
+```markdown
+## Principles
+
+For full philosophy, see: `principles.md`
+```
+
+### Mistake 3: Adding Transient Notes
+
+❌ **Wrong:**
+```markdown
+// TODO: Fix this section later
+// Session notes: user wanted X but we did Y
+```
+
+✅ **Correct:**
+```markdown
+// Remove transient content entirely
+// Use planning files for work-in-progress notes
+```
+
+### Mistake 4: Skipping Link Validation
+
+❌ **Wrong:**
+```markdown
+See: `docs/non-existent-file.md`
+```
+
+✅ **Correct:**
+```markdown
+// Always verify links exist before committing
+// Use grep or glob to confirm file paths
+```
+
+## Validation Checklist
+
+Before claiming CLAUDE.md maintenance complete:
+
+- [ ] Links verified to exist (no 404s)
+- [ ] Meta-skill table synchronized with actual skills
+- [ ] Cross-references consistent with .claude/rules/
+- [ ] No transient/TODO content included
+- [ ] File under 500 lines (or progressive disclosure applied)
+- [ ] Evergreen content only (no session-specific ] No duplication of notes)
+- [ .claude/rules/ content
+
+## Best Practices Summary
+
+✅ **DO:**
+- Keep CLAUDE.md under 500 lines with progressive disclosure
+- Use tables for structured references and navigation
+- Sync meta-skill table when adding/removing skills
+- Validate all links before committing
+- Document project-specific conventions, not generic knowledge
+
+❌ **DON'T:**
+- Include generic Markdown/YAML/Git explanations
+- Duplicate content from .claude/rules/
+- Add transient session notes or TODO items
+- Create broken links to non-existent files
+- Make CLAUDE.md a scratchpad for work-in-progress
 
 <critical_constraint>
 **System Physics:**

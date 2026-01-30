@@ -323,13 +323,89 @@ find ~/.claude/sessions/ -type d -mtime +30 -exec rm -rf {} \;
 cp -r ~/.claude/sessions/20250127-143022-12345 ~/archive/sessions/
 ```
 
-## Best Practices
+## Common Mistakes to Avoid
 
-1. **Review session summaries** - Check summary.md before starting new session
-2. **Extract patterns** - Use `/learn` to capture valuable patterns from sessions
-3. **Archive key sessions** - Save important sessions for future reference
-4. **Clean periodically** - Remove old sessions to manage disk space
-5. **Integrate with handoff** - Use handoff for session continuity
+### Mistake 1: No Session Start Hook
+
+❌ **Wrong:**
+Session starts without metadata capture → Context lost
+
+✅ **Correct:**
+Configure SessionStart hook in settings.json to initialize logging
+
+### Mistake 2: No Session End Hook
+
+❌ **Wrong:**
+Session ends without summary → No handoff document created
+
+✅ **Correct:**
+Configure SessionEnd hook to generate summary and handoff
+
+### Mistake 3: TaskList ID Not Persisted
+
+❌ **Wrong:**
+Task tracking reset each session → Duplicate work
+
+✅ **Correct:**
+Capture TaskList ID in session metadata for cross-session continuity
+
+### Mistake 4: Cross-Platform Incompatibility
+
+❌ **Wrong:**
+Using Windows-specific scripts → Fails on macOS/Linux
+
+✅ **Correct:**
+Use POSIX-compliant bash for cross-platform support
+
+---
+
+## Validation Checklist
+
+Before claiming memory persistence configured:
+
+**Hooks Configuration:**
+- [ ] SessionStart hook configured in settings.json
+- [ ] SessionEnd hook configured in settings.json
+- [ ] Hook scripts are executable
+
+**Session Lifecycle:**
+- [ ] Session start creates session directory
+- [ ] Metadata captured (timestamp, branch, working directory)
+- [ ] Session end generates summary
+- [ ] Handoff document created correctly
+
+**Context Preservation:**
+- [ ] TaskList IDs tracked across sessions
+- [ ] Previous session context can be loaded
+- [ ] Files modified list captured
+
+**Cross-Platform:**
+- [ ] Scripts use POSIX-compliant bash
+- [ ] Path handling is cross-platform compatible
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Configure both SessionStart and SessionEnd hooks for full lifecycle
+- Use POSIX-compliant bash scripts for cross-platform support
+- Capture all required metadata (timestamp, branch, working directory)
+- Preserve TaskList IDs for task continuity
+- Review session summaries before starting new sessions
+- Archive important sessions for future reference
+- Clean old sessions periodically to manage disk space
+
+❌ **DON'T:**
+- Skip SessionStart or SessionEnd hooks (loses context)
+- Use platform-specific scripts (breaks portability)
+- Forget to capture TaskList IDs (loses task continuity)
+- Skip handoff generation (breaks session continuity)
+- Ignore cross-platform path handling
+- Leave old sessions unarchived (disk space bloat)
+- Skip pattern extraction from valuable sessions
+
+---
 
 ## Privacy Considerations
 

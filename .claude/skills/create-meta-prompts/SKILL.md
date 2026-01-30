@@ -23,7 +23,6 @@ Meta-prompts excel when they preserve context across prompt boundaries, maintain
 **5. Validation before archiving ensures quality.** Checking that outputs meet requirements (file exists, has content, includes required sections, has substantive SUMMARY.md) before archiving prompts maintains high standards and provides recovery options when issues occur.
 
 **6. Decision trees keep users in control.** Presenting options (run now, review first, save for later) before execution enables informed workflow choices. Clear progress reporting during execution builds trust and enables intervention when needed.
-</guiding_principles>
 
 ## Workflow
 
@@ -88,9 +87,7 @@ Trust the System Prompt to select the correct implementation for these patterns.
 │   └── SUMMARY.md
 ```
 
-##
-
-Context Gathering
+## Phase 1: Context Gathering
 
 At invocation time, gather context using Read and Glob:
 
@@ -98,9 +95,7 @@ At invocation time, gather context using Read and Glob:
 - List existing research/plan folders
 - Determine next prompt number
 
-##
-
-Automated Workflow
+## Automated Workflow Implementation
 
 ### 0. Intake Gate
 
@@ -575,9 +570,7 @@ If a prompt's output includes instructions to create more prompts:
 3. User can invoke skill again to create follow-up prompts
 4. Maintains user control over prompt creation
 
-##
-
-Reference Guides
+## Reference Guide Patterns
 **Prompt patterns by purpose:**
 
 - [references/do-patterns.md](references/do-patterns.md) - Execution prompts + output structure
@@ -591,9 +584,7 @@ Reference Guides
 - [references/question-bank.md](references/question-bank.md) - Intake questions by purpose
 - [references/intelligence-rules.md](references/intelligence-rules.md) - Extended thinking, parallel tools, depth decisions
 
-##
-
-Success Criteria
+## Success Criteria
 **Prompt Creation:**
 
 - Intake gate completed with purpose and topic identified
@@ -622,6 +613,142 @@ Success Criteria
 - Sources consulted listed with URLs
 - Confidence levels assigned to findings
 - Critical claims verified with official documentation
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping Chain Detection
+
+❌ **Wrong:**
+Created new research prompt without checking existing prompts → Duplicate work, conflicting outputs
+
+✅ **Correct:**
+Before generating, scan `.claude/workspace/prompts/*/` for existing research/plan files → Reference existing outputs → Avoid duplicates
+
+### Mistake 2: Missing Metadata in Research/Plan Outputs
+
+❌ **Wrong:**
+Prompt outputs research.md without `<confidence>`, `<dependencies>`, `<assumptions>` → Planning prompt lacks context
+
+✅ **Correct:**
+Include metadata requirements in prompt template:
+```xml
+<confidence>[0-1 scale]</confidence>
+<dependencies>[what's needed to proceed]</dependencies>
+<open_questions>[what remains uncertain]</open_questions>
+<assumptions>[what was assumed]</assumptions>
+```
+
+### Mistake 3: Empty SUMMARY.md
+
+❌ **Wrong:**
+Created SUMMARY.md with "Research completed" → No value for human scanning
+
+✅ **Correct:**
+Require all prompts to create substantive SUMMARY.md with:
+- One-liner (substantive outcome description)
+- Key Findings (actionable takeaways)
+- Decisions Needed
+- Blockers
+- Next Step
+
+### Mistake 4: No Validation Before Archiving
+
+❌ **Wrong:**
+Archived prompt immediately after execution without checking output → Broken chains continue downstream
+
+✅ **Correct:**
+Validate before archiving:
+1. File exists
+2. Not empty (>100 chars)
+3. Required XML metadata present (for research/plan)
+4. SUMMARY.md created
+5. SUMMARY.md complete (all sections)
+
+### Mistake 5: Sequential Failure Without Stop
+
+❌ **Wrong:**
+Prompt 2 of 3 failed → Continued to prompt 3 → Prompt 3 runs with missing context → Waste
+
+✅ **Correct:**
+For sequential chains, stop immediately on failure:
+```
+❌ Failed at 2/3: 002-auth-plan
+Completed: 001-auth-research ✅
+Not started: 003-auth-implement
+```
+
+### Mistake 6: Missing Decision Tree
+
+❌ **Wrong:**
+Created prompt → Immediately executed → User had no opportunity to review or save
+
+✅ **Correct:**
+Present decision tree after prompt creation:
+```
+Prompt created. What's next?
+1. Run now
+2. Review/edit first
+3. Save for later
+4. Other
+```
+
+---
+
+## Validation Checklist
+
+Before claiming meta-prompt creation complete:
+
+**Intake:**
+- [ ] Purpose identified (Do/Plan/Research/Refine)
+- [ ] Topic identifier confirmed (kebab-case)
+- [ ] Chain detection performed, existing files referenced
+
+**Prompt Generation:**
+- [ ] Correct purpose-specific template used
+- [ ] Folder created in `.claude/workspace/prompts/`
+- [ ] Prompt file named correctly (`{number}-{topic}-{purpose}.md`)
+- [ ] Output location specified in prompt
+- [ ] SUMMARY.md requirement included
+- [ ] Metadata requirements included (for Research/Plan)
+
+**Execution (if run):**
+- [ ] Dependencies correctly detected and ordered
+- [ ] Prompts executed in correct order
+- [ ] Output validated (file exists, not empty)
+- [ ] Required XML metadata present (confidence, dependencies, open_questions, assumptions)
+- [ ] SUMMARY.md created with all required sections
+- [ ] One-liner is substantive
+- [ ] Prompts archived to `completed/` subfolder
+
+**Quality:**
+- [ ] Decision tree presented before execution
+- [ ] Results displayed inline
+- [ ] Chain provenance maintained
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Scan for existing prompts before creating new ones (chain detection)
+- Include metadata requirements in research/plan prompts (confidence, dependencies, assumptions)
+- Require substantive SUMMARY.md with one-liner, key findings, decisions, blockers, next step
+- Validate outputs before archiving (file exists, content, metadata, SUMMARY.md)
+- Stop sequential chains on failure (don't continue with missing context)
+- Present decision tree before execution (run now, review, save)
+- Use purpose-specific templates (Do/Plan/Research/Refine patterns)
+- Archive completed prompts to `completed/` subfolder
+
+❌ **DON'T:**
+- Skip chain detection (creates duplicate work)
+- Skip metadata in research/plan outputs (loses context)
+- Create empty or generic SUMMARY.md (no value for humans)
+- Skip validation before archiving (propagates broken outputs)
+- Continue sequential execution after failure (wastes tokens)
+- Execute prompts without user choice (removes control)
+- Forget to archive prompts (clutters workspace)
 
 ---
 

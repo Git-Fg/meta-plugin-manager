@@ -3,6 +3,11 @@ name: agent-development
 description: "Create, validate, and audit autonomous agents with isolated subprocess and independent context. Use when building agent systems, designing autonomous workflows, or reviewing agent quality. Includes agent patterns, context fork isolation, tool routing, and success criteria definition. Not for simple logic reuse, synchronous function calls, or human-orchestrated workflows."
 ---
 
+<mission_control>
+<objective>Create autonomous agents with isolated context and self-contained philosophy</objective>
+<success_criteria>Generated agent includes valid frontmatter, clear triggers, and bundled behavioral guidance</success_criteria>
+</mission_control>
+
 # Agent Development
 
 ## Quick Start
@@ -72,14 +77,6 @@ Trust native tools to fulfill these patterns. The System Prompt selects the corr
 | Agent confused about scope      | Missing Philosophy Bundle | Add `<philosophy_bundle>` with behavioral rules                                             |
 | Agent references external files | Non-portable              | Remove all `.claude/rules` references, bundle in philosophy                                 |
 | Missing required sections       | Invalid agent structure   | Add mission_control, Overview, Autonomous Capability, Trigger Conditions, Philosophy Bundle |
-
-<mission_control>
-<objective>Create autonomous agents with isolated context and self-contained philosophy</objective>
-<success_criteria>Generated agent includes valid frontmatter, clear triggers, and bundled behavioral guidance</success_criteria>
-</mission_control>
-
-<interaction_schema>
-design → template_generation → philosophy_bundle → validation → output</interaction_schema>
 
 ## When to Use Agents
 
@@ -267,30 +264,6 @@ assistant: "[Response before triggering]"
 assistant: "I'll use the [agent-name] agent to [action]."
 </example>
 ```
-
----
-
-## Validation Checklist
-
-| Check                         | Tool | Command                            |
-| ----------------------------- | ---- | ---------------------------------- |
-| Frontmatter starts with `---` | Read | `Read: first 5 lines`              |
-| Required fields present       | Grep | `^name:\|^description:`            |
-| Use when/Not for clauses      | Grep | `Use when\|Not for`                |
-| mission_control present       | Grep | `<mission_control>`                |
-| Valid mode value              | Grep | `default\|plan\|bypassPermissions` |
-
----
-
-## Navigation
-
-| If you need...             | Reference                                  |
-| -------------------------- | ------------------------------------------ |
-| System prompt templates    | `references/pattern_agent_templates.md`    |
-| Triggering examples        | `references/lookup_trigger_examples.md`    |
-| Agent configuration fields | See frontmatter specification in this file |
-
----
 
 ## Native Agent Type Mapping
 
@@ -599,7 +572,6 @@ The specificity matters. Vague descriptions lead to vague invocations.
 
 ## Dynamic Knowledge Loading
 
-<router>
 This skill is self-contained for standard workflows. Load specialized knowledge ONLY when specific conditions are met:
 
 | Context Condition              | Resource                                 | Action                                     |
@@ -613,16 +585,104 @@ This skill is self-contained for standard workflows. Load specialized knowledge 
 
 ## Dynamic Sourcing
 
-<fetch*protocol>
-**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For agent configuration fields:
+**Syntax Source**: This skill focuses on _patterns_ and _philosophy_. For agent configuration fields:
 
 1. **Fetch**: `https://code.claude.com/docs/en/sub-agents.md`
 2. **Extract**: The specific configuration fields you need
 3. **Discard**: Do not retain the fetch in context
-   </fetch_protocol>
 
 ---
 
 <critical_constraint>
 Agents are isolated organisms. They must work without external dependencies, carry their own philosophy, and define clear boundaries in their descriptions.
 </critical_constraint>
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Missing Philosophy Bundle
+
+❌ **Wrong:**
+Agent has only description and triggers, no behavioral guidance.
+
+✅ **Correct:**
+Include `## Philosophy Bundle` section with rules for context fork isolation.
+
+### Mistake 2: External Dependencies
+
+❌ **Wrong:**
+References `.claude/rules/architecture.md` or similar external files.
+
+✅ **Correct:**
+Bundle all philosophy in the agent file. Zero external dependencies.
+
+### Mistake 3: Weak Trigger Conditions
+
+❌ **Wrong:**
+"Help with code" → Too generic, triggers accidentally.
+
+✅ **Correct:**
+"Review pull requests for security vulnerabilities" → Specific, unambiguous.
+
+### Mistake 4: Missing Required Sections
+
+❌ **Wrong:**
+Agent lacks Overview, Autonomous Capability, or Trigger Conditions sections.
+
+✅ **Correct:**
+All 5 sections required: mission_control, Overview, Autonomous Capability, Trigger Conditions, Philosophy Bundle.
+
+### Mistake 5: Agent Spawning Other Agents
+
+❌ **Wrong:**
+Agent contains Task() calls to spawn subagents.
+
+✅ **Correct:**
+Provide philosophy only. Native Task() handles delegation.
+
+---
+
+## Validation Checklist
+
+Before claiming agent development complete:
+
+**Frontmatter:**
+- [ ] Valid YAML frontmatter with name, description, model
+- [ ] Description uses What-When-Not-Includes format
+- [ ] Trigger conditions are specific and unambiguous
+
+**Required Sections:**
+- [ ] `<mission_control>` with objective and success_criteria
+- [ ] `## Overview` - What agent does
+- [ ] `## Autonomous Capability` - How it operates independently
+- [ ] `## Trigger Conditions` - When to spawn
+- [ ] `## Philosophy Bundle` - Behavioral guidance for context fork
+
+**Portability:**
+- [ ] Zero external `.claude/rules` references
+- [ ] All philosophy bundled in file
+- [ ] Works in project with zero config files
+
+**Quality:**
+- [ ] Clear boundaries between agent and skills
+- [ ] Agent does NOT spawn other agents
+- [ ] Trigger conditions prevent accidental invocation
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Bundle all philosophy in the agent file
+- Use specific trigger conditions with "Use when / Not for" pattern
+- Include all 5 required sections
+- Design for context fork isolation
+- Provide clear boundaries in description
+
+❌ **DON'T:**
+- Reference external files in philosophy
+- Use generic or vague trigger conditions
+- Skip required sections (Overview, Autonomous Capability, Trigger Conditions, Philosophy Bundle)
+- Include Task() calls to spawn subagents
+- Assume shared context with main conversation

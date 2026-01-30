@@ -12,9 +12,7 @@ description: "Manage Python packages and projects using uv. Use when installing 
 
 <trigger>When working with Python projects (pyproject.toml/uv.lock), managing dependencies, running Python code/tests, installing CLI tools (ruff, pytest), or migrating from pip/poetry/conda.</trigger>
 
-<guiding_principles>
-
-## The Path to High-Efficiency Python Success
+<mission_control>
 
 ### 1. Simplicity Through Standalone Scripts
 
@@ -56,9 +54,7 @@ description: "Manage Python packages and projects using uv. Use when installing 
 
 **Success outcome**: Right-sized solutions. Quick tasks stay quick. Complex tasks get proper structure without premature overhead.
 
-</guiding_principles>
 
-<interaction_schema>
 DETECT CONTEXT → SELECT MODE → EXECUTE WORKFLOW → VALIDATE
 </interaction_schema>
 
@@ -580,14 +576,6 @@ This deduplication means:
 - No manual environment management required
 - Each script runs in its own sandbox, preventing dependency conflicts
 
-### Common Pitfalls
-
-- Forgetting `uv sync` after `uv add`
-- Using `uv venv` on existing project and wiping the environment
-- Not using `--frozen` in CI, so lockfile drift goes unnoticed
-- Wrong glob patterns in workspace members (`["packages/"]` vs `["packages/*"]`)
-- Not caching `~/.cache/uv` in CI, leading to slower builds
-
 ---
 
 ## Migration Patterns
@@ -702,6 +690,152 @@ uv export -o requirements.txt
   - Cold cache: **8-10× faster** than pip
   - Hot cache: **80-115× faster** than pip
   - Due to Rust implementation, parallel downloads, and global cache sharing
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Forgetting `uv sync` After `uv add`
+
+❌ **Wrong:**
+```bash
+uv add requests flask
+uv run pytest  # Environment not synced, might use old deps
+```
+
+✅ **Correct:**
+```bash
+uv add requests flask
+uv sync  # Always sync after modifying dependencies
+uv run pytest
+```
+
+### Mistake 2: Using `uv venv` on Existing Project
+
+❌ **Wrong:**
+```bash
+uv init myproject
+uv venv  # Wipes .venv if it existed
+uv sync  # Re-creates environment from scratch
+```
+
+✅ **Correct:**
+```bash
+uv init myproject
+uv sync  # Creates .venv automatically
+uv run pytest  # Uses the managed environment
+# Only use uv venv for legacy projects without uv.lock
+```
+
+### Mistake 3: Not Using `--frozen` in CI
+
+❌ **Wrong:**
+```yaml
+- run: uv sync  # Succeeds even if lockfile out of sync
+- run: uv run pytest
+```
+
+✅ **Correct:**
+```yaml
+- run: uv sync --frozen  # Fails if lockfile needs update
+- run: uv run pytest
+```
+
+### Mistake 4: Wrong Workspace Member Patterns
+
+❌ **Wrong:**
+```toml
+[tool.uv.workspace]
+members = ["packages/"]  # Creates packages/ sub-workspace, not individual packages
+```
+
+✅ **Correct:**
+```toml
+[tool.uv.workspace]
+members = ["packages/*"]  # Each package in packages/ is a workspace member
+```
+
+### Mistake 5: Not Caching UV in CI
+
+❌ **Wrong:**
+```yaml
+- run: uv sync  # Downloads every package every run
+```
+
+✅ **Correct:**
+```yaml
+- name: Cache uv
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/uv
+    key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+- run: uv sync --frozen
+```
+
+### Mistake 6: Mixing Package Managers
+
+❌ **Wrong:**
+```bash
+uv add requests
+pip install flask  # Creates conflicting environment
+```
+
+✅ **Correct:**
+```bash
+uv add requests flask  # Use uv for ALL package management
+# If legacy: uv pip install flask
+```
+
+---
+
+## Validation Checklist
+
+Before claiming uv usage complete:
+
+**Project Setup:**
+- [ ] Determined context (project vs script vs legacy)
+- [ ] Used appropriate mode (uv project, PEP 723 script, or uv pip)
+
+**Dependency Management:**
+- [ ] Used `uv add` for projects, `uv add --script` for scripts
+- [ ] Ran `uv sync` after modifying dependencies
+- [ ] Committed uv.lock for reproducibility
+
+**Execution:**
+- [ ] Used `uv run` for all script/project execution
+- [ ] Scripts use PEP 723 metadata format
+
+**CI/CD:**
+- [ ] Used `--frozen` to catch lockfile drift
+- [ ] Cached `~/.cache/uv` for faster builds
+- [ ] Used `--isolated` when clean environment needed
+
+**Tool Usage:**
+- [ ] Used `uvx` for one-off tools
+- [ ] Used `uv tool install` for persistent tools
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use `uv run` for all execution (scripts, modules, project commands)
+- Default to standalone scripts with PEP 723 for single-file tasks
+- Create projects only when explicitly requested or task requires it
+- Run `uv sync` after every `uv add` or `uv remove`
+- Use `uv sync --frozen` in CI to detect lockfile drift
+- Cache `~/.cache/uv` in CI for faster builds
+- Use `uvx` for one-off tools, `uv tool install` for persistent tools
+- Commit `uv.lock` to version control
+
+❌ **DON'T:**
+- Mix pip/poetry/conda with uv (pick one package manager)
+- Skip `uv sync` after modifying dependencies
+- Forget `--frozen` in CI (misses lockfile drift)
+- Use `uv venv` on uv projects (environment managed automatically)
+- Hardcode `["packages/"]` instead of `["packages/*"]` for workspaces
+- Skip caching in CI (slow builds)
+- Create projects for single-file tasks (use PEP 723 scripts)
 
 ---
 

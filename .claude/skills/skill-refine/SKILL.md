@@ -1,17 +1,24 @@
 ---
 name: skill-refine
-description: "Analyze conversation and files to refine skills. Use when user says 'no' or 'wrong', when friction occurs, or when skills need improvement. Includes conversation analysis, issue classification, evidence-based findings, and concrete refinements. Not for creating new skills or commands."
+description: "Analyze conversation and files to refine skills. Use when user says 'no' or 'wrong', when friction occurs, or when skills need improvement. Includes issue classification, evidence-based findings, and concrete fixes. Not for creating new skills or commands."
 ---
+
+<mission_control>
+<objective>Analyze conversation and files to identify skill refinements and prevent recurrence of issues</objective>
+<success_criteria>Evidence-based findings documented, concrete fixes specified, no false positives flagged</success_criteria>
+</mission_control>
 
 ## Quick Start
 
-**If user said "no" or "wrong":** Analyze what went wrong → Output refinements → Prevent recurrence
+**If user said "no" or "wrong":** MUST READ ## PATTERN: Conversation Analysis → Output refinements → Prevent recurrence
 
 **If conversation had friction:** Scan for patterns → Identify gaps → Synthesize fixes
 
 **If files provided:** Analyze alongside conversation → Cross-reference findings
 
 **Why:** Meta-analysis turns corrections into prevention—every mistake becomes a rule.
+
+**MUST READ before claiming completion:** ## PATTERN: Evidence-Based Findings (core invariant)
 
 ## Navigation
 
@@ -263,7 +270,7 @@ When conversation has multiple problems:
 
 ---
 
-## REFERENCE: Quick Refinement Checklist
+## PATTERN: Quick Refinement Checklist
 
 | Check | Description |
 | :---- | :---------- |
@@ -272,6 +279,56 @@ When conversation has multiple problems:
 | Concrete fix | File + section + change |
 | No assumptions | Verified against actual files |
 | Strong language | Failures clearly named |
+
+---
+
+## Validation Checklist
+
+Before claiming skill refinement complete:
+
+**Analysis Quality:**
+- [ ] Evidence provided for every finding (conversation quote or file reference)
+- [ ] Root cause analyzed, not just surface symptoms
+- [ ] Fix is concrete (file + section + specific change)
+- [ ] No false positives flagged
+- [ ] No vague findings or assumptions
+
+**Classification:**
+- [ ] Issue correctly classified (Pattern Gap, Scope Creep, Ambiguity, etc.)
+- [ ] Severity level assigned appropriately (CRITICAL/HIGH/MEDIUM/LOW)
+- [ ] Target file and section identified correctly
+
+**Output Format:**
+- [ ] Concrete changes format used (File/Section/Change/Why)
+- [ ] Language appropriate (strong for failures, positive for correct)
+- [ ] Multiple issues prioritized (Critical first)
+
+**Verification:**
+- [ ] Actual file read before applying changes
+- [ ] Diagnostics run after changes
+- [ ] Fix prevents original issue (verified)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Quote specific evidence from conversation or files
+- Analyze root cause, not just symptoms
+- Specify exact file, section, and change for each fix
+- Use strong language for agent failures and repeated issues
+- Prioritize CRITICAL issues first
+- Verify changes against actual files
+- Read the target file before applying refinements
+
+❌ **DON'T:**
+- Make vague findings ("The skill needs improvement")
+- Report symptoms without root cause analysis
+- Skip evidence (every finding must have a quote)
+- Assume issues without verification
+- Use weak language for quality failures
+- Skip diagnostics after applying changes
+- Make changes without reading the actual file
 
 ---
 

@@ -8,8 +8,6 @@ description: "Finish development branches for merge or PR creation. Use when imp
 <success_criteria>Branch finished with merge/PR created or archived, worktree cleaned up</success_criteria>
 </mission_control>
 
-<guiding_principles>
-
 ## The Path to Clean Branch Completion
 
 ### 1. Verify Before Deciding
@@ -41,8 +39,6 @@ Handle worktrees based on user choice—cleanup after merge/discard, preserve af
 Display test results and branch status before presenting options. Evidence enables informed decisions.
 
 **Why this matters**: Users make better choices when they see the actual state. Transparency builds trust in completion process.
-
-</guiding_principles>
 
 ## Workflow
 
@@ -348,27 +344,91 @@ git worktree remove <worktree-path>
 | 3. Keep as-is    | -     | -    | ✓             | -              |
 | 4. Discard       | -     | -    | -             | ✓ (force)      |
 
-## Common Mistakes
+## Common Mistakes to Avoid
 
-**Skipping test verification**
+### Mistake 1: Skipping Test Verification
 
-- **Problem:** Merge broken code, create failing PR
-- **Fix:** Always verify tests before offering options
+❌ **Wrong:**
+Present options without verifying tests
 
-**Open-ended questions**
+✅ **Correct:**
+Always run tests first, present options only if all pass
 
-- **Problem:** "What should I do next?" → ambiguous
-- **Fix:** Present exactly 4 structured options
+### Mistake 2: Open-Ended Questions
 
-**Automatic worktree cleanup**
+❌ **Wrong:**
+"What should I do next?" → User confused, ambiguous
 
-- **Problem:** Remove worktree when might need it (Option 2, 3)
-- **Fix:** Only cleanup for Options 1 and 4
+✅ **Correct:**
+Present exactly 4 structured options (merge, PR, keep, discard)
 
-**No confirmation for discard**
+### Mistake 3: Automatic Worktree Cleanup
 
-- **Problem:** Accidentally delete work
-- **Fix:** Require typed "discard" confirmation
+❌ **Wrong:**
+Clean up worktree for all options → Remove when user might need it (PR review)
+
+✅ **Correct:**
+Only cleanup worktree for Options 1 and 4; preserve for Option 2 and 3
+
+### Mistake 4: No Confirmation for Discard
+
+❌ **Wrong:**
+Delete branch without confirmation → Accidental work loss
+
+✅ **Correct:**
+Require typed "discard" confirmation before destructive operation
+
+---
+
+## Validation Checklist
+
+Before claiming branch completion:
+
+**Verification:**
+- [ ] Tests pass (npm test / cargo test / etc.)
+- [ ] Linting passes
+- [ ] No merge conflicts with base branch
+
+**Target:**
+- [ ] Base branch identified correctly
+- [ ] User confirmed merge target
+
+**Options Presented:**
+- [ ] Exactly 4 structured options presented
+- [ ] Tradeoffs explained for each option
+- [ ] User made explicit selection
+
+**Execution:**
+- [ ] Selected option executed correctly
+- [ ] Merge/PR created successfully (if applicable)
+- [ ] Confirmation obtained for destructive operations
+
+**Cleanup:**
+- [ ] Worktree handled according to option choice
+- [ ] Branch deleted (if merge/discard selected)
+- [ ] Repository state clean
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Verify tests pass before presenting options
+- Present exactly 4 structured options (recognition-based)
+- Show evidence (test results, branch status) before decisions
+- Require typed confirmation for discard (Option 4)
+- Clean up worktree only for Options 1 and 4
+- Preserve worktree for Options 2 (PR review) and 3 (keep)
+
+❌ **DON'T:**
+- Proceed with failing tests
+- Ask open-ended questions ("What should I do?")
+- Skip confirmation for destructive operations
+- Clean up worktree when user might need it
+- Delete branches without explicit confirmation
+- Skip showing evidence before presenting options
+
+---
 
 ## Red Flags
 

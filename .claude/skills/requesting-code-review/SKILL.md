@@ -8,10 +8,6 @@ description: "Request code reviews through pre-review checklist and two-stage re
 <success_criteria>Pre-review checklist complete, two-stage review passed, review request formatted correctly</success_criteria>
 </mission_control>
 
-# Requesting Code Review
-
-<guiding_principles>
-
 ## The Path to High-Quality Review Success
 
 ### 1. Pre-Review Preparation Creates Efficiency
@@ -29,8 +25,6 @@ Citing specific file:line references for issues enables precise fixes and demons
 ### 4. Severity Categorization Prioritizes Effectively
 
 Distinguishing Critical, Important, and Minor issues helps authors focus fixes where they matter most. Critical issues block merge; Important issues affect quality but allow discussion; Minor issues represent preferences. Clear categorization prevents merge delays from nitpicks while ensuring quality standards.
-
-</guiding_principles>
 
 ## Workflow
 
@@ -474,6 +468,101 @@ Please fix Critical and Important issues before merge.
 | **Quality**         | Code quality       | Standards, tests, docs, patterns           |
 
 Requesting code review systematically ensures high-quality implementations through spec compliance and quality verification.
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping Pre-Review Checklist
+
+❌ **Wrong:**
+"Tests might be passing, let me just request review anyway"
+
+✅ **Correct:**
+Run full verification: `npm test` → `npm run lint` → `npx tsc --noEmit`
+
+### Mistake 2: Reversing Review Stages
+
+❌ **Wrong:**
+Review quality before spec compliance → Wastes effort on code that doesn't meet requirements
+
+✅ **Correct:**
+Stage 1 first (spec compliance), then Stage 2 (quality review)
+
+### Mistake 3: Vague Issue Descriptions
+
+❌ **Wrong:**
+"The error handling could be better"
+
+✅ **Correct:**
+"Critical: Missing error handling for invalid tokens (SKILL.md:67)"
+
+### Mistake 4: Mixing Severity Levels
+
+❌ **Wrong:**
+Blocking merge on minor style preferences
+
+✅ **Correct:**
+- Critical: Must fix before merge
+- Important: Should fix for quality
+- Minor: Nice to have, doesn't block
+
+### Mistake 5: Skipping Self-Review
+
+❌ **Wrong:**
+Requesting review without first reviewing your own changes
+
+✅ **Correct:**
+Self-review first: check TODOs, debug statements, naming, patterns
+
+---
+
+## Validation Checklist
+
+Before requesting code review:
+
+**Pre-Review Verification:**
+- [ ] `npm test` passes all tests
+- [ ] `npm run lint` reports no errors
+- [ ] `tsc --noEmit` passes type check
+- [ ] No TODO/FIXME/XXX comments remaining
+- [ ] No console.log or debugger statements
+
+**Self-Review:**
+- [ ] Code follows existing patterns
+- [ ] Naming is clear and consistent
+- [ ] Error handling is proper
+- [ ] Edge cases are covered
+
+**Documentation:**
+- [ ] README updated if needed
+- [ ] API documentation complete
+- [ ] Code comments where complex
+
+**Two-Stage Review Readiness:**
+- [ ] Stage 1: Spec compliance checklist prepared
+- [ ] Stage 2: Quality review checklist prepared
+- [ ] Review request formatted correctly
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Run all verification commands before requesting review
+- Complete the pre-review checklist systematically
+- Use two-stage review (spec first, then quality)
+- Cite specific file:line references for issues
+- Categorize issues by severity (Critical/Important/Minor)
+- Self-review your changes before requesting review
+
+❌ **DON'T:**
+- Skip tests or lint checks before requesting review
+- Review quality before verifying spec compliance
+- Use vague descriptions without file:line references
+- Block merge on minor style preferences
+- Skip self-review and rely on reviewers to catch obvious issues
+- Submit incomplete work for review
 
 ---
 

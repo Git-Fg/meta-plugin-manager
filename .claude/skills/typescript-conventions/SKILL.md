@@ -384,35 +384,148 @@ const handleSearch = useCallback((query: string) => {
 }, []);
 ```
 
-## Common Anti-Patterns
+## Common Mistakes to Avoid
 
-**These patterns create maintenance burden and bugs:**
+### Mistake 1: Using `any` for Types
 
-| Pattern                   | Why Avoid                             | Alternative                    |
-| :------------------------ | :------------------------------------ | :----------------------------- |
-| `any` for types           | Disables type checking                | Use `unknown` with type guards |
-| Default exports           | Breaks tree-shaking, hard to refactor | Use named exports              |
-| Bare `throw new Error()`  | Loses context, hard to debug          | Use typed error classes        |
-| Mixed concerns            | Violates single responsibility        | Separate by layer              |
-| Magic numbers             | Hides intent, error-prone             | Use named constants            |
-| Console.log in production | Clutters logs, security risk          | Use proper logging             |
+❌ **Wrong:**
+```typescript
+function validateEmail(email: any): any {
+  // No type safety
+}
+```
 
-## Verification Checklist
+✅ **Correct:**
+```typescript
+function validateEmail(email: unknown): Email | null {
+  if (typeof email !== "string") return null;
+  if (!isValidEmailFormat(email)) return null;
+  return email as Email;
+}
+```
 
-**Quality indicators for TypeScript code:**
+### Mistake 2: Direct Mutation
 
+❌ **Wrong:**
+```typescript
+user.name = "New Name";
+items.push(newItem);
+```
+
+✅ **Correct:**
+```typescript
+const updatedUser = { ...user, name: "New Name" };
+const updatedArray = [...items, newItem];
+```
+
+### Mistake 3: Magic Numbers
+
+❌ **Wrong:**
+```typescript
+if (user.age < 18 || user.age > 120) {
+  throw new Error("Invalid age");
+}
+```
+
+✅ **Correct:**
+```typescript
+const MIN_AGE = 18;
+const MAX_AGE = 120;
+
+if (user.age < MIN_AGE || user.age > MAX_AGE) {
+  throw new ValidationError("Age out of range");
+}
+```
+
+### Mistake 4: Bare Error Throws
+
+❌ **Wrong:**
+```typescript
+throw new Error("Invalid user");
+```
+
+✅ **Correct:**
+```typescript
+class ValidationError extends Error {
+  constructor(
+    message: string,
+    public readonly field?: string,
+    public readonly context?: Record<string, unknown>,
+  ) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+throw new ValidationError("Invalid user", "user", { attemptedValue });
+```
+
+### Mistake 5: Default Exports
+
+❌ **Wrong:**
+```typescript
+export default function processData() {}
+```
+
+✅ **Correct:**
+```typescript
+export function processData() {}
+// Named exports enable tree-shaking and easier refactoring
+```
+
+---
+
+## Validation Checklist
+
+Before claiming TypeScript code complete:
+
+**Type Safety:**
 - [ ] Strict mode enabled in tsconfig.json
 - [ ] Explicit types defined (no `any` unless truly unknown)
 - [ ] Return types explicitly declared
+- [ ] Use `unknown` instead of `any` for unknown types
+
+**Error Handling:**
 - [ ] Typed error classes for domain errors
 - [ ] Result<T> pattern for fallible operations
+- [ ] Error context includes field and metadata
+
+**Code Quality:**
 - [ ] Immutability via spread operators
 - [ ] Named constants for business values
-- [ ] Consistent naming conventions applied
+- [ ] Consistent naming conventions (PascalCase types, camelCase functions)
 - [ ] Files focused and under 300 lines
 - [ ] Named exports for better tree-shaking
+
+**Testing:**
 - [ ] Tests covering public functions
 - [ ] 80%+ code coverage target
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Enable strict mode in tsconfig.json for compile-time error catching
+- Use explicit types and return types for all functions
+- Prefer `unknown` over `any` with type guards
+- Create typed error classes with context (field, metadata)
+- Use Result<T> pattern for operations that can fail
+- Apply immutability with spread operators
+- Use named constants instead of magic numbers
+- Follow naming conventions (PascalCase types, camelCase functions)
+
+❌ **DON'T:**
+- Use `any` to silence type checking
+- Mutate objects/arrays directly
+- Use bare `throw new Error()` without typed classes
+- Use default exports (breaks tree-shaking)
+- Mix concerns in single files
+- Leave magic numbers without named constants
+- Skip return type annotations
+- Ignore TypeScript compiler warnings
+
+---
 
 ## Few-Shot Examples
 

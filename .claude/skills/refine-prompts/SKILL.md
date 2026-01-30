@@ -72,11 +72,7 @@ Define deliverables explicitly—format, structure, completeness. Ambiguous outp
 
 **Why this works:** Precise output specifications set clear expectations. Claude knows exactly what "done" looks like.
 
-</guiding_principles>
 
----
-
-## Navigation
 
 | If you need...         | Read...                                   |
 | :--------------------- | :---------------------------------------- |
@@ -208,6 +204,113 @@ Bad: Use L4 when simple prompt suffices
 ```
 
 **Validation check:** Refinement succeeds when it includes: 1) L1 outcome statement, 2) L2 context with constraints, 3) L3 structure, 4) L4 template if needed, 5) Clear rationale.
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Using Wrong L-Level for Task Complexity
+
+❌ **Wrong:**
+"Build a complete authentication system with JWT tokens, refresh tokens, password hashing, email verification, and rate limiting." → L1 response
+
+✅ **Correct:**
+Identify complexity first. For multi-constraint tasks, use L3 or L4:
+- L3: Use bullet structure for multiple requirements
+- L4: Use template for repeatable patterns
+
+### Mistake 2: Keeping Tone Guidance and Fluff
+
+❌ **Wrong:**
+"Be professional, creative, and thorough. Remember best practices. Be sure to use modern approaches."
+
+✅ **Correct:**
+Remove all tone guidance. Keep only constraints that change outcomes:
+- "No external dependencies"
+- "Use TypeScript strict mode"
+- "Output must be deployable"
+
+### Mistake 3: Missing Output Format Specification
+
+❌ **Wrong:**
+"Create a summary of the findings."
+
+✅ **Correct:**
+Specify exact format and structure:
+"JSON array with objects: {id, name, timestamp, severity}. Max 100 items."
+
+### Mistake 4: Over-Constraining with Step-by-Step Instructions
+
+❌ **Wrong:**
+"First read the file, then parse the JSON, then validate each field, then output the results."
+
+✅ **Correct:**
+State the outcome, let Claude determine the approach:
+"Validate all fields in JSON file. Output errors as: {field, error, line_number}."
+
+### Mistake 5: Refining Already Clear Prompts
+
+❌ **Wrong:**
+User: "Create a Python function that adds two numbers"
+Claude: "Let me refine this by adding context..."
+
+✅ **Correct:**
+If prompt already has L1-L4 appropriate structure, proceed directly:
+"Already clear. Here's the function:"
+```python
+def add(a, b):
+    return a + b
+```
+
+---
+
+## Validation Checklist
+
+Before claiming prompt refinement complete:
+
+**L-Level Selection:**
+- [ ] L-level matches task complexity (not over-constraining, not under-specifying)
+- [ ] L1 for simple single-outcome tasks
+- [ ] L2 for default context-rich prompts
+- [ ] L3 for multi-constraint complex tasks
+- [ ] L4 for reusable patterns
+
+**Context Enrichment:**
+- [ ] Technical stack/platform specified
+- [ ] Forbidden approaches identified
+- [ ] Compliance requirements noted
+- [ ] Output format clearly defined
+
+**Constraint Quality:**
+- [ ] Only non-negotiable constraints kept
+- [ ] Tone guidance and fluff removed
+- [ ] Obvious best practices deleted
+- [ ] Step-by-step instructions replaced with outcomes
+
+**Output Specification:**
+- [ ] Exact format specified (JSON, markdown, code)
+- [ ] Structure defined (array, object, bullets)
+- [ ] Completeness criteria clear (max items, coverage %)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Match L-level to task complexity
+- Add technical constraints, platform, environment
+- Keep only constraints that change outcomes
+- Specify exact output format and structure
+- Use L4 templates for repeatable patterns
+- Validate all 5 components: L1 outcome, L2 context, L3 structure, L4 template, rationale
+
+❌ **DON'T:**
+- Use high L-level for simple tasks (wastes tokens)
+- Keep tone guidance ("be professional", "be creative")
+- Include step-by-step instructions (Claude knows how)
+- Add obvious best practices (Claude knows these)
+- Refine already clear prompts
+- Forget output format specification
 
 ---
 

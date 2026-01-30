@@ -3,6 +3,11 @@ name: command-refine
 description: "Analyze conversation and files to refine commands. Use when user says 'no' or 'wrong', when command behavior needs improvement, or when @/! injection fails. Includes conversation analysis, issue classification, evidence-based findings, and concrete refinements. Not for skills."
 ---
 
+<mission_control>
+<objective>Analyze conversation and files to identify command refinements, especially @/! injection patterns</objective>
+<success_criteria>Evidence-based findings documented, injection patterns validated, safe ! commands verified</success_criteria>
+</mission_control>
+
 ## Quick Start
 
 **If user said "no" or "wrong":** Analyze what went wrong → Output refinements → Prevent recurrence
@@ -319,7 +324,7 @@ When conversation has multiple problems:
 
 ---
 
-## REFERENCE: Quick Refinement Checklist
+## PATTERN: Quick Refinement Checklist
 
 | Check | Description |
 | :---- | :---------- |
@@ -330,6 +335,62 @@ When conversation has multiple problems:
 | Strong language | Failures clearly named |
 | @ safe | Paths have fallbacks |
 | ! safe | No destructive commands |
+
+---
+
+## Validation Checklist
+
+Before claiming command refinement complete:
+
+**Analysis Quality:**
+- [ ] Evidence provided for every finding (conversation quote or file reference)
+- [ ] Root cause analyzed, not just surface symptoms
+- [ ] Fix is concrete (file + section + specific change)
+- [ ] No false positives flagged
+- [ ] No vague findings or assumptions
+
+**Injection Safety:**
+- [ ] All @ paths have fallback handling ("(if exists)")
+- [ ] All ! commands are read-only (no rm, --force, etc.)
+- [ ] Missing files handled gracefully
+- [ ] Destructive commands replaced with safe alternatives
+
+**Classification:**
+- [ ] Issue correctly classified (@ issue, ! issue, description, etc.)
+- [ ] Severity level assigned appropriately (CRITICAL/HIGH/MEDIUM/LOW)
+- [ ] Target file and section identified correctly
+
+**Output Format:**
+- [ ] Concrete changes format used (File/Section/Change/Why)
+- [ ] Language appropriate (strong for failures, positive for correct)
+- [ ] Multiple issues prioritized (Critical first)
+
+**Verification:**
+- [ ] Actual file read before applying changes
+- [ ] Diagnostics run after changes
+- [ ] Fix prevents original issue (verified)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Quote specific evidence from conversation or files
+- Analyze root cause, not just symptoms
+- Ensure all @ paths have fallback handling
+- Ensure all ! commands are read-only (no destructive operations)
+- Use strong language for destructive command issues
+- Specify exact file, section, and change for each fix
+- Verify changes against actual files
+
+❌ **DON'T:**
+- Make vague findings ("The command has issues")
+- Use destructive ! commands (rm, --force, chmod)
+- Skip fallback handling for @ paths that may not exist
+- Report symptoms without root cause analysis
+- Skip evidence (every finding must have a quote)
+- Use weak language for safety issues
+- Skip diagnostics after applying changes
 
 ---
 

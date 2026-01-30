@@ -12,22 +12,7 @@ description: "Manage filesystem context for large data offloading, cross-session
 
 ## The Path to High-Efficiency Context Management
 
-<guiding_principles>
-
-1. **Write-Once Pattern Preserves Token Budget**: Writing large outputs to files instead of returning them to context prevents token accumulation across long conversations. This keeps the context window lean while preserving full data for selective retrieval.
-
-2. **Read-Selectively Enables Progressive Disclosure**: Using Grep/Glob to pull only relevant portions on-demand creates natural progressive disclosure. You retrieve what you need, when you need it, without loading unnecessary data.
-
-3. **Dynamic Discovery Scales to Unlimited Context**: The filesystem provides unlimited storage capacity with searchable discovery. Instead of stuffing everything into context, you rely on file search to find relevant information on-demand.
-
-4. **Session State Persistence Enables Continuity**: Writing plans, state, and intermediate results to files enables cross-session handoffs. When context degrades or sessions restart, the full state remains recoverable.
-
-5. **Append-Only Logs Preserve History**: JSONL format preserves complete history for pattern analysis. Never-delete integrity ensures nothing is lost, enabling audit trails and temporal analysis.
-
-6. **Targeted Retrieval Improves Performance**: Reading specific sections (line ranges, grep results) instead of full files reduces processing overhead and improves response times.
-   </guiding_principles>
-
-<interaction_schema>
+<mission_control>
 WRITE_ONCE → READ_SELECTIVELY → DISCOVER_DYNAMICALLY
 </interaction_schema>
 
@@ -436,6 +421,128 @@ grep("pattern", "**/*.ts")
 - Combined: Discovery → Storage → Targeted retrieval
 
 **Key Principle**: Filesystem provides unlimited context capacity through dynamic discovery. Write once, read selectively, discover on-demand.
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Returning Large Outputs to Context
+
+❌ **Wrong:**
+```python
+result = perform_web_search(query)
+return result  # 10k+ tokens added to context
+```
+
+✅ **Correct:**
+```python
+result = perform_web_search(query)
+write_file("scratch/search_results.json", result)
+return f"[Output written to scratch/search_results.json. Summary: {extract_summary(result)}]"
+```
+
+### Mistake 2: Reading Full Files Instead of Targeted Sections
+
+❌ **Wrong:**
+```python
+data = read_file("large_log_file.txt")  # Full file into context
+```
+
+✅ **Correct:**
+```python
+errors = grep("ERROR", "large_log_file.txt")  # Find relevant lines
+relevant_section = read_file("large_log_file.txt", offset=100, limit=50)  # Specific section
+```
+
+### Mistake 3: Not Using Timestamped Filenames
+
+❌ **Wrong:**
+```bash
+write_file("output.json", data)  # Overwrites previous output
+```
+
+✅ **Correct:**
+```bash
+timestamp=$(date +%Y%m%d_%H%M%S)
+write_file "output_${timestamp}.json" data
+```
+
+### Mistake 4: Storing Everything Instead of Summarizing
+
+❌ **Wrong:**
+```python
+for tool_call in all_tool_calls:
+    write_file("all_calls.txt", all_tool_calls)  # Dumps everything
+```
+
+✅ **Correct:**
+```python
+write_file("call_summary.yaml", summarize_tool_calls(all_tool_calls))
+write_file("call_details/", individual_call_files)  # Only if truly needed
+```
+
+### Mistake 5: Using Non-Descriptive Filenames
+
+❌ **Wrong:**
+```bash
+write_file("plan1.txt", plan)
+write_file("data.json", results)
+write_file("notes.txt", notes)
+```
+
+✅ **Correct:**
+```bash
+write_file("scratch/auth_refactor_plan_20260130.yaml", plan)
+write_file("scratch/user_query_results_20260130.jsonl", results)
+write_file("scratch/meeting_notes_20260130.md", notes)
+```
+
+---
+
+## Validation Checklist
+
+Before claiming filesystem context complete:
+
+**Write Operations:**
+- [ ] Large outputs written to files instead of returned to context
+- [ ] Timestamped or descriptive filenames used
+- [ ] Summaries extracted for quick reference
+
+**Read Operations:**
+- [ ] Targeted reads (line ranges) used instead of full files
+- [ ] Grep/Glob to find relevant sections before reading
+- [ ] Only necessary data loaded into context
+
+**Organization:**
+- [ ] Consistent directory structure (scratch/, context/, logs/)
+- [ ] Descriptive filenames enable quick discovery
+- [ ] Related files grouped together
+
+**Persistence:**
+- [ ] Plans and state persisted for cross-session continuity
+- [ ] JSONL format used for append-only logs
+- [ ] History preserved for pattern analysis
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Write large outputs to files instead of returning to context
+- Use timestamps in filenames for temporal ordering
+- Read specific sections (line ranges, grep results) instead of full files
+- Use descriptive filenames that indicate content
+- Group related files in consistent directories
+- Use JSONL format for append-only logs
+- Extract summaries for quick reference
+
+❌ **DON'T:**
+- Return large tool outputs directly to context
+- view_file full files when only specific sections are needed
+- Use generic filenames like "output.txt" or "notes.txt"
+- Dump everything without organization
+- Delete log files (preserve history)
+- Skip summaries when writing large outputs
 
 ---
 

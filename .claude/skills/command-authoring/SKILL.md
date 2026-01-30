@@ -3,6 +3,11 @@ name: command-authoring
 description: "Create single-file commands with dynamic content injection (@path and !command). Use when building commands that need filesystem access, git state, runtime context, or argument handling with $1 placeholders. Includes @file injection, !shell execution, <injected_content> wrappers, and single-file structure patterns. Not for skills (use skill-authoring) or audit workflows."
 ---
 
+<mission_control>
+<objective>Create single-file commands with @path and !command injection for dynamic content and runtime state</objective>
+<success_criteria>Command has valid frontmatter, proper @/! injection patterns, and graceful error handling</success_criteria>
+</mission_control>
+
 ## Quick Start
 
 **If you need to inject file content:** Use `@path` pattern at invocation time.
@@ -585,6 +590,56 @@ Last commit: !`git log -1 --oneline`
 ```markdown
 $IF($1, Use: $1, Infer from context)
 ```
+
+---
+
+## Validation Checklist
+
+Before claiming command authoring complete:
+
+**Structure:**
+- [ ] Single markdown file in `.claude/commands/`
+- [ ] File has `.md` extension
+- [ ] Valid YAML frontmatter with name and description
+
+**Injection Patterns:**
+- [ ] @path for dynamic file content (not in skills)
+- [ ] !command for runtime state capture
+- [ ] Wrapped in `<injected_content>` for semantic grouping
+- [ ] Paths are absolute or relative to workspace root
+
+**Error Handling:**
+- [ ] Missing files handled gracefully (empty result)
+- [ ] Command failures handled gracefully
+
+**Argument Handling:**
+- [ ] $1 used only for identifiers (IDs, slugs, hashes)
+- [ ] No flags or modes as $1 arguments
+
+**Content:**
+- [ ] Follows What-When-Not-Includes format in description
+- [ ] Imperative/infinitive voice throughout
+- [ ] No references/ folder (commands are single-file)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use @path for dynamic file content that changes between sessions
+- Use !command for runtime state (git status, CI results)
+- Wrap injections in `<injected_content>` for semantic grouping
+- Handle missing files gracefully
+- Use $1 only for unique identifiers (IDs, slugs)
+- Follow single-file structure (no references/ folder)
+
+❌ **DON'T:**
+- Use @ or ! in skills (skills use semantic instructions)
+- Use $1 for flags, modes, or non-identifier values
+- Create multi-file commands (use skills instead)
+- Skip .md extension
+- Forget frontmatter with name and description
+- Use complex bash in ! without proper escaping
 
 ---
 

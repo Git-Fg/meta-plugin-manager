@@ -22,9 +22,7 @@ Git worktrees create isolated workspaces sharing the same repository, allowing w
 
 ## The Path to Successful Isolation
 
-<guiding_principles>
-
-### 1. Systematic Directory Selection Prevents Confusion
+<mission_control>
 
 Following a clear priority order for directory location eliminates ambiguity and ensures consistency across sessions. When directory selection is systematic, worktrees are predictably located and easily managed.
 
@@ -53,8 +51,6 @@ Detecting project type from manifest files (package.json, Cargo.toml, etc.) and 
 Using the finishing-a-development-branch skill after work completion ensures proper merge, cleanup, and worktree removal when appropriate.
 
 **Why this works:** Structured cleanup prevents abandoned worktrees from accumulating and keeps the workspace organized over time.
-
-</guiding_principles>
 
 ## Workflow
 
@@ -214,28 +210,6 @@ Ready to implement <feature-name>
 | Tests fail during baseline | Report failures + ask      |
 | No package.json/Cargo.toml | Skip dependency install    |
 
-## Common Mistakes
-
-### Skipping ignore verification
-
-- **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always use `git check-ignore` before creating project-local worktree
-
-### Assuming directory location
-
-- **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: existing > CLAUDE.md > ask
-
-### Proceeding with failing tests
-
-- **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
-
-### Hardcoding setup commands
-
-- **Problem:** Breaks on projects using different tools
-- **Fix:** Auto-detect from project files (package.json, etc.)
-
 ## Example Workflow
 
 ```
@@ -364,6 +338,149 @@ fi
 5. **Proper cleanup** - Use finishing-a-development-branch when done
 
 Using git worktrees provides isolation without context switching, making parallel feature development safe and efficient.
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Skipping Git Ignore Verification
+
+❌ **Wrong:**
+```bash
+git worktree add .worktrees/auth -b feature/auth
+# Later: git status shows untracked files in .worktrees/
+```
+
+✅ **Correct:**
+```bash
+git check-ignore -q .worktrees || git check-ignore -q worktrees
+if [ $? -ne 0 ]; then
+  echo ".worktrees" >> .gitignore
+  git add .gitignore && git commit -m "Add .worktrees to gitignore"
+fi
+git worktree add .worktrees/auth -b feature/auth
+```
+
+### Mistake 2: Assuming Directory Location
+
+❌ **Wrong:**
+```bash
+# Creates worktree in random location based on current directory
+git worktree add ../some-path -b feature/auth
+```
+
+✅ **Correct:**
+```bash
+# Follow priority: existing > CLAUDE.md > ask
+ls -d .worktrees 2>/dev/null && LOCATION=".worktrees"
+ls -d worktrees 2>/dev/null && LOCATION="worktrees"
+grep -i "worktree.*dir" CLAUDE.md && LOCATION=$(grep...)
+# If neither: Ask user for location preference
+```
+
+### Mistake 3: Proceeding with Failing Tests
+
+❌ **Wrong:**
+```bash
+npm test
+# 3 failures detected
+# "Tests have some issues but let's proceed anyway"
+```
+
+✅ **Correct:**
+```bash
+npm test
+# 3 failures detected
+echo "Tests are failing (3 failures). Do you want to proceed with feature work anyway, or investigate the failures first?"
+# Wait for user confirmation before continuing
+```
+
+### Mistake 4: Hardcoding Setup Commands
+
+❌ **Wrong:**
+```bash
+# Assuming npm project
+npm install
+npm test
+# Fails on Rust project: no package.json
+```
+
+✅ **Correct:**
+```bash
+# Auto-detect project type
+if [ -f package.json ]; then npm install && npm test;
+elif [ -f Cargo.toml ]; then cargo build && cargo test;
+elif [ -f pyproject.toml ]; then poetry install && pytest;
+elif [ -f go.mod ]; then go mod download && go test ./...;
+else echo "No recognized project type - skipping setup"; fi
+```
+
+### Mistake 5: Not Using finishing-a-development-branch for Cleanup
+
+❌ **Wrong:**
+```bash
+# Feature complete
+git checkout main
+git merge feature/auth
+# Worktree still exists, cluttering .worktrees/
+```
+
+✅ **Correct:**
+```bash
+# Feature complete - use proper cleanup skill
+Delegate to finishing-a-development-branch skill
+# This will: merge, cleanup branch, remove worktree if appropriate
+```
+
+---
+
+## Validation Checklist
+
+Before claiming worktree setup complete:
+
+**Directory Selection:**
+- [ ] Checked existing directories (.worktrees, worktrees)
+- [ ] Verified CLAUDE.md preference if present
+- [ ] Asked user only if no preference found
+
+**Safety Verification:**
+- [ ] For project-local: Verified directory is git-ignored
+- [ ] If not ignored: Added to .gitignore and committed
+
+**Worktree Creation:**
+- [ ] Created with new branch (feature/ naming)
+- [ ] Branch name follows conventions
+
+**Environment Setup:**
+- [ ] Auto-detected project type (Node, Rust, Python, Go)
+- [ ] Ran appropriate setup commands
+
+**Baseline Verification:**
+- [ ] Tests run and passing (or user acknowledged failures)
+- [ ] Reported location and status
+
+**Cleanup Ready:**
+- [ ] User knows to use finishing-a-development-branch when done
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Follow directory priority: existing > CLAUDE.md > ask user
+- Always verify git-ignore for project-local directories
+- Auto-detect project type and run appropriate setup
+- Verify clean test baseline before starting work
+- Report failures and get user acknowledgment before proceeding
+- Use finishing-a-development-branch skill for cleanup
+
+❌ **DON'T:**
+- Skip git check-ignore verification for project-local directories
+- Hardcode setup commands (npm install, cargo build, etc.)
+- Proceed with failing tests without user acknowledgment
+- Create worktrees in inconsistent locations
+- Skip CLAUDE.md preference check
+- Forget to remove worktrees when done (use cleanup skill)
 
 ---
 

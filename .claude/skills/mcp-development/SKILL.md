@@ -1047,12 +1047,153 @@ This skill uses Blind Navigation for references. Load specialized knowledge ONLY
 
 ## Dynamic Sourcing
 
-<fetch*protocol>
-**Syntax Source**: This skill focuses on \_patterns* and _philosophy_. For raw MCP tool schema syntax:
+**Syntax Source**: This skill focuses on _patterns_ and _philosophy_. For raw MCP tool schema syntax:
 
 1. **Fetch**: `https://code.claude.com/docs/en/mcp.md`
 2. **Extract**: The specific tool schema fields you need
 3. **Discard**: Do not retain the fetch in context
-   </fetch_protocol>
 
 ---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Missing additionalProperties
+
+❌ **Wrong:**
+```json
+"inputSchema": {
+  "type": "object",
+  "properties": { "param": { "type": "string" } }
+}
+```
+
+✅ **Correct:**
+```json
+"inputSchema": {
+  "type": "object",
+  "properties": { "param": { "type": "string" } },
+  "additionalProperties": false
+}
+```
+
+### Mistake 2: Weak Tool Descriptions
+
+❌ **Wrong:**
+```json
+"description": "Tool to get data"
+```
+
+✅ **Correct:**
+```json
+"description": "Tool to retrieve user authentication status. Use when checking if a user is logged in or verifying session validity. Not for authentication operations (use auth-tool instead)."
+```
+
+### Mistake 3: Missing Required Parameters
+
+❌ **Wrong:**
+```json
+"inputSchema": {
+  "type": "object",
+  "properties": { "user_id": { "type": "string" } }
+}
+```
+
+✅ **Correct:**
+```json
+"inputSchema": {
+  "type": "object",
+  "properties": { "user_id": { "type": "string", "description": "The user ID to look up" } },
+  "required": ["user_id"],
+  "additionalProperties": false
+}
+```
+
+### Mistake 4: Using Deprecated Server Class
+
+❌ **Wrong:**
+```typescript
+import { Server } from "@modelcontextprotocol/sdk/server/index.js"
+```
+
+✅ **Correct:**
+```typescript
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
+```
+
+### Mistake 5: Poor Error Messages
+
+❌ **Wrong:**
+```
+"Invalid input"
+```
+
+✅ **Correct:**
+```
+"Invalid user_id: 'abc123' is not a valid UUID format. Please provide a valid UUID like '550e8400-e29b-41d4-a716-446655440000'."
+```
+
+---
+
+## Validation Checklist
+
+Before claiming MCP development complete:
+
+**Tool Schema:**
+- [ ] Valid JSON Schema for inputSchema
+- [ ] All required parameters listed in `required` array
+- [ ] additionalProperties set to false
+- [ ] Parameter descriptions explain purpose and constraints
+
+**Tool Description:**
+- [ ] Follows formula: "Tool to X. Use when Y. Constraints: Z."
+- [ ] Includes trigger conditions
+- [ ] Excludes use cases clearly (Not for...)
+
+**Transport:**
+- [ ] stdio configured for local tools
+- [ ] http configured for remote tools
+- [ ] Authentication properly set up
+
+**Server:**
+- [ ] Uses McpServer (not deprecated Server class)
+- [ ] Tools registered with valid schemas
+- [ ] Server properly initialized
+
+**Testing:**
+- [ ] test_mcp.sh validation passes
+- [ ] Tool calls work correctly
+- [ ] Error messages are helpful
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use `additionalProperties: false` for strict validation
+- Write tool descriptions as micro-prompts
+- Include all required parameters in schema
+- Use enums for finite value sets
+- Set format constraints (email, date, etc.)
+- Use McpServer from correct import path
+- Test with test_mcp.sh before claiming complete
+
+❌ **DON'T:**
+- Skip parameter descriptions
+- Use loose schemas without additionalProperties
+- Write vague tool descriptions
+- Forget required array for mandatory params
+- Use deprecated Server class
+- Skip error message improvement
+- Skip validation testing
+
+---
+
+<critical_constraint>
+**System Physics:**
+
+1. Zero external dependencies (portability invariant)
+2. Use `McpServer` from `@modelcontextprotocol/sdk/server/mcp.js` (legacy `Server` deprecated)
+3. Completion claims require verification evidence
+4. Prompt-engineered descriptions required for protocol correctness
+5. additionalProperties: false required for tool schemas
+</critical_constraint>

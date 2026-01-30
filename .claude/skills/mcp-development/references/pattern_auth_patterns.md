@@ -1,6 +1,14 @@
 # MCP Authentication Patterns
 
-Complete guide to authentication methods for MCP servers in Claude Code.
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| OAuth setup | ## OAuth (Automatic) |
+| Environment tokens | ## Environment Token Authentication |
+| Bearer tokens | ## Bearer Token Authentication |
+| Best practices | ## PATTERN: Authentication Best Practices |
+| Common mistakes | ## ANTI-PATTERN: Authentication Mistakes |
 
 ---
 
@@ -313,7 +321,7 @@ For APIs requiring request signing, implement signing in the MCP server itself r
 
 ---
 
-## Security Best Practices
+## PATTERN: Authentication Best Practices
 
 ### DO
 
@@ -338,7 +346,7 @@ For APIs requiring request signing, implement signing in the MCP server itself r
 
 ✅ **Use .env files (gitignored) for development**
 
-### DON'T
+❌ **DON'T:**
 
 ❌ **Hardcode tokens:**
 ```json

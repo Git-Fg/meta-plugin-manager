@@ -494,25 +494,97 @@ Before applying any rule, ask:
 - "Is this valuable but not essential?"
 - "Can this be deferred without impact?"
 
-## Best Practices
+---
 
-### Transparency
+## Common Mistakes to Avoid
 
-- Document EVERY deviation in SUMMARY.md
-- Explain WHY each deviation was necessary
-- Note what was done vs what was planned
+### Mistake 1: Treating Architecture as Bug
 
-### Judgement
+❌ **Wrong:**
+"Found a file structure issue, auto-fixing"
 
-- Be conservative with Rule 4 (when in doubt, ask)
-- Be generous with Rule 2 (err on side of completeness)
-- Be honest with Rule 5 (log real improvements, don't ignore)
+✅ **Correct:**
+"File/folder structure change detected → STOP and ask user (Rule 4)"
 
-### Context
+### Mistake 2: Asking About Everything
 
-- Consider project size and complexity
-- Consider team practices and standards
-- Consider long-term maintenance impact
+❌ **Wrong:**
+"Should I add error handling?" (Rule 2 is for missing essential functionality)
+
+✅ **Correct:**
+"If clearly essential and overlooked → Add without asking"
+
+### Mistake 3: Not Documenting Deviations
+
+❌ **Wrong:**
+Fixed issues silently, user never knows what was different from plan
+
+✅ **Correct:**
+Document every deviation in SUMMARY.md with explanation and why
+
+### Mistake 4: Being Too Conservative with Rule 2
+
+❌ **Wrong:**
+"Not in the plan" → Leave out error handling, input validation
+
+✅ **Correct:**
+If essential for functionality and clearly overlooked → Add it
+
+### Mistake 5: Wrong Classification
+
+❌ **Wrong:**
+Treating enhancement as critical, or bug as architecture
+
+✅ **Correct:**
+Use trigger conditions: bug (logic error + unambiguous fix), enhancement (nice-to-have)
+
+---
+
+## Validation Checklist
+
+Before claiming deviation handling complete:
+
+**Classification:**
+- [ ] Deviation classified correctly (Bug/Missing/Blocker/Architecture/Enhancement)
+- [ ] Trigger conditions verified for chosen rule
+- [ ] Rule 4 applied only for structural changes
+
+**Resolution:**
+- [ ] Bug fixed with unambiguous solution
+- [ ] Missing critical added without asking
+- [ ] Blocker resolved immediately
+- [ ] Enhancement logged for later
+
+**Documentation:**
+- [ ] Every deviation documented in SUMMARY.md
+- [ ] Explanation provided for each deviation
+- [ ] Original plan vs actual work clear
+
+**Autonomy:**
+- [ ] 80-95% autonomy achieved (only Rule 4 requires asking)
+- [ ] Rules applied mechanistically (not subjective judgment)
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Classify deviations immediately when discovered
+- Apply rules mechanistically based on trigger conditions
+- Be generous with Rule 2 (missing critical) for essential functionality
+- Be conservative with Rule 4 (architectural) - only for structural changes
+- Document EVERY deviation with explanation and why
+- Preserve execution flow by handling without asking when possible
+
+❌ **DON'T:**
+- Auto-fix architectural changes without asking
+- Treat enhancements as critical scope creep
+- Skip documentation of deviations
+- Apply subjective judgment instead of trigger conditions
+- Ask about every small change (only Rule 4 for structural)
+- Ignore missing essential functionality
+
+---
 
 ## Arguments
 

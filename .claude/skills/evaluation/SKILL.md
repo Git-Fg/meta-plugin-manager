@@ -46,8 +46,6 @@ Simple cases don't reveal complex failures. Stratifying test sets across complex
 
 **Success pattern**: Build test sets representing real usage patterns. Include edge cases, multi-turn interactions, and boundary conditions.
 
-</guiding_principles>
-
 ## Workflow
 
 **Design rubric:** Create multi-dimensional scoring criteria with weights
@@ -226,16 +224,99 @@ npm run evaluate -- --component=my-skill
 
 ---
 
-## Guidelines
+## Common Mistakes to Avoid
 
-1. **Judge outcomes, not paths** - Multiple valid routes to goals
-2. **Use multi-dimensional rubrics** - Quality is composite
-3. **Test across complexity levels** - Simple ≠ Complex
-4. **Implement position swapping** - Mitigate pairwise bias
-5. **Require evidence** - Justify all scores
-6. **Track over time** - Detect regressions
-7. **Combine automated and human** - Catch what automation misses
-8. **Test context strategies** - Validate progressive disclosure
+### Mistake 1: Evaluating Paths Instead of Outcomes
+
+❌ **Wrong:**
+"Used the wrong function" → Fail
+
+✅ **Correct:**
+Judge outcomes (correctness, completeness) rather than specific implementation methods
+
+### Mistake 2: Single-Metric Obsession
+
+❌ **Wrong:**
+Only measuring accuracy → Missing completeness, portability, efficiency
+
+✅ **Correct:**
+Use multi-dimensional rubrics (4-6 dimensions covering functional, structural, performance)
+
+### Mistake 3: No Evidence for Scores
+
+❌ **Wrong:**
+"Portability: 0.8" → Just a number without justification
+
+✅ **Correct:**
+Require evidence: "Portability: 0.8 - Self-contained with zero external dependencies"
+
+### Mistake 4: Position Bias in Comparisons
+
+❌ **Wrong:**
+A always beats B when listed first in pairwise comparison
+
+✅ **Correct:**
+Implement position swapping (compare A vs B, then B vs A, reconcile results)
+
+### Mistake 5: Threshold Too Strict or Relaxed
+
+❌ **Wrong:**
+Everything passing (threshold too low) or everything failing (threshold too high)
+
+✅ **Correct:**
+Set based on risk: ≥0.7 for production, ≥0.6 for experimental; adjust based on observations
+
+---
+
+## Validation Checklist
+
+Before claiming evaluation complete:
+
+**Rubric Design:**
+- [ ] Multi-dimensional rubric created (4-6 dimensions)
+- [ ] Dimensions weighted appropriately
+- [ ] Rubric covers functional, structural, and performance aspects
+
+**Assessment:**
+- [ ] Evidence documented for each score
+- [ ] Scores include specific file:line references
+- [ ] LLM judge prompt includes all rubric dimensions
+
+**Bias Mitigation:**
+- [ ] Position swapping implemented for pairwise comparisons
+- [ ] Results reconciled to reduce position bias
+
+**Quality Gate:**
+- [ ] Threshold set appropriately (≥0.7 production, ≥0.6 experimental)
+- [ ] Gate blocks substandard work
+- [ ] Pass/fail clearly determined
+
+**Test Coverage:**
+- [ ] Test set stratified across complexity levels
+- [ ] Edge cases included
+- [ ] Real usage patterns represented
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Design multi-dimensional rubrics with weighted scores
+- Require evidence for every score (file:line references)
+- Judge outcomes, not specific implementation paths
+- Use position swapping in pairwise comparisons
+- Set thresholds based on risk tolerance (production vs experimental)
+- Stratify test sets across complexity levels (simple, moderate, edge cases)
+- Track scores over time to detect regressions
+
+❌ **DON'T:**
+- Judge specific implementation steps or tools used
+- Use single-metric assessment (accuracy alone is insufficient)
+- Accept scores without justification or evidence
+- Skip position swapping in pairwise comparisons
+- Set thresholds too high (everything fails) or too low (everything passes)
+- Test only simple cases (edge cases reveal real issues)
+- Ignore evidence-based assessment
 
 ---
 

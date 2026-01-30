@@ -1,6 +1,16 @@
 # MCP 2026 Features
 
-Complete guide to new MCP features in Claude Code 2026.
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Tool Search | ## MCP Tool Search |
+| MCP Resources | ## MCP Resources |
+| MCP Prompts | ## MCP Prompts |
+| Managed MCP | ## Managed MCP |
+| Output limits | ## Output Limits |
+| Best practices | ## PATTERN: 2026 Feature Usage |
+| Common mistakes | ## ANTI-PATTERN: 2026 Mistakes |
 
 ---
 
@@ -545,6 +555,23 @@ claude
 export MAX_MCP_OUTPUT_TOKENS=50000
 claude
 ```
+
+---
+
+## PATTERN: 2026 Feature Usage
+
+✅ **DO:**
+- Use Tool Search when configuring many MCP servers
+- Use Resources (@) for shared data across tools
+- Use Prompts (/) for reusable command templates
+- Set appropriate output limits for large data operations
+- Test new features incrementally
+
+❌ **DON'T:**
+- Disable Tool Search without measuring impact
+- Use unmanaged HTTP servers in enterprise environments
+- Skip output limits for unbounded data operations
+- Mix old and new features without testing
 
 ---
 

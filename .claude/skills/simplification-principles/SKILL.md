@@ -16,8 +16,6 @@ Find the simplest explanation that accounts for all the facts. Among competing h
 
 ## The Path to High-Impact Simplification
 
-<guiding_principles>
-
 ### 1. Simplicity Creates Actionable Solutions
 
 Simple explanations lead to actionable fixes. When you choose the explanation with fewer assumptions, you reduce unknowns and increase confidence. This means faster implementation, fewer edge cases, and more predictable outcomes.
@@ -47,8 +45,6 @@ Some systems are inherently complex. When a simple explanation doesn't fit all f
 Separate what you observe from what you infer. Facts are observable and verifiable. Assumptions are required to connect facts to explanations. Starting with facts grounds the analysis in reality.
 
 **Why this works**: Building explanations from verified facts prevents speculation from driving the investigation.
-
-</guiding_principles>
 
 ---
 
@@ -408,6 +404,53 @@ After analysis, produce structured output:
 
 - "Does this actually explain ALL the facts?"
 - "Am I choosing simple because it's easy or because it's correct?"
+
+## Validation Checklist
+
+Before claiming simplification analysis complete:
+
+**Facts Collection:**
+- [ ] All observable facts documented
+- [ ] Facts distinguished from assumptions
+- [ ] Evidence verified for each fact
+
+**Explanation Analysis:**
+- [ ] Multiple explanations generated (at least 3)
+- [ ] Each explanation has explicit assumption list
+- [ ] Assumptions counted correctly (each independent assumption counts)
+- [ ] No grouping of multiple assumptions into one
+
+**Selection:**
+- [ ] Explanation with fewest assumptions selected
+- [ ] Selection verified against ALL facts
+- [ ] If evidence doesn't fit, different explanation chosen
+
+**Output:**
+- [ ] Structured output format followed
+- [ ] Confidence level assigned with reason
+- [ ] Recommended action documented
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- List all observable facts before generating explanations
+- Generate multiple explanations (at least 3)
+- Count each independent assumption separately
+- Choose explanation with fewest assumptions that fits all facts
+- Verify simple explanation against all evidence
+- Separate facts from assumptions explicitly
+
+❌ **DON'T:**
+- Choose explanation that doesn't account for all facts
+- Group multiple assumptions into one
+- Ignore evidence that contradicts simple explanation
+- Use simplification to avoid necessary complexity
+- Treat assumptions as facts without verification
+- Force fit when explanation doesn't work
+
+---
 
 ## Common Mistakes
 

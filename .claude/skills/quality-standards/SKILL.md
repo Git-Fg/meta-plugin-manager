@@ -300,6 +300,98 @@ This is not optional. This is how quality is proven.
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Claiming Without Evidence
+
+❌ **Wrong:**
+"Looks complete to me" → No verification evidence
+
+✅ **Correct:**
+`npm test: 47 passed, 0 failed` → Fresh verification output
+
+### Mistake 2: Skipping Gates
+
+❌ **Wrong:**
+"Tests pass, we're done" → Skip BUILD, TYPE, LINT, SECURITY
+
+✅ **Correct:**
+Run all 6 phases: BUILD → TYPE → LINT → TEST → SECURITY → DIFF
+
+### Mistake 3: Trusting Build for Type Safety
+
+❌ **Wrong:**
+"Build succeeded, types must be fine" → Types unchecked
+
+✅ **Correct:**
+Run `tsc --noEmit` explicitly for type verification
+
+### Mistake 4: Ignoring Warnings
+
+❌ **Wrong:**
+"Linter only shows warnings" → Warnings become errors
+
+✅ **Correct:**
+Fix all warnings, treat them as errors
+
+### Mistake 5: Skipping One Gate "Just This Once"
+
+❌ **Wrong:**
+"One skipped gate won't hurt" → Standards erode
+
+✅ **Correct:**
+Every gate, every time. Once becomes always.
+
+---
+
+## Validation Checklist
+
+Before claiming completion:
+
+**6-Phase Gate:**
+- [ ] BUILD: `npm run build` succeeds
+- [ ] TYPE: `tsc --noEmit` passes with 0 errors
+- [ ] LINT: `eslint .` reports no issues
+- [ ] TEST: `npm test` passes all tests
+- [ ] SECURITY: `npm audit` shows no high vulnerabilities
+- [ ] DIFF: Changes are intentional and documented
+
+**Evidence Standards:**
+- [ ] Every claim backed by fresh verification output
+- [ ] Evidence includes command name and result
+- [ ] No "should work" or "looks correct" claims
+
+**Three-Way Audit:**
+- [ ] Request: What was explicitly asked for
+- [ ] Delivery: What was actually implemented
+- [ ] Standards: What quality standards specify
+
+**Portability:**
+- [ ] Zero external `.claude/rules` references
+- [ ] Component works in project with zero config files
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Run all 6 gates sequentially before claiming completion
+- Provide fresh verification evidence for every claim
+- Use the evidence standard: command name + result
+- Compare Request vs Delivery vs Standards in audits
+- Fix warnings immediately (they become errors)
+- Document intentional changes in git diff
+
+❌ **DON'T:**
+- Claim completion without verification evidence
+- Skip gates for speed
+- Trust "build succeeded" for type safety
+- Ignore linter warnings
+- Skip gates "just this once"
+- Make claims like "looks complete" or "should work"
+
+---
+
 ## Common Rationalizations
 
 | Excuse                                  | Reality                                                |

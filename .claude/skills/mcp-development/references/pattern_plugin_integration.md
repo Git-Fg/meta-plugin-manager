@@ -1,6 +1,14 @@
 # Plugin MCP Integration
 
-Complete guide for bundling MCP servers with Claude Code plugins.
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Overview | ## Overview |
+| MCP config format | ## PATTERN: MCP Configuration |
+| Best practices | ## PATTERN: Plugin Best Practices |
+| Common mistakes | ## ANTI-PATTERN: Integration Mistakes |
+| Troubleshooting | ## Troubleshooting |
 
 ---
 
@@ -370,7 +378,7 @@ Integrate multiple MCP servers:
 
 ---
 
-## Best Practices
+## PATTERN: Plugin Best Practices
 
 ### DO
 
@@ -392,7 +400,7 @@ Integrate multiple MCP servers:
 
 ✅ Handle errors gracefully
 
-### DON'T
+❌ **DON'T:**
 
 ❌ Hardcode absolute paths
 

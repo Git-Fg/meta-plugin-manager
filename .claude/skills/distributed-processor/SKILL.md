@@ -1,16 +1,13 @@
 ---
 name: distributed-processor
 description: "Coordinate distributed processing with parallel execution, forked skills, and isolated work units. Use when distributed processing, work isolation, or parallel execution is required. Includes parallel coordination, fork management, and result aggregation. Not for sequential tasks, single-threaded workflows, or non-isolated processing."
-context: fork
->
-<objective>Coordinate distributed processing with parallel execution, forked skills, and isolated work units.</objective---
+---
 
+# Distributed Processor
 <mission_control>
 <objective>Coordinate distributed processing with parallel execution, forked skills, and isolated work units.</objective>
 <success_criteria>All work units complete, results aggregated, isolation maintained</success_criteria>
 </mission_control>
-
-<Guiding_principles>
 
 ## The Path to High-Autonomy Distributed Processing
 
@@ -43,8 +40,6 @@ Collecting outputs after completion ensures that the final dataset represents co
 Distributed systems experience partial failures. Retry mechanisms enable recovery without complete system restart.
 
 **Why this works:** Individual region failures don't doom the entire job. Retry failed regions, skip non-critical failures, or mark aggregation with errors—the system remains operational and productive.
-
-</Guiding_principles>
 
 ## Quick Start
 
@@ -271,6 +266,145 @@ Total: [combined statistics]
 - Results aggregation after completion
 
 **Binary check:** "Proper distributed processing?" → Both criteria must pass.
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Starting Aggregation Before All Processors Complete
+
+❌ **Wrong:**
+```typescript
+Dispatch region processors A, B, C in parallel
+TaskList.waitForCompletion(["region-a"])  // Only waits for A!
+aggregate_results = combine_outputs(region_a, region_b, region_c)
+```
+
+✅ **Correct:**
+```typescript
+Dispatch region processors A, B, C in parallel
+TaskList.waitForCompletion(["region-a", "region-b", "region-c"])  // Wait for ALL
+aggregate_results = combine_outputs(region_a, region_b, region_c)
+```
+
+### Mistake 2: Missing blockedBy Dependencies
+
+❌ **Wrong:**
+```typescript
+TaskList.create([
+  { id: "region-a", task: "process-region-a" },
+  { id: "region-b", task: "process-region-b" },
+  { id: "aggregate", task: "aggregate-results" },  // No blockedBy!
+]);
+```
+
+✅ **Correct:**
+```typescript
+TaskList.create([
+  { id: "region-a", task: "process-region-a" },
+  { id: "region-b", task: "process-region-b" },
+  {
+    id: "aggregate",
+    task: "aggregate-results",
+    blockedBy: ["region-a", "region-b"],
+  },
+]);
+```
+
+### Mistake 3: No Fault Tolerance for Failed Regions
+
+❌ **Wrong:**
+Dispatch region processors → One fails → Entire aggregation fails → No retry attempted
+
+✅ **Correct:**
+```typescript
+try {
+  Dispatch region processors A, B, C with fork isolation
+  TaskList.waitForCompletion(["region-a", "region-b", "region-c"])
+} catch (error) {
+  TaskList.retry_failed_tasks(["region-a"])  // Retry failed region
+  // or: mark_aggregator_with_partial_results()
+}
+```
+
+### Mistake 4: Breaking Isolation Between Regions
+
+❌ **Wrong:**
+Regions share a common file for state → Region B corrupts Region A's data → Results unreliable
+
+✅ **Correct:**
+Each region gets completely isolated context with no shared resources:
+```typescript
+Delegate to region processor with fork isolation for region A
+Delegate to region processor with fork isolation for region B
+// No shared state, no cross-contamination possible
+```
+
+### Mistake 5: Sequential Processing When Parallel Is Possible
+
+❌ **Wrong:**
+Process Region A → Wait → Process Region B → Wait → Process Region C → Aggregate
+(Time = A + B + C)
+
+✅ **Correct:**
+```typescript
+Delegate to region processor for A (fork)
+Delegate to region processor for B (fork)
+Delegate to region processor for C (fork)
+TaskList.waitForCompletion([...])
+// All run in parallel (Time = max(A, B, C))
+```
+
+---
+
+## Validation Checklist
+
+Before claiming distributed processing complete:
+
+**Coordination:**
+- [ ] TaskList created with all processing tasks
+- [ ] blockedBy dependencies properly configured for aggregator
+- [ ] No race conditions in task completion
+
+**Parallelism:**
+- [ ] Multiple regions dispatched concurrently (not sequentially)
+- [ ] Fork isolation used for each region processor
+- [ ] No shared state between regions
+
+**Fault Tolerance:**
+- [ ] Failed tasks can be retried
+- [ ] Partial failures handled gracefully
+- [ ] Error recovery strategy defined
+
+**Aggregation:**
+- [ ] Wait for ALL processors to complete before aggregating
+- [ ] Results from all regions available
+- [ ] Final dataset represents complete work
+
+**Isolation:**
+- [ ] Each region runs in complete isolation
+- [ ] No cross-contamination between regions
+- [ ] Fault boundaries maintained
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Use TaskList with blockedBy for proper dependency management
+- Wait for ALL processors to complete before aggregating results
+- Use fork isolation for each region processor
+- Implement retry logic for failed regions
+- Dispatch regions concurrently to maximize throughput
+- Verify no shared state between isolated regions
+
+❌ **DON'T:**
+- Aggregate before all regions complete
+- Skip blockedBy dependencies (causes race conditions)
+- Process regions sequentially when parallel is possible
+- Share state between forked regions
+- Skip fault tolerance (single failure = total failure)
+- Use regular delegation instead of fork isolation
 
 ---
 

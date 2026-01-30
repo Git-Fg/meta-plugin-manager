@@ -113,6 +113,92 @@ When adding constraints to Skills or Rules, place them at the BOTTOM of the file
 
 Hardcoded paths (e.g., `/Users/jdoe/`) break portability. Use relative paths or environment variables.
 
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Overfitting to Specific Cases
+
+❌ **Wrong:**
+"Detect package manager via lockfile" → Only for this specific project
+
+✅ **Correct:**
+"Detect package manager via lockfile" → Universal rule applicable everywhere
+
+### Mistake 2: Patching Wrong File Location
+
+❌ **Wrong:**
+Fixing skill behavior in architecture.md
+
+✅ **Correct:**
+Update the specific skill file, not a global rule
+
+### Mistake 3: Skipping Generalization
+
+❌ **Wrong:**
+"Don't use npm test in backend folder" → Specific to one folder
+
+✅ **Correct:**
+"Detect package manager via lockfile before running test commands" → General pattern
+
+### Mistake 4: Modifying Wrong File Type
+
+❌ **Wrong:**
+Updating CLAUDE.md instead of the specific skill for a procedural issue
+
+✅ **Correct:**
+Use Protocol A for skills, Protocol B for rules, Protocol C for CLAUDE.md
+
+---
+
+## Validation Checklist
+
+Before claiming meta-learning extraction complete:
+
+**Diagnosis:**
+- [ ] Error signal correctly classified (Procedural Gap, Structural Drift, Behavioral Drift, Context Rot, Quality Failure)
+- [ ] Root cause type identified correctly
+- [ ] Target file location determined
+
+**Synthesis:**
+- [ ] Principle generalized beyond specific case
+- [ ] Rule applies universally, not just edge case
+- [ ] No hardcoded paths or project-specific values
+
+**Surgery:**
+- [ ] Correct protocol used (A for skills, B for rules, C for CLAUDE.md)
+- [ ] Edit applied to correct file
+- [ ] Constraint placed at bottom for recency bias
+
+**Verification:**
+- [ ] Syntax valid (no malformed XML/Markdown)
+- [ ] No breaking changes to existing structure
+- [ ] Change aligned with system architecture
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Classify errors correctly using the taxonomy (5 types)
+- Generalize rules to apply universally, not just edge cases
+- Use correct patching protocol for file type
+- Place new constraints at bottom of files (recency bias)
+- Append to "System Discoveries" in CLAUDE.md rather than overwriting
+- Work through the 5 thinking questions before applying fixes
+- Preserve historical context in CLAUDE.md
+
+❌ **DON'T:**
+- Patch specific instances instead of general principles
+- Fix procedural issues in architecture rules
+- Use hardcoded paths (breaks portability)
+- Modify the wrong file type
+- Skip the thinking process questions
+- Overwrite existing sections in CLAUDE.md
+- Create brittle rules that don't transfer
+
+---
+
 <critical_constraint>
 **System Physics:**
 

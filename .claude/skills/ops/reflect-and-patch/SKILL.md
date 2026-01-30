@@ -37,7 +37,7 @@ Reading the full transcript before making changes, classifying the failure type 
 
 Modifying the actual rule file rather than creating duplicates or exceptions keeps knowledge consolidated in its canonical location. This makes the entire system smarter and more consistent, preventing the same mistake across all contexts rather than creating scattered workarounds.
 
-</guiding_principles>
+---
 
 Think of this skill as **self-diagnostic surgery**—when Claude makes a mistake that the user corrects, this skill investigates why and patches the relevant rule to prevent recurrence.
 
@@ -257,19 +257,95 @@ User: "No, that's wrong. The skill should be in skills/ not skill/"
 7. REPORT: Generated transparency report
 ```
 
-## Anti-Patterns to Avoid
+## Common Mistakes to Avoid
 
-- Don't patch the wrong file based on weak classification
-- Don't apply too strong language for minor issues
-- Don't create duplicates instead of updating existing rules
-- Don't skip verification before completing
+### Mistake 1: Patching the Wrong File
 
-**Do:**
+❌ **Wrong:**
+```markdown
+// Classification was weak, patched wrong file
+// Based on partial transcript analysis
+```
 
-- Verify classification before patching
-- Match language strength to severity
-- Update existing rules, don't create duplicates
-- Always verify before claiming completion
+✅ **Correct:**
+```markdown
+// Verify classification using correction-patterns.md
+// Confirm target file before applying patch
+// Re-read transcript if classification is uncertain
+```
+
+### Mistake 2: Over-strengthening Language
+
+❌ **Wrong:**
+```markdown
+<critical_constraint>
+ALWAYS verify directory names before creation
+```
+
+✅ **Correct:**
+```markdown
+// Match language strength to issue severity
+// Use "Consider" for preferences, "MUST" for critical steps
+// Escalate only when pattern of mistakes is observed
+```
+
+### Mistake 3: Creating Duplicates
+
+❌ **Wrong:**
+```markdown
+// Created new file for exception instead of updating existing
+```
+
+✅ **Correct:**
+```markdown
+// Update-in-place is the default strategy
+// Only create new file if canonical location is unclear
+// Consolidate knowledge, don't fragment it
+```
+
+### Mistake 4: Skipping Verification
+
+❌ **Wrong:**
+```markdown
+// Applied patch, assumed it's correct, completed
+```
+
+✅ **Correct:**
+```markdown
+// Verify XML/Markdown syntax is valid
+// Check patch doesn't break existing content
+// Confirm reference links are correct
+// Re-verify before claiming completion
+```
+
+## Validation Checklist
+
+Before claiming reflect-and-patch complete:
+
+- [ ] Session transcript read and analyzed
+- [ ] Failure type classified using correction-patterns.md
+- [ ] Root cause identified
+- [ ] Target file determined
+- [ ] Patch applied using patch-strategies.md
+- [ ] Change verified (no regressions)
+- [ ] Transparency report generated
+
+## Best Practices Summary
+
+✅ **DO:**
+- Verify classification before patching the target file
+- Match language strength to the severity of the issue
+- Update existing rules in-place, don't create duplicates
+- Always verify changes before claiming completion
+- Use recognition questions for single mistakes, constraints for patterns
+- Report what changed and why for transparency
+
+❌ **DON'T:**
+- Patch files based on weak or unverified classification
+- Apply overly strong language (MUST/ALWAYS) for minor issues
+- Create new files when updating the canonical location is possible
+- Skip verification of syntax and regressions
+- Skip transparency reporting after patching
 
 ## Transparency Reporting
 
@@ -322,16 +398,6 @@ This component carries essential Seed System principles for context: fork isolat
 - "Would Claude know this without being told?" → Delete (zero delta)
 - "Can this work standalone?" → Fix if no (non-self-sufficient)
 - "Did I read the actual file, or just see it in grep?" → Verify before claiming
-
-## Success Criteria
-
-- [ ] Session transcript read and analyzed
-- [ ] Failure type classified using correction-patterns.md
-- [ ] Root cause identified
-- [ ] Target file determined
-- [ ] Patch applied using patch-strategies.md
-- [ ] Change verified (no regressions)
-- [ ] Transparency report generated
 
 ## Trigger
 
