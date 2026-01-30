@@ -623,6 +623,80 @@ Before claiming command authoring complete:
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Using @ or ! in Skills
+
+❌ **Wrong:**
+```markdown
+# My Skill
+Current branch: !`git branch --show-current`
+```
+
+✅ **Correct:**
+Skills use semantic instructions:
+```markdown
+# My Skill
+Determine the current Git branch using standard git commands.
+```
+
+### Mistake 2: Using $1 for Flags
+
+❌ **Wrong:**
+```yaml
+$1: --verbose
+```
+
+✅ **Correct:**
+```yaml
+$1: session-id  # Only for identifiers
+```
+
+### Mistake 3: Missing Frontmatter
+
+❌ **Wrong:**
+```markdown
+# My Command
+description: Does something useful
+```
+
+✅ **Correct:**
+```yaml
+---
+name: my-command
+description: "Verb + object. Use when [condition]. Includes [features]. Not for [exclusions]."
+---
+```
+
+### Mistake 4: Complex Bash in !
+
+❌ **Wrong:**
+```markdown
+!`for f in $(ls *.json); do cat $f | jq '.name'; done`
+```
+
+✅ **Correct:**
+```markdown
+!`find . -name "*.json" -exec jq -r '.name' {} \;`
+```
+
+### Mistake 5: Missing Error Handling
+
+❌ **Wrong:**
+```markdown
+@/path/to/mandatory/file.yaml
+```
+(If file doesn't exist, command fails)
+
+✅ **Correct:**
+```markdown
+@/path/to/file.yaml
+```
+(gracefully handles missing files)
+```
+
+---
+
 ## Best Practices Summary
 
 ✅ **DO:**

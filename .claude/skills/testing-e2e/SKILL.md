@@ -1,6 +1,6 @@
 ---
 name: testing-e2e
-description: "Run E2E tests for all .claude/ components using claude -p. Use when testing skills, commands, agents, hooks, or MCP servers. Includes sandbox isolation, hallucination detection, and cross-component integration tests. Not for unit tests or CI/CD pipelines."
+description: "Execute programmatic E2E tests for all .claude/ components. Use when validating skills, commands, agents, hooks, or MCP servers. Not for unit tests or CI/CD pipelines."
 ---
 
 <mission_control>
@@ -14,21 +14,22 @@ description: "Run E2E tests for all .claude/ components using claude -p. Use whe
 
 **If you need to test a specific component:** Run `scripts/runner.sh --component skill-authoring`.
 
-**If you need to understand test patterns:** MUST READ ## PATTERN: Test Definition first—all tests depend on this.
+**If you need to understand test patterns:** MUST READ ## PATTERN: Test Definition before creating any tests.
 
 **If you need to debug a test:** Run `scripts/runner.sh --verbose --test <test-name>`.
 
 ## Navigation
 
-| If you need...                       | Read this section...                    |
+| If you need...                       | Read...                                 |
 | :----------------------------------- | :-------------------------------------- |
-| Test definition format               | ## PATTERN: Test Definition (MUST)      |
+| Test definition format               | ## PATTERN: Test Definition             |
 | Claude -p invocation                 | ## PATTERN: Claude Invocation           |
 | Sandbox management                   | ## PATTERN: Sandbox Management          |
 | Hallucination detection              | ## PATTERN: Hallucination Detection     |
 | Validation conditions                | ## PATTERN: Validation Conditions       |
 | Component test scenarios             | ## PATTERN: Component Tests             |
 | Anti-patterns to avoid               | ## ANTI-PATTERN: Common Mistakes        |
+| When to use references               | ## QUALITY PATTERN: When to Use References |
 
 ## PATTERN: Test Definition
 
@@ -429,6 +430,24 @@ Before claiming test execution complete:
 
 ---
 
+## QUALITY PATTERN: When to Use References
+
+MUST READ `references/patterns_test-cases.md` when:
+- You need 20+ test case patterns for inspiration
+- You need templates for hallucination detection
+- You need validation condition templates (file, YAML, JSON, exit code)
+- You need component-specific test scenarios (skills, commands, agents, hooks, MCP)
+
+Keep in SKILL.md (don't move to references):
+- Core workflow and quick start
+- Sandbox invariant (CWD requirement)
+- Error handling patterns
+- Recognition questions
+
+**Why references/ exists:** `patterns_test-cases.md` has 509 lines with 20+ examples—putting this in SKILL.md would create a skill that no one reads. References are for "ultra-situational" lookup, not core workflow.
+
+---
+
 <critical_constraint>
 **E2E Testing Invariant:**
 
@@ -441,3 +460,100 @@ Before claiming test execution complete:
 
 Claude -p loads skills/commands from relative paths—wrong CWD = wrong results.
 </critical_constraint>
+
+---
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Wrong CWD for Claude -p
+
+❌ **Wrong:**
+```bash
+cd /tmp
+claude -p "test prompt"
+```
+
+✅ **Correct:**
+```bash
+cd .sandbox/.claude/
+claude -p "test prompt"
+```
+
+### Mistake 2: Creating Test Scenarios On-The-Fly
+
+❌ **Wrong:**
+```bash
+# Test creates file mid-execution
+claude -p "Create a new skill"
+```
+
+✅ **Correct:**
+```bash
+# Pre-create scenario first
+# Scenario already exists at .sandbox/.claude/skills/my-test-skill/
+claude -p "Test the skill"
+```
+
+### Mistake 3: Skipping Hallucination Detection
+
+❌ **Wrong:**
+```bash
+# Only checks if output exists
+if [ -f output.md ]; then echo "PASS"; fi
+```
+
+✅ **Correct:**
+```bash
+# Check for hallucinations (false claims, wrong file paths)
+./scripts/detect-hallucination.sh output.md
+```
+
+### Mistake 4: Ignoring Exit Codes
+
+❌ **Wrong:**
+```bash
+claude -p "test" > output.md
+# Ignores exit code
+```
+
+✅ **Correct:**
+```bash
+claude -p "test" > output.md
+if [ $? -ne 0 ]; then echo "FAIL: claude -p failed"; exit 1; fi
+```
+
+### Mistake 5: Temporary Logs
+
+❌ **Wrong:**
+```bash
+claude -p "test" > output.md
+# Log lost after session
+```
+
+✅ **Correct:**
+```bash
+claude -p "test" 2>&1 | tee logs/run-$(date +%Y%m%d-%H%M%S).log
+```
+
+---
+
+## Best Practices Summary
+
+✅ **DO:**
+- Create sandbox with mirrored `.claude/` structure
+- Run claude -p from inside `.sandbox/.claude/`
+- Pre-create all test scenarios before invocation
+- Capture logs to permanent folder
+- Test for hallucinations (false claims, wrong assumptions)
+- Check exit codes for all commands
+- Test all component types (skills, commands, agents, hooks, MCP)
+
+❌ **DON'T:**
+- Run from wrong directory (breaks relative paths)
+- Create test scenarios mid-test (changes variables)
+- Skip hallucination detection (misses false outputs)
+- Ignore exit codes (misses failures)
+- Use /tmp or /dev/null for logs (lose evidence)
+- Test only one component type (misses integration issues)
+
+---

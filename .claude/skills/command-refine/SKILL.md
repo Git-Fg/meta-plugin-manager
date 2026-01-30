@@ -372,6 +372,65 @@ Before claiming command refinement complete:
 
 ---
 
+## Common Mistakes to Avoid
+
+### Mistake 1: Vague Findings Without Evidence
+
+❌ **Wrong:**
+"The command description needs improvement."
+
+✅ **Correct:**
+**Issue:** Missing 'Not for' exclusion in description
+**Evidence:** User said "No" when skill triggered for unrelated task
+**Root Cause:** Description triggers too broad, includes unintended use cases
+**Fix:** Add "Not for X" to description frontmatter at line 3
+
+### Mistake 2: Skipping Root Cause Analysis
+
+❌ **Wrong:**
+"The @ path is wrong. Fix it."
+
+✅ **Correct:**
+**Issue:** @ path uses relative path that fails when invoked from different directory
+**Evidence:** Command fails with "File not found" error
+**Root Cause:** Path is relative to workspace root but command runs from project root
+**Fix:** Change `@./docs/page.md` to `@/Users/project/docs/page.md`
+
+### Mistake 3: Missing File Verification
+
+❌ **Wrong:**
+"Fix the frontmatter" (without reading the file)
+
+✅ **Correct:**
+**Issue:** Frontmatter missing 'model' field
+**Evidence:** Read skill/SKILL.md lines 1-5
+**Fix:** Add `model: inherit` to frontmatter
+
+### Mistake 4: Dangerous ! Commands
+
+❌ **Wrong:**
+```markdown
+!`rm -rf node_modules && npm install`
+```
+
+✅ **Correct:**
+```markdown
+!`npm list --depth=0`
+```
+(Use read-only commands in ! patterns)
+
+### Mistake 5: No Severity Classification
+
+❌ **Wrong:**
+"The skill needs improvement."
+
+✅ **Correct:**
+**Issue:** Missing portability invariant (CRITICAL)
+**Root Cause:** Skill references `.claude/rules/` directly
+**Fix:** Remove all `.claude/rules/` references, bundle philosophy in file
+
+---
+
 ## Best Practices Summary
 
 ✅ **DO:**

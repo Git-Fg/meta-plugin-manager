@@ -351,7 +351,7 @@ Change one thing at a time. Run tests after each change. Verify behavior remains
 
 ---
 
-## Verification Checklist
+## Validation Checklist
 
 Before considering refactoring complete:
 

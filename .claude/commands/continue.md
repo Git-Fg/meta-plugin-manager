@@ -100,6 +100,19 @@ Continue asking until intent is clear, then proceed.
 
 ---
 
+## Validation Checklist
+
+Before claiming clarification complete:
+
+- [ ] User intent identified through questions
+- [ ] 1-4 questions per batch (not overwhelming)
+- [ ] Recognition-based options (2-4 choices)
+- [ ] Intent confirmed before proceeding
+- [ ] No unrelated questions in same batch
+- [ ] Converged on clear direction
+
+---
+
 <critical_constraint>
 MANDATORY: Batch 1-4 questions per AskUserQuestion call
 MANDATORY: Converge on intent before acting
