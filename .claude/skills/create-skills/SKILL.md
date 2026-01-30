@@ -1,12 +1,32 @@
 ---
-name: Skill Development
-description: This skill should be used when the user wants to "create a skill", "add a skill to plugin", "write a new skill", "improve skill description", "organize skill content", or needs guidance on skill structure, progressive disclosure, or skill development best practices for Claude Code plugins.
+name: create-skills
+description: "Create portable skills with SKILL.md. Use when building new skills or documenting patterns for Claude Code plugins. Includes progressive disclosure, frontmatter syntax, directory conventions, and validation. Not for commands or agents."
 ---
 
 <mission_control>
 <objective>Guide the creation of effective skills for Claude Code plugins with progressive disclosure and proper structure</objective>
 <success_criteria>Skill created with valid frontmatter, lean SKILL.md, proper references/, and working examples</success_criteria>
 </mission_control>
+
+## Quick Start
+
+**If you need to create a new skill:** Follow Step 1-6 in ## Skill Creation Process.
+
+**If you need frontmatter syntax:** Read ### Imperative/Infinitive Form under ## Writing Style Requirements.
+
+**If you need directory structure:** Read ### Anatomy of a Skill.
+
+## Navigation
+
+| If you need... | Read this section... |
+| :------------- | :------------------- |
+| Skill creation workflow | ## Skill Creation Process |
+| Frontmatter syntax | ### Step 4: Edit the Skill |
+| Directory structure | ### Anatomy of a Skill |
+| Progressive disclosure | ## Progressive Disclosure in Practice |
+| Writing style | ## Writing Style Requirements |
+| Validation checklist | ## Validation Checklist |
+| Common mistakes | ## Common Mistakes to Avoid |
 
 # Skill Development for Claude Code Plugins
 
@@ -639,3 +659,21 @@ To create a skill for your plugin:
 8. **Iterate**: Improve based on usage
 
 Focus on strong trigger descriptions, progressive disclosure, and imperative writing style for effective skills that load when needed and provide targeted guidance.
+
+---
+
+<critical_constraint>
+**Portability Invariant:**
+
+This skill must work in a project with ZERO external dependencies to `.claude/rules/` or CLAUDE.md. All necessary philosophy for skill creation is self-contained.
+
+**Gold Standards:**
+
+- Frontmatter MUST use third-person description with specific trigger phrases
+- SKILL.md MUST open with ## Quick Start or ## Workflow
+- Navigation tables MUST use "If you need... Read this section..." format
+- Body MUST use imperative/infinitive form (not second person)
+- Target SKILL.md length: 1,500-2,000 words (progressive disclosure)
+- All references/ MUST be explicitly mentioned in SKILL.md
+- Portability invariant: Zero external dependencies
+</critical_constraint>

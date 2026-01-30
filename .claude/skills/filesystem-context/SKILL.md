@@ -397,28 +397,30 @@ skills/my-skill/
 
 **For Complex Discovery**:
 
-When basic search is insufficient, use **iterative-retrieval** for targeted context discovery:
+When basic search is insufficient, combine search strategies:
 
 ```
 # Basic search (grep/glob)
 grep("pattern", "**/*.ts")
 
-# Iterative retrieval with progressive refinement
-/search "authentication patterns in TypeScript"
+# Multi-stage search for refinement
+1. Broad grep for candidate files
+2. Narrow with specific patterns
+3. Read selected files for targeted content
 ```
 
-**iterative-retrieval** enhances filesystem-context by:
+**Multi-stage discovery enhances filesystem-context by**:
 
-- **4-phase loop**: DISPATCH → EVALUATE → REFINE → LOOP
-- **Relevance scoring**: Identifies which files to read from filesystem
-- **Progressive refinement**: Discovers relevant files systematically
-- **Termination conditions**: Stops when sufficient high-relevance files found
+- **Broad then narrow**: Start wide, progressively refine
+- **Pattern evolution**: Adjust search based on findings
+- **Selective reading**: Read only relevant sections from discovered files
+- **Termination**: Stop when sufficient context gathered
 
 **Integration**:
 
-- Use iterative-retrieval to discover relevant files
-- Use filesystem-context to persist discovered files for selective retrieval
-- Combined: Discovery → Storage → Targeted retrieval
+- Use broad search to discover relevant files
+- Use filesystem-context to cache discovered file metadata
+- Combined: Discovery → Metadata caching → Targeted retrieval
 
 **Key Principle**: Filesystem provides unlimited context capacity through dynamic discovery. Write once, read selectively, discover on-demand.
 
