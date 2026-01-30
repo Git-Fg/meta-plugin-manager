@@ -1,5 +1,4 @@
 ---
-name: strategy:execute
 description: "Execute STRATEGY.md phases with parallel Task() batching and TDD prompt injection. Uses TodoWrite for phase-level tracking and /qa:verify-phase as gatekeeper. Primary command for executing planned work."
 argument-hint:
   [

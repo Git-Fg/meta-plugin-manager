@@ -1,4 +1,6 @@
-# Indepth System Review & Comparison
+---
+description: "Perform an in-depth architectural review and comparison of documentation, rules, and instructions versus skills, commands, agents, and MCP servers."
+---
 
 ## Objective
 Perform an in-depth review and comparison, step by step, of all documentations, rules, and instructions versus skills, commands, agents, MCP, and other components.

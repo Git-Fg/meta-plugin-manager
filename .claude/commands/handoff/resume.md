@@ -1,5 +1,4 @@
 ---
-name: handoff:resume
 description: "Resume work from a handoff document. Use at session start to restore context from previous session. Not for planning resume - use plan-specific mechanisms instead."
 argument-hint: "[handoff | diagnostic | attic/filename]"
 ---

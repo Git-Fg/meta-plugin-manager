@@ -25,6 +25,7 @@ description: "Create single-file commands with dynamic content injection (@path 
 | File injection    | ## PATTERN: @ Path Injection     |
 | Command execution | ## PATTERN: ! Command Injection  |
 | Structure         | ## PATTERN: Command Structure    |
+| Engine separation | ## PATTERN: Engine Separation    |
 | Argument handling | ## PATTERN: Argument Patterns    |
 | Anti-patterns     | ## ANTI-PATTERN: Common Mistakes |
 
@@ -201,7 +202,7 @@ Or flat structure:
 
 | Component             | Required? | Notes                       |
 | :-------------------- | :-------- | :-------------------------- |
-| Frontmatter           | Yes       | YAML with name, description |
+| Frontmatter           | Yes       | YAML with description       |
 | ## Quick Start        | Yes       | Scenario-based              |
 | Content               | Yes       | With @/! injection          |
 | <critical_constraint> | Yes       | At bottom                   |
@@ -233,10 +234,6 @@ argument-hint: "[issue-number] [priority]"  # Placeholder for args
 ---
 ```
 
-> **Note:** `allowed-tools` is for security-sensitive operations. Add during **iteration** if issues arise.
-
-> **Note:** `allowed-tools` is for security-sensitive operations. Add during iteration if issues arise.
-
 ### Argument Handling
 
 | Syntax | Description | Example |
@@ -263,7 +260,6 @@ argument-hint: "[issue-number] [priority]"  # Placeholder for args
 
 ```yaml
 ---
-name: command-name
 description: "Verb + object. Use when [condition]. Includes [features]. Not for [exclusions]."
 ---
 ```
@@ -292,6 +288,39 @@ description: "Verb + object. Use when [condition]. Includes [features]. Not for 
 | Injection   | @, ! supported       | Not supported          |
 | Frontmatter | Required             | Required               |
 | References  | Optional references/ | Extensive references/  |
+
+## PATTERN: Engine Separation
+
+Commands **SHOULD NOT contain complex logic**. They should:
+
+1. **Gather context** (via @/!)
+2. **Ask clarifying questions** (if Liaison)
+3. **Invoke the appropriate Skill**
+
+### Anti-Pattern: Command with Logic
+
+```markdown
+❌ Wrong: A 200-line "how-to" guide in a command
+✅ Correct: 5-line context gatherer → invoke Skill
+```
+
+### Command Responsibilities
+
+| Responsibility | Description |
+| :------------- | :---------- |
+| Context Injection | Use @/! to capture current state |
+| Human Negotiation | Use AskUserQuestion to clarify intent |
+| Skill Invocation | Delegate to Engine with compiled context |
+
+### When to Move to Skill
+
+Use a Skill instead of a Command when:
+- You need `references/` for documentation
+- Logic exceeds 50 lines of content
+- Multiple patterns and anti-patterns needed
+- Complex decision trees required
+
+**Rule: If you need references/, you are building a Skill, not a Command.**
 
 ---
 
@@ -600,7 +629,7 @@ Before claiming command authoring complete:
 **Structure:**
 - [ ] Single markdown file in `.claude/commands/`
 - [ ] File has `.md` extension
-- [ ] Valid YAML frontmatter with name and description
+- [ ] Valid YAML frontmatter with description
 
 **Injection Patterns:**
 - [ ] @path for dynamic file content (not in skills)
@@ -726,6 +755,7 @@ description: "Verb + object. Use when [condition]. Includes [features]. Not for 
 | Does command use single-file structure? | Yes, no references/ folder            |
 | Does $1 use identifier-only pattern?    | Yes, IDs/slugs, not flags             |
 | Is XML minimal?                         | Only injected_content wrapper         |
+| Does command delegate to Skill?         | Yes, if logic exceeds ~50 lines       |
 
 ---
 
@@ -737,6 +767,12 @@ description: "Verb + object. Use when [condition]. Includes [features]. Not for 
 3. Use `<injected_content>` wrapper for semantic grouping
 4. All paths MUST be absolute or relative to workspace root
 
+**Engine vs Interface:**
+
+- Commands are Interfaces that bind Skills to Reality
+- Commands SHOULD NOT contain complex logic (delegate to Skills)
+- If you need references/, you are building a Skill, not a Command
+
 @ and ! are command-only features.
 
 Skills MUST use semantic instructions, not injection.
@@ -747,5 +783,5 @@ Commands MUST be single markdown files.
 
 Commands MUST use .md extension.
 
-Commands MUST have frontmatter with name and description.
+Commands MUST have frontmatter with description.
 </critical_constraint>

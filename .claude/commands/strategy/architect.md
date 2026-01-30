@@ -1,5 +1,4 @@
 ---
-name: strategy:architect
 description: "Create STRATEGY.md with dependency graph using EnterPlanMode and planning philosophy. Use when starting new projects, continuing from brief/roadmap, or planning complex work with parallel execution. Not for simple tasks - use /plan:create for atomic work."
 argument-hint: [project description or "auto" for context detection]
 ---

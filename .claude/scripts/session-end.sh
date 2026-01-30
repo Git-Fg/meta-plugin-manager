@@ -8,18 +8,35 @@ transcript_path=$(echo "$input" | jq -r '.transcript_path')
 session_id=$(echo "$input" | jq -r '.session_id')
 
 # --- Validation ---
-if [ -z "$transcript_path" ] || [ ! -f "$transcript_path" ]; then
+if [ -z "$transcript_path" ]; then
+  echo "[SessionEnd] ERROR: No transcript_path in hook input" >&2
+  exit 0
+fi
+
+if [ ! -f "$transcript_path" ]; then
   echo "[SessionEnd] No transcript found at: $transcript_path" >&2
   exit 0
 fi
 
 # --- Determine session directory ---
 LOCAL_SESSIONS_DIR="${CLAUDE_PROJECT_DIR}/.claude/workspace/sessions"
+
+# Ensure sessions directory exists
+if [ ! -d "$LOCAL_SESSIONS_DIR" ]; then
+  mkdir -p "$LOCAL_SESSIONS_DIR"
+fi
+
 if [ -f "${LOCAL_SESSIONS_DIR}/.current_session" ]; then
   session_dir=$(cat "${LOCAL_SESSIONS_DIR}/.current_session")
 else
   session_dir="${LOCAL_SESSIONS_DIR}/${session_id}"
   mkdir -p "$session_dir"
+fi
+
+# Validate session_dir is writable
+if [ ! -w "$session_dir" ]; then
+  echo "[SessionEnd] ERROR: Cannot write to session directory: $session_dir" >&2
+  exit 0
 fi
 
 # --- Condensation jq filter ---

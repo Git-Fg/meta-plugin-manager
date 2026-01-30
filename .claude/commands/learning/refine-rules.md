@@ -1,5 +1,4 @@
 ---
-name: refine-rules
 description: "Analyze CLAUDE.md and .claude/rules for quality, consistency, and best practices. Use when reviewing project memory files for gaps, redundancies, or alignment issues."
 ---
 

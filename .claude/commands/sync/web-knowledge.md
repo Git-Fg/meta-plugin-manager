@@ -1,5 +1,4 @@
 ---
-name: sync:web-knowledge
 description: "Fetch web content and sync relevant findings to skills. Use when external documentation, best practices, or examples could enhance existing skills. Not for simple URL bookmarking."
 argument-hint: [url] [--depth=N]
 ---

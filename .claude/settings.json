@@ -21,11 +21,11 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash(rm*)",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"^\\s*rm\\b\"",
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/scripts/rm-rf-block.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/scripts/rm-rf-block.sh"
           }
         ]
       }

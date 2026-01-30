@@ -1,5 +1,4 @@
 ---
-name: handoff:diagnostic
 description: "Create or update diagnostic handoff for debugging sessions. Use when capturing issues, errors, user feedback, and behavior signals for problem analysis."
 argument-hint: "[session-name]"
 ---

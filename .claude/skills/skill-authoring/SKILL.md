@@ -26,6 +26,8 @@ description: "Create portable skills with SKILL.md. Use when building new skills
 | Directory layout | ## PATTERN: Directory |
 | Progressive disclosure | ## PATTERN: Tiers |
 | Navigation tables | ## PATTERN: Navigation |
+| Engine vs Interface | ## PATTERN: The Engine Philosophy |
+| Pareto content focus | ## PATTERN: The 20% Value Invariant |
 | Anti-patterns to avoid | ## ANTI-PATTERN: Common Mistakes |
 | Quality verification | ## PATTERN: Quality (MUST) |
 | Description examples | ## PATTERN: Description Examples |
@@ -380,6 +382,72 @@ description: "...Use when creating portable skills..."
 - 500 lines is a virtual limit, not a hard constraint
 - Losing knowledge is worse than having a longer file
 - Guardrails and patterns belong in the main file
+
+## PATTERN: The Engine Philosophy
+
+Skills are **stateless Engines of expertise**. They do not care about the "Now" (git status, open files, current branch) until that context is fed to them.
+
+### Engine Characteristics
+
+| Characteristic | Description |
+| :------------- | :---------- |
+| **Deep Knowledge** | Contains the "How-To" knowledge, checklists, references, and logic |
+| **Stateless** | Does not know about runtime environment until invoked with context |
+| **References/** | Uses for deep knowledge (API specs, examples, lookup tables) |
+| **No @/!** | Cannot use @ or ! injection (commands only feature) |
+
+### Engine vs Command
+
+| Aspect | Engine (Skill) | Interface (Command) |
+| :--- | :--- | :--- |
+| **Structure** | SKILL.md + references/ | Single .md file |
+| **Dynamic Content** | Semantic instructions | @/! injection |
+| **Purpose** | Deep Knowledge | Runtime Context |
+| **Invocation** | Skill invocation | Slash command |
+
+### When to Build a Skill
+
+Use a Skill when:
+- You need `references/` for API docs or extensive examples
+- The logic is complex enough to warrant progressive disclosure
+- The knowledge should be reusable across different contexts
+- You're teaching Claude a concept or pattern
+
+### When NOT to Build a Skill
+
+Use a Command instead when:
+- It's a 3-line utility (Atomic Macro)
+- You need `@file` or `!command` injection
+- It's a user liaison that asks questions before acting
+
+## PATTERN: The 20% Value Invariant
+
+Focus content on the **20% of logic that creates 80% of the value** (The Pareto Core).
+
+### Pareto Core Elements (Tier 2)
+
+Keep in SKILL.md (Tier 2):
+- Core workflows and patterns
+- Guardrails and anti-patterns
+- Recognition questions
+- Critical constraints
+
+### Move to References (Tier 3)
+
+Move to `references/` folder:
+- Vast API specifications (>100 lines)
+- 20+ code examples
+- Edge cases that rarely occur
+- Implementation details and variations
+
+### Value-First Content
+
+| Content Type | Where | Why |
+| :----------- | :---- | :--- |
+| "How to use this skill" | Tier 2 | Always visible |
+| Common patterns | Tier 2 | 80% of use cases |
+| Rare edge cases | Tier 3 | Reference only |
+| API details | Tier 3 | Lookup as needed |
 
 ## Recognition Questions
 
